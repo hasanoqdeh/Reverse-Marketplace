@@ -13,15 +13,8 @@ import { RequestStatusHistory } from './request-status-history.entity';
 import { RequestCategory } from './request-category.entity';
 import { RequestView } from './request-view.entity';
 
-export enum RequestStatus {
-  DRAFT = 'DRAFT',
-  ACTIVE = 'ACTIVE',
-  IN_PROGRESS = 'IN_PROGRESS',
-  COMPLETED = 'COMPLETED',
-  CANCELLED = 'CANCELLED',
-  EXPIRED = 'EXPIRED',
-  BLOCKED = 'BLOCKED',
-}
+import { RequestStatus } from '../enums/request-status.enum';
+
 
 @Entity('requests')
 @Index(['buyerId'])

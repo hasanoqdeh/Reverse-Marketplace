@@ -9,7 +9,9 @@ import { MerchantInterest } from './common/entities/merchant-interest.entity';
 import { MerchantCoverageArea } from './common/entities/merchant-coverage-area.entity';
 import { MerchantStatusCache } from './common/entities/merchant-status-cache.entity';
 import { MatchLog } from './common/entities/match-log.entity';
+import { HealthController } from './common/controllers/health.controller';
 import configuration from './config/configuration';
+
 
 @Module({
   imports: [
@@ -36,7 +38,7 @@ import configuration from './config/configuration';
     MerchantRegistryModule,
     MatchingModule,
   ],
-  controllers: [],
+  controllers: [HealthController],
   providers: [],
 })
 export class AppModule {}

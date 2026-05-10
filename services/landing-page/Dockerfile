@@ -39,29 +39,24 @@ ENV NODE_ENV production
 # Ensure /app is owned by node
 RUN chown node:node /app
 
-# Copy essential files only WITH ownership set during copy for performance
+# Copy essential files only WITH ownership set during copy
 COPY --from=builder --chown=node:node /app/dist ./dist
 COPY --from=builder --chown=node:node /app/node_modules ./node_modules
 COPY --from=builder --chown=node:node /app/package.json ./package.json
-COPY --from=builder --chown=node:node /app/scripts ./scripts
+
+
 # Copy prisma if it exists
 RUN if [ -d "/app/prisma" ]; then cp -r /app/prisma ./prisma && chown -R node:node ./prisma; fi || true
 
-# Set permissions
-RUN if [ -d "./scripts" ]; then chmod +x ./scripts/*.sh; fi || true
+# Set permissions for scripts
+
 
 USER node
-EXPOSE 3000
+EXPOSE 3007
 
 # Use wget for healthcheck (built-in to Alpine)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3007/health || exit 1
 
+# Using pnpm run start:dev for hot-reloading and better dev experience
 CMD ["pnpm", "run", "start:dev"]
-
-
-
-
-
-
-

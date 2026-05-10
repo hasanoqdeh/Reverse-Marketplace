@@ -1,56 +1,62 @@
-# Use Node.js 18 Alpine as base image
-FROM node:18-alpine AS base
+# syntax=docker/dockerfile:1
 
-# Install dependencies only when needed
+# Use Node.js 20 Alpine for modern features and performance
+FROM node:20-alpine AS base
+
+# Install pnpm globally in the base image for reliability across stages
+RUN npm install -g pnpm@8.15.0
+
+WORKDIR /app
+
+# --- Stage 1: Dependencies ---
 FROM base AS deps
+# Install libc6-compat for some native modules
 RUN apk add --no-cache libc6-compat
-WORKDIR /app
 
-# Copy package files
-COPY package.json package-lock.json* ./
-COPY pnpm-lock.yaml* ./
-RUN npm install -g pnpm
+# Copy package files for dependency installation
+COPY package.json pnpm-lock.yaml* package-lock.json* ./
 
-# Install dependencies
-RUN pnpm install --no-frozen-lockfile
+# Install dependencies using BuildKit cache for pnpm store
+RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
+    pnpm install
 
-# Rebuild the source code only when needed
+# --- Stage 2: Builder ---
 FROM base AS builder
-WORKDIR /app
+# Copy node_modules from deps stage
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/package.json ./package.json
+# Copy the rest of the source code
 COPY . .
-# Install pnpm locally and build
-RUN npm install -g pnpm && pnpm run build
 
 # Build the application
+RUN pnpm run build
 
-
-# Production image, copy all the files and run the app
+# --- Stage 3: Runner ---
 FROM base AS runner
 WORKDIR /app
-
 ENV NODE_ENV production
 
-# Create a non-root user
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nestjs
+# Use the built-in 'node' user (UID 1000) to match the host user for volume permissions
+# Ensure /app is owned by node
+RUN chown node:node /app
 
-# Copy built application
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
+# Copy essential files only WITH ownership set during copy
+COPY --from=builder --chown=node:node /app/dist ./dist
+COPY --from=builder --chown=node:node /app/node_modules ./node_modules
+COPY --from=builder --chown=node:node /app/package.json ./package.json
+COPY --from=builder --chown=node:node /app/scripts ./scripts
 
-# Set permissions
-RUN chown -R nestjs:nodejs /app
-USER nestjs
+# Copy prisma if it exists
+RUN if [ -d "/app/prisma" ]; then cp -r /app/prisma ./prisma && chown -R node:node ./prisma; fi || true
 
-# Expose port
+# Set permissions for scripts
+RUN if [ -d "./scripts" ]; then chmod +x ./scripts/*.sh; fi || true
+
+USER node
 EXPOSE 3006
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:3006/health || exit 1
+# Use wget for healthcheck (built-in to Alpine)
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3006/health || exit 1
 
-# Start the application
-CMD ["node", "dist/main.js"]
+# Using pnpm run start:dev for hot-reloading and better dev experience
+CMD ["pnpm", "run", "start:dev"]

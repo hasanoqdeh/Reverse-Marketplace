@@ -1,0 +1,9 @@
+export enum RequestStatus {
+  DRAFT = 'DRAFT',
+  ACTIVE = 'ACTIVE',
+  IN_PROGRESS = 'IN_PROGRESS',
+  COMPLETED = 'COMPLETED',
+  CANCELLED = 'CANCELLED',
+  EXPIRED = 'EXPIRED',
+  BLOCKED = 'BLOCKED',
+}

@@ -32,24 +32,8 @@ async function bootstrap() {
     credentials: true,
   });
   
-  // Health check endpoint
-  app.getHttpServer().on('request', (req: any, res: any) => {
-    if (req.url === '/health') {
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ 
-        status: 'ok', 
-        service: 'matching-engine',
-        timestamp: new Date().toISOString(),
-        version: '1.0.0',
-        performance: {
-          matchTimeout: configService.get('matching.timeoutMs'),
-          maxMerchants: configService.get('matching.maxMerchantsPerRequest'),
-        }
-      }));
-    }
-  });
-  
   await app.listen(port);
+
   console.log(`Matching Engine is running on port ${port}`);
   console.log(`Health check: http://localhost:${port}/health`);
 }

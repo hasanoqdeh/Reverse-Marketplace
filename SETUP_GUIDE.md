@@ -7,20 +7,17 @@ This guide implements a zero-manual-intervention database initialization system 
 
 ### 1. Database Initialization Scripts
 - `01-wait-for-databases.sh` - Database readiness detection
-- `02-postgres-init.sh` - PostgreSQL initialization and seeding
+- `02-postgres-init.sh` - PostgreSQL initialization
 - `03-mongodb-init.js` - MongoDB initialization
 
 ### 2. Application Migration Runners
 - `services/identity-service/src/database/migration-runner.ts`
-- `services/identity-service/src/database/seed-runner.ts`
-- `services/identity-service/src/database/migration-runner-cli.ts`
-- `services/identity-service/src/database/seed-runner-cli.ts`
 - `services/identity-service/scripts/wait-for-db.sh`
 
 ### 3. Updated Configuration
 - `infrastructure/docker/docker-compose.dev.yml` - Enhanced with health checks
 - `services/identity-service/Dockerfile` - Enhanced health check
-- `services/identity-service/package.json` - New migration/seed scripts
+- `services/identity-service/package.json` - New migration scripts
 
 ## Setup Instructions
 

@@ -6,7 +6,8 @@
   "scripts": {
     "build": "nest build",
     "start": "nest start",
-    "start:prod": "node dist/main"
+    "start:prod": "node dist/main",
+    "start:dev": "nest start --watch"
   },
   "dependencies": {
     "@nestjs/bull": "^11.0.4",
@@ -29,7 +30,8 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "socket.io": "^4.7.0",
-    "typeorm": "^0.3.17"
+    "typeorm": "^0.3.17",
+    "class-transformer": "^0.5.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

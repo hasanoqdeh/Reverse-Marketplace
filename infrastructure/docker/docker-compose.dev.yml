@@ -13,9 +13,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init-scripts/01-wait-for-databases.sh:/docker-entrypoint-initdb.d/01-wait-for-databases.sh:ro
       - ./init-scripts/02-postgres-init.sh:/docker-entrypoint-initdb.d/02-postgres-init.sh:ro
-      - ../../DATABASE_SEED.sql:/docker-entrypoint-initdb.d/DATABASE_SEED.sql:ro
     networks:
       - reverse-marketplace-network
     healthcheck:
@@ -93,6 +91,43 @@ services:
       retries: 5
       start_period: 30s
 
+  # Landing Page Service
+  landing-page:
+    build:
+      context: ../../services/landing-page
+      dockerfile: Dockerfile
+    container_name: reverse-marketplace-landing
+    environment:
+      NODE_ENV: development
+      PORT: 3007
+    ports:
+      - "3007:3007"
+    volumes:
+      - ../../services/landing-page:/app
+      - /app/node_modules
+    networks:
+      - reverse-marketplace-network
+    command: ["pnpm", "run", "start:dev"]
+
+  # Admin Dashboard Service
+  admin-dashboard:
+    build:
+      context: ../../apps/admin-dashboard
+      dockerfile: Dockerfile
+      target: runner
+    container_name: reverse-marketplace-admin
+    environment:
+      NODE_ENV: development
+      PORT: 3008
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api
+    ports:
+      - "3008:3008"
+    volumes:
+      - /app/node_modules
+    networks:
+      - reverse-marketplace-network
+    command: ["node", "server.js"]
+
   # API Gateway
   kong:
     image: kong:3
@@ -115,6 +150,8 @@ services:
     networks:
       - reverse-marketplace-network
     depends_on:
+      - landing-page
+      - admin-dashboard
       - identity-service
 
   # Microservices
@@ -128,16 +165,23 @@ services:
       PORT: 3000
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/reverse_marketplace
       REDIS_URL: redis://redis:6379
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
       RABBITMQ_URL: amqp://admin:password@rabbitmq:5672
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: admin
+      RABBITMQ_PASSWORD: password
       JWT_SECRET: your-super-secret-jwt-key
       # Database initialization flags
       DB_MIGRATE: "true"
-      DB_SEED: "true"
-    ports:
-      - "3000:3000"
+    # Internal port only (accessed through Kong)
+    # ports:
+    #   - "3000:3000"
     volumes:
       - ../../services/identity-service:/app
       - /app/node_modules
+
     networks:
       - reverse-marketplace-network
     depends_on:
@@ -147,7 +191,9 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-    command: ["sh", "-c", "/app/scripts/wait-for-db.sh postgres && npm run start:prod"]
+    command: ["sh", "-c", "/app/scripts/wait-for-db.sh postgres && /app/scripts/wait-for-db.sh redis && /app/scripts/wait-for-db.sh rabbitmq && pnpm run start:dev"]
+
+
 
   request-service:
     build:
@@ -159,18 +205,25 @@ services:
       PORT: 3001
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/reverse_marketplace
       REDIS_URL: redis://redis:6379
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
       RABBITMQ_URL: amqp://admin:password@rabbitmq:5672
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: admin
+      RABBITMQ_PASSWORD: password
       AWS_S3_BUCKET: reverse-marketplace-dev
       AWS_ACCESS_KEY_ID: your-access-key
       AWS_SECRET_ACCESS_KEY: your-secret-key
       # Database initialization flags
       DB_MIGRATE: "true"
-      DB_SEED: "true"
-    ports:
-      - "3001:3001"
+    # Internal port only (accessed through Kong)
+    # ports:
+    #   - "3001:3001"
     volumes:
       - ../../services/request-service:/app
       - /app/node_modules
+
     networks:
       - reverse-marketplace-network
     depends_on:
@@ -180,7 +233,9 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-    command: ["sh", "-c", "/app/scripts/wait-for-db.sh postgres && npm run start:prod"]
+    command: ["sh", "-c", "/app/scripts/wait-for-db.sh postgres && /app/scripts/wait-for-db.sh redis && /app/scripts/wait-for-db.sh rabbitmq && pnpm run start:dev"]
+
+
 
   matching-engine:
     build:
@@ -191,16 +246,23 @@ services:
       NODE_ENV: development
       PORT: 3002
       REDIS_URL: redis://redis:6379
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
       RABBITMQ_URL: amqp://admin:password@rabbitmq:5672
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: admin
+      RABBITMQ_PASSWORD: password
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/reverse_marketplace
       # Database initialization flags
       DB_MIGRATE: "true"
-      DB_SEED: "true"
-    ports:
-      - "3002:3002"
+    # Internal port only (accessed through Kong)
+    # ports:
+    #   - "3002:3002"
     volumes:
       - ../../services/matching-engine:/app
       - /app/node_modules
+
     networks:
       - reverse-marketplace-network
     depends_on:
@@ -210,7 +272,9 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-    command: ["sh", "-c", "/app/scripts/wait-for-db.sh postgres && npm run start:prod"]
+    command: ["sh", "-c", "/app/scripts/wait-for-db.sh postgres && /app/scripts/wait-for-db.sh redis && /app/scripts/wait-for-db.sh rabbitmq && pnpm run start:dev"]
+
+
 
   bidding-service:
     build:
@@ -221,15 +285,23 @@ services:
       NODE_ENV: development
       PORT: 3003
       MONGODB_URL: mongodb://admin:password@mongodb:27017/reverse_marketplace?authSource=admin
+      MONGODB_URI: mongodb://admin:password@mongodb:27017/reverse_marketplace?authSource=admin
+      MONGODB_HOST: mongodb
+      MONGODB_PORT: 27017
       RABBITMQ_URL: amqp://admin:password@rabbitmq:5672
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: admin
+      RABBITMQ_PASSWORD: password
       # Database initialization flags
       DB_MIGRATE: "true"
-      DB_SEED: "true"
-    ports:
-      - "3003:3003"
+    # Internal port only (accessed through Kong)
+    # ports:
+    #   - "3003:3003"
     volumes:
       - ../../services/bidding-service:/app
       - /app/node_modules
+
     networks:
       - reverse-marketplace-network
     depends_on:
@@ -237,7 +309,8 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-    command: ["sh", "-c", "/app/scripts/wait-for-db.sh mongodb && npm run start:prod"]
+    command: ["sh", "-c", "/app/scripts/wait-for-db.sh mongodb && /app/scripts/wait-for-db.sh rabbitmq && pnpm run start:dev"]
+
 
   notification-service:
     build:
@@ -248,16 +321,23 @@ services:
       NODE_ENV: development
       PORT: 3004
       REDIS_URL: redis://redis:6379
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
       RABBITMQ_URL: amqp://admin:password@rabbitmq:5672
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: admin
+      RABBITMQ_PASSWORD: password
       FCM_SERVER_KEY: your-fcm-server-key
       # Database initialization flags
       DB_MIGRATE: "true"
-      DB_SEED: "true"
-    ports:
-      - "3004:3004"
+    # Internal port only (accessed through Kong)
+    # ports:
+    #   - "3004:3004"
     volumes:
       - ../../services/notification-service:/app
       - /app/node_modules
+
     networks:
       - reverse-marketplace-network
     depends_on:
@@ -265,7 +345,8 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-    command: ["sh", "-c", "/app/scripts/wait-for-db.sh redis && npm run start:prod"]
+    command: ["sh", "-c", "/app/scripts/wait-for-db.sh redis && /app/scripts/wait-for-db.sh rabbitmq && pnpm run start:dev"]
+
 
   chat-service:
     build:
@@ -277,15 +358,22 @@ services:
       PORT: 3005
       CASSANDRA_CONTACT_POINTS: cassandra:9042
       REDIS_URL: redis://redis:6379
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
       RABBITMQ_URL: amqp://admin:password@rabbitmq:5672
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: admin
+      RABBITMQ_PASSWORD: password
       # Database initialization flags
       DB_MIGRATE: "true"
-      DB_SEED: "true"
-    ports:
-      - "3005:3005"
+    # Internal port only (accessed through Kong)
+    # ports:
+    #   - "3005:3005"
     volumes:
       - ../../services/chat-service:/app
       - /app/node_modules
+
     networks:
       - reverse-marketplace-network
     depends_on:
@@ -295,7 +383,8 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-    command: ["sh", "-c", "/app/scripts/wait-for-db.sh cassandra && npm run start:prod"]
+    command: ["sh", "-c", "/app/scripts/wait-for-db.sh cassandra && /app/scripts/wait-for-db.sh redis && /app/scripts/wait-for-db.sh rabbitmq && pnpm run start:dev"]
+
 
   payment-service:
     build:
@@ -306,17 +395,24 @@ services:
       NODE_ENV: development
       PORT: 3006
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/reverse_marketplace
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
       RABBITMQ_URL: amqp://admin:password@rabbitmq:5672
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: admin
+      RABBITMQ_PASSWORD: password
       STRIPE_SECRET_KEY: sk_test_your-stripe-key
       THAWANI_SECRET_KEY: your-thawani-key
       # Database initialization flags
       DB_MIGRATE: "true"
-      DB_SEED: "true"
-    ports:
-      - "3006:3006"
+    # Internal port only (accessed through Kong)
+    # ports:
+    #   - "3006:3006"
     volumes:
       - ../../services/payment-service:/app
       - /app/node_modules
+
     networks:
       - reverse-marketplace-network
     depends_on:
@@ -324,7 +420,9 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-    command: ["sh", "-c", "/app/scripts/wait-for-db.sh postgres && npm run start:prod"]
+    command: ["sh", "-c", "/app/scripts/wait-for-db.sh postgres && /app/scripts/wait-for-db.sh rabbitmq && pnpm run start:dev"]
+
+
 
 volumes:
   postgres_data:

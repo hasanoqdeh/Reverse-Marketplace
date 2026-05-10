@@ -11,15 +11,7 @@
     "docker:dev": "docker compose -f infrastructure/docker/docker-compose.dev.yml up --build",
     "docker:prod": "docker compose -f infrastructure/docker/docker-compose.prod.yml up --build",
     "k8s:deploy": "kubectl apply -f infrastructure/k8s/",
-    "migrate": "nx run-many --target=migrate --all",
-    "seed": "nx run-many --target=seed --all",
-    "seed:identity": "nx run identity-service:seed",
-    "seed:request": "nx run request-service:seed", 
-    "seed:payment": "nx run payment-service:seed",
-    "seed:bidding": "nx run bidding-service:seed",
-    "seed:chat": "nx run chat-service:seed",
-    "seed:matching": "nx run matching-engine:seed",
-    "seed:all": "pnpm run seed:identity && pnpm run seed:request && pnpm run seed:payment && pnpm run seed:bidding && pnpm run seed:chat && pnpm run seed:matching"
+    "migrate": "nx run-many --target=migrate --all"
   },
   "devDependencies": {
     "@nx/workspace": "^17.0.0",

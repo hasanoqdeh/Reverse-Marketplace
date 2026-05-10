@@ -7,7 +7,7 @@ import {
   Index,
 } from 'typeorm';
 import { Request } from './request.entity';
-import { RequestStatus } from './request.entity';
+import { RequestStatus } from '../enums/request-status.enum';
 
 @Entity('request_status_history')
 @Index(['requestId'])

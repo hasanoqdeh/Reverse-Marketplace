@@ -13,9 +13,13 @@ import { BidAnalyticsSchema } from './schemas/bid-analytics.schema';
       useFactory: (configService: ConfigService) => ({
         uri: configService.get('mongodb.uri'),
         connectionFactory: (connection) => {
-          connection.plugin(require('mongoose-autopopulate'));
-          connection.plugin(require('mongoose-lean-defaults'));
-          connection.plugin(require('mongoose-lean-virtuals'));
+          const autopopulate = require('mongoose-autopopulate');
+          const leanDefaults = require('mongoose-lean-defaults');
+          const leanVirtuals = require('mongoose-lean-virtuals');
+          
+          connection.plugin(autopopulate.default || autopopulate);
+          connection.plugin(leanDefaults.default || leanDefaults);
+          connection.plugin(leanVirtuals.default || leanVirtuals);
           
           connection.on('connected', () => {
             console.log('MongoDB connected successfully');
@@ -37,7 +41,6 @@ import { BidAnalyticsSchema } from './schemas/bid-analytics.schema';
         maxPoolSize: configService.get('mongodb.connectionPoolSize') || 10,
         serverSelectionTimeoutMS: 5000,
         socketTimeoutMS: 45000,
-        bufferMaxEntries: 0,
         bufferCommands: false,
       }),
     }),

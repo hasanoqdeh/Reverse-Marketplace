@@ -15,29 +15,26 @@ export class RedisModule {
       providers: [
         {
           provide: 'REDIS_CLIENT',
-          useFactory: async (configService: ConfigService) => {
-            const Redis = require('redis');
+                    useFactory: async (configService: ConfigService) => {
+            const { createClient } = require('redis');
             
-            const client = Redis.createClient({
-              host: configService.get('redis.host'),
-              port: configService.get('redis.port'),
-              password: configService.get('redis.password') || undefined,
-              db: configService.get('redis.db'),
-              retryDelayOnFailover: 100,
-              maxRetriesPerRequest: 3,
-              lazyConnect: true,
-            });
+            const host = configService.get('redis.host') || 'localhost';
+            const port = configService.get('redis.port') || 6379;
+            console.log(`DEBUG: Redis connecting to ${host}:${port}`);
+            const password = configService.get('redis.password');
 
-            client.on('error', (err: any) => {
+            const url = password 
+              ? `redis://:${password}@${host}:${port}`
+              : `redis://${host}:${port}`;
+
+            const client = createClient({ url });
+
+            client.on('error', (err) => {
               console.error('Redis Client Error', err);
             });
 
             client.on('connect', () => {
-              console.log('Redis Client Connected');
-            });
-
-            client.on('ready', () => {
-              console.log('Redis Client Ready');
+              console.log('Redis Client Connected to ' + url);
             });
 
             await client.connect();
