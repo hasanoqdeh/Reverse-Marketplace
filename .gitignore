@@ -147,3 +147,10 @@ test-results/
 .parcel-cache/
 .cache/
 .vercel
+
+# Build artifacts
+dist/
+build/
+
+# Nx
+.nx/cache

@@ -75,8 +75,8 @@ Reverse Marketplace/
 
 1. **Clone and install dependencies**:
 ```bash
-git clone <repository-url>
-cd "Reverse Marketplace"
+git clone https://github.com/your-username/reverse-marketplace.git
+cd reverse-marketplace
 pnpm install
 ```
 
@@ -207,7 +207,7 @@ Local development uses Docker Compose with:
 
 ## 📄 License
 
-[Add your license here]
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
