@@ -1,0 +1,104 @@
+{
+  "version": "6.0",
+  "nxVersion": "22.7.1",
+  "pathMappings": {},
+  "nxJsonPlugins": [],
+  "fileMap": {
+    "nonProjectFiles": [
+      {
+        "file": "Docs/Backlog/ Buyer Mobile App.md",
+        "hash": "10628668973898221494"
+      },
+      {
+        "file": "Docs/Backlog/API Gateway.md",
+        "hash": "1708183985499692256"
+      },
+      {
+        "file": "Docs/Backlog/Admin Dashboard.md",
+        "hash": "14879581249867617253"
+      },
+      {
+        "file": "Docs/Backlog/App Backlog.md",
+        "hash": "3319173567841288750"
+      },
+      {
+        "file": "Docs/Backlog/Bidding Service.md",
+        "hash": "18330189324939939864"
+      },
+      {
+        "file": "Docs/Backlog/Chat Service.md",
+        "hash": "5650633202093752076"
+      },
+      {
+        "file": "Docs/Backlog/DevOps Backlog.md",
+        "hash": "6623625937145188272"
+      },
+      {
+        "file": "Docs/Backlog/Identity Service.md",
+        "hash": "17532135481745415178"
+      },
+      {
+        "file": "Docs/Backlog/Infrastructure.md",
+        "hash": "17160725603461756681"
+      },
+      {
+        "file": "Docs/Backlog/Matching Engine.md",
+        "hash": "6691996108183515792"
+      },
+      {
+        "file": "Docs/Backlog/Merchant Mobile App.md",
+        "hash": "2037196495142848588"
+      },
+      {
+        "file": "Docs/Backlog/Notification Service.md",
+        "hash": "7123986246345416649"
+      },
+      {
+        "file": "Docs/Backlog/Payment Service.md",
+        "hash": "17660940604517067222"
+      },
+      {
+        "file": "Docs/Backlog/Request Service.md",
+        "hash": "7525392068805859066"
+      },
+      {
+        "file": "Docs/Backlog/Service Backlog.md",
+        "hash": "16522183706997262229"
+      },
+      {
+        "file": "Docs/index.md",
+        "hash": "15066863283940201181"
+      },
+      {
+        "file": "README.md",
+        "hash": "2330139643848020142"
+      },
+      {
+        "file": "agent-config.md",
+        "hash": "4751590632668728261"
+      },
+      {
+        "file": "infrastructure/docker/docker-compose.dev.yml",
+        "hash": "11454115414896345045"
+      },
+      {
+        "file": "nx.json",
+        "hash": "10658695255507926470"
+      },
+      {
+        "file": "package.json",
+        "hash": "53758259615144840"
+      },
+      {
+        "file": "pnpm-lock.yaml",
+        "hash": "5780421229667156799"
+      },
+      {
+        "file": "pnpm-workspace.yaml",
+        "hash": "1490840558044782243"
+      }
+    ],
+    "projectFileMap": {}
+  },
+  "externalNodesHash": "16701083791797433462"
+}

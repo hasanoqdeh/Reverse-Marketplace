@@ -1,0 +1,164 @@
+_format_version: "3.0"
+
+services:
+  - name: identity-service
+    url: http://identity-service:3000
+    routes:
+      - name: identity-service-route
+        paths:
+          - /api/auth
+          - /api/users
+        methods:
+          - GET
+          - POST
+          - PUT
+          - PATCH
+          - DELETE
+
+  - name: request-service
+    url: http://request-service:3001
+    routes:
+      - name: request-service-route
+        paths:
+          - /api/requests
+        methods:
+          - GET
+          - POST
+          - PUT
+          - PATCH
+          - DELETE
+
+  - name: matching-engine
+    url: http://matching-engine:3002
+    routes:
+      - name: matching-engine-route
+        paths:
+          - /api/matching
+        methods:
+          - GET
+          - POST
+
+  - name: bidding-service
+    url: http://bidding-service:3003
+    routes:
+      - name: bidding-service-route
+        paths:
+          - /api/bids
+        methods:
+          - GET
+          - POST
+          - PUT
+          - PATCH
+          - DELETE
+
+  - name: notification-service
+    url: http://notification-service:3004
+    routes:
+      - name: notification-service-route
+        paths:
+          - /api/notifications
+        methods:
+          - GET
+          - POST
+          - PUT
+          - PATCH
+          - DELETE
+
+  - name: chat-service
+    url: http://chat-service:3005
+    routes:
+      - name: chat-service-route
+        paths:
+          - /api/chat
+        methods:
+          - GET
+          - POST
+          - PUT
+          - PATCH
+          - DELETE
+
+  - name: payment-service
+    url: http://payment-service:3006
+    routes:
+      - name: payment-service-route
+        paths:
+          - /api/payments
+          - /api/wallet
+          - /api/subscriptions
+        methods:
+          - GET
+          - POST
+          - PUT
+          - PATCH
+          - DELETE
+
+plugins:
+  - name: cors
+    service: identity-service
+    config:
+      origins:
+        - "*"
+      methods:
+        - GET
+        - POST
+        - PUT
+        - PATCH
+        - DELETE
+        - OPTIONS
+      headers:
+        - Accept
+        - Accept-Version
+        - Content-Length
+        - Content-MD5
+        - Content-Type
+        - Date
+        - Authorization
+        - Host
+      exposed_headers:
+        - X-Total-Count
+
+  - name: cors
+    service: request-service
+    config:
+      origins:
+        - "*"
+      methods:
+        - GET
+        - POST
+        - PUT
+        - PATCH
+        - DELETE
+        - OPTIONS
+      headers:
+        - Accept
+        - Accept-Version
+        - Content-Length
+        - Content-MD5
+        - Content-Type
+        - Date
+        - Authorization
+        - Host
+      exposed_headers:
+        - X-Total-Count
+
+  - name: rate-limiting
+    service: identity-service
+    config:
+      minute: 100
+      hour: 1000
+      fault_tolerant: true
+
+  - name: rate-limiting
+    service: request-service
+    config:
+      minute: 100
+      hour: 1000
+      fault_tolerant: true
+
+consumers:
+  - username: anonymous
+    plugins:
+      - name: rate-limiting
+        config:
+          minute: 100
+          hour: 1000

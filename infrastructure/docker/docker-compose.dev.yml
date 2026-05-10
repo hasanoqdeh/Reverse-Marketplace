@@ -1,0 +1,265 @@
+version: '3.8'
+
+services:
+  # Databases
+  postgres:
+    image: postgres:15-alpine
+    container_name: reverse-marketplace-postgres
+    environment:
+      POSTGRES_DB: reverse_marketplace
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - reverse-marketplace-network
+
+  mongodb:
+    image: mongo:7
+    container_name: reverse-marketplace-mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: reverse_marketplace
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - reverse-marketplace-network
+
+  cassandra:
+    image: cassandra:4
+    container_name: reverse-marketplace-cassandra
+    ports:
+      - "9042:9042"
+    volumes:
+      - cassandra_data:/var/lib/cassandra
+    networks:
+      - reverse-marketplace-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: reverse-marketplace-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - reverse-marketplace-network
+
+  # Message Broker
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: reverse-marketplace-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: password
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - reverse-marketplace-network
+
+  # API Gateway
+  kong:
+    image: kong:3
+    container_name: reverse-marketplace-kong
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /kong/declarative/kong.yml
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+      - "8443:8443"
+      - "8444:8444"
+    volumes:
+      - ./kong/kong.yml:/kong/declarative/kong.yml
+    networks:
+      - reverse-marketplace-network
+    depends_on:
+      - identity-service
+
+  # Microservices
+  identity-service:
+    build:
+      context: ../../services/identity-service
+      dockerfile: Dockerfile
+    container_name: reverse-marketplace-identity
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/reverse_marketplace
+      REDIS_URL: redis://redis:6379
+      RABBITMQ_URL: amqp://admin:password@rabbitmq:5672
+      JWT_SECRET: your-super-secret-jwt-key
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../../services/identity-service:/app
+      - /app/node_modules
+    networks:
+      - reverse-marketplace-network
+    depends_on:
+      - postgres
+      - redis
+      - rabbitmq
+
+  request-service:
+    build:
+      context: ../../services/request-service
+      dockerfile: Dockerfile
+    container_name: reverse-marketplace-requests
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/reverse_marketplace
+      REDIS_URL: redis://redis:6379
+      RABBITMQ_URL: amqp://admin:password@rabbitmq:5672
+      AWS_S3_BUCKET: reverse-marketplace-dev
+      AWS_ACCESS_KEY_ID: your-access-key
+      AWS_SECRET_ACCESS_KEY: your-secret-key
+    ports:
+      - "3001:3001"
+    volumes:
+      - ../../services/request-service:/app
+      - /app/node_modules
+    networks:
+      - reverse-marketplace-network
+    depends_on:
+      - postgres
+      - redis
+      - rabbitmq
+
+  matching-engine:
+    build:
+      context: ../../services/matching-engine
+      dockerfile: Dockerfile
+    container_name: reverse-marketplace-matching
+    environment:
+      NODE_ENV: development
+      PORT: 3002
+      REDIS_URL: redis://redis:6379
+      RABBITMQ_URL: amqp://admin:password@rabbitmq:5672
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/reverse_marketplace
+    ports:
+      - "3002:3002"
+    volumes:
+      - ../../services/matching-engine:/app
+      - /app/node_modules
+    networks:
+      - reverse-marketplace-network
+    depends_on:
+      - redis
+      - rabbitmq
+      - postgres
+
+  bidding-service:
+    build:
+      context: ../../services/bidding-service
+      dockerfile: Dockerfile
+    container_name: reverse-marketplace-bidding
+    environment:
+      NODE_ENV: development
+      PORT: 3003
+      MONGODB_URL: mongodb://admin:password@mongodb:27017/reverse_marketplace?authSource=admin
+      RABBITMQ_URL: amqp://admin:password@rabbitmq:5672
+    ports:
+      - "3003:3003"
+    volumes:
+      - ../../services/bidding-service:/app
+      - /app/node_modules
+    networks:
+      - reverse-marketplace-network
+    depends_on:
+      - mongodb
+      - rabbitmq
+
+  notification-service:
+    build:
+      context: ../../services/notification-service
+      dockerfile: Dockerfile
+    container_name: reverse-marketplace-notifications
+    environment:
+      NODE_ENV: development
+      PORT: 3004
+      REDIS_URL: redis://redis:6379
+      RABBITMQ_URL: amqp://admin:password@rabbitmq:5672
+      FCM_SERVER_KEY: your-fcm-server-key
+    ports:
+      - "3004:3004"
+    volumes:
+      - ../../services/notification-service:/app
+      - /app/node_modules
+    networks:
+      - reverse-marketplace-network
+    depends_on:
+      - redis
+      - rabbitmq
+
+  chat-service:
+    build:
+      context: ../../services/chat-service
+      dockerfile: Dockerfile
+    container_name: reverse-marketplace-chat
+    environment:
+      NODE_ENV: development
+      PORT: 3005
+      CASSANDRA_CONTACT_POINTS: cassandra:9042
+      REDIS_URL: redis://redis:6379
+      RABBITMQ_URL: amqp://admin:password@rabbitmq:5672
+    ports:
+      - "3005:3005"
+    volumes:
+      - ../../services/chat-service:/app
+      - /app/node_modules
+    networks:
+      - reverse-marketplace-network
+    depends_on:
+      - cassandra
+      - redis
+      - rabbitmq
+
+  payment-service:
+    build:
+      context: ../../services/payment-service
+      dockerfile: Dockerfile
+    container_name: reverse-marketplace-payments
+    environment:
+      NODE_ENV: development
+      PORT: 3006
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/reverse_marketplace
+      RABBITMQ_URL: amqp://admin:password@rabbitmq:5672
+      STRIPE_SECRET_KEY: sk_test_your-stripe-key
+      THAWANI_SECRET_KEY: your-thawani-key
+    ports:
+      - "3006:3006"
+    volumes:
+      - ../../services/payment-service:/app
+      - /app/node_modules
+    networks:
+      - reverse-marketplace-network
+    depends_on:
+      - postgres
+      - rabbitmq
+
+volumes:
+  postgres_data:
+  mongodb_data:
+  cassandra_data:
+  redis_data:
+  rabbitmq_data:
+
+networks:
+  reverse-marketplace-network:
+    driver: bridge

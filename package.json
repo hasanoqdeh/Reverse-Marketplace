@@ -1,0 +1,34 @@
+{
+  "name": "reverse-marketplace",
+  "version": "1.0.0",
+  "description": "Reverse Marketplace - Real-time bidding platform connecting buyers to merchants",
+  "private": true,
+  "scripts": {
+    "build": "nx run-many --target=build --all",
+    "test": "nx run-many --target=test --all",
+    "lint": "nx run-many --target=lint --all",
+    "dev": "nx run-many --target=serve --all --parallel",
+    "docker:dev": "docker compose -f infrastructure/docker/docker-compose.dev.yml up --build",
+    "docker:prod": "docker compose -f infrastructure/docker/docker-compose.prod.yml up --build",
+    "k8s:deploy": "kubectl apply -f infrastructure/k8s/",
+    "migrate": "nx run-many --target=migrate --all",
+    "seed": "nx run-many --target=seed --all"
+  },
+  "devDependencies": {
+    "@nx/workspace": "^17.0.0",
+    "@nx/js": "^17.0.0",
+    "@nx/nest": "^17.0.0",
+    "@nx/next": "^17.0.0",
+    "typescript": "^5.0.0",
+    "prettier": "^3.0.0",
+    "eslint": "^8.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "nx": "22.7.1"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.15.0"
+}

@@ -1,0 +1,61 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "affected": {
+    "defaultBase": "main"
+  },
+  "cli": {
+    "packageManager": "pnpm"
+  },
+  "projects": {
+    "identity-service": "services/identity-service",
+    "request-service": "services/request-service",
+    "matching-engine": "services/matching-engine",
+    "bidding-service": "services/bidding-service",
+    "notification-service": "services/notification-service",
+    "chat-service": "services/chat-service",
+    "payment-service": "services/payment-service",
+    "buyer-mobile-app": "apps/buyer-mobile-app",
+    "merchant-mobile-app": "apps/merchant-mobile-app",
+    "admin-web-dashboard": "apps/admin-web-dashboard",
+    "common-dto": "libs/common-dto",
+    "event-bus": "libs/event-bus",
+    "auth": "libs/auth",
+    "configs": "libs/configs",
+    "shared-utils": "libs/shared-utils"
+  },
+  "targetDefaults": {
+    "build": {
+      "cache": true,
+      "dependsOn": ["^build"]
+    },
+    "test": {
+      "cache": true
+    },
+    "lint": {
+      "cache": true
+    },
+    "serve": {
+      "cache": true
+    }
+  },
+  "generators": {
+    "@nx/nest": {
+      "application": {
+        "style": "css",
+        "linter": "eslint",
+        "unitTestRunner": "jest"
+      },
+      "library": {
+        "linter": "eslint",
+        "unitTestRunner": "jest"
+      }
+    },
+    "@nx/next": {
+      "application": {
+        "style": "css",
+        "linter": "eslint",
+        "unitTestRunner": "jest"
+      }
+    }
+  }
+}
