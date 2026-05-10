@@ -49,18 +49,12 @@ export default function DisputesPage() {
 
       const response = await apiService.get<Dispute[]>(`${API_ENDPOINTS.DISPUTES.LIST}?${params.toString()}`);
       if (response.success && response.data) {
-        // Add severity to disputes based on status and other factors
-        const disputesWithSeverity = response.data.map(dispute => ({
+        const disputesWithSeverity = response.data.map((dispute: Dispute) => ({
           ...dispute,
           severity: dispute.status === DisputeStatus.OPEN ? 'HIGH' : 
                    dispute.status === DisputeStatus.INVESTIGATING ? 'MEDIUM' : 'LOW'
         }));
         setDisputes(disputesWithSeverity);
-      } else {
-        setError(response.message || 'Failed to fetch disputes');
-      }
-      if (response.success && response.data) {
-        setDisputes(response.data);
       } else {
         setError(response.message || 'Failed to fetch disputes');
       }

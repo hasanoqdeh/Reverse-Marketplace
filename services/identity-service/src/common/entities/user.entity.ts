@@ -60,7 +60,7 @@ export class User {
   refreshTokens: RefreshToken[];
 
   @OneToOne(() => MerchantProfile, (merchantProfile) => merchantProfile.user)
-  merchantProfile: MerchantProfile;
+  merchantProfile?: MerchantProfile;
 
   @OneToOne(() => NotificationPreferences, (preferences) => preferences.user)
   notificationPreferences: NotificationPreferences;

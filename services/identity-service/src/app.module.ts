@@ -5,6 +5,10 @@ import { RedisModule } from './infrastructure/redis/redis.module';
 import { RabbitMQModule } from './infrastructure/rabbitmq/rabbitmq.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
+import { MerchantsModule } from './modules/merchants/merchants.module';
+import { AdminModule } from './modules/admin/admin.module';
+import { MetricsModule } from './common/metrics/metrics.module';
+import { HealthController } from './common/controllers/health.controller';
 import { User } from './common/entities/user.entity';
 import { RefreshToken } from './common/entities/refresh-token.entity';
 import { MerchantProfile } from './common/entities/merchant-profile.entity';
@@ -36,8 +40,11 @@ import configuration from './config/configuration';
     RabbitMQModule.forRoot(),
     AuthModule,
     UsersModule,
+    MerchantsModule,
+    AdminModule,
+    MetricsModule,
   ],
-  controllers: [],
+  controllers: [HealthController],
   providers: [],
 })
 export class AppModule {}

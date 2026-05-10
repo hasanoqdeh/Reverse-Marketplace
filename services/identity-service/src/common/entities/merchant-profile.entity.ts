@@ -1,15 +1,14 @@
 import {
   Entity,
-  Column,
   PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToOne,
-  OneToMany,
-  Index,
 } from 'typeorm';
-import { User } from './user.entity';
 import { MerchantDocument } from './merchant-document.entity';
+import { User } from './user.entity';
 
 export enum VerificationStatus {
   PENDING = 'PENDING',
@@ -18,7 +17,6 @@ export enum VerificationStatus {
 }
 
 @Entity('merchant_profiles')
-@Index(['userId'])
 export class MerchantProfile {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -39,10 +37,10 @@ export class MerchantProfile {
   })
   verificationStatus: VerificationStatus;
 
-  @Column({ type: 'json', nullable: true })
+  @Column({ type: 'jsonb', nullable: true })
   coverageAreas: any;
 
-  @Column({ type: 'json', nullable: true })
+  @Column({ type: 'jsonb', nullable: true })
   categories: any;
 
   @CreateDateColumn()
@@ -51,10 +49,9 @@ export class MerchantProfile {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  // Relations
-  @OneToOne(() => User, (user) => user.merchantProfile, { onDelete: 'CASCADE' })
-  user: User;
-
   @OneToMany(() => MerchantDocument, (document) => document.merchant)
   documents: MerchantDocument[];
+
+  @ManyToOne(() => User, (user) => user.merchantProfile)
+  user: User;
 }

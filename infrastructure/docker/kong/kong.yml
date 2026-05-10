@@ -6,8 +6,10 @@ services:
     routes:
       - name: identity-service-route
         paths:
-          - /api/auth
-          - /api/users
+          - /auth
+          - /users
+          - /health
+          - /metrics
         methods:
           - GET
           - POST

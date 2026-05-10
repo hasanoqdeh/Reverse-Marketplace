@@ -26,7 +26,8 @@ export class UsersController {
   @ApiOperation({ summary: 'Update current user profile' })
   @ApiResponse({ status: 200, description: 'Profile updated successfully' })
   async updateProfile(@CurrentUser() user: any, @Body() updateData: any) {
-    // TODO: Implement profile update logic
+    // TODO: Implement actual profile update logic
+    // For now, return success with the update data
     return { message: 'Profile updated successfully', data: updateData };
   }
 

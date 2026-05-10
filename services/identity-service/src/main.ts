@@ -32,19 +32,7 @@ async function bootstrap() {
     credentials: true,
   });
   
-  // Health check endpoint
-  app.getHttpServer().on('request', (req: any, res: any) => {
-    if (req.url === '/health') {
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ 
-        status: 'ok', 
-        service: 'identity-service',
-        timestamp: new Date().toISOString(),
-        version: '1.0.0'
-      }));
-    }
-  });
-  
+    
   await app.listen(port);
   console.log(`Identity Service is running on port ${port}`);
   console.log(`Health check: http://localhost:${port}/health`);

@@ -149,6 +149,18 @@ export class RabbitMQService implements OnModuleInit, OnModuleDestroy {
     await this.publishEvent('user.banned', event);
   }
 
+  async publishUserUnbanned(userId: string, reason: string): Promise<void> {
+    const event: DomainEvent = {
+      eventId: this.generateEventId(),
+      eventType: 'user.unbanned',
+      aggregateId: userId,
+      data: { userId, reason },
+      timestamp: new Date().toISOString(),
+      version: '1.0',
+    };
+    await this.publishEvent('user.unbanned', event);
+  }
+
   async publishProfileUpdated(userId: string, changes: any): Promise<void> {
     const event: DomainEvent = {
       eventId: this.generateEventId(),
