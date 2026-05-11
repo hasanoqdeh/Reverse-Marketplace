@@ -55,23 +55,22 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Page Header */}
-      <div>
-        <h1 className="text-2xl font-semibold text-gray-900">Marketplace Overview</h1>
-        <p className="mt-1 text-sm text-gray-600">
-          Real-time marketplace metrics and performance indicators
-        </p>
-      </div>
+    <div className="space-y-6 p-6">
+        {/* Page Header */}
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-900">Marketplace Overview</h1>
+          <p className="mt-1 text-sm text-gray-600">
+            Real-time marketplace metrics and performance indicators
+          </p>
+        </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {/* Active Users */}
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
+        {/* KPI Cards */}
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {/* Active Users */}
+          <div className="stats-card">
             <div className="flex items-center">
-              <div className="flex-shrink-0 bg-admin-600 rounded-md p-3">
-                <Users className="h-6 w-6 text-white" />
+              <div className="stats-icon stats-icon-blue">
+                <Users className="h-6 w-6" />
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
@@ -82,13 +81,12 @@ export default function Dashboard() {
                 </dl>
               </div>
             </div>
-          </div>
-          <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:py-4">
-            <div className="text-sm text-gray-500">
-              <span className="font-medium text-green-600">+12%</span> from last month
+            <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:py-4 mt-4">
+              <div className="text-sm text-gray-500">
+                <span className="font-medium text-success-600">+12%</span> from last month
+              </div>
             </div>
           </div>
-        </div>
 
         {/* Active Requests */}
         <div className="bg-white overflow-hidden shadow rounded-lg">

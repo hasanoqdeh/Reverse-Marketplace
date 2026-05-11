@@ -15,6 +15,9 @@ import { RequestView } from './request-view.entity';
 
 import { RequestStatus } from '../enums/request-status.enum';
 
+// Re-export RequestStatus for convenience
+export { RequestStatus };
+
 
 @Entity('requests')
 @Index(['buyerId'])

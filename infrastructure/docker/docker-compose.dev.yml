@@ -111,22 +111,21 @@ services:
 
   # Admin Dashboard Service
   admin-dashboard:
-    build:
-      context: ../../apps/admin-dashboard
-      dockerfile: Dockerfile
-      target: runner
+    image: node:20-alpine
     container_name: reverse-marketplace-admin
+    working_dir: /app
     environment:
       NODE_ENV: development
       PORT: 3008
-      NEXT_PUBLIC_API_URL: http://localhost:8000/api
+      NEXT_PUBLIC_API_URL: http://kong:8000/api
     ports:
       - "3008:3008"
     volumes:
+      - ../../apps/admin-dashboard:/app
       - /app/node_modules
     networks:
       - reverse-marketplace-network
-    command: ["node", "server.js"]
+    command: ["sh", "-c", "npm install && npm run dev"]
 
   # API Gateway
   kong:

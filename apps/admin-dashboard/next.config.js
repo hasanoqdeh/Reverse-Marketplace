@@ -2,7 +2,6 @@
 const nextConfig = {
   output: 'standalone',
   
-
   typescript: {
     // !! WARN !!
     // Dangerously allow production builds to successfully complete even if
@@ -15,11 +14,13 @@ const nextConfig = {
     NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000',
     HOSTNAME: '0.0.0.0', // Bind to all interfaces
   },
-  async rewrites() {
+  // Set asset prefix for Kong routing
+  assetPrefix: '/admin',
+      async rewrites() {
     return [
       {
         source: '/api/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/:path*`,
+        destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://kong:8000'}/api/:path*`,
       },
     ];
   },

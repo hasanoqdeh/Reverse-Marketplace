@@ -1,0 +1,102 @@
+version: '3.8'
+
+services:
+  seed-runner:
+    build:
+      context: ..
+      dockerfile: scripts/Dockerfile.seed
+    container_name: reverse-marketplace-seed
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/reverse_marketplace
+      - REDIS_URL=redis://redis:6379
+      - MONGODB_URL=mongodb://mongo:27017/bidding_service
+      - CASSANDRA_URL=cassandra:9042
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+    networks:
+      - reverse-marketplace-network
+    volumes:
+      - ../:/app
+      - /app/node_modules
+    depends_on:
+      - postgres
+      - redis
+      - mongo
+      - cassandra
+      - rabbitmq
+    command: ["sh", "-c", "if [ \"$$SERVICE\" != \"\" ]; then npx ts-node scripts/seed.ts --$$SERVICE-only; elif [ \"$$CLEANUP\" = \"true\" ]; then npx ts-node scripts/seed.ts --cleanup; else npx ts-node scripts/seed.ts; fi"]
+
+  # Database services for seeding
+  postgres:
+    image: postgres:15-alpine
+    container_name: reverse-marketplace-postgres
+    environment:
+      POSTGRES_DB: reverse_marketplace
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../DATABASE_SEED.sql:/docker-entrypoint-initdb.d/DATABASE_SEED.sql
+    networks:
+      - reverse-marketplace-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: reverse-marketplace-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - reverse-marketplace-network
+
+  mongo:
+    image: mongo:7
+    container_name: reverse-marketplace-mongo
+    environment:
+      MONGO_INITDB_DATABASE: bidding_service
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - reverse-marketplace-network
+
+  cassandra:
+    image: cassandra:4.1
+    container_name: reverse-marketplace-cassandra
+    ports:
+      - "9042:9042"
+    volumes:
+      - cassandra_data:/var/lib/cassandra
+    environment:
+      - CASSANDRA_CLUSTER_NAME=ReverseMarketplace
+    networks:
+      - reverse-marketplace-network
+
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: reverse-marketplace-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - reverse-marketplace-network
+
+volumes:
+  postgres_data:
+  redis_data:
+  mongo_data:
+  cassandra_data:
+  rabbitmq_data:
+
+networks:
+  reverse-marketplace-network:
+    driver: bridge

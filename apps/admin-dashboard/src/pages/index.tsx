@@ -7,13 +7,15 @@ export default function Home() {
   useEffect(() => {
     // Redirect to dashboard if session exists, otherwise to login
     // For now, let's just redirect to login
-    router.push('/auth/login');
+    // Check if we're behind Kong proxy and redirect accordingly
+    const isKongProxy = window.location.pathname.startsWith('/admin');
+    router.push(isKongProxy ? '/admin/auth/login' : '/auth/login');
   }, [router]);
 
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="text-center">
-        <h1 className="text-2xl font-bold">Redirecting...</h1>
+        <h1 className="text-2xl font-bold">Redirecting Login...</h1>
         <p className="text-gray-500">Please wait while we redirect you to the login page.</p>
       </div>
     </div>

@@ -7,7 +7,19 @@ services:
     routes:
       - name: landing-page-route
         paths:
-          - /
+          - /landing
+        methods:
+          - GET
+          - OPTIONS
+
+  # Admin Dashboard Static Assets Service
+  - name: admin-dashboard-static
+    url: http://admin-dashboard:3008/_next
+    routes:
+      - name: admin-dashboard-static
+        paths:
+          - /admin/_next
+        strip_path: true
         methods:
           - GET
           - OPTIONS
@@ -16,7 +28,7 @@ services:
   - name: admin-dashboard
     url: http://admin-dashboard:3008
     routes:
-      - name: admin-dashboard-route
+      - name: admin-dashboard-pages
         paths:
           - /admin
         strip_path: true

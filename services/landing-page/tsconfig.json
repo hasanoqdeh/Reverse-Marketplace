@@ -17,6 +17,10 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "lib": ["ES2020"],
+    "types": ["node"],
     "paths": {
       "@/*": ["src/*"]
     }
