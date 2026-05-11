@@ -6,7 +6,7 @@ class ApiService {
 
   constructor() {
     this.client = axios.create({
-      baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
+      baseURL: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}`,
       timeout: 30000,
       headers: {
         'Content-Type': 'application/json',
@@ -67,9 +67,12 @@ class ApiService {
 
   async post<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
     try {
+      console.log('API POST request:', { url, data, baseURL: this.client.defaults.baseURL });
       const response: AxiosResponse<ApiResponse<T>> = await this.client.post(url, data, config);
+      console.log('API POST response:', response);
       return response.data;
     } catch (error: unknown) {
+      console.error('API POST error:', error);
       throw this.handleError(error);
     }
   }
@@ -148,30 +151,33 @@ export const apiService = new ApiService();
 export const API_ENDPOINTS = {
   // Authentication
   AUTH: {
-    LOGIN: '/api/admin/auth/login',
-    LOGOUT: '/api/admin/auth/logout',
-    REFRESH: '/api/admin/auth/refresh',
-    ME: '/api/admin/auth/me',
+    REQUEST_OTP: '/api/identity/auth/request-otp',
+    VERIFY_OTP: '/api/identity/auth/verify-otp',
+    LOGIN: '/api/identity/auth/verify-otp',
+    LOGOUT: '/api/identity/auth/logout',
+    REFRESH: '/api/identity/auth/refresh',
+    ME: '/api/users/me',
   },
 
   // Users
   USERS: {
-    LIST: '/api/admin/users',
+    LIST: '/api/admin/users/admin/all',
     BY_ID: (id: string) => `/api/admin/users/${id}`,
     BAN: (id: string) => `/api/admin/users/${id}/ban`,
     UNBAN: (id: string) => `/api/admin/users/${id}/unban`,
     UPDATE: (id: string) => `/api/admin/users/${id}`,
+    BANNED: '/api/admin/users/banned',
+    STATS: '/api/admin/users/stats',
   },
 
   // Merchants
   MERCHANTS: {
-    LIST: '/api/admin/merchants',
+    LIST: '/api/admin/merchants/pending',
     BY_ID: (id: string) => `/api/admin/merchants/${id}`,
-    VERIFY: (id: string) => `/api/admin/merchants/${id}/verify`,
+    VERIFY: (id: string) => `/api/admin/merchants/${id}/approve`,
     REJECT: (id: string) => `/api/admin/merchants/${id}/reject`,
-    SUSPEND: (id: string) => `/api/admin/merchants/${id}/suspend`,
-    PERFORMANCE: '/api/admin/merchants/performance',
-    SUBSCRIPTIONS: '/api/admin/merchants/subscriptions',
+    SUSPEND: (id: string) => `/api/admin/merchants/${id}/reject`,
+    STATS: '/api/admin/merchants/stats',
   },
 
   // Requests
@@ -210,11 +216,11 @@ export const API_ENDPOINTS = {
 
   // Analytics
   ANALYTICS: {
-    OVERVIEW: '/api/admin/analytics/overview',
-    CATEGORY_TRENDS: '/api/admin/analytics/category-trends',
-    GEOGRAPHIC: '/api/admin/analytics/geographic',
-    RATIOS: '/api/admin/analytics/ratios',
-    REVENUE_PER_CATEGORY: '/api/admin/analytics/revenue-per-category',
+    OVERVIEW: '/api/analytics/overview',
+    CATEGORY_TRENDS: '/api/analytics/category-trends',
+    GEOGRAPHIC: '/api/analytics/geographic',
+    RATIOS: '/api/analytics/ratios',
+    REVENUE_PER_CATEGORY: '/api/analytics/revenue-per-category',
   },
 
   // System Health

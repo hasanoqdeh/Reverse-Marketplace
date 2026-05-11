@@ -19,7 +19,8 @@ import {
   Menu,
   Bell,
   Search,
-  User
+  User,
+  ChevronDown
 } from 'lucide-react';
 import { UserRole } from '@/types';
 
@@ -31,6 +32,7 @@ interface AdminLayoutProps {
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'Admin Dashboard - Reverse Marketplace' }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [user, setUser] = useState<any>(null);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -131,117 +133,107 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'Admin Dash
       </Head>
       <div className="min-h-screen bg-gray-50 flex">
         {/* Sidebar */}
-      <div className={`${sidebarOpen ? 'w-64' : 'w-16'} bg-admin-900 text-white transition-all duration-300 ease-in-out flex flex-col fixed inset-y-0 z-50`}>
-        {/* Logo */}
-        <div className="flex items-center justify-center h-16 bg-admin-800">
-          <div className="flex items-center space-x-2">
-            <Shield className="h-8 w-8 text-admin-400" />
-            {sidebarOpen && (
-              <span className="text-xl font-bold">Admin Portal</span>
-            )}
-          </div>
-        </div>
+        <div 
+          className={`${sidebarOpen ? 'w-64' : 'w-16'} text-white transition-all duration-300 ease-in-out flex flex-col fixed inset-y-0 z-50`}
+          style={{ backgroundColor: '#0F1117' }}
+        >
+      
 
-        {/* Navigation */}
-        <nav className="flex-1 px-2 py-4 space-y-2">
-          {filteredNavigation.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="group flex items-center px-2 py-2 text-sm font-medium rounded-md hover:bg-admin-700 hover:text-white transition-colors"
-            >
-              <item.icon className={`mr-3 h-5 w-5 ${!sidebarOpen ? 'mx-auto' : ''}`} />
-              {sidebarOpen && item.name}
-            </Link>
-          ))}
-        </nav>
-
-        {/* User Menu */}
-        <div className="border-t border-admin-800 p-2">
-          <div className="flex items-center space-x-3 px-2 py-2">
-            <div className="flex-shrink-0">
-              <User className="h-6 w-6 bg-admin-600 rounded-full" />
-            </div>
-            {sidebarOpen && user && (
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">
-                  {user.email || user.phone}
-                </p>
-                <p className="text-xs text-admin-400 truncate">
-                  {user.role}
-                </p>
-              </div>
-            )}
-          </div>
-          <button
-            onClick={handleLogout}
-            className="flex items-center w-full px-2 py-2 text-sm font-medium rounded-md hover:bg-admin-700 transition-colors"
-          >
-            <LogOut className={`mr-3 h-5 w-5 ${!sidebarOpen ? 'mx-auto' : ''}`} />
-            {sidebarOpen && 'Logout'}
-          </button>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className={`flex-1 ${sidebarOpen ? 'ml-64' : 'ml-16'} transition-all duration-300 ease-in-out`}>
-        {/* Top Bar */}
-        <header className="bg-white shadow-sm border-b border-gray-200">
-          <div className="flex items-center justify-between px-4 py-3">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="p-2 rounded-md hover:bg-gray-100 transition-colors"
-              >
-                <Menu className="h-5 w-5 text-gray-600" />
-              </button>
-              
-              {/* Search */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search users, requests, bids..."
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-admin-500 focus:border-admin-500 block w-64 text-sm"
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              {/* Notifications */}
-              <button className="relative p-2 rounded-md hover:bg-gray-100 transition-colors">
-                <Bell className="h-5 w-5 text-gray-600" />
-                <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
-              </button>
-
-              {/* User Info */}
-              {user && (
-                <div className="flex items-center space-x-2">
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-gray-900">
-                      {user.email || user.phone}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {user.role}
-                    </p>
-                  </div>
-                  <div className="h-8 w-8 bg-admin-600 rounded-full flex items-center justify-center">
-                    <User className="h-4 w-4 text-white" />
-                  </div>
+          {/* Navigation - Below User Menu */}
+          <nav className="flex-1 px-2 py-4 space-y-2">
+                {/* User Menu - Top */}
+          <div className="border-b border-gray-700">
+            <div className="flex items-center space-x-3 px-2 py-3">
+              <div className="flex-shrink-0">
+                <div className="h-10 w-10 bg-blue-600 rounded-full flex items-center justify-center">
+                  <h1>H</h1>
                 </div>
-              )}
+              </div>
+              
             </div>
           </div>
-        </header>
+            {filteredNavigation.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="group flex items-center px-2 py-2 text-sm font-medium rounded-md hover:bg-gray-700 hover:text-white transition-colors"
+              >
+                <item.icon className={`mr-3 h-5 w-5 text-white ${!sidebarOpen ? 'mx-auto' : ''}`} />
+                {sidebarOpen && item.name}
+              </Link>
+            ))}
+          </nav>``
+        </div>
 
-        {/* Page Content */}
-        <main className="flex-1 overflow-auto">
-          <div className="py-6">
-            {children}
-          </div>
-        </main>
+        {/* Main Content */}
+        <div className={`flex-1 ${sidebarOpen ? 'ml-64' : 'ml-16'} transition-all duration-300 ease-in-out`}>
+          {/* Top Bar */}
+          <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+            <div className="flex items-center justify-between px-4 py-3">
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={() => setSidebarOpen(!sidebarOpen)}
+                  className="p-2 rounded-md hover:bg-gray-100 transition-colors"
+                >
+                  <Menu className="h-5 w-5 text-gray-600" />
+                </button>
+              </div>
+
+              <div className="flex items-center space-x-4">
+                {/* Notifications */}
+                <button className="relative p-2 rounded-md hover:bg-gray-100 transition-colors">
+                  <Bell className="h-5 w-5 text-gray-600" />
+                  <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
+                </button>
+
+    {/* User Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className="flex items-center px-2 py-1 text-sm text-gray-300 hover:text-white hover:bg-gray-600 rounded-md transition-colors"
+                >
+                  <User className="h-4 w-4 text-white mr-2" />
+                  {sidebarOpen && (
+                    <span className="flex-1 text-sm text-gray-300">
+                      {user?.email || user?.phone || 'Admin User'}
+                    </span>
+                  )}
+                </button>
+
+                {/* Dropdown Menu */}
+                {userMenuOpen && (
+                  <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                    <div className="py-1">
+                      <div className="px-3 py-2 hover:bg-gray-50 rounded-md cursor-pointer flex items-center text-sm text-gray-700 hover:text-gray-900 transition-colors">
+                        <User className="h-4 w-4 mr-2" />
+                        <span className="flex-1">{user?.email || user?.phone || 'Admin User'}</span>
+                      </div>
+                      
+                      <div className="border-t border-gray-100 my-1"></div>
+                      
+                      <button
+                        onClick={handleLogout}
+                        className="flex items-center w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                      >
+                        <LogOut className="h-4 w-4 mr-2" />
+                        <span className="flex-1">Sign Out</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+              </div>
+            </div>
+          </header>
+
+          {/* Page Content */}
+          <main className="flex-1 overflow-auto">
+            <div className="py-6">
+              {children}
+            </div>
+          </main>
+        </div>
       </div>
-    </div>
     </>
   );
 };

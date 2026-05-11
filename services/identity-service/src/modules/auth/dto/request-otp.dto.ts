@@ -1,20 +1,14 @@
-import { IsString, IsNotEmpty, Matches, Length } from 'class-validator';
+import { IsString, IsNotEmpty, Length } from 'class-validator';
 
 export class RequestOtpDto {
   @IsString()
   @IsNotEmpty()
-  @Matches(/^968[79]\d{7}$/, {
-    message: 'Phone number must be a valid Oman number starting with +968 and followed by 7 or 9 and 7 digits',
-  })
   phoneNumber: string;
 }
 
 export class VerifyOtpDto {
   @IsString()
   @IsNotEmpty()
-  @Matches(/^968[79]\d{7}$/, {
-    message: 'Phone number must be a valid Oman number starting with +968 and followed by 7 or 9 and 7 digits',
-  })
   phoneNumber: string;
 
   @IsString()

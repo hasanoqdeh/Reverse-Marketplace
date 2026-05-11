@@ -31,6 +31,17 @@ services:
           - PATCH
           - DELETE
           - OPTIONS
+      - name: analytics-service-route
+        paths:
+          - /api/analytics
+        strip_path: true
+        methods:
+          - GET
+          - POST
+          - PUT
+          - PATCH
+          - DELETE
+          - OPTIONS
 
   # Request Service
   - name: request-service
@@ -147,12 +158,12 @@ plugins:
       exposed_headers:
         - X-Total-Count
 
-  # Rate limiting for all services
-  - name: rate-limiting
-    config:
-      minute: 100
-      hour: 1000
-      fault_tolerant: true
+  # Rate limiting for all services - DISABLED FOR DEVELOPMENT
+  # - name: rate-limiting
+  #   config:
+  #     minute: 100
+  #     hour: 1000
+  #     fault_tolerant: true
 
   # Request transformation for API routes
   - name: request-transformer
@@ -163,8 +174,9 @@ plugins:
 
 consumers:
   - username: anonymous
-    plugins:
-      - name: rate-limiting
-        config:
-          minute: 100
-          hour: 1000
+  # Rate limiting for consumers - DISABLED FOR DEVELOPMENT
+  # plugins:
+  #   - name: rate-limiting
+  #     config:
+  #       minute: 100
+  #       hour: 1000

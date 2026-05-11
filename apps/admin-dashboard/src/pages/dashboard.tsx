@@ -76,7 +76,7 @@ export default function Dashboard() {
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">Active Users</dt>
                   <dd className="text-lg font-medium text-gray-900">
-                    {analytics?.activeUsers.toLocaleString() || '0'}
+                    {analytics?.users?.active?.toLocaleString() || '0'}
                   </dd>
                 </dl>
               </div>
@@ -99,7 +99,7 @@ export default function Dashboard() {
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">Active Requests</dt>
                   <dd className="text-lg font-medium text-gray-900">
-                    {analytics?.activeRequests.toLocaleString() || '0'}
+                    {analytics?.requests?.pending?.toLocaleString() || '0'}
                   </dd>
                 </dl>
               </div>
@@ -123,7 +123,7 @@ export default function Dashboard() {
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">Conversion Rate</dt>
                   <dd className="text-lg font-medium text-gray-900">
-                    {analytics?.conversionRate ? `${(analytics.conversionRate * 100).toFixed(1)}%` : '0%'}
+                    {analytics?.revenue?.growth ? `${analytics.revenue.growth.toFixed(1)}%` : '0%'}
                   </dd>
                 </dl>
               </div>
@@ -147,7 +147,7 @@ export default function Dashboard() {
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">Total Revenue</dt>
                   <dd className="text-lg font-medium text-gray-900">
-                    ${analytics?.totalRevenue ? analytics.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 }) : '0.00'}
+                    ${analytics?.revenue?.total ? analytics.revenue.total.toLocaleString(undefined, { minimumFractionDigits: 2 }) : '0.00'}
                   </dd>
                 </dl>
               </div>

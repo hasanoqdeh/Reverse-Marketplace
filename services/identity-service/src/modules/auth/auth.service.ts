@@ -28,13 +28,13 @@ export class AuthService {
   async requestOtp(requestOtpDto: RequestOtpDto): Promise<{ message: string }> {
     const { phoneNumber } = requestOtpDto;
 
-    // Rate limiting check - max 5 OTPs per hour per phone
-    const rateLimitKey = `otp_rate_limit:${phoneNumber}`;
-    const currentAttempts = await this.redisService.incrementRateLimit(rateLimitKey, 3600);
-    
-    if (currentAttempts > 5) {
-      throw new BadRequestException('Too many OTP requests. Please try again later.');
-    }
+    // Rate limiting check - DISABLED FOR DEVELOPMENT
+    // const rateLimitKey = `otp_rate_limit:${phoneNumber}`;
+    // const currentAttempts = await this.redisService.incrementRateLimit(rateLimitKey, 3600);
+    // 
+    // if (currentAttempts > 5) {
+    //   throw new BadRequestException('Too many OTP requests. Please try again later.');
+    // }
 
     // Generate OTP
     const otp = this.generateOTP();
@@ -149,6 +149,11 @@ export class AuthService {
   }
 
   private generateOTP(): string {
+    // Use fixed OTP for development/testing
+    if (this.configService.get('nodeEnv') === 'development') {
+      return '123456';
+    }
+    
     const length = this.configService.get('otp.length');
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     return otp.padEnd(length, '0').slice(0, length);

@@ -174,17 +174,37 @@ export interface DisputeResolution {
 
 // Analytics Types
 export interface MarketplaceAnalytics {
-  activeUsers: number;
-  activeRequests: number;
-  conversionRate: number;
-  averageBidPrice: number;
-  totalRevenue: number;
-  categoryTrends: CategoryTrend[];
-  geographicData: GeographicData[];
-  merchantVsBuyerRatio: {
-    merchants: number;
-    buyers: number;
+  users: {
+    total: number;
+    active: number;
+    banned: number;
+    byRole: {
+      buyers: number;
+      merchants: number;
+      admins: number;
+    };
+    banRate: string;
   };
+  requests: {
+    total: number;
+    pending: number;
+    completed: number;
+    cancelled: number;
+  };
+  revenue: {
+    total: number;
+    thisMonth: number;
+    lastMonth: number;
+    growth: number;
+  };
+  merchants: {
+    total: number;
+    active: number;
+    pending: number;
+    verified: number;
+  };
+  categoryTrends?: CategoryTrend[];
+  geographicData?: GeographicData[];
 }
 
 export interface CategoryTrend {
