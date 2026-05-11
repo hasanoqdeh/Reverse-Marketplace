@@ -6,6 +6,7 @@ import { Roles } from '../../common/decorators/roles.decorator';
 import { UserRole } from '../../common/entities/user.entity';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ApproveMerchantDto, RejectMerchantDto } from './merchants.service';
+import { MerchantProfile } from './merchant-profile.entity';
 
 @ApiTags('Merchants')
 @Controller('merchants')
@@ -18,8 +19,16 @@ export class MerchantsController {
   @ApiOperation({ summary: 'Get pending merchants for admin review' })
   @ApiResponse({ status: 200, description: 'Pending merchants retrieved successfully' })
   @ApiResponse({ status: 403, description: 'Forbidden - Admin access required' })
-  async getPendingMerchants() {
-    return this.merchantsService.getPendingMerchants();
+  async getPendingMerchants(): Promise<MerchantProfile[]> {
+    try {
+      console.log('Getting pending merchants...');
+      const result = await this.merchantsService.getPendingMerchants();
+      console.log('Found pending merchants:', result.length);
+      return result;
+    } catch (error) {
+      console.error('Error in getPendingMerchants:', error);
+      throw error;
+    }
   }
 
   @Get('stats')

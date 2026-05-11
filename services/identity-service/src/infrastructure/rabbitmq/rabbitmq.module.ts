@@ -23,6 +23,10 @@ export class RabbitMQModule {
               port: configService.get('rabbitmq.port'),
               username: configService.get('rabbitmq.username'),
               password: configService.get('rabbitmq.password'),
+              heartbeat: 60,
+              reconnect: true,
+              reconnectBackoffStrategy: 'linear',
+              timeout: 20000,
             });
 
             connection.on('error', (err) => {
@@ -31,6 +35,10 @@ export class RabbitMQModule {
 
             connection.on('close', () => {
               console.log('RabbitMQ Connection Closed');
+            });
+
+            connection.on('connected', () => {
+              console.log('RabbitMQ Connected');
             });
 
             return connection;

@@ -19,7 +19,15 @@ export class AdminController {
   @ApiResponse({ status: 200, description: 'Banned users retrieved successfully' })
   @ApiResponse({ status: 403, description: 'Forbidden - Admin access required' })
   async getBannedUsers() {
-    return this.adminService.getBannedUsers();
+    try {
+      console.log('Getting banned users...');
+      const result = await this.adminService.getBannedUsers();
+      console.log('Found banned users:', result.length);
+      return result;
+    } catch (error) {
+      console.error('Error in getBannedUsers:', error);
+      throw error;
+    }
   }
 
   @Get('stats')
