@@ -12,7 +12,7 @@ export default function LandingPage() {
               🛍️ Reverse Marketplace
             </div>
             <div className="flex space-x-6">
-              <Link href="/admin/auth/login" className="text-gray-700 hover:text-indigo-600 font-medium">
+              <Link href="/auth/login" className="text-gray-700 hover:text-indigo-600 font-medium">
                 Admin Dashboard
               </Link>
               <Link href="/api/docs" className="text-gray-700 hover:text-indigo-600 font-medium">
@@ -40,7 +40,7 @@ export default function LandingPage() {
               Start Buying
             </Link>
             <Link 
-              href="/admin/auth/login" 
+              href="/auth/login" 
               className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-indigo-600 transition-colors"
             >
               Admin Portal
@@ -88,7 +88,7 @@ export default function LandingPage() {
             &copy; 2026 Reverse Marketplace. All rights reserved.
           </p>
           <div className="flex justify-center space-x-6">
-            <Link href="/admin/auth/login" className="text-indigo-400 hover:text-indigo-300">
+            <Link href="/auth/login" className="text-indigo-400 hover:text-indigo-300">
               Admin Dashboard
             </Link>
             <span className="text-gray-400">|</span>

@@ -14,7 +14,6 @@ const nextConfig = {
     NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000',
     HOSTNAME: '0.0.0.0', // Bind to all interfaces
   },
-  // Set asset prefix for Kong routing
   async rewrites() {
     return [
       {

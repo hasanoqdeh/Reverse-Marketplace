@@ -1,21 +1,36 @@
 import '@/app/globals.css'
 import type { AppProps } from 'next/app'
 import AdminLayout from '@/layouts/AdminLayout'
+import LandingLayout from '@/layouts/LandingLayout'
+import AuthLayout from '@/layouts/AuthLayout'
+import { useRouter } from 'next/router'
 
 export default function App({ Component, pageProps }: AppProps) {
-  // Skip layout for auth pages
-  const isAuthPage = Component.displayName?.includes('Auth') || 
-                    (Component as any)?.isAuthPage ||
-                    typeof window !== 'undefined' && 
-                    window.location.pathname.startsWith('/auth')
-
-  if (isAuthPage) {
-    return <Component {...pageProps} />
+  const router = useRouter()
+  
+  // Determine which layout to use based on route
+  const getLayout = () => {
+    const pathname = router.pathname
+    
+    // Landing page uses LandingLayout
+    if (pathname === '/') {
+      return LandingLayout
+    }
+    
+    // Auth pages use AuthLayout
+    if (pathname.startsWith('/auth')) {
+      return AuthLayout
+    }
+    
+    // All other pages use AdminLayout (protected routes)
+    return AdminLayout
   }
-
+  
+  const Layout = getLayout()
+  
   return (
-    <AdminLayout>
+    <Layout>
       <Component {...pageProps} />
-    </AdminLayout>
+    </Layout>
   )
 }

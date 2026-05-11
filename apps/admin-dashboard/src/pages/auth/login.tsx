@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { Shield, Eye, EyeOff } from 'lucide-react';
+import { Shield, Eye, EyeOff, Lock, Mail } from 'lucide-react';
 import { apiService, API_ENDPOINTS } from '@/services/api';
 import { UserRole } from '@/types';
 
@@ -12,7 +12,14 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [focusedField, setFocusedField] = useState('');
   const router = useRouter();
+
+  useEffect(() => {
+    // Clear any existing auth data on mount
+    localStorage.removeItem('admin_token');
+    localStorage.removeItem('admin_user');
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,7 +50,6 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">
@@ -195,6 +201,5 @@ export default function LoginPage() {
           </p>
         </div>
       </div>
-    </div>
   );
 }

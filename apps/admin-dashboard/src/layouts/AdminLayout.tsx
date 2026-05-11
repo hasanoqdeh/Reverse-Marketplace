@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
+import Head from 'next/head';
 import Link from 'next/link';
 import { 
   LayoutDashboard, 
@@ -24,9 +25,10 @@ import { UserRole } from '@/types';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
+  title?: string;
 }
 
-const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
+const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'Admin Dashboard - Reverse Marketplace' }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [user, setUser] = useState<any>(null);
   const router = useRouter();
@@ -121,8 +123,14 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
+    <>
+      <Head>
+        <title>{title}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <div className="min-h-screen bg-gray-50 flex">
+        {/* Sidebar */}
       <div className={`${sidebarOpen ? 'w-64' : 'w-16'} bg-admin-900 text-white transition-all duration-300 ease-in-out flex flex-col fixed inset-y-0 z-50`}>
         {/* Logo */}
         <div className="flex items-center justify-center h-16 bg-admin-800">
@@ -234,6 +242,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         </main>
       </div>
     </div>
+    </>
   );
 };
 

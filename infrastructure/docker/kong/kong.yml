@@ -5,9 +5,10 @@ services:
   - name: admin-dashboard
     url: http://admin-dashboard:3008
     routes:
-      - name: admin-dashboard-route
+      - name: admin-dashboard-root-route
         paths:
-          - /admin
+          - /
+        strip_path: false
         methods:
           - GET
           - POST
