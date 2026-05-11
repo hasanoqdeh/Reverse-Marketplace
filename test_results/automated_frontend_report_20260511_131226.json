@@ -1,0 +1,35 @@
+{
+  "testRun": {
+    "timestamp": "2026-05-11T13:12:26+03:00",
+    "baseUrl": "http://localhost:8000",
+    "testPhone": "+1234567890",
+    "source": "apps/admin-dashboard/src/services/api.ts",
+    "environment": "development",
+    "automation": true,
+    "timeout": 10,
+    "maxRetries": 2
+  },
+  "results": [],
+  "summary": {
+    "total": 0,
+    "working": 0,
+    "notWorking": 0,
+    "passed": 0,
+    "failed": 0,
+    "successRate": 0
+  },
+  "categories": {
+    "authentication": {"total": 0, "working": 0, "notWorking": 0},
+    "users": {"total": 0, "working": 0, "notWorking": 0},
+    "merchants": {"total": 0, "working": 0, "notWorking": 0},
+    "requests": {"total": 0, "working": 0, "notWorking": 0},
+    "bids": {"total": 0, "working": 0, "notWorking": 0},
+    "payments": {"total": 0, "working": 0, "notWorking": 0},
+    "disputes": {"total": 0, "working": 0, "notWorking": 0},
+    "analytics": {"total": 0, "working": 0, "notWorking": 0},
+    "systemHealth": {"total": 0, "working": 0, "notWorking": 0},
+    "audit": {"total": 0, "working": 0, "notWorking": 0},
+    "configuration": {"total": 0, "working": 0, "notWorking": 0},
+    "notifications": {"total": 0, "working": 0, "notWorking": 0}
+  }
+}

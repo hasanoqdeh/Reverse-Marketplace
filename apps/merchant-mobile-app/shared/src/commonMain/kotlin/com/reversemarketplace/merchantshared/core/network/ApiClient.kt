@@ -123,43 +123,43 @@ class ApiClient(
 // API Endpoints
 object ApiEndpoints {
     // Authentication
-    const val AUTH_REQUEST_OTP = "/auth/request-otp"
-    const val AUTH_VERIFY_OTP = "/auth/verify-otp"
-    const val AUTH_REFRESH = "/auth/refresh"
-    const val AUTH_LOGOUT = "/auth/logout"
+    const val AUTH_REQUEST_OTP = "/api/identity/auth/request-otp"
+    const val AUTH_VERIFY_OTP = "/api/identity/auth/verify-otp"
+    const val AUTH_REFRESH = "/api/identity/auth/refresh"
+    const val AUTH_LOGOUT = "/api/identity/auth/logout"
     
     // Requests
-    const val REQUESTS_ACTIVE = "/requests/active"
-    const val REQUESTS_BY_ID = "/requests/{id}"
-    const val REQUESTS_WATCHLIST = "/requests/watchlist"
+    const val REQUESTS_ACTIVE = "/api/request/requests"
+    const val REQUESTS_BY_ID = "/api/request/requests/{id}"
+    const val REQUESTS_WATCHLIST = "/api/request/requests/watchlist"
     
     // Bids
-    const val BIDS_CREATE = "/bids"
-    const val BIDS_MY_BIDS = "/bids/my-bids"
-    const val BIDS_BY_REQUEST = "/bids/request/{requestId}"
+    const val BIDS_CREATE = "/api/bidding/bids"
+    const val BIDS_MY_BIDS = "/api/bidding/bids/my-bids"
+    const val BIDS_BY_REQUEST = "/api/bidding/bids/request/{requestId}"
     
     // Deals
-    const val DEALS_ACTIVE = "/deals/active"
-    const val DEALS_HISTORY = "/deals/history"
-    const val DEALS_COMPLETE = "/deals/{id}/complete"
+    const val DEALS_ACTIVE = "/api/request/requests"
+    const val DEALS_HISTORY = "/api/request/requests/my-requests"
+    const val DEALS_COMPLETE = "/api/request/requests/{id}/status"
     
     // Wallet
-    const val WALLET_BALANCE = "/wallet/balance"
-    const val WALLET_TRANSACTIONS = "/wallet/transactions"
+    const val WALLET_BALANCE = "/api/payment/wallet/balance"
+    const val WALLET_TRANSACTIONS = "/api/payment/wallet/transactions"
     
     // Subscription
-    const val SUBSCRIPTION_PLANS = "/subscription/plans"
-    const val SUBSCRIPTION_CURRENT = "/subscription/current"
-    const val SUBSCRIPTION_UPGRADE = "/subscription/upgrade"
+    const val SUBSCRIPTION_PLANS = "/api/payment/wallet/stats"
+    const val SUBSCRIPTION_CURRENT = "/api/payment/wallet"
+    const val SUBSCRIPTION_UPGRADE = "/api/payment/wallet"
     
     // Chat
-    const val CHAT_CONVERSATIONS = "/chat/conversations"
-    const val CHAT_MESSAGES = "/chat/messages/conversation/{conversationId}"
-    const val CHAT_SEND_MESSAGE = "/chat/messages"
-    const val CHAT_QUICK_REPLIES = "/chat/quick-replies"
+    const val CHAT_CONVERSATIONS = "/api/chat/chat/conversations"
+    const val CHAT_MESSAGES = "/api/chat/chat/messages/conversation/{conversationId}"
+    const val CHAT_SEND_MESSAGE = "/api/chat/chat/messages"
+    const val CHAT_QUICK_REPLIES = "/api/chat/chat/messages"
     
     // Analytics
-    const val ANALYTICS_OVERVIEW = "/analytics/overview"
-    const val ANALYTICS_PERFORMANCE = "/analytics/performance"
-    const val ANALYTICS_COMPETITION = "/analytics/competition"
+    const val ANALYTICS_OVERVIEW = "/api/analytics/overview"
+    const val ANALYTICS_PERFORMANCE = "/api/analytics/ratios"
+    const val ANALYTICS_COMPETITION = "/api/analytics/category-trends"
 }

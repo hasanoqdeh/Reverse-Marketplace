@@ -32,13 +32,13 @@ export class BulkNotificationDto {
 }
 
 @ApiTags('notifications')
-@Controller('notifications')
+@Controller()
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
-  @Post()
+  @Post('notifications')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create and send a notification' })
   @ApiResponse({ status: 201, description: 'Notification created and sent successfully' })
@@ -61,7 +61,7 @@ export class NotificationController {
     };
   }
 
-  @Get()
+  @Get('notifications')
   @ApiOperation({ summary: 'Get user notifications' })
   @ApiResponse({ status: 200, description: 'Notifications retrieved successfully' })
   async getUserNotifications(
@@ -90,7 +90,7 @@ export class NotificationController {
     };
   }
 
-  @Get('unread/count')
+  @Get('notifications/unread/count')
   @ApiOperation({ summary: 'Get unread notifications count' })
   @ApiResponse({ status: 200, description: 'Unread count retrieved successfully' })
   async getUnreadCount(@Request() req: any) {
@@ -103,7 +103,7 @@ export class NotificationController {
     };
   }
 
-  @Get('stats')
+  @Get('notifications/stats')
   @ApiOperation({ summary: 'Get notification statistics' })
   @ApiResponse({ status: 200, description: 'Statistics retrieved successfully' })
   async getNotificationStats(@Request() req: any) {
@@ -116,7 +116,7 @@ export class NotificationController {
     };
   }
 
-  @Patch(':id/read')
+  @Patch('notifications/:id/read')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Mark notification as read' })
   @ApiResponse({ status: 200, description: 'Notification marked as read' })
@@ -134,7 +134,7 @@ export class NotificationController {
     };
   }
 
-  @Patch('read-all')
+  @Patch('notifications/read-all')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Mark all notifications as read' })
   @ApiResponse({ status: 200, description: 'All notifications marked as read' })
@@ -148,7 +148,7 @@ export class NotificationController {
     };
   }
 
-  @Delete(':id')
+  @Delete('notifications/:id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Delete notification' })
   @ApiResponse({ status: 200, description: 'Notification deleted successfully' })
@@ -166,7 +166,7 @@ export class NotificationController {
     };
   }
 
-  @Post('bulk')
+  @Post('notifications/bulk')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Send bulk notifications to multiple users' })
   @ApiResponse({ status: 201, description: 'Bulk notifications sent successfully' })
@@ -193,13 +193,13 @@ export class NotificationController {
 
 // Admin endpoints for system-wide notifications
 @ApiTags('admin-notifications')
-@Controller('admin/notifications')
+@Controller()
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class AdminNotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
-  @Post('broadcast')
+  @Post('admin/notifications/broadcast')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Broadcast notification to all users' })
   @ApiResponse({ status: 201, description: 'Broadcast sent successfully' })
@@ -220,7 +220,7 @@ export class AdminNotificationController {
     };
   }
 
-  @Get('stats')
+  @Get('admin/notifications/stats')
   @ApiOperation({ summary: 'Get system-wide notification statistics' })
   @ApiResponse({ status: 200, description: 'System statistics retrieved successfully' })
   async getSystemNotificationStats() {

@@ -17,11 +17,11 @@ export class GenerateUploadUrlDto {
   contentType: string;
 }
 
-@Controller('chat/uploads')
+@Controller()
 export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
 
-  @Post('url')
+  @Post('chat/uploads/url')
   @HttpCode(HttpStatus.CREATED)
   async generateUploadUrl(
     @Body() generateUploadUrlDto: GenerateUploadUrlDto,
@@ -40,7 +40,7 @@ export class UploadController {
     };
   }
 
-  @Post(':fileId/confirm')
+  @Post('chat/uploads/:fileId/confirm')
   @HttpCode(HttpStatus.OK)
   async confirmUpload(
     @Param('fileId') fileId: string,
@@ -56,7 +56,7 @@ export class UploadController {
     };
   }
 
-  @Get(':fileId/metadata')
+  @Get('chat/uploads/:fileId/metadata')
   async getFileMetadata(@Param('fileId') fileId: string) {
     const fileKey = `chat/${fileId}`;
     const metadata = await this.uploadService.getFileMetadata(fileKey);
@@ -66,7 +66,7 @@ export class UploadController {
     };
   }
 
-  @Post(':fileId/scan')
+  @Post('chat/uploads/:fileId/scan')
   @HttpCode(HttpStatus.OK)
   async scanFile(@Param('fileId') fileId: string) {
     const fileKey = `chat/${fileId}`;
@@ -77,7 +77,7 @@ export class UploadController {
     };
   }
 
-  @Post(':fileId/validate')
+  @Post('chat/uploads/:fileId/validate')
   @HttpCode(HttpStatus.OK)
   async validateContent(
     @Param('fileId') fileId: string,
@@ -94,7 +94,7 @@ export class UploadController {
     };
   }
 
-  @Delete(':fileId')
+  @Delete('chat/uploads/:fileId')
   @HttpCode(HttpStatus.OK)
   async deleteFile(
     @Param('fileId') fileId: string,
@@ -113,7 +113,7 @@ export class UploadController {
     };
   }
 
-  @Get('config/supported-types')
+  @Get('chat/uploads/config/supported-types')
   getSupportedFileTypes() {
     const supportedTypes = this.uploadService.getSupportedFileTypes();
     const maxSize = this.uploadService.getMaxFileSize();

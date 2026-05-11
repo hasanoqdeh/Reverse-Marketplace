@@ -14,11 +14,11 @@ import {
 import { ConversationService } from './conversation.service';
 import { ConversationStatus } from '../../infrastructure/cassandra/models/conversation.model';
 
-@Controller('chat/conversations')
+@Controller()
 export class ConversationController {
   constructor(private readonly conversationService: ConversationService) {}
 
-  @Get()
+  @Get('chat/conversations')
   async getUserConversations(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 20,
@@ -37,7 +37,7 @@ export class ConversationController {
     };
   }
 
-  @Get(':id')
+  @Get('chat/conversations/:id')
   async getConversation(
     @Param('id') conversationId: string,
     @Request() req: any,
@@ -65,7 +65,7 @@ export class ConversationController {
     };
   }
 
-  @Patch(':id/archive')
+  @Patch('chat/conversations/:id/archive')
   @HttpCode(HttpStatus.OK)
   async archiveConversation(
     @Param('id') conversationId: string,
@@ -87,7 +87,7 @@ export class ConversationController {
     };
   }
 
-  @Patch(':id/block')
+  @Patch('chat/conversations/:id/block')
   @HttpCode(HttpStatus.OK)
   async blockConversation(
     @Param('id') conversationId: string,
@@ -109,7 +109,7 @@ export class ConversationController {
     };
   }
 
-  @Patch(':id/close')
+  @Patch('chat/conversations/:id/close')
   @HttpCode(HttpStatus.OK)
   async closeConversation(
     @Param('id') conversationId: string,
@@ -126,7 +126,7 @@ export class ConversationController {
     };
   }
 
-  @Get(':id/participants')
+  @Get('chat/conversations/:id/participants')
   async getConversationParticipants(
     @Param('id') conversationId: string,
     @Request() req: any,

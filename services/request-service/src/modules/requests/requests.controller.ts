@@ -16,11 +16,11 @@ import { CreateRequestDto, UpdateRequestDto, PublishRequestDto, UpdateRequestSta
 import { RequestStatus } from '../../common/entities/request.entity';
 
 @ApiTags('Requests')
-@Controller('requests')
+@Controller()
 export class RequestsController {
   constructor(private readonly requestsService: RequestsService) {}
 
-  @Post('draft')
+  @Post('requests/draft')
   @ApiOperation({ summary: 'Create a new draft request' })
   @ApiResponse({ status: 201, description: 'Draft request created successfully' })
   @ApiResponse({ status: 400, description: 'Bad Request - Invalid input' })
@@ -30,7 +30,7 @@ export class RequestsController {
     return { data: request };
   }
 
-  @Patch(':id/draft')
+  @Patch('requests/:id/draft')
   @ApiOperation({ summary: 'Update a draft request' })
   @ApiResponse({ status: 200, description: 'Draft request updated successfully' })
   @ApiResponse({ status: 403, description: 'Forbidden - Not owner or not a draft' })
@@ -43,7 +43,7 @@ export class RequestsController {
     return { data: request };
   }
 
-  @Patch(':id/publish')
+  @Patch('requests/:id/publish')
   @ApiOperation({ summary: 'Publish a draft request' })
   @ApiResponse({ status: 200, description: 'Request published successfully' })
   @ApiResponse({ status: 400, description: 'Bad Request - Invalid request or incomplete' })
@@ -56,7 +56,7 @@ export class RequestsController {
     return { data: request };
   }
 
-  @Patch(':id/status')
+  @Patch('requests/:id/status')
   @ApiOperation({ summary: 'Update request status' })
   @ApiResponse({ status: 200, description: 'Request status updated successfully' })
   @ApiResponse({ status: 400, description: 'Bad Request - Invalid status transition' })
@@ -69,7 +69,7 @@ export class RequestsController {
     return { data: request };
   }
 
-  @Get('my-requests')
+  @Get('requests/my-requests')
   @ApiOperation({ summary: 'Get current user\'s requests' })
   @ApiResponse({ status: 200, description: 'User requests retrieved successfully' })
   async getMyRequests(
@@ -87,7 +87,7 @@ export class RequestsController {
     return { data: result };
   }
 
-  @Get(':id')
+  @Get('requests/:id')
   @ApiOperation({ summary: 'Get request by ID' })
   @ApiResponse({ status: 200, description: 'Request retrieved successfully' })
   @ApiResponse({ status: 404, description: 'Request not found' })
@@ -96,7 +96,7 @@ export class RequestsController {
     return { data: request };
   }
 
-  @Delete(':id')
+  @Delete('requests/:id')
   @ApiOperation({ summary: 'Delete a draft request' })
   @ApiResponse({ status: 200, description: 'Request deleted successfully' })
   @ApiResponse({ status: 403, description: 'Forbidden - Not owner or not a draft' })

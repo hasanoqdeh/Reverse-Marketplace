@@ -8,7 +8,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ApproveMerchantDto, RejectMerchantDto } from './merchants.service';
 
 @ApiTags('Merchants')
-@Controller('admin/merchants')
+@Controller('merchants')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.ADMIN)
 export class MerchantsController {

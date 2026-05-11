@@ -1,0 +1,117 @@
+name: API Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run tests daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest
+    
+    services:
+      # Start required services for testing
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: reverse_marketplace_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: |
+        npm ci
+        # Install test dependencies
+        sudo apt-get update
+        sudo apt-get install -y curl jq bc
+
+    - name: Start services
+      run: |
+        # Start Kong and API services
+        cd infrastructure/docker
+        docker-compose -f docker-compose.dev.yml up -d
+        # Wait for services to be ready
+        sleep 30
+
+    - name: Wait for API Gateway
+      run: |
+        echo "Waiting for API Gateway to be ready..."
+        timeout 300 bash -c 'until curl -f http://localhost:8000/api/identity/health; do sleep 5; done'
+
+    - name: Run API Tests
+      run: |
+        # Create test results directory
+        mkdir -p test_results
+        
+        # Run the automated API tests
+        ./automated_api_test.sh
+        
+        # Upload test results
+        echo "Uploading test results..."
+
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: api-test-results
+        path: |
+          test_results/
+          *.log
+        retention-days: 30
+
+    - name: Generate Test Report
+      if: always()
+      run: |
+        # Generate HTML report from JSON results
+        node scripts/generate-test-report.js test_results/api_test_report_*.json
+
+    - name: Upload Test Report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-report
+        path: test-results/*.html
+        retention-days: 30
+
+    - name: Notify on Failure
+      if: failure()
+      run: |
+        echo "API tests failed! Check the uploaded artifacts for details."
+
+    - name: Cleanup
+      if: always()
+      run: |
+        # Stop services
+        cd infrastructure/docker
+        docker-compose -f docker-compose.dev.yml down

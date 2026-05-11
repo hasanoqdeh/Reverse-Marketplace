@@ -14,11 +14,11 @@ import {
 import { BidService, CreateBidDto, UpdateBidStatusDto } from './bid.service';
 import { BidStatus } from '../../infrastructure/mongodb/schemas/bid.schema';
 
-@Controller('bids')
+@Controller()
 export class BidController {
   constructor(private readonly bidService: BidService) {}
 
-  @Post()
+  @Post('bids')
   @HttpCode(HttpStatus.CREATED)
   async createBid(@Body() createBidDto: CreateBidDto, @Request() req: any) {
     // This would typically validate JWT token and extract merchant info
@@ -32,7 +32,7 @@ export class BidController {
     };
   }
 
-  @Get(':id')
+  @Get('bids/:id')
   async getBid(@Param('id') id: string, @Request() req: any) {
     const bid = await this.bidService.getBidById(id);
     if (!bid) {
@@ -46,7 +46,7 @@ export class BidController {
     };
   }
 
-  @Patch(':id/status')
+  @Patch('bids/:id/status')
   @HttpCode(HttpStatus.OK)
   async updateBidStatus(
     @Param('id') id: string,
@@ -62,7 +62,7 @@ export class BidController {
     };
   }
 
-  @Get('request/:requestId')
+  @Get('bids/request/:requestId')
   async getRequestBids(
     @Param('requestId') requestId: string,
     @Request() req: any,
@@ -98,7 +98,7 @@ export class BidController {
     };
   }
 
-  @Get('request/:requestId/analytics')
+  @Get('bids/request/:requestId/analytics')
   async getRequestBidAnalytics(@Param('requestId') requestId: string, @Request() req: any) {
     const analytics = await this.bidService.getBidAnalytics(requestId);
     
@@ -128,7 +128,7 @@ export class BidController {
     };
   }
 
-  @Get('my-bids')
+  @Get('bids/my-bids')
   async getMyBids(
     @Request() req: any,
     @Query('status') status?: BidStatus,
@@ -145,7 +145,7 @@ export class BidController {
     };
   }
 
-  @Patch(':id/withdraw')
+  @Patch('bids/:id/withdraw')
   @HttpCode(HttpStatus.OK)
   async withdrawBid(@Param('id') id: string, @Request() req: any) {
     const merchantId = req.user?.sub || 'user-placeholder';

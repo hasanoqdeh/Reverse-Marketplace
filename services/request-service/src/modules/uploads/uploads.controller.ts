@@ -19,7 +19,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 @ApiTags('Uploads')
-@Controller('requests/:id/images')
+@Controller()
 export class UploadsController {
   constructor(
     private readonly s3Service: S3Service,
@@ -28,7 +28,7 @@ export class UploadsController {
     private readonly requestImageRepository: Repository<RequestImage>,
   ) {}
 
-  @Post()
+  @Post('requests/:id/images')
   @UseInterceptors(FilesInterceptor('images', 10))
   @ApiOperation({ summary: 'Upload images for a request' })
   @ApiConsumes('multipart/form-data')
@@ -107,7 +107,7 @@ export class UploadsController {
     return { data: uploadedImages };
   }
 
-  @Delete(':imageId')
+  @Delete('requests/:id/images/:imageId')
   @ApiOperation({ summary: 'Delete an image from a request' })
   @ApiResponse({ status: 200, description: 'Image deleted successfully' })
   async deleteImage(
@@ -148,7 +148,7 @@ export class UploadsController {
     }
   }
 
-  @Post('reorder')
+  @Post('requests/:id/images/reorder')
   @ApiOperation({ summary: 'Reorder images in a request' })
   @ApiResponse({ status: 200, description: 'Images reordered successfully' })
   async reorderImages(

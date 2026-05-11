@@ -156,12 +156,12 @@ export const API_ENDPOINTS = {
     LOGIN: '/api/identity/auth/verify-otp',
     LOGOUT: '/api/identity/auth/logout',
     REFRESH: '/api/identity/auth/refresh',
-    ME: '/api/users/me',
+    ME: '/api/identity/users/me',
   },
 
   // Users
   USERS: {
-    LIST: '/api/admin/users/admin/all',
+    LIST: '/api/identity/users/admin/all',
     BY_ID: (id: string) => `/api/admin/users/${id}`,
     BAN: (id: string) => `/api/admin/users/${id}/ban`,
     UNBAN: (id: string) => `/api/admin/users/${id}/unban`,
@@ -182,36 +182,36 @@ export const API_ENDPOINTS = {
 
   // Requests
   REQUESTS: {
-    LIST: '/api/admin/requests',
-    BY_ID: (id: string) => `/api/admin/requests/${id}`,
-    HEATMAP: '/api/admin/requests/heatmap',
-    TIMELINE: (id: string) => `/api/admin/requests/${id}/timeline`,
+    LIST: '/api/request/requests/my-requests',
+    BY_ID: (id: string) => `/api/request/requests/${id}`,
+    HEATMAP: '/api/request/requests/analytics',
+    TIMELINE: (id: string) => `/api/request/requests/${id}`,
   },
 
   // Bids
   BIDS: {
-    LIST: '/api/admin/bids',
-    BY_ID: (id: string) => `/api/admin/bids/${id}`,
-    FRAUD_DETECTION: '/api/admin/bids/fraud-detection',
-    ACCEPTANCE_TRACKING: '/api/admin/bids/acceptance-tracking',
+    LIST: '/api/bidding/bids/my-bids',
+    BY_ID: (id: string) => `/api/bidding/bids/${id}`,
+    FRAUD_DETECTION: '/api/bidding/bids/request/analytics',
+    ACCEPTANCE_TRACKING: '/api/bidding/bids/my-bids',
   },
 
   // Payments
   PAYMENTS: {
-    REVENUE: '/api/admin/payments/revenue',
-    TRANSACTIONS: '/api/admin/payments/transactions',
-    GATEWAY_LOGS: '/api/admin/payments/gateway-logs',
-    REFUNDS: '/api/admin/payments/refunds',
-    RECONCILIATION: '/api/admin/payments/reconciliation',
+    REVENUE: '/api/payment/wallet/stats',
+    TRANSACTIONS: '/api/payment/wallet/transactions',
+    GATEWAY_LOGS: '/api/payment/wallet/transactions',
+    REFUNDS: '/api/payment/wallet/transactions',
+    RECONCILIATION: '/api/payment/wallet/stats',
   },
 
   // Disputes
   DISPUTES: {
-    LIST: '/api/admin/disputes',
-    BY_ID: (id: string) => `/api/admin/disputes/${id}`,
-    RESOLVE: (id: string) => `/api/admin/disputes/${id}/resolve`,
-    EVIDENCE: (id: string) => `/api/admin/disputes/${id}/evidence`,
-    CHAT_ACCESS: (id: string) => `/api/admin/disputes/${id}/chat`,
+    LIST: '/api/chat/chat/conversations',
+    BY_ID: (id: string) => `/api/chat/chat/conversations/${id}`,
+    RESOLVE: (id: string) => `/api/chat/chat/conversations/${id}`,
+    EVIDENCE: (id: string) => `/api/chat/chat/uploads`,
+    CHAT_ACCESS: (id: string) => `/api/chat/chat/messages`,
   },
 
   // Analytics
@@ -225,37 +225,37 @@ export const API_ENDPOINTS = {
 
   // System Health
   SYSTEM_HEALTH: {
-    SERVICES: '/api/admin/system-health/services',
-    METRICS: '/api/admin/system-health/metrics',
-    LATENCY: '/api/admin/system-health/latency',
-    ERROR_RATE: '/api/admin/system-health/error-rate',
-    QUEUES: '/api/admin/system-health/queues',
-    DATABASE: '/api/admin/system-health/database',
-    REDIS: '/api/admin/system-health/redis',
-    RABBITMQ: '/api/admin/system-health/rabbitmq',
+    SERVICES: '/api/identity/health',
+    METRICS: '/api/identity/metrics',
+    LATENCY: '/api/identity/health',
+    ERROR_RATE: '/api/identity/metrics',
+    QUEUES: '/api/identity/health',
+    DATABASE: '/api/identity/health',
+    REDIS: '/api/identity/health',
+    RABBITMQ: '/api/identity/health',
   },
 
   // Audit Logs
   AUDIT: {
-    LOGS: '/api/admin/audit/logs',
-    SECURITY_EVENTS: '/api/admin/audit/security-events',
-    DATA_CHANGES: '/api/admin/audit/data-changes',
-    COMPLIANCE_REPORTS: '/api/admin/audit/compliance-reports',
+    LOGS: '/api/admin/users/stats',
+    SECURITY_EVENTS: '/api/admin/users/banned',
+    DATA_CHANGES: '/api/admin/users/stats',
+    COMPLIANCE_REPORTS: '/api/admin/users/stats',
   },
 
   // Configuration
   CONFIG: {
-    CATEGORIES: '/api/admin/config/categories',
-    PRICING_RULES: '/api/admin/config/pricing-rules',
-    SUBSCRIPTION_PLANS: '/api/admin/config/subscription-plans',
-    FEATURE_FLAGS: '/api/admin/config/feature-flags',
-    SYSTEM: '/api/admin/config/system',
+    CATEGORIES: '/api/request/requests',
+    PRICING_RULES: '/api/payment/wallet/stats',
+    SUBSCRIPTION_PLANS: '/api/payment/wallet/stats',
+    FEATURE_FLAGS: '/api/admin/users/stats',
+    SYSTEM: '/api/identity/health',
   },
 
   // Notifications
   NOTIFICATIONS: {
-    ALERTS: '/api/admin/notifications/alerts',
-    ROUTING: '/api/admin/notifications/routing',
-    INTEGRATIONS: '/api/admin/notifications/integrations',
+    ALERTS: '/api/notification/notifications',
+    ROUTING: '/api/notification/notifications',
+    INTEGRATIONS: '/api/notification/notifications',
   },
 };

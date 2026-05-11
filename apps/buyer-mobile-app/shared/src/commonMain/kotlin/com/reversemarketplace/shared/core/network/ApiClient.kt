@@ -122,22 +122,22 @@ class ApiClient(
 
 // API Endpoints
 object ApiEndpoints {
-    const val AUTH_REQUEST_OTP = "/auth/request-otp"
-    const val AUTH_VERIFY_OTP = "/auth/verify-otp"
-    const val AUTH_REFRESH = "/auth/refresh"
-    const val AUTH_LOGOUT = "/auth/logout"
+    const val AUTH_REQUEST_OTP = "/api/identity/auth/request-otp"
+    const val AUTH_VERIFY_OTP = "/api/identity/auth/verify-otp"
+    const val AUTH_REFRESH = "/api/identity/auth/refresh"
+    const val AUTH_LOGOUT = "/api/identity/auth/logout"
     
-    const val REQUESTS_DRAFT = "/requests/draft"
-    const val REQUESTS_MY_REQUESTS = "/requests/my-requests"
-    const val REQUESTS_BY_ID = "/requests/{id}"
-    const val REQUESTS_PUBLISH = "/requests/{id}/publish"
-    const val REQUESTS_IMAGES = "/requests/{id}/images"
+    const val REQUESTS_DRAFT = "/api/request/requests/draft"
+    const val REQUESTS_MY_REQUESTS = "/api/request/requests/my-requests"
+    const val REQUESTS_BY_ID = "/api/request/requests/{id}"
+    const val REQUESTS_PUBLISH = "/api/request/requests/{id}/publish"
+    const val REQUESTS_IMAGES = "/api/request/requests/{id}/images"
     
-    const val BIDS_BY_REQUEST = "/bids/request/{requestId}"
-    const val BIDS_ACCEPT = "/bids/{id}/status"
+    const val BIDS_BY_REQUEST = "/api/bidding/bids/request/{requestId}"
+    const val BIDS_ACCEPT = "/api/bidding/bids/{id}/status"
     
-    const val CHAT_CONVERSATIONS = "/chat/conversations"
-    const val CHAT_MESSAGES = "/chat/messages/conversation/{conversationId}"
-    const val CHAT_SEND_MESSAGE = "/chat/messages"
-    const val CHAT_MARK_READ = "/chat/messages/read"
+    const val CHAT_CONVERSATIONS = "/api/chat/chat/conversations"
+    const val CHAT_MESSAGES = "/api/chat/chat/messages/conversation/{conversationId}"
+    const val CHAT_SEND_MESSAGE = "/api/chat/chat/messages"
+    const val CHAT_MARK_READ = "/api/chat/chat/messages/read"
 }

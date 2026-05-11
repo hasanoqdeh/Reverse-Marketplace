@@ -25,11 +25,11 @@ export class MarkMessageReadDto {
   message_id: string;
 }
 
-@Controller('chat/messages')
+@Controller()
 export class MessageController {
   constructor(private readonly messageService: MessageService) {}
 
-  @Post()
+  @Post('chat/messages')
   @HttpCode(HttpStatus.CREATED)
   async sendMessage(
     @Body() sendMessageDto: SendMessageDto,
@@ -51,7 +51,7 @@ export class MessageController {
     };
   }
 
-  @Get('conversation/:conversationId')
+  @Get('chat/messages/conversation/:conversationId')
   async getConversationMessages(
     @Param('conversationId') conversationId: string,
     @Request() req: any,
@@ -74,7 +74,7 @@ export class MessageController {
     };
   }
 
-  @Patch('read')
+  @Patch('chat/messages/read')
   @HttpCode(HttpStatus.OK)
   async markMessageAsRead(
     @Body() markReadDto: MarkMessageReadDto,
@@ -96,7 +96,7 @@ export class MessageController {
     };
   }
 
-  @Patch('conversation/:conversationId/read-all')
+  @Patch('chat/messages/conversation/:conversationId/read-all')
   @HttpCode(HttpStatus.OK)
   async markAllMessagesAsRead(
     @Param('conversationId') conversationId: string,
@@ -115,7 +115,7 @@ export class MessageController {
     };
   }
 
-  @Get('unread')
+  @Get('chat/messages/unread')
   async getUnreadCount(
     @Request() req: any,
     @Query('conversationId') conversationId?: string,
@@ -132,7 +132,7 @@ export class MessageController {
     };
   }
 
-  @Get(':messageId')
+  @Get('chat/messages/:messageId')
   async getMessage(
     @Param('messageId') messageId: string,
     @Request() req: any,
@@ -150,7 +150,7 @@ export class MessageController {
     };
   }
 
-  @Patch(':messageId/delete')
+  @Patch('chat/messages/:messageId/delete')
   @HttpCode(HttpStatus.OK)
   async deleteMessage(
     @Param('messageId') messageId: string,

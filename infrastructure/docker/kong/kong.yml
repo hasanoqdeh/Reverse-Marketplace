@@ -31,6 +31,17 @@ services:
           - PATCH
           - DELETE
           - OPTIONS
+      - name: admin-service-route
+        paths:
+          - /api/admin
+        strip_path: true
+        methods:
+          - GET
+          - POST
+          - PUT
+          - PATCH
+          - DELETE
+          - OPTIONS
       - name: analytics-service-route
         paths:
           - /api/analytics

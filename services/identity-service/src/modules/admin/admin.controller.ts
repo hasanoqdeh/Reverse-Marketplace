@@ -8,7 +8,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { BanUserDto, UnbanUserDto } from './admin.service';
 
 @ApiTags('Admin')
-@Controller('admin/users')
+@Controller('users')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.ADMIN)
 export class AdminController {
