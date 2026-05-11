@@ -15,8 +15,7 @@ const nextConfig = {
     HOSTNAME: '0.0.0.0', // Bind to all interfaces
   },
   // Set asset prefix for Kong routing
-  assetPrefix: '/admin',
-      async rewrites() {
+  async rewrites() {
     return [
       {
         source: '/api/:path*',

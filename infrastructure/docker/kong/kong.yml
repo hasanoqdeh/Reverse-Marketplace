@@ -1,37 +1,13 @@
 _format_version: "3.0"
 
 services:
-  # Landing Page Service
-  - name: landing-page
-    url: http://landing-page:3007
-    routes:
-      - name: landing-page-route
-        paths:
-          - /landing
-        methods:
-          - GET
-          - OPTIONS
-
-  # Admin Dashboard Static Assets Service
-  - name: admin-dashboard-static
-    url: http://admin-dashboard:3008/_next
-    routes:
-      - name: admin-dashboard-static
-        paths:
-          - /admin/_next
-        strip_path: true
-        methods:
-          - GET
-          - OPTIONS
-
   # Admin Dashboard Service
   - name: admin-dashboard
     url: http://admin-dashboard:3008
     routes:
-      - name: admin-dashboard-pages
+      - name: admin-dashboard-route
         paths:
           - /admin
-        strip_path: true
         methods:
           - GET
           - POST

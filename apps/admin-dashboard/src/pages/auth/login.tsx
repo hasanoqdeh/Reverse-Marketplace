@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 import { Shield, Eye, EyeOff } from 'lucide-react';
 import { apiService, API_ENDPOINTS } from '@/services/api';
 import { UserRole } from '@/types';

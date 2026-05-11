@@ -91,24 +91,6 @@ services:
       retries: 5
       start_period: 30s
 
-  # Landing Page Service
-  landing-page:
-    build:
-      context: ../../services/landing-page
-      dockerfile: Dockerfile
-    container_name: reverse-marketplace-landing
-    environment:
-      NODE_ENV: development
-      PORT: 3007
-    ports:
-      - "3007:3007"
-    volumes:
-      - ../../services/landing-page:/app
-      - /app/node_modules
-    networks:
-      - reverse-marketplace-network
-    command: ["pnpm", "run", "start:dev"]
-
   # Admin Dashboard Service
   admin-dashboard:
     image: node:20-alpine
@@ -149,7 +131,6 @@ services:
     networks:
       - reverse-marketplace-network
     depends_on:
-      - landing-page
       - admin-dashboard
       - identity-service
 
