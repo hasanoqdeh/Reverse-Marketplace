@@ -1,0 +1,53 @@
+{
+  "name": "reverse-marketplace",
+  "version": "1.0.0",
+  "description": "A reverse marketplace platform where buyers post requests and merchants compete to fulfill them",
+  "main": "index.js",
+  "scripts": {
+    "install:all": "npm install && npm run install:backend && npm run install:admin && npm run install:buyer && npm run install:merchant",
+    "install:backend": "cd backend && npm install",
+    "install:admin": "cd admin-panel && npm install",
+    "install:buyer": "cd buyer-app && npm install",
+    "install:merchant": "cd merchant-app && npm install",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:admin": "cd admin-panel && npm run dev",
+    "dev:buyer": "cd buyer-app && npm start",
+    "dev:merchant": "cd merchant-app && npm start",
+    "build:admin": "cd admin-panel && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "test:backend": "cd backend && npm test",
+    "lint:all": "npm run lint:backend && npm run lint:admin && npm run lint:buyer && npm run lint:merchant",
+    "lint:backend": "cd backend && npm run lint",
+    "lint:admin": "cd admin-panel && npm run lint",
+    "lint:buyer": "cd buyer-app && npm run lint",
+    "lint:merchant": "cd merchant-app && npm run lint"
+  },
+  "keywords": [
+    "marketplace",
+    "reverse-auction",
+    "bidding",
+    "ecommerce",
+    "react-native",
+    "nextjs",
+    "nodejs",
+    "microservices"
+  ],
+  "author": "Reverse Marketplace Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/reverse-marketplace.git"
+  },
+  "workspaces": [
+    "backend",
+    "admin-panel"
+  ],
+  "devDependencies": {
+    "concurrently": "^8.2.0",
+    "cross-env": "^7.0.3"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  }
+}
