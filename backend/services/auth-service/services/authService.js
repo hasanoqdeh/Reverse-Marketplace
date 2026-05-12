@@ -98,22 +98,24 @@ class AuthService {
     else if (cleanPhone.length === 9 && cleanPhone.startsWith('7')) {
       cleanPhone = '962' + cleanPhone;
     }
-    // Handle Jordanian numbers with country code
+    // Handle Jordanian numbers with country code (starts with 962 and has 12 digits)
     else if (cleanPhone.startsWith('962') && cleanPhone.length === 12) {
       // Already has country code, keep as is
     }
-    // Check if it's a valid Omani phone number
-    else if (cleanPhone.startsWith('968')) {
-      return cleanPhone.length === 11 ? cleanPhone : null;
+    // Handle Jordanian numbers with + prefix (starts with 962 and has 12 digits)
+    else if (cleanPhone.startsWith('962') && cleanPhone.length === 12) {
+      // Already has country code, keep as is
     }
-    // For other international numbers, basic validation
-    else if (cleanPhone.length >= 10 && cleanPhone.length <= 15) {
-      // Keep as is for other international numbers
-    } else {
-      return null;
+    else {
+      return null; // Only Jordanian numbers are supported
     }
     
-    return cleanPhone;
+    // Validate that it's a valid Jordanian mobile number (starts with 7 after country code)
+    if (cleanPhone.length === 12 && cleanPhone.startsWith('9627')) {
+      return cleanPhone;
+    }
+    
+    return null;
   }
 
   async checkRateLimit(key, windowMs, maxRequests) {

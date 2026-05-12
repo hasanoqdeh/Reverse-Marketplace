@@ -6,9 +6,11 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Shield, Phone, Lock, AlertCircle, Clock } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { formatPhoneNumber, validatePhoneNumber, validateOTP, formatOTP } from '@/lib/auth'
+import { formatJordanianPhone, validateLocalJordanianPhone } from '@/lib/phoneUtils'
 
 export default function LoginPage() {
   const { 
@@ -25,7 +27,6 @@ export default function LoginPage() {
   } = useAuth()
 
   const [phone, setPhone] = useState('')
-  const [countryCode] = useState('JO')
   const [otpCode, setOtpCode] = useState(['', '', '', '', '', ''])
   const [timeRemaining, setTimeRemaining] = useState(0)
   const [resendCooldown, setResendCooldown] = useState(0)
@@ -73,30 +74,25 @@ export default function LoginPage() {
     e.preventDefault()
     clearError()
 
-    // For validation, use the cleaned raw phone number (9 digits)
-    const cleanRawPhone = phone.replace(/\D/g, '')
-    
-    // Format phone number with country code for API call
-    const formattedPhone = phone.startsWith('+') ? phone : `+962${cleanRawPhone}`
+    // Format phone number to Jordan format +962XXXXXXXXX
+    const formattedPhone = formatJordanianPhone(phone)
     
     console.log('🔧 LoginPage Debug:', {
       rawPhone: phone,
-      cleanRawPhone,
       formattedPhone,
-      countryCode,
-      isValid: validatePhoneNumber(cleanRawPhone)
+      isValid: validatePhoneNumber(formattedPhone)
     });
     
-    // Validate the raw Jordan phone number (9 digits)
-    if (!validatePhoneNumber(cleanRawPhone)) {
+    // Validate the formatted phone number
+    if (!validatePhoneNumber(formattedPhone)) {
       console.log('❌ Phone validation failed');
       return
     }
 
-    console.log('🚀 Calling phoneLogin with:', { formattedPhone, countryCode });
+    console.log('🚀 Calling phoneLogin with:', { formattedPhone });
     
     try {
-      await phoneLogin(formattedPhone, countryCode)
+      await phoneLogin(formattedPhone, 'JO')
       console.log('✅ phoneLogin completed successfully');
     } catch (error) {
       console.log('❌ phoneLogin error:', error);
@@ -114,7 +110,16 @@ export default function LoginPage() {
     }
 
     try {
-      await verifyOTP(phone, fullOTP)
+      // Format phone number to international format before sending to API
+      const formattedPhone = formatJordanianPhone(phone)
+      
+      console.log('🔧 OTP Submit Debug:', {
+        localPhone: phone,
+        formattedPhone,
+        otpCode: fullOTP
+      });
+      
+      await verifyOTP(formattedPhone, fullOTP)
     } catch (error) {
       // Error is handled by the auth context
     }
@@ -124,7 +129,15 @@ export default function LoginPage() {
     if (resendCooldown > 0) return
 
     try {
-      await resendOTP(phone)
+      // Format phone number to international format before sending to API
+      const formattedPhone = formatJordanianPhone(phone)
+      
+      console.log('🔧 Resend OTP Debug:', {
+        localPhone: phone,
+        formattedPhone
+      });
+      
+      await resendOTP(formattedPhone)
       setOtpCode(['', '', '', '', '', ''])
     } catch (error) {
       // Error is handled by the auth context
@@ -206,23 +219,23 @@ export default function LoginPage() {
                     <Input
                       id="phone"
                       type="tel"
-                      placeholder="XXXXX XXXXX"
+                      placeholder="7XXXXXXXX"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
                       className="rounded-l-none"
-                      maxLength={12}
+                      maxLength={9}
                       disabled={isLoading}
                     />
                   </div>
                   <p className="text-xs text-gray-500">
-                    Enter your Jordanian phone number
+                    Enter your Jordanian phone number (starts with 7)
                   </p>
                 </div>
 
                 <Button 
                   type="submit" 
                   className="w-full" 
-                  disabled={isLoading || !validatePhoneNumber(phone)}
+                  disabled={isLoading || !validateLocalJordanianPhone(phone)}
                 >
                   {isLoading ? (
                     <>

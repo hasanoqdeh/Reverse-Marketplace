@@ -1,62 +1,82 @@
 import React from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, Alert, TextInput, Modal, ScrollView, TouchableHighlight } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useAuth } from '@/contexts/AuthContext'
-import { formatJordanianPhone, validateLocalJordanianPhone } from '@/lib/phoneUtils'
+import { formatJordanianPhone, validateLocalJordanianPhone } from '../lib/phoneUtils'
 
 export default function LoginScreen() {
-  const { 
-    phoneLogin, 
-    verifyOTP, 
-    resendOTP, 
-    isLoading, 
-    error, 
-    clearError, 
-    otpSent, 
-    otpExpiresAt,
-    loginStep,
-    resetLoginFlow 
-  } = useAuth()
-
   const [phone, setPhone] = React.useState('')
-  const [otpCode, setOtpCode] = React.useState(['', '', '', '', '', '', ''])
+  const [otpCode, setOtpCode] = React.useState(['', '', '', '', '', ''])
+  const [loginStep, setLoginStep] = React.useState<'phone' | 'otp'>('phone')
+  const [isLoading, setIsLoading] = React.useState(false)
+  const [error, setError] = React.useState('')
+
+  const clearError = () => setError('')
 
   const handlePhoneSubmit = async () => {
     try {
       clearError()
+      setIsLoading(true)
       
       // Format phone number to Jordan format +962XXXXXXXXX
       const formattedPhone = formatJordanianPhone(phone)
       
-      await phoneLogin(formattedPhone, 'JO')
+      // TODO: Implement actual API call
+      console.log('🚀 Calling phoneLogin with:', { formattedPhone });
+      
+      // Simulate API call
+      setTimeout(() => {
+        setIsLoading(false)
+        setLoginStep('otp')
+      }, 1000)
+      
     } catch (error) {
-      // Error is handled by auth context
+      setIsLoading(false)
+      setError('Failed to send verification code')
     }
   }
 
   const handleOTPSubmit = async () => {
     try {
       clearError()
+      setIsLoading(true)
+      
       const fullOTP = otpCode.join('')
       
       // Format phone number to international format before sending to API
       const formattedPhone = formatJordanianPhone(phone)
       
-      await verifyOTP(formattedPhone, fullOTP)
+      // TODO: Implement actual API call
+      console.log('🚀 Calling verifyOTP with:', { formattedPhone, fullOTP });
+      
+      // Simulate API call
+      setTimeout(() => {
+        setIsLoading(false)
+        Alert.alert('Success', 'Login successful!')
+      }, 1000)
+      
     } catch (error) {
-      // Error is handled by auth context
+      setIsLoading(false)
+      setError('Failed to verify code')
     }
   }
 
   const handleResendOTP = async () => {
     try {
-      // Format phone number to international format before sending to API
-      const formattedPhone = formatJordanianPhone(phone)
+      clearError()
+      setIsLoading(true)
       
-      await resendOTP(formattedPhone)
-      setOtpCode(['', '', '', '', '', '', ''])
+      // TODO: Implement actual API call
+      console.log('🚀 Calling resendOTP with:', { phone });
+      
+      // Simulate API call
+      setTimeout(() => {
+        setIsLoading(false)
+        Alert.alert('Success', 'Code resent!')
+      }, 1000)
+      
     } catch (error) {
-      // Error is handled by auth context
+      setIsLoading(false)
+      setError('Failed to resend code')
     }
   }
 
@@ -67,20 +87,12 @@ export default function LoginScreen() {
     const newOTP = [...otpCode]
     newOTP[index] = value
     setOtpCode(newOTP)
-
-    // Auto-focus next input
-    if (value && index < 5) {
-      // In React Native, we'd use ref to focus next input
-      // For now, this is handled by the input component
-    }
   }
 
-  const formatPhoneNumber = (phone: string) => {
-    const cleanPhone = phone.replace(/\D/g, '')
-    if (cleanPhone.startsWith('962') && cleanPhone.length === 12) {
-      return cleanPhone.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3')
-    }
-    return cleanPhone
+  const resetLoginFlow = () => {
+    setLoginStep('phone')
+    clearError()
+    setOtpCode(['', '', '', '', '', ''])
   }
 
   return (
@@ -89,10 +101,10 @@ export default function LoginScreen() {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.logoContainer}>
-            <Text style={styles.logo}>🛍️</Text>
+            <Text style={styles.logo}>🏪</Text>
           </View>
           <Text style={styles.title}>Reverse Marketplace</Text>
-          <Text style={styles.subtitle}>Buyer Portal</Text>
+          <Text style={styles.subtitle}>Merchant Portal</Text>
         </View>
 
         {/* Error Alert */}
@@ -144,7 +156,7 @@ export default function LoginScreen() {
           <View style={styles.form}>
             <Text style={styles.formTitle}>Enter Verification Code</Text>
             <Text style={styles.formSubtitle}>
-              Code sent to {formatPhoneNumber(phone)}
+              Code sent to +962 {phone}
             </Text>
 
             {/* OTP Input Fields */}
@@ -161,13 +173,6 @@ export default function LoginScreen() {
                 />
               ))}
             </View>
-
-            {/* Timer */}
-            {otpExpiresAt && (
-              <Text style={styles.timerText}>
-                Code expires in {Math.max(0, Math.floor((new Date(otpExpiresAt).getTime() - Date.now()) / 1000 / 60))} minutes
-              </Text>
-            )}
 
             {/* Submit Button */}
             <TouchableOpacity 
@@ -211,10 +216,10 @@ export default function LoginScreen() {
         {/* Security Notice */}
         <View style={styles.securityNotice}>
           <Text style={styles.securityNoticeText}>
-            This is a secure buyer portal. All login attempts are logged.
+            This is a secure merchant portal. All login attempts are logged.
           </Text>
           <Text style={styles.securityNoticeText}>
-            For assistance, contact customer support.
+            For assistance, contact support.
           </Text>
         </View>
 
@@ -241,7 +246,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#3b82f6',
+    backgroundColor: '#10b981',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
@@ -306,22 +311,14 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderTopLeftRadius: 8,
     borderBottomLeftRadius: 8,
-    borderRightWidth: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 70,
   },
   countryCodeText: {
     fontSize: 14,
     color: '#6b7280',
     fontWeight: '500',
-  },
-  countryCodeButton: {
-    backgroundColor: '#f3f4f6',
-    paddingHorizontal: 12,
-    paddingVertical: 16,
-    borderTopLeftRadius: 8,
-    borderBottomLeftRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: 70,
   },
   countryName: {
     fontSize: 10,
@@ -353,14 +350,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
-  timerText: {
-    fontSize: 12,
-    color: '#6b7280',
-    textAlign: 'center',
-    marginBottom: 20,
-  },
   button: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: '#10b981',
     borderRadius: 8,
     paddingVertical: 16,
     alignItems: 'center',
@@ -382,7 +373,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   resendButtonText: {
-    color: '#3b82f6',
+    color: '#10b981',
     fontSize: 14,
     fontWeight: '500',
   },

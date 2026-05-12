@@ -189,17 +189,28 @@ const validate = (schema, source = 'body') => {
 };
 
 // Custom validation functions
-const validatePhoneFormat = (phone) => {
+const validatePhoneFormat = (phone, countryCode = 'JO') => {
   // Remove all non-numeric characters
-  const cleanPhone = phone.replace(/\D/g, '');
+  let cleanPhone = phone.replace(/\D/g, '');
   
-  // Check if it's a valid Omani phone number
-  if (cleanPhone.startsWith('968')) {
-    return cleanPhone.length === 11 ? cleanPhone : null;
+  // Handle local Jordanian numbers without country code (starts with 07 and has 10 digits)
+  if (cleanPhone.length === 10 && cleanPhone.startsWith('07')) {
+    cleanPhone = '962' + cleanPhone.substring(1); // Remove 07 and add 962
+  }
+  // Handle local Jordanian numbers without country code (starts with 7 and has 9 digits)
+  else if (cleanPhone.length === 9 && cleanPhone.startsWith('7')) {
+    cleanPhone = '962' + cleanPhone;
+  }
+  // Handle Jordanian numbers with country code (starts with 962 and has 12 digits)
+  else if (cleanPhone.startsWith('962') && cleanPhone.length === 12) {
+    // Already has country code, keep as is
+  }
+  else {
+    return null; // Only Jordanian numbers are supported
   }
   
-  // For international numbers, basic validation
-  if (cleanPhone.length >= 10 && cleanPhone.length <= 15) {
+  // Validate that it's a valid Jordanian mobile number (starts with 7 after country code)
+  if (cleanPhone.length === 12 && cleanPhone.startsWith('9627')) {
     return cleanPhone;
   }
   
