@@ -60,7 +60,7 @@ services:
       dockerfile: Dockerfile
     container_name: reverse-marketplace-backend
     env_file:
-      - .env.dev
+      - .env
     environment:
       # Override hostnames for Docker networking
       DB_HOST: ${DB_HOST_DOCKER}
@@ -90,7 +90,7 @@ services:
       dockerfile: Dockerfile
     container_name: reverse-marketplace-admin
     env_file:
-      - .env.dev
+      - .env
     environment:
       # Override URLs for Docker networking
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL_DOCKER}
