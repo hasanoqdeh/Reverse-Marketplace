@@ -1,82 +1,65 @@
 import React from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, Alert, TextInput, Modal, ScrollView, TouchableHighlight } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useAuth } from '../contexts/AuthContext'
 import { formatJordanianPhone, validateLocalJordanianPhone } from '../lib/phoneUtils'
 
 export default function LoginScreen() {
+  const { 
+    phoneLogin, 
+    verifyOTP, 
+    resendOTP, 
+    isLoading, 
+    error, 
+    clearError, 
+    otpSent, 
+    otpExpiresAt,
+    loginStep,
+    resetLoginFlow 
+  } = useAuth()
+
   const [phone, setPhone] = React.useState('')
   const [otpCode, setOtpCode] = React.useState(['', '', '', '', '', ''])
-  const [loginStep, setLoginStep] = React.useState<'phone' | 'otp'>('phone')
-  const [isLoading, setIsLoading] = React.useState(false)
-  const [error, setError] = React.useState('')
-
-  const clearError = () => setError('')
 
   const handlePhoneSubmit = async () => {
     try {
       clearError()
-      setIsLoading(true)
       
       // Format phone number to Jordan format +962XXXXXXXXX
       const formattedPhone = formatJordanianPhone(phone)
       
-      // TODO: Implement actual API call
-      console.log('🚀 Calling phoneLogin with:', { formattedPhone });
-      
-      // Simulate API call
-      setTimeout(() => {
-        setIsLoading(false)
-        setLoginStep('otp')
-      }, 1000)
-      
+      await phoneLogin(formattedPhone, 'JO')
     } catch (error) {
-      setIsLoading(false)
-      setError('Failed to send verification code')
+      // Error is handled by the auth context
     }
   }
 
   const handleOTPSubmit = async () => {
     try {
       clearError()
-      setIsLoading(true)
       
       const fullOTP = otpCode.join('')
       
       // Format phone number to international format before sending to API
       const formattedPhone = formatJordanianPhone(phone)
       
-      // TODO: Implement actual API call
-      console.log('🚀 Calling verifyOTP with:', { formattedPhone, fullOTP });
-      
-      // Simulate API call
-      setTimeout(() => {
-        setIsLoading(false)
-        Alert.alert('Success', 'Login successful!')
-      }, 1000)
-      
+      await verifyOTP(formattedPhone, fullOTP)
     } catch (error) {
-      setIsLoading(false)
-      setError('Failed to verify code')
+      // Error is handled by the auth context
     }
   }
 
   const handleResendOTP = async () => {
     try {
       clearError()
-      setIsLoading(true)
       
-      // TODO: Implement actual API call
-      console.log('🚀 Calling resendOTP with:', { phone });
+      // Format phone number to international format before sending to API
+      const formattedPhone = formatJordanianPhone(phone)
       
-      // Simulate API call
-      setTimeout(() => {
-        setIsLoading(false)
-        Alert.alert('Success', 'Code resent!')
-      }, 1000)
-      
+      await resendOTP(formattedPhone)
+      setOtpCode(['', '', '', '', '', ''])
     } catch (error) {
-      setIsLoading(false)
-      setError('Failed to resend code')
+      // Error is handled by the auth context
     }
   }
 
@@ -89,12 +72,7 @@ export default function LoginScreen() {
     setOtpCode(newOTP)
   }
 
-  const resetLoginFlow = () => {
-    setLoginStep('phone')
-    clearError()
-    setOtpCode(['', '', '', '', '', ''])
-  }
-
+  
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>

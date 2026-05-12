@@ -942,3 +942,631 @@ The system is ready for implementation with clear phases, testing strategies, an
 - [ ] Monitor and optimize performance
 
 This specification serves as the complete technical foundation for implementing a robust, secure, and user-friendly authentication system for the reverse marketplace platform.
+
+---
+
+## 12. Admin Panel Technical Specification
+
+### 12.1 Admin Panel Architecture Overview
+
+The admin panel serves as the central management interface for the reverse marketplace, providing comprehensive user management, system monitoring, and administrative controls. Built on the authentication foundation specified in sections 1-11, the admin panel leverages role-based access control and secure session management.
+
+#### 12.1.1 Core Design Principles
+
+✅ **Role-Based Administration**
+- Three-tier admin hierarchy (SUPER_ADMIN, ADMIN, SUPPORT)
+- Granular permission system for feature access
+- Audit trail for all administrative actions
+- Secure device and session management
+
+✅ **Comprehensive User Management**
+- Real-time user monitoring and management
+- Advanced filtering and search capabilities
+- Bulk operations for efficient administration
+- User lifecycle management (registration → suspension → deletion)
+
+✅ **System Monitoring & Analytics**
+- Real-time dashboard with key metrics
+- Performance monitoring and alerting
+- Security incident tracking and response
+- Business intelligence and reporting
+
+### 12.2 Admin Panel Database Schema Extensions
+
+#### 12.2.1 Admin Activity Logs Table
+```sql
+CREATE TABLE admin_activity_logs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    admin_id UUID REFERENCES users(id) ON DELETE SET NULL,
+    action_type admin_action_type NOT NULL,
+    target_type VARCHAR(50) NOT NULL,
+    target_id UUID NULL,
+    target_phone VARCHAR(20) NULL,
+    action_details JSONB DEFAULT '{}',
+    ip_address INET NULL,
+    user_agent TEXT NULL,
+    success BOOLEAN NOT NULL,
+    failure_reason TEXT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TYPE admin_action_type AS ENUM (
+    'USER_VIEW', 'USER_EDIT', 'USER_SUSPEND', 'USER_BAN', 'USER_DELETE',
+    'USER_BULK_ACTION', 'ADMIN_ADD', 'ADMIN_EDIT', 'ADMIN_REMOVE',
+    'SYSTEM_CONFIG_CHANGE', 'EXPORT_DATA', 'IMPORT_DATA', 'SECURITY_ALERT',
+    'SESSION_TERMINATE', 'PASSWORD_RESET', 'VERIFICATION_OVERRIDE'
+);
+
+-- Indexes
+CREATE INDEX idx_admin_activity_logs_admin_id ON admin_activity_logs(admin_id);
+CREATE INDEX idx_admin_activity_logs_action_type ON admin_activity_logs(action_type);
+CREATE INDEX idx_admin_activity_logs_created_at ON admin_activity_logs(created_at);
+CREATE INDEX idx_admin_activity_logs_target ON admin_activity_logs(target_type, target_id);
+```
+
+#### 12.2.2 System Configuration Table
+```sql
+CREATE TABLE system_configurations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    config_key VARCHAR(100) UNIQUE NOT NULL,
+    config_value JSONB NOT NULL,
+    config_type VARCHAR(50) NOT NULL,
+    description TEXT NULL,
+    is_sensitive BOOLEAN DEFAULT FALSE,
+    updated_by UUID REFERENCES users(id) ON DELETE SET NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Indexes
+CREATE INDEX idx_system_configurations_key ON system_configurations(config_key);
+CREATE INDEX idx_system_configurations_type ON system_configurations(config_type);
+```
+
+#### 12.2.3 User Notes Table
+```sql
+CREATE TABLE user_notes (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    admin_id UUID REFERENCES users(id) ON DELETE SET NULL,
+    note_type note_type NOT NULL,
+    note_content TEXT NOT NULL,
+    is_internal BOOLEAN DEFAULT TRUE,
+    is_visible_to_user BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TYPE note_type AS ENUM ('GENERAL', 'SUPPORT', 'SECURITY', 'VERIFICATION', 'WARNING');
+
+-- Indexes
+CREATE INDEX idx_user_notes_user_id ON user_notes(user_id);
+CREATE INDEX idx_user_notes_admin_id ON user_notes(admin_id);
+CREATE INDEX idx_user_notes_type ON user_notes(note_type);
+```
+
+### 12.3 Admin Panel API Specifications
+
+#### 12.3.1 User Management Endpoints
+
+##### GET `/admin/users`
+```typescript
+interface GetUsersRequest {
+  page?: number;
+  limit?: number;
+  search?: string;
+  role?: 'BUYER' | 'MERCHANT' | 'ADMIN' | 'ALL';
+  status?: 'PENDING' | 'ACTIVE' | 'BANNED' | 'SUSPENDED' | 'ALL';
+  registrationDateFrom?: string;
+  registrationDateTo?: string;
+  lastLoginFrom?: string;
+  lastLoginTo?: string;
+  sortBy?: 'createdAt' | 'lastLoginAt' | 'phone' | 'name';
+  sortOrder?: 'asc' | 'desc';
+}
+
+interface GetUsersResponse {
+  success: boolean;
+  users: Array<{
+    id: string;
+    phone: string;
+    role: string;
+    status: string;
+    phoneVerified: boolean;
+    createdAt: string;
+    lastLoginAt: string | null;
+    failedLoginAttempts: number;
+    lockedUntil: string | null;
+    profile?: {
+      firstName: string;
+      lastName: string;
+      email?: string;
+      city?: string;
+      country?: string;
+    };
+    adminInfo?: {
+      adminLevel: string;
+      department?: string;
+      isActive: boolean;
+    };
+    merchantInfo?: {
+      businessName?: string;
+      verificationStatus?: string;
+      verificationDate?: string;
+    };
+  }>;
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+  filters: {
+    appliedFilters: Record<string, any>;
+    availableFilters: Array<{
+      key: string;
+      label: string;
+      type: 'select' | 'date' | 'text';
+      options?: Array<{ value: string; label: string }>;
+    }>;
+  };
+}
+```
+
+##### POST `/admin/users/{userId}/suspend`
+```typescript
+interface SuspendUserRequest {
+  reason: string;
+  duration?: number; // in hours, null for indefinite
+  notifyUser?: boolean;
+  internalNote?: string;
+}
+
+interface SuspendUserResponse {
+  success: boolean;
+  message: string;
+  user: {
+    id: string;
+    status: string;
+    suspendedUntil: string | null;
+  };
+}
+```
+
+##### POST `/admin/users/{userId}/ban`
+```typescript
+interface BanUserRequest {
+  reason: string;
+  permanent: boolean;
+  notifyUser?: boolean;
+  internalNote?: string;
+  deleteData?: boolean; // option to delete user data
+}
+
+interface BanUserResponse {
+  success: boolean;
+  message: string;
+  user: {
+    id: string;
+    status: string;
+    bannedAt: string;
+  };
+}
+```
+
+##### POST `/admin/users/bulk-action`
+```typescript
+interface BulkActionRequest {
+  userIds: string[];
+  action: 'SUSPEND' | 'BAN' | 'DELETE' | 'VERIFY' | 'SEND_NOTIFICATION';
+  actionData: {
+    reason?: string;
+    duration?: number;
+    notifyUsers?: boolean;
+    internalNote?: string;
+    message?: string;
+  };
+}
+
+interface BulkActionResponse {
+  success: boolean;
+  processed: number;
+  successful: Array<{
+    userId: string;
+    success: boolean;
+    message?: string;
+  }>;
+  failed: Array<{
+    userId: string;
+    error: string;
+  }>;
+  summary: {
+    totalProcessed: number;
+    successCount: number;
+    failureCount: number;
+  };
+}
+```
+
+#### 12.3.2 Admin Management Endpoints
+
+##### GET `/admin/admins`
+```typescript
+interface GetAdminsResponse {
+  success: boolean;
+  admins: Array<{
+    id: string;
+    phone: string;
+    name: string;
+    adminLevel: string;
+    department?: string;
+    isActive: boolean;
+    lastLoginAt: string | null;
+    createdAt: string;
+    permissions: Array<{
+      resource: string;
+      actions: string[];
+    }>;
+  }>;
+}
+```
+
+##### POST `/admin/admins/{adminId}/permissions`
+```typescript
+interface UpdatePermissionsRequest {
+  permissions: Array<{
+    resource: string;
+    actions: string[];
+  }>;
+}
+
+interface UpdatePermissionsResponse {
+  success: boolean;
+  message: string;
+  updatedPermissions: Array<{
+    resource: string;
+    actions: string[];
+  }>;
+}
+```
+
+#### 12.3.3 System Monitoring Endpoints
+
+##### GET `/admin/dashboard/metrics`
+```typescript
+interface DashboardMetricsResponse {
+  success: boolean;
+  metrics: {
+    users: {
+      total: number;
+      active: number;
+      newToday: number;
+      newThisWeek: number;
+      byRole: Record<string, number>;
+      byStatus: Record<string, number>;
+    };
+    authentication: {
+      loginAttemptsToday: number;
+      successfulLoginsToday: number;
+      failedLoginsToday: number;
+      otpSentToday: number;
+      averageLoginTime: number;
+    };
+    security: {
+      suspiciousActivities: number;
+      blockedIPs: number;
+      lockedAccounts: number;
+      activeAdminSessions: number;
+    };
+    system: {
+      uptime: number;
+      apiResponseTime: number;
+      databaseConnections: number;
+      errorRate: number;
+    };
+  };
+  trends: {
+    userRegistrations: Array<{
+      date: string;
+      count: number;
+    }>;
+    loginActivity: Array<{
+      date: string;
+      successful: number;
+      failed: number;
+    }>;
+    securityEvents: Array<{
+      date: string;
+      events: number;
+    }>;
+  };
+}
+```
+
+##### GET `/admin/security/alerts`
+```typescript
+interface SecurityAlertsResponse {
+  success: boolean;
+  alerts: Array<{
+    id: string;
+    type: 'SUSPICIOUS_LOGIN' | 'RATE_LIMIT_EXCEEDED' | 'ACCOUNT_LOCKOUT' | 'ADMIN_ACCESS_ANOMALY';
+    severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+    title: string;
+    description: string;
+    userId?: string;
+    phone?: string;
+    ipAddress?: string;
+    occurredAt: string;
+    status: 'NEW' | 'INVESTIGATING' | 'RESOLVED' | 'FALSE_POSITIVE';
+    actions: Array<{
+      action: string;
+      label: string;
+      requiresConfirmation: boolean;
+    }>;
+  }>;
+  summary: {
+    total: number;
+    bySeverity: Record<string, number>;
+    byStatus: Record<string, number>;
+  };
+}
+```
+
+### 12.4 Admin Panel User Interface Specifications
+
+#### 12.4.1 Dashboard Layout
+
+**Main Dashboard Components:**
+- **Header**: Admin profile, session status, quick actions, notifications
+- **Sidebar Navigation**: Main menu with role-based visibility
+- **Metrics Overview**: Key performance indicators with real-time updates
+- **Activity Feed**: Recent system events and admin actions
+- **Quick Actions**: Common tasks with one-click access
+
+**Navigation Structure:**
+```
+Dashboard
+├── Overview
+├── Users
+│   ├── All Users
+│   ├── Buyer Management
+│   ├── Merchant Management
+│   └── Admin Management
+├── Security
+│   ├── Security Alerts
+│   ├── Audit Logs
+│   ├── Session Management
+│   └── Access Control
+├── System
+│   ├── Configuration
+│   ├── Monitoring
+│   ├── Reports
+│   └── Maintenance
+├── Analytics
+│   ├── User Analytics
+│   ├── Business Metrics
+│   ├── Performance Reports
+│   └── Custom Reports
+└── Settings
+    ├── Admin Settings
+    ├── System Preferences
+    └── Export/Import
+```
+
+#### 12.4.2 User Management Interface
+
+**User List View:**
+- Advanced filtering system with saved filter presets
+- Sortable columns with custom sorting options
+- Bulk selection with action toolbar
+- Real-time search with highlighting
+- Export functionality (CSV, Excel, PDF)
+
+**User Detail View:**
+- **Profile Section**: Basic user information with edit capabilities
+- **Authentication History**: Login attempts, devices, sessions
+- **Activity Timeline**: User actions with chronological display
+- **Notes Section**: Internal admin notes with categorization
+- **Quick Actions**: Suspend, ban, verify, reset, notify
+
+**User Actions Panel:**
+```typescript
+interface UserActions {
+  account: {
+    suspend: { duration: number; reason: string };
+    ban: { permanent: boolean; reason: string };
+    delete: { confirm: boolean; dataDeletion: boolean };
+  };
+  verification: {
+    verifyPhone: { method: 'AUTO' | 'MANUAL' };
+    verifyMerchant: { documents: string[]; notes: string };
+    overrideSuspension: { reason: string };
+  };
+  communication: {
+    sendNotification: { message: string; channels: string[] };
+    addNote: { content: string; type: string; visibility: string };
+  };
+  security: {
+    resetPassword: { method: 'EMAIL' | 'SMS' };
+    terminateSessions: { allDevices: boolean };
+    requireReauth: { reason: string };
+  };
+}
+```
+
+#### 12.4.3 Security Management Interface
+
+**Security Dashboard:**
+- Real-time threat monitoring map
+- Alert severity classification system
+- Automated vs manual threat response
+- Security incident timeline
+- Threat intelligence integration
+
+**Audit Log Viewer:**
+- Advanced filtering by event type, user, date range
+- Log export with compliance formatting
+- Anomaly detection highlighting
+- Forensic investigation tools
+- Chain of custody documentation
+
+**Session Management:**
+- Active session monitoring with geolocation
+- Remote session termination capabilities
+- Device fingerprinting visualization
+- Suspicious session detection
+- Access pattern analysis
+
+### 12.5 Admin Panel Security Features
+
+#### 12.5.1 Enhanced Authentication
+
+**Multi-Factor Authentication:**
+- OTP via SMS (primary)
+- Email verification (secondary)
+- Time-based one-time passwords (TOTP)
+- Hardware security key support (YubiKey)
+- Biometric authentication (fingerprint, face ID)
+
+**Session Security:**
+- Device fingerprinting validation
+- IP address whitelisting
+- Geolocation verification
+- Session timeout with grace period
+- Concurrent session limits
+
+**Access Control:**
+- Role-based permission matrix
+- Feature-level access control
+- Time-based access restrictions
+- IP-based access restrictions
+- Emergency access procedures
+
+#### 12.5.2 Audit & Compliance
+
+**Comprehensive Logging:**
+- All admin actions with full context
+- Data access and modification logs
+- System configuration changes
+- Security events and responses
+- User data exports and imports
+
+**Compliance Features:**
+- GDPR compliance tools
+- Data retention policies
+- Right to deletion implementation
+- Data portability exports
+- Privacy impact assessments
+
+**Security Monitoring:**
+- Real-time threat detection
+- Automated alerting system
+- Incident response workflows
+- Security score dashboard
+- Vulnerability scanning integration
+
+### 12.6 Admin Panel Performance Specifications
+
+#### 12.6.1 Performance Requirements
+
+**Response Time Targets:**
+- Dashboard load: < 2 seconds
+- User list load: < 1 second
+- Search results: < 500ms
+- Bulk operations: < 30 seconds
+- Report generation: < 60 seconds
+
+**Scalability Requirements:**
+- Support 100+ concurrent admin users
+- Handle 1M+ user records
+- Process 10K+ operations/hour
+- Maintain < 100ms API response time
+- 99.9% uptime availability
+
+#### 12.6.2 Caching Strategy
+
+**Multi-Level Caching:**
+- Browser-level caching for static assets
+- CDN caching for global distribution
+- Application-level caching for frequent data
+- Database query result caching
+- Session-based caching for user preferences
+
+**Cache Invalidation:**
+- Real-time cache updates
+- Version-based cache busting
+- Event-driven cache invalidation
+- Scheduled cache refresh
+- Manual cache clearing options
+
+### 12.7 Admin Panel Implementation Roadmap
+
+#### 12.7.1 Phase 1: Core Admin Interface (Week 1-2)
+- [ ] Basic admin authentication integration
+- [ ] Dashboard layout and navigation
+- [ ] User list with basic filtering
+- [ ] Simple user detail view
+- [ ] Basic audit log viewer
+
+#### 12.7.2 Phase 2: Advanced User Management (Week 2-3)
+- [ ] Advanced filtering and search
+- [ ] Bulk user operations
+- [ ] User suspension and banning
+- [ ] Admin management interface
+- [ ] User notes system
+
+#### 12.7.3 Phase 3: Security & Monitoring (Week 3-4)
+- [ ] Security dashboard and alerts
+- [ ] Session management interface
+- [ ] Advanced audit logging
+- [ ] Threat detection integration
+- [ ] Compliance features
+
+#### 12.7.4 Phase 4: Analytics & Reporting (Week 4-5)
+- [ ] Real-time metrics dashboard
+- [ ] Custom report builder
+- [ ] Data export functionality
+- [ ] Business intelligence tools
+- [ ] Performance monitoring
+
+#### 12.7.5 Phase 5: Advanced Features (Week 5-6)
+- [ ] Multi-factor authentication
+- [ ] Advanced permission system
+- [ ] Automated workflows
+- [ ] API management interface
+- [ ] System configuration tools
+
+### 12.8 Admin Panel Testing Strategy
+
+#### 12.8.1 Functional Testing
+- User management workflows
+- Admin permission validation
+- Security feature verification
+- Data accuracy validation
+- Cross-browser compatibility
+
+#### 12.8.2 Security Testing
+- Penetration testing
+- Access control validation
+- Data protection verification
+- Session security testing
+- Compliance audit testing
+
+#### 12.8.3 Performance Testing
+- Load testing with concurrent users
+- Stress testing with large datasets
+- Database performance optimization
+- Caching effectiveness testing
+- Scalability validation
+
+### 12.9 Conclusion
+
+The admin panel specification provides a comprehensive, secure, and scalable management interface that extends the authentication system foundation with powerful administrative capabilities. The system ensures:
+
+✅ **Complete User Control** - Comprehensive user lifecycle management
+✅ **Enhanced Security** - Multi-layered security with audit trails
+✅ **Real-time Monitoring** - Live dashboard with actionable insights
+✅ **Scalable Architecture** - Built for enterprise-scale operations
+✅ **Compliance Ready** - GDPR and regulatory compliance features
+
+This admin panel specification, combined with the authentication system foundation, creates a complete administrative ecosystem for the reverse marketplace platform.
