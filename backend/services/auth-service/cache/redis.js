@@ -10,15 +10,43 @@ class RedisClient {
 
   async connect() {
     try {
-      this.client = Redis.createClient({
-        url: config.redis.url,
-        host: config.redis.host,
-        port: config.redis.port,
-        password: config.redis.password,
-        database: config.redis.db,
-        retryDelayOnFailover: config.redis.retryDelayOnFailover,
-        maxRetriesPerRequest: config.redis.maxRetriesPerRequest,
+      // In Docker environment, use host/port instead of URL to avoid localhost conflicts
+      let clientConfig;
+      const useDockerConfig = config.env === 'development' && process.env.REDIS_HOST === 'redis';
+      logger.info('Redis connection config:', {
+        env: config.env,
+        redisHost: process.env.REDIS_HOST,
+        useDockerConfig,
+        configHost: config.redis.host,
+        configUrl: config.redis.url
       });
+      
+      if (useDockerConfig) {
+        clientConfig = {
+          socket: {
+            host: config.redis.host,
+            port: config.redis.port,
+            family: 4, // Force IPv4
+            connectTimeout: 5000,
+          },
+          password: config.redis.password,
+          database: config.redis.db,
+          retryDelayOnFailover: config.redis.retryDelayOnFailover,
+          maxRetriesPerRequest: config.redis.maxRetriesPerRequest,
+        };
+        logger.info('Using Docker Redis config:', clientConfig);
+      } else {
+        clientConfig = {
+          url: config.redis.url,
+          password: config.redis.password,
+          database: config.redis.db,
+          retryDelayOnFailover: config.redis.retryDelayOnFailover,
+          maxRetriesPerRequest: config.redis.maxRetriesPerRequest,
+        };
+        logger.info('Using URL Redis config:', clientConfig);
+      }
+
+      this.client = Redis.createClient(clientConfig);
 
       // Event handlers
       this.client.on('connect', () => {

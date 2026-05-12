@@ -12,11 +12,11 @@ const config = {
   // Database Configuration
   database: {
     url: process.env.DATABASE_URL,
-    host: process.env.DATABASE_HOST || 'localhost',
-    port: parseInt(process.env.DATABASE_PORT, 10) || 5432,
-    name: process.env.DATABASE_NAME || 'reverse_marketplace_auth',
-    user: process.env.DATABASE_USER || 'auth_service_user',
-    password: process.env.DATABASE_PASSWORD,
+    host: process.env.DB_HOST || process.env.DATABASE_HOST || 'localhost',
+    port: parseInt(process.env.DB_PORT || process.env.DATABASE_PORT, 10) || 5432,
+    name: process.env.DB_NAME || process.env.DATABASE_NAME || 'reverse_marketplace_auth',
+    user: process.env.DB_USER || process.env.DATABASE_USER || 'auth_service_user',
+    password: process.env.DB_PASSWORD || process.env.DATABASE_PASSWORD,
     ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
     max: 20, // maximum number of clients in the pool
     idleTimeoutMillis: 30000, // how long a client is allowed to remain idle before being closed
@@ -25,7 +25,7 @@ const config = {
 
   // Redis Configuration
   redis: {
-    url: process.env.REDIS_URL || 'redis://localhost:6379',
+    url: process.env.REDIS_URL,
     host: process.env.REDIS_HOST || 'localhost',
     port: parseInt(process.env.REDIS_PORT, 10) || 6379,
     password: process.env.REDIS_PASSWORD,
@@ -36,11 +36,11 @@ const config = {
 
   // RabbitMQ Configuration
   rabbitmq: {
-    url: process.env.RABBITMQ_URL || 'amqp://localhost:5672',
+    url: process.env.RABBITMQ_URL,
     host: process.env.RABBITMQ_HOST || 'localhost',
     port: parseInt(process.env.RABBITMQ_PORT, 10) || 5672,
-    user: process.env.RABBITMQ_USER || 'guest',
-    password: process.env.RABBITMQ_PASSWORD || 'guest',
+    user: process.env.RABBITMQ_USER || process.env.RABBITMQ_DEFAULT_USER || 'admin',
+    password: process.env.RABBITMQ_PASSWORD || process.env.RABBITMQ_DEFAULT_PASS || 'password',
     exchanges: {
       auth: 'auth.events',
       user: 'user.events',
@@ -57,26 +57,26 @@ const config = {
   jwt: {
     secret: process.env.JWT_SECRET,
     refreshSecret: process.env.JWT_REFRESH_SECRET,
-    accessExpiry: process.env.JWT_ACCESS_EXPIRY || '15m',
-    refreshExpiry: process.env.JWT_REFRESH_EXPIRY || '30d',
+    accessExpiry: process.env.JWT_ACCESS_EXPIRY,
+    refreshExpiry: process.env.JWT_REFRESH_EXPIRY,
     algorithm: 'HS256',
-    issuer: 'reverse-marketplace-auth',
+    issuer: 'reverse-marketplace',
     audience: 'reverse-marketplace',
   },
 
   // OTP Configuration
   otp: {
-    length: parseInt(process.env.OTP_LENGTH, 10) || 6,
-    expiryMinutes: parseInt(process.env.OTP_EXPIRY_MINUTES, 10) || 10,
-    maxAttempts: parseInt(process.env.OTP_MAX_ATTEMPTS, 10) || 3,
-    resendCooldownSeconds: parseInt(process.env.OTP_RESEND_COOLDOWN_SECONDS, 10) || 60,
-    characters: '0123456789', // Numeric only
+    length: parseInt(process.env.OTP_LENGTH, 10),
+    expiryMinutes: parseInt(process.env.OTP_EXPIRY_MINUTES, 10),
+    maxAttempts: parseInt(process.env.OTP_MAX_ATTEMPTS, 10),
+    resendCooldownSeconds: parseInt(process.env.OTP_RESEND_COOLDOWN_SECONDS, 10),
+    characters: '0123456789',
     caseSensitive: false,
   },
 
   // SMS Service Configuration
   sms: {
-    provider: process.env.SMS_PROVIDER || 'twilio',
+    provider: process.env.SMS_PROVIDER,
     twilio: {
       accountSid: process.env.TWILIO_ACCOUNT_SID,
       authToken: process.env.TWILIO_AUTH_TOKEN,
@@ -135,7 +135,12 @@ const config = {
 
   // CORS Configuration
   cors: {
-    origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : ['http://localhost:3000'],
+    origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : [
+      'http://localhost:3001', // admin panel
+      'http://localhost:3002', // buyer app
+      'http://localhost:3003', // merchant app
+      'http://localhost:3000', // local dev
+    ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Device-Fingerprint'],
@@ -162,7 +167,7 @@ const config = {
     ];
 
     const missing = required.filter(key => !process.env[key]);
-    
+
     if (missing.length > 0) {
       throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
     }
@@ -171,7 +176,7 @@ const config = {
     if (process.env.JWT_SECRET.length < 32) {
       throw new Error('JWT_SECRET must be at least 32 characters long');
     }
-    
+
     if (process.env.JWT_REFRESH_SECRET.length < 32) {
       throw new Error('JWT_REFRESH_SECRET must be at least 32 characters long');
     }

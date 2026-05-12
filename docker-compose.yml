@@ -92,9 +92,9 @@ services:
     env_file:
       - .env
     environment:
-      # Override URLs for Docker networking
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL_DOCKER}
-      NEXT_PUBLIC_WS_URL: ${NEXT_PUBLIC_WS_URL_DOCKER}
+      # Override URLs for Docker networking - use localhost for browser access
+      NEXT_PUBLIC_API_URL: http://localhost:3000/api/v1
+      NEXT_PUBLIC_WS_URL: ws://localhost:3000
     ports:
       - "${ADMIN_PORT_EXTERNAL}:${ADMIN_PORT}"
     depends_on:
@@ -114,5 +114,5 @@ volumes:
   rabbitmq_data:
 
 networks:
-  ${DOCKER_NETWORK}:
+  reverse-marketplace:
     driver: bridge

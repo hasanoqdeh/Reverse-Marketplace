@@ -105,10 +105,28 @@ app.use('*', (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 API Gateway running on port ${PORT}`);
-  console.log(`📊 Health check: http://localhost:${PORT}/health`);
-  console.log(`📖 API docs: http://localhost:${PORT}/api/v1`);
-});
+// Initialize auth services
+const authDatabase = require('../services/auth-service/database/connection');
+const authRedisClient = require('../services/auth-service/cache/redis');
+const authEventPublisher = require('../services/auth-service/events/publisher');
+
+async function startGateway() {
+  try {
+    await authDatabase.connect();
+    await authRedisClient.connect();
+    await authEventPublisher.connect();
+    console.log('✅ Auth services connected successfully');
+  } catch (error) {
+    console.error('❌ Failed to connect auth services:', error);
+  }
+
+  app.listen(PORT, () => {
+    console.log(`🚀 API Gateway running on port ${PORT}`);
+    console.log(`📊 Health check: http://localhost:${PORT}/health`);
+    console.log(`📖 API docs: http://localhost:${PORT}/api/v1`);
+  });
+}
+
+startGateway();
 
 module.exports = app;

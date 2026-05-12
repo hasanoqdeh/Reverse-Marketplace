@@ -10,8 +10,8 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install --legacy-peer-deps
 
-# Copy application code
-COPY . .
+# Copy application code (excluding node_modules)
+COPY --chown=node:node . .
 
 # Create .next directory with proper permissions
 RUN mkdir -p .next && chown -R node:node /app

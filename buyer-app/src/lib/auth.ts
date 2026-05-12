@@ -1,4 +1,5 @@
 // Authentication types and utilities for buyer app
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export interface User {
   id: string;
@@ -99,7 +100,7 @@ export interface LogoutResponse {
 export class AuthAPI {
   private baseURL: string;
 
-  constructor(baseURL: string = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000') {
+  constructor(baseURL: string = process.env.NEXT_PUBLIC_API_URL) {
     this.baseURL = baseURL;
   }
 
@@ -199,22 +200,13 @@ export class AuthAPI {
 // Device fingerprinting utilities
 export function generateDeviceFingerprint(): string {
   try {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      ctx.textBaseline = 'top';
-      ctx.font = '14px Arial';
-      ctx.fillText('Device fingerprint', 2, 2);
-    }
-
+    // React Native compatible fingerprinting
+    // Use device info and random values for React Native environment
     const fingerprint = [
-      navigator.userAgent,
-      navigator.language,
-      screen.width + 'x' + screen.height,
+      'react-native',
       new Date().getTimezoneOffset(),
-      !!window.sessionStorage,
-      !!window.localStorage,
-      canvas.toDataURL(),
+      Math.random().toString(36),
+      Date.now().toString(36),
     ].join('|');
 
     return btoa(fingerprint).substring(0, 255);
@@ -288,65 +280,80 @@ export class SessionManager {
   private static readonly DEVICE_FINGERPRINT_KEY = 'device_fingerprint';
 
   static setTokens(accessToken: string, refreshToken: string, user: User): void {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(this.ACCESS_TOKEN_KEY, accessToken);
-      localStorage.setItem(this.REFRESH_TOKEN_KEY, refreshToken);
-      localStorage.setItem(this.USER_KEY, JSON.stringify(user));
-    }
+    // React Native AsyncStorage usage
+    AsyncStorage.multiSet([
+      [this.ACCESS_TOKEN_KEY, accessToken],
+      [this.REFRESH_TOKEN_KEY, refreshToken],
+      [this.USER_KEY, JSON.stringify(user)],
+    ]).catch(error => {
+      console.warn('AsyncStorage error:', error);
+    });
   }
 
-  static getTokens(): { accessToken: string | null; refreshToken: string | null } {
-    if (typeof window !== 'undefined') {
+  static async getTokens(): Promise<{ accessToken: string | null; refreshToken: string | null }> {
+    try {
+      const [accessToken, refreshToken] = await AsyncStorage.multiGet([
+        this.ACCESS_TOKEN_KEY,
+        this.REFRESH_TOKEN_KEY,
+      ]);
       return {
-        accessToken: localStorage.getItem(this.ACCESS_TOKEN_KEY),
-        refreshToken: localStorage.getItem(this.REFRESH_TOKEN_KEY),
+        accessToken: accessToken[1],
+        refreshToken: refreshToken[1],
       };
+    } catch (error) {
+      console.warn('AsyncStorage error:', error);
+      return { accessToken: null, refreshToken: null };
     }
-    return { accessToken: null, refreshToken: null };
   }
 
-  static getUser(): User | null {
-    if (typeof window !== 'undefined') {
-      const userStr = localStorage.getItem(this.USER_KEY);
+  static async getUser(): Promise<User | null> {
+    try {
+      const userStr = await AsyncStorage.getItem(this.USER_KEY);
       return userStr ? JSON.parse(userStr) : null;
+    } catch (error) {
+      console.warn('AsyncStorage error:', error);
+      return null;
     }
-    return null;
   }
 
   static clearTokens(): void {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem(this.ACCESS_TOKEN_KEY);
-      localStorage.removeItem(this.REFRESH_TOKEN_KEY);
-      localStorage.removeItem(this.USER_KEY);
-      localStorage.removeItem(this.DEVICE_FINGERPRINT_KEY);
-    }
+    AsyncStorage.multiRemove([
+      this.ACCESS_TOKEN_KEY,
+      this.REFRESH_TOKEN_KEY,
+      this.USER_KEY,
+      this.DEVICE_FINGERPRINT_KEY,
+    ]).catch(error => {
+      console.warn('AsyncStorage error:', error);
+    });
   }
 
   static setDeviceFingerprint(fingerprint: string): void {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(this.DEVICE_FINGERPRINT_KEY, fingerprint);
+    AsyncStorage.setItem(this.DEVICE_FINGERPRINT_KEY, fingerprint).catch(error => {
+      console.warn('AsyncStorage error:', error);
+    });
+  }
+
+  static async getDeviceFingerprint(): Promise<string | null> {
+    try {
+      return await AsyncStorage.getItem(this.DEVICE_FINGERPRINT_KEY);
+    } catch (error) {
+      console.warn('AsyncStorage error:', error);
+      return null;
     }
   }
 
-  static getDeviceFingerprint(): string | null {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem(this.DEVICE_FINGERPRINT_KEY);
-    }
-    return null;
-  }
-
-  static isAuthenticated(): boolean {
-    const { accessToken } = this.getTokens();
+  static async isAuthenticated(): Promise<boolean> {
+    const { accessToken } = await this.getTokens();
     return accessToken !== null && !isTokenExpired(accessToken);
   }
 
-  static isBuyer(): boolean {
-    const user = this.getUser();
+  static async isBuyer(): Promise<boolean> {
+    const user = await this.getUser();
     return user?.role === 'BUYER';
   }
 
-  static isMerchant(): boolean {
-    const user = this.getUser();
+  static async isMerchant(): Promise<boolean> {
+    const user = await this.getUser();
     return user?.role === 'MERCHANT';
   }
 }
