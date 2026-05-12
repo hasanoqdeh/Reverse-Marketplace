@@ -1,12 +1,25 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Users, ShoppingBag, DollarSign, TrendingUp, Package, MessageSquare } from 'lucide-react'
+import { Users, ShoppingBag, DollarSign, TrendingUp, Package, MessageSquare, LogOut } from 'lucide-react'
+import { useAuth } from '@/contexts/AuthContext'
 
 export default function Dashboard() {
-  const [isLoading, setIsLoading] = useState(false)
+  const { user, logout, canViewAdminPanel } = useAuth()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!canViewAdminPanel()) {
+      router.push('/login')
+    }
+  }, [canViewAdminPanel, router])
+
+  if (!canViewAdminPanel()) {
+    return null
+  }
 
   const stats = [
     {
@@ -66,6 +79,15 @@ export default function Dashboard() {
     }
   ]
 
+  const handleLogout = async () => {
+    try {
+      await logout()
+      router.push('/login')
+    } catch (error) {
+      console.error('Logout failed:', error)
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -74,9 +96,15 @@ export default function Dashboard() {
           <p className="text-muted-foreground">
             Welcome to the Reverse Marketplace Admin Panel
           </p>
+          {user && (
+            <p className="text-sm text-gray-600 mt-1">
+              Logged in as: {user.profile?.firstName} {user.profile?.lastName} ({user.adminLevel})
+            </p>
+          )}
         </div>
-        <Button onClick={() => setIsLoading(!isLoading)}>
-          {isLoading ? 'Refreshing...' : 'Refresh'}
+        <Button onClick={handleLogout} variant="outline">
+          <LogOut className="h-4 w-4 mr-2" />
+          Logout
         </Button>
       </div>
 

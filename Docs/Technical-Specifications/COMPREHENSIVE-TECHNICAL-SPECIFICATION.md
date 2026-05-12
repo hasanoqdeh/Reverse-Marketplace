@@ -1693,7 +1693,7 @@ interface FraudReportedEvent extends BaseEvent {
 ### 6.1 Authentication & Authorization
 
 **Authentication Flow:**
-1. Phone number validation (Oman format: +968 followed by 8 digits)
+1. Phone number validation (Jordan format: +962 followed by 9 digits)
 2. OTP generation (6-digit numeric, 5-minute expiry)
 3. JWT token generation (15-minute access, 30-day refresh)
 4. Session management with Redis

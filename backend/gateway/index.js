@@ -10,12 +10,35 @@ dotenv.config();
 const app = express();
 const PORT = process.env.GATEWAY_PORT || 3000;
 
+// CORS — must be before helmet and all routes
+const allowedOrigins = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(',').map((o) => o.trim())
+  : [
+      'http://localhost:3001', // admin panel
+      'http://localhost:3002', // buyer app
+      'http://localhost:3003', // merchant app
+      'http://localhost:3000', // local dev
+    ];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow server-to-server requests (no origin header) and whitelisted origins
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS policy: origin ${origin} not allowed`));
+      }
+    },
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    credentials: true,
+    optionsSuccessStatus: 204,
+  })
+);
+
 // Security middleware
 app.use(helmet());
-app.use(cors({
-  origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
-  credentials: true
-}));
 
 // Rate limiting
 const limiter = rateLimit({
@@ -36,7 +59,10 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// API Routes (will be implemented as services are created)
+// Import auth service routes
+const authRoutes = require('../services/auth-service/routes/auth');
+
+// API Routes
 app.get('/api/v1', (req, res) => {
   res.json({ 
     message: 'Reverse Marketplace API Gateway',
@@ -54,6 +80,9 @@ app.get('/api/v1', (req, res) => {
     }
   });
 });
+
+// Mount auth service routes
+app.use('/api/v1/auth', authRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

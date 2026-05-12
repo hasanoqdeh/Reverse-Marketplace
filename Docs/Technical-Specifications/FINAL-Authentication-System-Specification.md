@@ -704,7 +704,7 @@ sequenceDiagram
 #### Login Flow
 **Visual Design:**
 - Clean, professional login screen with company branding
-- Phone input field with Oman country code pre-filled (+968)
+- Phone input field with Jordan country code pre-filled (+962)
 - Large, accessible OTP input fields (6 digits, separate boxes)
 - Progress indicator showing authentication steps
 - Real-time validation feedback with visual cues

@@ -1,4 +1,4 @@
-# Use Node.js 18 LTS
+# Use Node.js 18 LTS for development
 FROM node:18-alpine
 
 # Set working directory
@@ -8,16 +8,16 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci && npm cache clean --force
+RUN npm install --legacy-peer-deps
 
 # Copy application code
 COPY . .
 
 # Create .next directory with proper permissions
-RUN mkdir -p .next && chown -R nodejs:nodejs /app
+RUN mkdir -p .next && chown -R node:node /app
 
 # Switch to non-root user
-USER nodejs
+USER node
 
 # Expose port
 EXPOSE 3000
@@ -26,5 +26,5 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD node -e "require('http').get('http://localhost:3000', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
 
-# Start the application
+# Start development server
 CMD ["npm", "run", "dev"]

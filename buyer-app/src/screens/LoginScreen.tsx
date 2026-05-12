@@ -10,25 +10,29 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
-import {useAuth} from '../context/AuthContext';
+import {useAuth} from '../contexts/AuthContext';
 
 const LoginScreen: React.FC = ({navigation}: any) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
-  const {login} = useAuth();
+  const {phoneLogin, loginStep, otpSent} = useAuth();
 
   const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
+    if (!phone) {
+      Alert.alert('Error', 'Please enter your phone number');
       return;
     }
 
     setLoading(true);
     try {
-      await login(email, password);
+      await phoneLogin(phone);
+      // Navigate to OTP verification screen or show OTP input
+      if (otpSent) {
+        // You might want to navigate to an OTP screen here
+        Alert.alert('Success', 'OTP sent to your phone');
+      }
     } catch (error) {
-      Alert.alert('Login Failed', 'Invalid credentials');
+      Alert.alert('Login Failed', error instanceof Error ? error.message : 'Failed to send OTP');
     } finally {
       setLoading(false);
     }
@@ -47,18 +51,11 @@ const LoginScreen: React.FC = ({navigation}: any) => {
         <View style={styles.form}>
           <TextInput
             style={styles.input}
-            placeholder="Email"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
+            placeholder="Phone Number"
+            value={phone}
+            onChangeText={setPhone}
+            keyboardType="phone-pad"
             autoCapitalize="none"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
           />
 
           <TouchableOpacity
@@ -66,7 +63,7 @@ const LoginScreen: React.FC = ({navigation}: any) => {
             onPress={handleLogin}
             disabled={loading}>
             <Text style={styles.buttonText}>
-              {loading ? 'Signing In...' : 'Sign In'}
+              {loading ? 'Sending OTP...' : 'Send OTP'}
             </Text>
           </TouchableOpacity>
 
