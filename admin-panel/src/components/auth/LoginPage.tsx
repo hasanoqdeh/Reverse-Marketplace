@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -12,6 +13,7 @@ import { formatPhoneNumber, validatePhoneNumber, validateOTP, formatOTP } from '
 import { formatJordanianPhone, validateLocalJordanianPhone } from '@/lib/phoneUtils'
 
 export default function LoginPage() {
+  const router = useRouter()
   const { 
     phoneLogin, 
     verifyOTP, 
@@ -22,7 +24,8 @@ export default function LoginPage() {
     otpSent, 
     otpExpiresAt,
     loginStep,
-    resetLoginFlow 
+    resetLoginFlow,
+    isAuthenticated
   } = useAuth()
 
   const [phone, setPhone] = useState('')
@@ -68,6 +71,14 @@ export default function LoginPage() {
 
     return () => clearInterval(interval)
   }, [otpSent])
+
+  // Redirect to admin dashboard on successful authentication
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log('🎉 Admin authenticated successfully, redirecting to dashboard...')
+      router.push('/admin/dashboard')
+    }
+  }, [isAuthenticated, router])
 
   const handlePhoneSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()

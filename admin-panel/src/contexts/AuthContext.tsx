@@ -12,8 +12,15 @@ import {
   OTPVerificationRequest,
   ResendOTPRequest,
   RefreshTokenRequest,
+  RefreshTokenResponse,
   LogoutRequest,
 } from '@/lib/auth'
+import { 
+  AdminAPI, 
+  AdminPhoneLoginRequest, 
+  AdminOTPVerificationRequest, 
+  AdminResendOTPRequest 
+} from '@/lib/adminAPI'
 
 // Auth state interface
 interface AuthState {
@@ -127,6 +134,7 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children, apiURL }) => {
   const [state, dispatch] = useReducer(authReducer, initialState)
   const api = new AuthAPI(apiURL)
+  const adminApi = new AdminAPI(apiURL)
 
   // Initialize device fingerprint
   useEffect(() => {
@@ -206,19 +214,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, apiURL }) 
       dispatch({ type: 'SET_LOADING', payload: true })
       dispatch({ type: 'CLEAR_ERROR' })
 
-      const request: PhoneLoginRequest = { phone, countryCode }
-      console.log('📱 AuthContext phoneLogin Debug:', {
+      const request: AdminPhoneLoginRequest = { phone, countryCode }
+      console.log('📱 Admin AuthContext phoneLogin Debug:', {
         phone,
         countryCode,
         request
       });
       
-      const response = await api.phoneLogin(request)
+      // Use admin-specific login endpoint
+      const response = await adminApi.adminPhoneLogin(request)
       
-      console.log('✅ AuthContext Response Debug:', response);
+      console.log('✅ Admin AuthContext Response Debug:', response);
 
       if (!response.success) {
-        throw new AuthError(response.message, 'PHONE_LOGIN_FAILED')
+        throw new AuthError(response.message, 'ADMIN_PHONE_LOGIN_FAILED')
       }
 
       if (response.rateLimitExceeded) {
@@ -240,7 +249,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, apiURL }) 
         payload: { expiresAt: response.expiresAt || new Date().toISOString() }
       })
     } catch (error) {
-      const errorMessage = error instanceof AuthError ? error.message : 'Login failed'
+      const errorMessage = error instanceof AuthError ? error.message : 'Admin login failed'
       dispatch({ type: 'SET_ERROR', payload: errorMessage })
       throw error
     }
@@ -252,11 +261,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, apiURL }) 
       dispatch({ type: 'CLEAR_ERROR' })
 
       const deviceFingerprint = SessionManager.getDeviceFingerprint() || undefined
-      const request: OTPVerificationRequest = { phone, otpCode, deviceFingerprint }
-      const response = await api.verifyOTP(request)
+      const request: AdminOTPVerificationRequest = { phone, otpCode, deviceFingerprint }
+      const response = await adminApi.adminVerifyOTP(request)
 
       if (!response.success) {
-        throw new AuthError('OTP verification failed', 'OTP_VERIFICATION_FAILED')
+        throw new AuthError('OTP verification failed', 'ADMIN_OTP_VERIFICATION_FAILED')
       }
 
       // Store tokens and user
@@ -269,7 +278,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, apiURL }) 
       dispatch({ type: 'SET_USER', payload: response.user })
       dispatch({ type: 'SET_SESSION_TIMEOUT', payload: response.sessionTimeout })
     } catch (error) {
-      const errorMessage = error instanceof AuthError ? error.message : 'OTP verification failed'
+      const errorMessage = error instanceof AuthError ? error.message : 'Admin OTP verification failed'
       dispatch({ type: 'SET_ERROR', payload: errorMessage })
       throw error
     }
@@ -280,11 +289,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, apiURL }) 
       dispatch({ type: 'SET_LOADING', payload: true })
       dispatch({ type: 'CLEAR_ERROR' })
 
-      const request: ResendOTPRequest = { phone }
-      const response = await api.resendOTP(request)
+      const request: AdminResendOTPRequest = { phone }
+      const response = await adminApi.adminResendOTP(request)
 
       if (!response.success) {
-        throw new AuthError(response.message, 'OTP_RESEND_FAILED')
+        throw new AuthError(response.message, 'ADMIN_OTP_RESEND_FAILED')
       }
 
       dispatch({ 
@@ -292,7 +301,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, apiURL }) 
         payload: { expiresAt: response.expiresAt || new Date().toISOString() }
       })
     } catch (error) {
-      const errorMessage = error instanceof AuthError ? error.message : 'Failed to resend OTP'
+      const errorMessage = error instanceof AuthError ? error.message : 'Failed to resend admin OTP'
       dispatch({ type: 'SET_ERROR', payload: errorMessage })
       throw error
     }
@@ -306,25 +315,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, apiURL }) 
       }
 
       const request: RefreshTokenRequest = { refreshToken }
-      const response = await api.refreshToken(request)
+      const response = await adminApi.adminRefreshToken(request)
 
       if (!response.success) {
         throw new AuthError('Token refresh failed', 'TOKEN_REFRESH_FAILED')
       }
 
-      // Update tokens
-      const user = SessionManager.getUser()
-      if (user) {
-        SessionManager.setTokens(
-          response.tokens.accessToken,
-          response.tokens.refreshToken,
-          user
-        )
-      }
+      // Update stored tokens
+      const { accessToken } = SessionManager.getTokens()
+      SessionManager.setTokens(response.tokens.accessToken, response.tokens.refreshToken, response.user)
+
+      dispatch({ type: 'SET_USER', payload: response.user })
+      dispatch({ type: 'SET_SESSION_TIMEOUT', payload: response.sessionTimeout })
     } catch (error) {
-      // If refresh fails, clear tokens and logout
-      SessionManager.clearTokens()
-      dispatch({ type: 'CLEAR_USER' })
+      const errorMessage = error instanceof AuthError ? error.message : 'Token refresh failed'
+      dispatch({ type: 'SET_ERROR', payload: errorMessage })
       throw error
     }
   }

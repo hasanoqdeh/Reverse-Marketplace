@@ -14,8 +14,11 @@ export default function Dashboard() {
   useEffect(() => {
     if (!canViewAdminPanel()) {
       router.push('/login')
+    } else if (canViewAdminPanel() && user) {
+      // Redirect to admin dashboard after successful login
+      router.push('/admin/dashboard')
     }
-  }, [canViewAdminPanel, router])
+  }, [canViewAdminPanel, router, user])
 
   if (!canViewAdminPanel()) {
     return null

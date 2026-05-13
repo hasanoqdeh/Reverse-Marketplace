@@ -84,6 +84,8 @@ export interface RefreshTokenRequest {
 export interface RefreshTokenResponse {
   success: boolean;
   tokens: AuthTokens;
+  user: User;
+  sessionTimeout: number;
 }
 
 export interface LogoutRequest {
@@ -532,7 +534,15 @@ export class SessionManager {
   static getUser(): User | null {
     if (typeof window !== 'undefined') {
       const userStr = localStorage.getItem(this.USER_KEY);
-      return userStr ? JSON.parse(userStr) : null;
+      if (!userStr) {
+        return null;
+      }
+      try {
+        return JSON.parse(userStr);
+      } catch (error) {
+        console.error('🔧 Error parsing user from localStorage:', error);
+        return null;
+      }
     }
     return null;
   }

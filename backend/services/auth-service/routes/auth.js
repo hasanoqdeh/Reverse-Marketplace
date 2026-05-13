@@ -16,16 +16,35 @@ router.post('/phone-login',
   authController.phoneLogin
 );
 
+// Admin authentication endpoints
+router.post('/admin/phone-login', 
+  getRateLimitMiddleware('phoneLogin'),
+  validate(schemas.phoneLogin),
+  authController.adminPhoneLogin
+);
+
 router.post('/verify-otp',
   getRateLimitMiddleware('otpVerification'),
   validate(schemas.otpVerification),
   authController.verifyOTP
 );
 
+router.post('/admin/verify-otp',
+  getRateLimitMiddleware('otpVerification'),
+  validate(schemas.otpVerification),
+  authController.adminVerifyOTP
+);
+
 router.post('/resend-otp',
   getRateLimitMiddleware('otpResend'),
   validate(schemas.resendOTP),
   authController.resendOTP
+);
+
+router.post('/admin/resend-otp',
+  getRateLimitMiddleware('otpResend'),
+  validate(schemas.resendOTP),
+  authController.adminResendOTP
 );
 
 router.post('/refresh-token',
@@ -69,6 +88,54 @@ router.get('/admin/whitelist',
 router.delete('/admin/whitelist/:adminId',
   authorizeAdmin('SUPER_ADMIN'),
   authController.removeAdminFromWhitelist
+);
+
+// User management endpoints
+router.get('/admin/users',
+  authorizeAdmin('SUPER_ADMIN', 'ADMIN', 'SUPPORT'),
+  authController.getUsers
+);
+
+router.get('/admin/users/:userId',
+  authorizeAdmin('SUPER_ADMIN', 'ADMIN', 'SUPPORT'),
+  authController.getUserById
+);
+
+router.post('/admin/users/:userId/suspend',
+  authorizeAdmin('SUPER_ADMIN', 'ADMIN'),
+  authController.suspendUser
+);
+
+router.post('/admin/users/:userId/ban',
+  authorizeAdmin('SUPER_ADMIN', 'ADMIN'),
+  authController.banUser
+);
+
+router.post('/admin/users/:userId/verify',
+  authorizeAdmin('SUPER_ADMIN', 'ADMIN'),
+  authController.verifyUser
+);
+
+router.post('/admin/users/bulk-action',
+  authorizeAdmin('SUPER_ADMIN', 'ADMIN'),
+  authController.bulkUserAction
+);
+
+// Dashboard endpoints
+router.get('/admin/dashboard/metrics',
+  authorizeAdmin('SUPER_ADMIN', 'ADMIN', 'SUPPORT'),
+  authController.getDashboardMetrics
+);
+
+// Security endpoints
+router.get('/admin/security/alerts',
+  authorizeAdmin('SUPER_ADMIN', 'ADMIN', 'SUPPORT'),
+  authController.getSecurityAlerts
+);
+
+router.post('/admin/security/alerts/:alertId/resolve',
+  authorizeAdmin('SUPER_ADMIN', 'ADMIN'),
+  authController.resolveSecurityAlert
 );
 
 // Health check endpoint (public)
