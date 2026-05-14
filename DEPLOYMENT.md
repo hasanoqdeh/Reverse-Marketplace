@@ -26,7 +26,7 @@ The authentication system consists of:
 
 ### Environment Variables
 
-Create a `.env` file in the auth-service directory:
+Create a `.env` file in the identity-service directory:
 
 ```bash
 # Database Configuration
@@ -81,7 +81,7 @@ CORS_ORIGIN=https://yourdomain.com,https://admin.yourdomain.com,https://api.your
 
 2. **Configure environment variables:**
    ```bash
-   cp backend/services/auth-service/.env.example backend/services/auth-service/.env
+   cp backend/services/identity-service/.env.example backend/services/identity-service/.env
    # Edit the .env file with your configuration
    ```
 
@@ -92,7 +92,7 @@ CORS_ORIGIN=https://yourdomain.com,https://admin.yourdomain.com,https://api.your
 
 4. **Run database migrations:**
    ```bash
-   cd backend/services/auth-service
+   cd backend/services/identity-service
    npm run migrate
    ```
 
@@ -118,7 +118,7 @@ CORS_ORIGIN=https://yourdomain.com,https://admin.yourdomain.com,https://api.your
 
 3. **Scale services:**
    ```bash
-   docker-compose -f docker-compose.prod.yml up -d --scale auth-service=3
+   docker-compose -f docker-compose.prod.yml up -d --scale identity-service=3
    ```
 
 ## Database Setup
@@ -146,7 +146,7 @@ CORS_ORIGIN=https://yourdomain.com,https://admin.yourdomain.com,https://api.your
 ### Run Migrations
 
 ```bash
-cd backend/services/auth-service
+cd backend/services/identity-service
 npm run migrate
 ```
 
@@ -201,7 +201,7 @@ server {
     ssl_certificate_key /etc/ssl/private/auth.yourdomain.com.key;
     
     location / {
-        proxy_pass http://auth-service:3001;
+        proxy_pass http://identity-service:3001;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -386,7 +386,7 @@ cp docker-compose.*.yml /backups/
 
 ```bash
 # Check service logs
-docker-compose logs auth-service
+docker-compose logs identity-service
 
 # Check database connections
 psql -h localhost -U auth_service_user -d reverse_marketplace_auth -c "SELECT count(*) FROM pg_stat_activity WHERE state = 'active';"
@@ -475,7 +475,7 @@ logging:
 
 For deployment issues or questions:
 
-1. **Check logs**: `docker-compose logs auth-service`
+1. **Check logs**: `docker-compose logs identity-service`
 2. **Health check**: `curl http://localhost:3001/auth/health`
 3. **Documentation**: Refer to this guide and API docs
 4. **Issue tracking**: Create detailed bug reports with logs

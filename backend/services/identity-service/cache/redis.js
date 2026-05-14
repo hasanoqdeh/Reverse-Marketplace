@@ -267,6 +267,7 @@ class RedisClient {
   async deleteDeviceFingerprint(userId, deviceFingerprint) {
     const key = `device:${userId}:${deviceFingerprint}`;
     return this.del(key);
+
   }
 
   // Health check

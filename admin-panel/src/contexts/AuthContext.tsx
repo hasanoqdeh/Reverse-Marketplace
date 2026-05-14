@@ -340,7 +340,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, apiURL }) 
       
       if (refreshToken) {
         const request: LogoutRequest = { refreshToken, allDevices }
-        await api.logout(request)
+        await adminApi.adminLogout(request)
       }
     } catch (error) {
       console.error('Logout error:', error)

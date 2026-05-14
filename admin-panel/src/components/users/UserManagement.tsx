@@ -1,3 +1,5 @@
+'use client'
+
 // User Management Component with Backend Integration
 
 import React from 'react';

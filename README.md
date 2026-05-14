@@ -9,7 +9,7 @@ reverse-marketplace/
 ├── backend/                 # Node.js microservices backend
 │   ├── gateway/            # API Gateway
 │   ├── services/           # Individual microservices
-│   │   ├── auth-service/
+│   │   ├── identity-service/
 │   │   ├── user-service/
 │   │   ├── product-service/
 │   │   ├── order-service/

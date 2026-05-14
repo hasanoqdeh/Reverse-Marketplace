@@ -14,11 +14,11 @@ const PORT = process.env.GATEWAY_PORT || 3000;
 const allowedOrigins = process.env.CORS_ORIGINS
   ? process.env.CORS_ORIGINS.split(',').map((o) => o.trim())
   : [
-      'http://localhost:3001', // admin panel
-      'http://localhost:3002', // buyer app
-      'http://localhost:3003', // merchant app
-      'http://localhost:3000', // local dev
-    ];
+    'http://localhost:3001', // admin panel
+    'http://localhost:3002', // buyer app
+    'http://localhost:3003', // merchant app
+    'http://localhost:3000', // local dev
+  ];
 
 app.use(
   cors({
@@ -59,16 +59,22 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Import auth service routes
-const authRoutes = require('../services/auth-service/routes/auth');
+// Import identity service routes
+const authRoutes = require('../services/identity-service/routes/identityAuth');
+const adminAuthRoutes = require('../services/identity-service/routes/identityAdminAuth');
+const adminRoutes = require('../services/identity-service/routes/identityAdmin');
 
 // API Routes
 app.get('/api/v1', (req, res) => {
-  res.json({ 
+  res.json({
     message: 'Reverse Marketplace API Gateway',
     version: '1.0.0',
     services: {
-      auth: '/api/v1/auth',
+      identity: {
+        auth: '/api/v1/identity/auth',
+        adminAuth: '/api/v1/identity/admin/auth',
+        admin: '/api/v1/identity/admin'
+      },
       users: '/api/v1/users',
       products: '/api/v1/products',
       orders: '/api/v1/orders',
@@ -81,8 +87,10 @@ app.get('/api/v1', (req, res) => {
   });
 });
 
-// Mount auth service routes
-app.use('/api/v1/auth', authRoutes);
+// Mount identity service routes
+app.use('/api/v1/identity/auth', authRoutes);
+app.use('/api/v1/identity/admin/auth', adminAuthRoutes);
+app.use('/api/v1/identity/admin', adminRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -105,19 +113,19 @@ app.use('*', (req, res) => {
   });
 });
 
-// Initialize auth services
-const authDatabase = require('../services/auth-service/database/connection');
-const authRedisClient = require('../services/auth-service/cache/redis');
-const authEventPublisher = require('../services/auth-service/events/publisher');
+// Initialize identity services
+const identityDatabase = require('../services/identity-service/database/connection');
+const identityRedisClient = require('../services/identity-service/cache/redis');
+const identityEventPublisher = require('../services/identity-service/events/publisher');
 
 async function startGateway() {
   try {
-    await authDatabase.connect();
-    await authRedisClient.connect();
-    await authEventPublisher.connect();
-    console.log('✅ Auth services connected successfully');
+    await identityDatabase.connect();
+    await identityRedisClient.connect();
+    await identityEventPublisher.connect();
+    console.log('✅ Identity services connected successfully');
   } catch (error) {
-    console.error('❌ Failed to connect auth services:', error);
+    console.error('❌ Failed to connect identity services:', error);
   }
 
   app.listen(PORT, () => {

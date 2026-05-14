@@ -1,7 +1,7 @@
 // Admin API Client for Backend Integration
 
 import { useState } from 'react';
-import { User, AuthTokens, SessionManager, RefreshTokenRequest, RefreshTokenResponse } from './auth';
+import { User, AuthTokens, SessionManager, RefreshTokenRequest, RefreshTokenResponse, LogoutRequest, LogoutResponse } from './auth';
 
 // Admin Login Request/Response Types
 export interface AdminPhoneLoginRequest {
@@ -368,7 +368,7 @@ export class AdminAPI {
 
   // Admin Login APIs
   async adminPhoneLogin(data: AdminPhoneLoginRequest): Promise<AdminPhoneLoginResponse> {
-    const url = `${this.baseURL}/auth/admin/phone-login`;
+    const url = `${this.baseURL}/identity/admin/auth/phone-login`;
     
     console.log('🔍 Admin Login API Request:', {
       url,
@@ -384,49 +384,27 @@ export class AdminAPI {
       body: JSON.stringify(data),
     });
 
-    console.log('📡 Admin Login API Response:', {
-      status: response.status,
-      statusText: response.statusText,
-      ok: response.ok,
-      url: response.url
-    });
-
     if (!response.ok) {
       const error = await response.json().catch(() => ({
         success: false,
         message: 'Network error',
         error: 'NETWORK_ERROR',
       }));
-      console.log('❌ Admin Login API Error:', error);
       throw new Error(error.message || 'Admin login failed');
     }
 
-    const result = await response.json();
-    console.log('✅ Admin Login API Result:', result);
-    return result;
+    return response.json();
   }
 
   async adminVerifyOTP(data: AdminOTPVerificationRequest): Promise<AdminOTPVerificationResponse> {
-    const url = `${this.baseURL}/auth/admin/verify-otp`;
+    const url = `${this.baseURL}/identity/admin/auth/verify-otp`;
     
-    console.log('🔍 Admin OTP Verification Request:', {
-      url,
-      method: 'POST',
-      data
-    });
-
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
-    });
-
-    console.log('📡 Admin OTP Verification Response:', {
-      status: response.status,
-      ok: response.ok,
-      url: response.url
     });
 
     if (!response.ok) {
@@ -435,36 +413,21 @@ export class AdminAPI {
         message: 'OTP verification failed',
         error: 'OTP_VERIFICATION_FAILED',
       }));
-      console.log('❌ Admin OTP Verification Error:', error);
       throw new Error(error.message || 'OTP verification failed');
     }
 
-    const result = await response.json();
-    console.log('✅ Admin OTP Verification Result:', result);
-    return result;
+    return response.json();
   }
 
   async adminResendOTP(data: AdminResendOTPRequest): Promise<AdminResendOTPResponse> {
-    const url = `${this.baseURL}/auth/admin/resend-otp`;
+    const url = `${this.baseURL}/identity/admin/auth/resend-otp`;
     
-    console.log('🔍 Admin Resend OTP Request:', {
-      url,
-      method: 'POST',
-      data
-    });
-
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
-    });
-
-    console.log('📡 Admin Resend OTP Response:', {
-      status: response.status,
-      ok: response.ok,
-      url: response.url
     });
 
     if (!response.ok) {
@@ -473,24 +436,15 @@ export class AdminAPI {
         message: 'Failed to resend OTP',
         error: 'OTP_RESEND_FAILED',
       }));
-      console.log('❌ Admin Resend OTP Error:', error);
       throw new Error(error.message || 'Failed to resend OTP');
     }
 
-    const result = await response.json();
-    console.log('✅ Admin Resend OTP Result:', result);
-    return result;
+    return response.json();
   }
 
   async adminRefreshToken(data: RefreshTokenRequest): Promise<RefreshTokenResponse> {
-    const url = `${this.baseURL}/auth/refresh-token`;
+    const url = `${this.baseURL}/identity/admin/auth/refresh-token`;
     
-    console.log('🔍 Admin Refresh Token Request:', {
-      url,
-      method: 'POST',
-      data
-    });
-
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -499,25 +453,39 @@ export class AdminAPI {
       body: JSON.stringify(data),
     });
 
-    console.log('📡 Admin Refresh Token Response:', {
-      status: response.status,
-      ok: response.ok,
-      url: response.url
-    });
-
     if (!response.ok) {
       const error = await response.json().catch(() => ({
         success: false,
         message: 'Token refresh failed',
         error: 'TOKEN_REFRESH_FAILED',
       }));
-      console.log('❌ Admin Refresh Token Error:', error);
       throw new Error(error.message || 'Token refresh failed');
     }
 
-    const result = await response.json();
-    console.log('✅ Admin Refresh Token Result:', result);
-    return result;
+    return response.json();
+  }
+
+  async adminLogout(data: LogoutRequest): Promise<LogoutResponse> {
+    const url = `${this.baseURL}/identity/admin/auth/logout`;
+    
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({
+        success: false,
+        message: 'Logout failed',
+        error: 'LOGOUT_FAILED',
+      }));
+      throw new Error(error.message || 'Logout failed');
+    }
+
+    return response.json();
   }
 
   private async request<T>(
@@ -535,11 +503,6 @@ export class AdminAPI {
     console.log('🔍 Admin API Request:', {
       url,
       method: options.method || 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
-        ...options.headers,
-      },
     });
 
     const response = await fetch(url, {
@@ -549,13 +512,6 @@ export class AdminAPI {
         ...options.headers,
       },
       ...options,
-    });
-
-    console.log('📡 Admin API Response:', {
-      status: response.status,
-      statusText: response.statusText,
-      ok: response.ok,
-      url: response.url
     });
 
     if (!response.ok) {
@@ -583,11 +539,11 @@ export class AdminAPI {
               );
               
               // Retry the original request with new token
-              const { accessToken } = SessionManager.getTokens();
+              const { accessToken: newAccessToken } = SessionManager.getTokens();
               const retryResponse = await fetch(url, {
                 headers: {
                   'Content-Type': 'application/json',
-                  Authorization: `Bearer ${accessToken}`,
+                  Authorization: `Bearer ${newAccessToken}`,
                   ...options.headers,
                 },
                 ...options,
@@ -604,7 +560,9 @@ export class AdminAPI {
         
         // If refresh failed or no refresh token, clear and redirect
         SessionManager.clearTokens();
-        window.location.href = '/login';
+        if (typeof window !== 'undefined') {
+          window.location.href = '/login';
+        }
         throw new Error('Session expired. Please login again.');
       }
       
@@ -624,42 +582,42 @@ export class AdminAPI {
       }
     });
 
-    return this.request<GetUsersResponse>(`/auth/admin/users?${queryParams.toString()}`);
+    return this.request<GetUsersResponse>(`/identity/admin/users?${queryParams.toString()}`);
   }
 
   async getUserById(userId: string): Promise<{ success: boolean; user: any }> {
-    return this.request<{ success: boolean; user: any }>(`/auth/admin/users/${userId}`);
+    return this.request<{ success: boolean; user: any }>(`/identity/admin/users/${userId}`);
   }
 
   async suspendUser(userId: string, data: SuspendUserRequest): Promise<SuspendUserResponse> {
-    return this.request<SuspendUserResponse>(`/auth/admin/users/${userId}/suspend`, {
+    return this.request<SuspendUserResponse>(`/identity/admin/users/${userId}/suspend`, {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
   async banUser(userId: string, data: BanUserRequest): Promise<BanUserResponse> {
-    return this.request<BanUserResponse>(`/auth/admin/users/${userId}/ban`, {
+    return this.request<BanUserResponse>(`/identity/admin/users/${userId}/ban`, {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
   async deleteUser(userId: string, confirm: boolean): Promise<{ success: boolean; message: string }> {
-    return this.request<{ success: boolean; message: string }>(`/auth/admin/users/${userId}/delete`, {
+    return this.request<{ success: boolean; message: string }>(`/identity/admin/users/${userId}/delete`, {
       method: 'POST',
       body: JSON.stringify({ confirm }),
     });
   }
 
   async verifyUser(userId: string): Promise<{ success: boolean; message: string }> {
-    return this.request<{ success: boolean; message: string }>(`/auth/admin/users/${userId}/verify`, {
+    return this.request<{ success: boolean; message: string }>(`/identity/admin/users/${userId}/verify`, {
       method: 'POST',
     });
   }
 
   async bulkUserAction(data: BulkActionRequest): Promise<BulkActionResponse> {
-    return this.request<BulkActionResponse>('/auth/admin/users/bulk-action', {
+    return this.request<BulkActionResponse>('/identity/admin/users/bulk-action', {
       method: 'POST',
       body: JSON.stringify(data),
     });
@@ -667,40 +625,40 @@ export class AdminAPI {
 
   // Admin Management APIs
   async getAdmins(): Promise<GetAdminsResponse> {
-    return this.request<GetAdminsResponse>('/auth/admin/admins');
+    return this.request<GetAdminsResponse>('/identity/admin/admins');
   }
 
   async updateAdminPermissions(adminId: string, data: UpdatePermissionsRequest): Promise<UpdatePermissionsResponse> {
-    return this.request<UpdatePermissionsResponse>(`/auth/admin/admins/${adminId}/permissions`, {
+    return this.request<UpdatePermissionsResponse>(`/identity/admin/admins/${adminId}/permissions`, {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
   async addAdminToWhitelist(data: { phone: string; adminLevel: string; department?: string }): Promise<{ success: boolean; message: string }> {
-    return this.request<{ success: boolean; message: string }>('/auth/admin/admin/whitelist', {
+    return this.request<{ success: boolean; message: string }>('/identity/admin/whitelist', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
   async removeAdminFromWhitelist(adminId: string): Promise<{ success: boolean; message: string }> {
-    return this.request<{ success: boolean; message: string }>(`/auth/admin/admin/whitelist/${adminId}`, {
+    return this.request<{ success: boolean; message: string }>(`/identity/admin/whitelist/${adminId}`, {
       method: 'DELETE',
     });
   }
 
   // Dashboard & Analytics APIs
   async getDashboardMetrics(): Promise<DashboardMetricsResponse> {
-    return this.request<DashboardMetricsResponse>('/auth/admin/dashboard/metrics');
+    return this.request<DashboardMetricsResponse>('/identity/admin/dashboard/metrics');
   }
 
   async getSecurityAlerts(): Promise<SecurityAlertsResponse> {
-    return this.request<SecurityAlertsResponse>('/auth/admin/security/alerts');
+    return this.request<SecurityAlertsResponse>('/identity/admin/security/alerts');
   }
 
   async resolveSecurityAlert(alertId: string, resolution: string): Promise<{ success: boolean; message: string }> {
-    return this.request<{ success: boolean; message: string }>(`/auth/admin/security/alerts/${alertId}/resolve`, {
+    return this.request<{ success: boolean; message: string }>(`/identity/admin/security/alerts/${alertId}/resolve`, {
       method: 'POST',
       body: JSON.stringify({ resolution }),
     });
@@ -716,58 +674,58 @@ export class AdminAPI {
       }
     });
 
-    return this.request<AuditLogsResponse>(`/auth/admin/audit-logs?${queryParams.toString()}`);
+    return this.request<AuditLogsResponse>(`/identity/admin/audit-logs?${queryParams.toString()}`);
   }
 
   // User Notes APIs
   async getUserNotes(userId: string): Promise<GetUserNotesResponse> {
-    return this.request<GetUserNotesResponse>(`/auth/admin/users/${userId}/notes`);
+    return this.request<GetUserNotesResponse>(`/identity/admin/users/${userId}/notes`);
   }
 
   async addUserNote(data: AddUserNoteRequest): Promise<{ success: boolean; note: UserNote }> {
-    return this.request<{ success: boolean; note: UserNote }>('/auth/admin/users/notes', {
+    return this.request<{ success: boolean; note: UserNote }>('/identity/admin/users/notes', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
   async updateUserNote(noteId: string, content: string): Promise<{ success: boolean; note: UserNote }> {
-    return this.request<{ success: boolean; note: UserNote }>(`/auth/admin/users/notes/${noteId}`, {
+    return this.request<{ success: boolean; note: UserNote }>(`/identity/admin/users/notes/${noteId}`, {
       method: 'PUT',
       body: JSON.stringify({ noteContent: content }),
     });
   }
 
   async deleteUserNote(noteId: string): Promise<{ success: boolean; message: string }> {
-    return this.request<{ success: boolean; message: string }>(`/auth/admin/users/notes/${noteId}`, {
+    return this.request<{ success: boolean; message: string }>(`/identity/admin/users/notes/${noteId}`, {
       method: 'DELETE',
     });
   }
 
   // Session Management APIs
   async getUserSessions(userId: string): Promise<{ success: boolean; sessions: any[] }> {
-    return this.request<{ success: boolean; sessions: any[] }>(`/auth/admin/users/${userId}/sessions`);
+    return this.request<{ success: boolean; sessions: any[] }>(`/identity/admin/users/${userId}/sessions`);
   }
 
   async terminateUserSession(userId: string, sessionId: string): Promise<{ success: boolean; message: string }> {
-    return this.request<{ success: boolean; message: string }>(`/auth/admin/users/${userId}/sessions/${sessionId}/terminate`, {
+    return this.request<{ success: boolean; message: string }>(`/identity/admin/users/${userId}/sessions/${sessionId}/terminate`, {
       method: 'POST',
     });
   }
 
   async terminateAllUserSessions(userId: string): Promise<{ success: boolean; message: string }> {
-    return this.request<{ success: boolean; message: string }>(`/auth/admin/users/${userId}/sessions/terminate-all`, {
+    return this.request<{ success: boolean; message: string }>(`/identity/admin/users/${userId}/sessions/terminate-all`, {
       method: 'POST',
     });
   }
 
   // System Configuration APIs
   async getSystemConfiguration(): Promise<{ success: boolean; config: Record<string, any> }> {
-    return this.request<{ success: boolean; config: Record<string, any> }>('/auth/admin/system/config');
+    return this.request<{ success: boolean; config: Record<string, any> }>('/identity/admin/system/config');
   }
 
   async updateSystemConfiguration(config: Record<string, any>): Promise<{ success: boolean; message: string }> {
-    return this.request<{ success: boolean; message: string }>('/auth/admin/system/config', {
+    return this.request<{ success: boolean; message: string }>('/identity/admin/system/config', {
       method: 'PUT',
       body: JSON.stringify(config),
     });
@@ -785,7 +743,7 @@ export class AdminAPI {
       });
     }
 
-    const response = await fetch(`${this.baseURL}/auth/admin/export/users?${queryParams.toString()}`, {
+    const response = await fetch(`${this.baseURL}/identity/admin/export/users?${queryParams.toString()}`, {
       headers: {
         'Authorization': `Bearer ${SessionManager.getTokens().accessToken}`,
       },
@@ -809,7 +767,7 @@ export class AdminAPI {
       });
     }
 
-    const response = await fetch(`${this.baseURL}/auth/admin/export/audit-logs?${queryParams.toString()}`, {
+    const response = await fetch(`${this.baseURL}/identity/admin/export/audit-logs?${queryParams.toString()}`, {
       headers: {
         'Authorization': `Bearer ${SessionManager.getTokens().accessToken}`,
       },
@@ -824,7 +782,7 @@ export class AdminAPI {
 
   // Health Check
   async healthCheck(): Promise<{ success: boolean; status: string; services: any }> {
-    return this.request<{ success: boolean; status: string; services: any }>('/auth/admin/health');
+    return this.request<{ success: boolean; status: string; services: any }>('/identity/auth/health');
   }
 }
 
@@ -893,4 +851,3 @@ export function useAdminAPI() {
     clearError: () => setError(null),
   };
 }
-

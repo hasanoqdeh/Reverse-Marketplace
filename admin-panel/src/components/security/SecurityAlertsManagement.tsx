@@ -1,3 +1,5 @@
+'use client'
+
 // Security Alerts Management Component
 
 import React, { useState, useEffect, useCallback } from 'react';

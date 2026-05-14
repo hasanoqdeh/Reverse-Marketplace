@@ -1,5 +1,5 @@
 {
-  "name": "@reverse-marketplace/auth-service",
+  "name": "@reverse-marketplace/identity-service",
   "version": "1.0.0",
   "description": "Authentication service for Reverse Marketplace",
   "main": "index.js",

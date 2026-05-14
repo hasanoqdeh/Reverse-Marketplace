@@ -10,7 +10,7 @@ A microservices-based backend architecture for the Reverse Marketplace platform.
 backend/
 ├── gateway/                # API Gateway (Port 3000)
 ├── services/              # Individual microservices
-│   ├── auth-service/      # Authentication (Port 3001)
+│   ├── identity-service/      # Authentication (Port 3001)
 │   ├── user-service/      # User management (Port 3002)
 │   ├── product-service/   # Product catalog (Port 3003)
 │   ├── order-service/      # Order processing (Port 3004)
@@ -71,7 +71,7 @@ npm run dev
 Start individual services:
 ```bash
 # Auth Service
-cd services/auth-service && npm start
+cd services/identity-service && npm start
 
 # User Service
 cd services/user-service && npm start
@@ -125,7 +125,7 @@ Authorization: Bearer <your_jwt_token>
 
 ### Endpoints
 
-#### Authentication Service (`/api/v1/auth`)
+#### Identity Service (`/api/v1/identity/auth`)
 - `POST /register` - Register new user
 - `POST /login` - User login
 - `POST /logout` - User logout
@@ -195,7 +195,7 @@ CREATE TABLE products (
 npm test
 
 # Run tests for specific service
-cd services/auth-service && npm test
+cd services/identity-service && npm test
 
 # Run tests with coverage
 npm run test:coverage

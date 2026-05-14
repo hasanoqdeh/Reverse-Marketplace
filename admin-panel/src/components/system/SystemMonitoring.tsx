@@ -1,3 +1,5 @@
+'use client'
+
 // System Monitoring Component
 
 import React, { useState, useEffect, useCallback } from 'react';

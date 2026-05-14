@@ -108,7 +108,7 @@ export class AuthAPI {
     endpoint: string,
     options: RequestInit = {}
   ): Promise<T> {
-    const url = `${this.baseURL}/auth${endpoint}`;
+    const url = `${this.baseURL}/identity/auth${endpoint}`;
     
     const response = await fetch(url, {
       headers: {

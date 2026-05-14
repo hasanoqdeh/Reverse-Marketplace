@@ -130,25 +130,32 @@ export interface AddAdminResponse {
   message: string;
 }
 
-// API client for authentication
+// API client for identity and authentication
 export class AuthAPI {
   private baseURL: string;
+  private authBaseURL: string;
+  private adminAuthBaseURL: string;
+  private adminBaseURL: string;
 
   constructor(baseURL: string = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1') {
     this.baseURL = baseURL;
+    // New identity service paths
+    this.authBaseURL = `${this.baseURL}/identity/auth`;
+    this.adminAuthBaseURL = `${this.baseURL}/identity/admin/auth`;
+    this.adminBaseURL = `${this.baseURL}/identity/admin`;
   }
 
   private async request<T>(
+    basePath: string,
     endpoint: string,
     options: RequestInit = {}
   ): Promise<T> {
-    const url = `${this.baseURL}/auth${endpoint}`;
+    const url = `${basePath}${endpoint}`;
     
     console.log('🔍 API Request Debug:', {
       url,
       endpoint,
       method: options.method || 'GET',
-      baseURL: this.baseURL,
       headers: {
         'Content-Type': 'application/json',
         ...options.headers,
@@ -183,43 +190,68 @@ export class AuthAPI {
     return response.json();
   }
 
+  // Admin Auth methods
   async phoneLogin(data: PhoneLoginRequest): Promise<PhoneLoginResponse> {
-    return this.request<PhoneLoginResponse>('/phone-login', {
+    return this.request<PhoneLoginResponse>(this.adminAuthBaseURL, '/phone-login', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
   async verifyOTP(data: OTPVerificationRequest): Promise<OTPVerificationResponse> {
-    return this.request<OTPVerificationResponse>('/verify-otp', {
+    return this.request<OTPVerificationResponse>(this.adminAuthBaseURL, '/verify-otp', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
   async resendOTP(data: ResendOTPRequest): Promise<ResendOTPResponse> {
-    return this.request<ResendOTPResponse>('/resend-otp', {
+    return this.request<ResendOTPResponse>(this.adminAuthBaseURL, '/resend-otp', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
+  // Common Auth methods (can use authBaseURL)
   async refreshToken(data: RefreshTokenRequest): Promise<RefreshTokenResponse> {
-    return this.request<RefreshTokenResponse>('/refresh-token', {
+    return this.request<RefreshTokenResponse>(this.authBaseURL, '/refresh-token', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
   async logout(data: LogoutRequest): Promise<LogoutResponse> {
-    return this.request<LogoutResponse>('/logout', {
+    return this.request<LogoutResponse>(this.authBaseURL, '/logout', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
+  async getUserProfile(accessToken: string): Promise<{ success: boolean; profile: UserProfile }> {
+    return this.request<{ success: boolean; profile: UserProfile }>(this.authBaseURL, '/profile', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+  }
+
+  async updateUserProfile(
+    profileData: Partial<UserProfile>,
+    accessToken: string
+  ): Promise<{ success: boolean; profile: UserProfile }> {
+    return this.request<{ success: boolean; profile: UserProfile }>(this.authBaseURL, '/profile', {
+      method: 'PUT',
+      body: JSON.stringify(profileData),
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+  }
+
+  // Admin Management methods
   async addAdminToWhitelist(data: AddAdminRequest, accessToken: string): Promise<AddAdminResponse> {
-    return this.request<AddAdminResponse>('/admin/whitelist', {
+    return this.request<AddAdminResponse>(this.adminBaseURL, '/whitelist', {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {
@@ -233,7 +265,7 @@ export class AuthAPI {
     limit: number = 10,
     accessToken: string
   ): Promise<AdminWhitelistResponse> {
-    return this.request<AdminWhitelistResponse>(`/admin/whitelist?page=${page}&limit=${limit}`, {
+    return this.request<AdminWhitelistResponse>(this.adminBaseURL, `/whitelist?page=${page}&limit=${limit}`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -245,30 +277,8 @@ export class AuthAPI {
     adminId: string,
     accessToken: string
   ): Promise<{ success: boolean; message: string }> {
-    return this.request<{ success: boolean; message: string }>(`/admin/whitelist/${adminId}`, {
+    return this.request<{ success: boolean; message: string }>(this.adminBaseURL, `/whitelist/${adminId}`, {
       method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-  }
-
-  async getUserProfile(accessToken: string): Promise<{ success: boolean; profile: UserProfile }> {
-    return this.request<{ success: boolean; profile: UserProfile }>('/profile', {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-  }
-
-  async updateUserProfile(
-    profileData: Partial<UserProfile>,
-    accessToken: string
-  ): Promise<{ success: boolean; profile: UserProfile }> {
-    return this.request<{ success: boolean; profile: UserProfile }>('/profile', {
-      method: 'PUT',
-      body: JSON.stringify(profileData),
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -281,7 +291,7 @@ export class AuthAPI {
     timestamp: string;
     services: any;
   }> {
-    return this.request('/health');
+    return this.request(this.authBaseURL, '/health');
   }
 }
 

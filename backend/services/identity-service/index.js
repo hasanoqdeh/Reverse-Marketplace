@@ -6,7 +6,9 @@ const logger = require('./utils/logger');
 const database = require('./database/connection');
 const redisClient = require('./cache/redis');
 const eventPublisher = require('./events/publisher');
-const authRoutes = require('./routes/auth');
+const authRoutes = require('./routes/identityAuth');
+const adminAuthRoutes = require('./routes/identityAdminAuth');
+const adminRoutes = require('./routes/identityAdmin');
 const { getRateLimitMiddleware } = require('./middleware/rateLimiting');
 
 // Validate configuration
@@ -48,16 +50,20 @@ app.use(getRateLimitMiddleware('global'));
 
 // API routes
 app.use('/auth', authRoutes);
+app.use('/admin/auth', adminAuthRoutes);
+app.use('/admin', adminRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
   res.json({
-    service: 'reverse-marketplace-auth-service',
+    service: 'reverse-marketplace-identity-service',
     version: '1.0.0',
     status: 'running',
     timestamp: new Date().toISOString(),
     endpoints: {
-      authentication: '/auth',
+      auth: '/auth',
+      adminAuth: '/admin/auth',
+      admin: '/admin',
       health: '/auth/health',
     },
   });
