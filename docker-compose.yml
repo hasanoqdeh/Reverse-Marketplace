@@ -13,7 +13,7 @@ services:
       - "${DB_PORT_EXTERNAL}:${DB_PORT}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./backend/shared/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - ${DOCKER_NETWORK}
     restart: unless-stopped
@@ -65,6 +65,10 @@ services:
       # Override hostnames for Docker networking
       DB_HOST: ${DB_HOST_DOCKER}
       DATABASE_HOST: ${DATABASE_HOST_DOCKER}
+      DATABASE_URL: "postgresql://postgres:password@postgres:5432/reverse_marketplace"
+      DATABASE_USER: postgres
+      DATABASE_NAME: reverse_marketplace
+      IDENTITY_DATABASE_URL: "postgresql://postgres:password@postgres:5432/reverse_marketplace"
       REDIS_HOST: ${REDIS_HOST_DOCKER}
       RABBITMQ_HOST: ${RABBITMQ_HOST_DOCKER}
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL_DOCKER}
@@ -81,7 +85,10 @@ services:
     networks:
       - ${DOCKER_NETWORK}
     restart: unless-stopped
-    command: npm run dev
+    command: >
+      sh -c "npx prisma generate --schema=services/identity-service/prisma/schema.prisma &&
+             npx prisma db push --schema=services/identity-service/prisma/schema.prisma --skip-generate &&
+             npm run dev"
 
   # Admin Panel
   admin-panel:

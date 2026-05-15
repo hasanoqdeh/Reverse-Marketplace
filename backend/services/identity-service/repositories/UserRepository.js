@@ -1,113 +1,203 @@
-const BaseRepository = require('./BaseRepository');
+'use strict';
 
-class UserRepository extends BaseRepository {
-  constructor() {
-    super();
-  }
+const prisma = require('../prisma/client');
+
+// Flatten Prisma's nested profile into the flat shape the service layer expects.
+function flattenUser(user) {
+  if (!user) return null;
+  const { profile, phoneVerified, createdAt, updatedAt, lastLoginAt,
+          failedLoginAttempts, lockedUntil, adminSubRole, ...rest } = user;
+  return {
+    ...rest,
+    phone_verified: phoneVerified,
+    created_at: createdAt,
+    updated_at: updatedAt,
+    last_login_at: lastLoginAt,
+    failed_login_attempts: failedLoginAttempts,
+    locked_until: lockedUntil,
+    admin_sub_role: adminSubRole,
+    first_name: profile?.firstName ?? '',
+    last_name: profile?.lastName ?? '',
+    profile_image_url: profile?.profileImageUrl ?? null,
+    city: profile?.city ?? null,
+    country: profile?.country ?? null,
+    address: profile?.address ?? null,
+    location_lat: profile?.locationLat ?? null,
+    location_lng: profile?.locationLng ?? null,
+    preferences: profile?.preferences ?? {},
+  };
+}
+
+const WITH_PROFILE = { profile: true };
+
+const UserRepository = {
+  // ─── Find ──────────────────────────────────────────────────────
 
   async findById(id) {
-    const result = await this.db.query(
-      'SELECT * FROM users WHERE id = $1',
-      [id]
-    );
-    return result.rows[0];
-  }
+    const user = await prisma.user.findUnique({ where: { id }, include: WITH_PROFILE });
+    return flattenUser(user);
+  },
 
   async findByPhone(phone) {
-    const result = await this.db.query(
-      'SELECT * FROM users WHERE phone = $1',
-      [phone]
-    );
-    return result.rows[0];
-  }
+    const user = await prisma.user.findUnique({ where: { phone }, include: WITH_PROFILE });
+    return flattenUser(user);
+  },
 
-  async create(userData) {
-    const { phone, role, status, phone_verified } = userData;
-    const result = await this.db.query(
-      'INSERT INTO users (phone, role, status, phone_verified) VALUES ($1, $2, $3, $4) RETURNING *',
-      [phone, role || 'BUYER', status || 'PENDING', phone_verified || false]
-    );
-    return result.rows[0];
-  }
+  async findByPhoneAndRole(phone, role) {
+    const user = await prisma.user.findFirst({ where: { phone, role }, include: WITH_PROFILE });
+    return flattenUser(user);
+  },
 
-  async update(id, userData) {
-    const fields = [];
-    const values = [];
-    let paramIndex = 1;
+  // ─── Create / Update ───────────────────────────────────────────
 
-    for (const [key, value] of Object.entries(userData)) {
-      if (key !== 'id') {
-        fields.push(`${key} = $${paramIndex++}`);
-        values.push(value);
-      }
+  async create({ phone, role = 'BUYER', status = 'PENDING' }) {
+    const user = await prisma.user.create({ data: { phone, role, status } });
+    return flattenUser(user);
+  },
+
+  async createProfile({ userId, firstName = '', lastName = '' }) {
+    const profile = await prisma.userProfile.upsert({
+      where: { userId },
+      create: { userId, firstName, lastName },
+      update: {},
+    });
+    return profile;
+  },
+
+  async updateStatus(userId, status) {
+    const user = await prisma.user.update({ where: { id: userId }, data: { status } });
+    return flattenUser(user);
+  },
+
+  async markPhoneVerified(userId) {
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: { phoneVerified: true, status: 'ACTIVE' },
+    });
+    return flattenUser(user);
+  },
+
+  async updateLastLogin(userId) {
+    await prisma.user.update({
+      where: { id: userId },
+      data: { lastLoginAt: new Date(), failedLoginAttempts: 0, lockedUntil: null },
+    });
+  },
+
+  async incrementFailedAttempts(userId) {
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: { failedLoginAttempts: { increment: 1 } },
+      select: { failedLoginAttempts: true },
+    });
+    return user.failedLoginAttempts;
+  },
+
+  async lockAccount(userId, lockoutMinutes) {
+    const lockedUntil = new Date(Date.now() + lockoutMinutes * 60 * 1000);
+    await prisma.user.update({ where: { id: userId }, data: { lockedUntil } });
+  },
+
+  async unlockAccount(userId) {
+    await prisma.user.update({
+      where: { id: userId },
+      data: { lockedUntil: null, failedLoginAttempts: 0 },
+    });
+  },
+
+  async updateProfile(userId, fields) {
+    const fieldMap = {
+      first_name: 'firstName', last_name: 'lastName',
+      profile_image_url: 'profileImageUrl', city: 'city',
+      country: 'country', address: 'address',
+      location_lat: 'locationLat', location_lng: 'locationLng',
+      preferences: 'preferences',
+    };
+    const data = {};
+    for (const [snake, camel] of Object.entries(fieldMap)) {
+      if (fields[snake] !== undefined) data[camel] = fields[snake];
+    }
+    if (Object.keys(data).length === 0) return null;
+    return prisma.userProfile.update({ where: { userId }, data });
+  },
+
+  // ─── Admin user management ─────────────────────────────────────
+
+  async listUsers({
+    page = 1, limit = 20, search, role, status,
+    sortBy = 'createdAt', sortOrder = 'desc',
+    registrationDateFrom, registrationDateTo,
+    lastLoginFrom, lastLoginTo,
+  } = {}) {
+    const where = {};
+
+    if (search) {
+      where.OR = [
+        { phone: { contains: search, mode: 'insensitive' } },
+        { profile: { firstName: { contains: search, mode: 'insensitive' } } },
+        { profile: { lastName: { contains: search, mode: 'insensitive' } } },
+      ];
+    }
+    if (role && role !== 'ALL') where.role = role;
+    if (status && status !== 'ALL') where.status = status;
+
+    if (registrationDateFrom || registrationDateTo) {
+      where.createdAt = {};
+      if (registrationDateFrom) where.createdAt.gte = new Date(registrationDateFrom);
+      if (registrationDateTo) where.createdAt.lte = new Date(registrationDateTo);
+    }
+    if (lastLoginFrom || lastLoginTo) {
+      where.lastLoginAt = {};
+      if (lastLoginFrom) where.lastLoginAt.gte = new Date(lastLoginFrom);
+      if (lastLoginTo) where.lastLoginAt.lte = new Date(lastLoginTo);
     }
 
-    if (fields.length === 0) return null;
+    const sortableColumns = {
+      createdAt: 'createdAt', lastLoginAt: 'lastLoginAt',
+      phone: 'phone', name: 'firstName',
+    };
+    const orderField = sortableColumns[sortBy] || 'createdAt';
 
-    values.push(id);
-    const query = `UPDATE users SET ${fields.join(', ')} WHERE id = $${paramIndex} RETURNING *`;
-    const result = await this.db.query(query, values);
-    return result.rows[0];
-  }
+    const [total, users] = await prisma.$transaction([
+      prisma.user.count({ where }),
+      prisma.user.findMany({
+        where,
+        include: WITH_PROFILE,
+        orderBy: { [orderField]: sortOrder === 'asc' ? 'asc' : 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+    ]);
 
-  async incrementFailedAttempts(id) {
-    const result = await this.db.query(
-      'UPDATE users SET failed_login_attempts = failed_login_attempts + 1 WHERE id = $1 RETURNING failed_login_attempts',
-      [id]
-    );
-    return result.rows[0]?.failed_login_attempts;
-  }
+    return { users: users.map(flattenUser), total, page, limit };
+  },
 
-  async resetFailedAttempts(id) {
-    await this.db.query(
-      'UPDATE users SET failed_login_attempts = 0 WHERE id = $1',
-      [id]
-    );
-  }
+  async getDashboardMetrics() {
+    const now = new Date();
+    const dayAgo = new Date(now - 86400000);
+    const weekAgo = new Date(now - 7 * 86400000);
 
-  async lockAccount(id, lockedUntil) {
-    const result = await this.db.query(
-      'UPDATE users SET locked_until = $1 WHERE id = $2 RETURNING *',
-      [lockedUntil, id]
-    );
-    return result.rows[0];
-  }
+    const [total, active, newToday, newThisWeek, buyers, merchants, admins, pending, banned, suspended] =
+      await prisma.$transaction([
+        prisma.user.count(),
+        prisma.user.count({ where: { status: 'ACTIVE' } }),
+        prisma.user.count({ where: { createdAt: { gte: dayAgo } } }),
+        prisma.user.count({ where: { createdAt: { gte: weekAgo } } }),
+        prisma.user.count({ where: { role: 'BUYER' } }),
+        prisma.user.count({ where: { role: 'MERCHANT' } }),
+        prisma.user.count({ where: { role: 'ADMIN' } }),
+        prisma.user.count({ where: { status: 'PENDING' } }),
+        prisma.user.count({ where: { status: 'BANNED' } }),
+        prisma.user.count({ where: { status: 'SUSPENDED' } }),
+      ]);
 
-  async unlockAccount(id) {
-    const result = await this.db.query(
-      'UPDATE users SET locked_until = NULL, failed_login_attempts = 0 WHERE id = $1 RETURNING *',
-      [id]
-    );
-    return result.rows[0];
-  }
-
-  async updateVerificationAndLogin(id, status, newStatus) {
-    const result = await this.db.query(
-      'UPDATE users SET phone_verified = true, last_login_at = NOW(), status = CASE WHEN status = $1 THEN $2 ELSE status END WHERE id = $3 RETURNING *',
-      [status, newStatus, id]
-    );
-    return result.rows[0];
-  }
-
-  async upsertAdminUser(phone, role, name) {
-    // Check if user exists
-    let user = await this.findByPhone(phone);
-    
-    if (user) {
-      // Update role and status
-      user = await this.update(user.id, { role: 'ADMIN', status: 'ACTIVE' });
-    } else {
-      // Create new admin user
-      user = await this.create({
-        phone,
-        role: 'ADMIN',
-        status: 'ACTIVE',
-        phone_verified: true
-      });
-    }
-    
-    return user;
-  }
-}
+    return {
+      total, active,
+      new_today: newToday,
+      new_this_week: newThisWeek,
+      buyers, merchants, admins, pending, banned, suspended,
+    };
+  },
+};
 
 module.exports = UserRepository;

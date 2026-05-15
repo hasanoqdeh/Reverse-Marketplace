@@ -1,59 +1,53 @@
+'use strict';
+
 const express = require('express');
 const router = express.Router();
+const IdentityAuthController = require('../controllers/identityAuthController');
+const { authenticate } = require('../../../shared/middleware/authenticate');
+const { getRateLimitMiddleware } = require('../../../shared/middleware/rateLimiting');
+const asyncHandler = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 
-const authController = require('../controllers/identityAuthController');
-const { validate, schemas, validateAuthInput } = require('../middleware/validation');
-const { getRateLimitMiddleware } = require('../middleware/rateLimiting');
-const { authenticate } = require('../middleware/auth');
+// ── Public routes ──────────────────────────────────────────────────────────
 
-// Apply common validation middleware to all routes
-router.use(validateAuthInput);
-
-// Public authentication endpoints
-router.post('/phone-login', 
-  getRateLimitMiddleware('phoneLogin'),
-  validate(schemas.phoneLogin),
-  authController.phoneLogin
+// POST /auth/login  — initiate OTP for BUYER, MERCHANT, or ADMIN
+router.post(
+  '/login',
+  getRateLimitMiddleware('otp'),
+  asyncHandler(IdentityAuthController.phoneLogin),
 );
 
-router.post('/verify-otp',
-  getRateLimitMiddleware('otpVerification'),
-  validate(schemas.otpVerification),
-  authController.verifyOTP
+// POST /auth/verify-otp
+router.post(
+  '/verify-otp',
+  getRateLimitMiddleware('otp'),
+  asyncHandler(IdentityAuthController.verifyOtp),
 );
 
-router.post('/resend-otp',
-  getRateLimitMiddleware('otpResend'),
-  validate(schemas.resendOTP),
-  authController.resendOTP
+// POST /auth/resend-otp
+router.post(
+  '/resend-otp',
+  getRateLimitMiddleware('otp'),
+  asyncHandler(IdentityAuthController.resendOtp),
 );
 
-router.post('/refresh-token',
-  getRateLimitMiddleware('tokenRefresh'),
-  validate(schemas.refreshToken),
-  authController.refreshToken
+// POST /auth/refresh-token
+router.post(
+  '/refresh-token',
+  getRateLimitMiddleware('auth'),
+  asyncHandler(IdentityAuthController.refreshToken),
 );
 
-router.post('/logout',
-  validate(schemas.logout),
-  authController.logout
+// ── Authenticated routes ───────────────────────────────────────────────────
+
+// POST /auth/logout
+router.post(
+  '/logout',
+  authenticate,
+  asyncHandler(IdentityAuthController.logout),
 );
 
-// Protected endpoints - require authentication
-router.use(authenticate); // Apply authentication to all following routes
+// ── Health ─────────────────────────────────────────────────────────────────
 
-// User profile endpoints
-router.get('/profile',
-  authController.getUserProfile
-);
-
-router.put('/profile',
-  authController.updateUserProfile
-);
-
-// Health check endpoint (public)
-router.get('/health',
-  authController.healthCheck
-);
+router.get('/health', IdentityAuthController.health);
 
 module.exports = router;

@@ -14,31 +14,35 @@ const PORT = process.env.GATEWAY_PORT || 3000;
 const allowedOrigins = process.env.CORS_ORIGINS
   ? process.env.CORS_ORIGINS.split(',').map((o) => o.trim())
   : [
+    'http://localhost:3000',
     'http://localhost:3001', // admin panel
     'http://localhost:3002', // buyer app
     'http://localhost:3003', // merchant app
-    'http://localhost:3000', // local dev
   ];
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Allow server-to-server requests (no origin header) and whitelisted origins
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error(`CORS policy: origin ${origin} not allowed`));
-      }
-    },
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-    credentials: true,
-    optionsSuccessStatus: 204,
-  })
-);
+const isDev = process.env.NODE_ENV !== 'production';
+const localhostPattern = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
 
-// Security middleware
-app.use(helmet());
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    if (isDev && localhostPattern.test(origin)) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error(`CORS policy: origin ${origin} not allowed`));
+  },
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Device-Fingerprint', 'X-Requested-With'],
+  exposedHeaders: ['Authorization'],
+  credentials: true,
+  optionsSuccessStatus: 204,
+};
+
+// Handle preflight for all routes before any other middleware
+app.options('*', cors(corsOptions));
+app.use(cors(corsOptions));
+
+// Security middleware — disable crossOriginResourcePolicy so CORS headers aren't overridden
+app.use(helmet({ crossOriginResourcePolicy: false }));
 
 // Rate limiting
 const limiter = rateLimit({
@@ -63,6 +67,12 @@ app.get('/health', (req, res) => {
 const authRoutes = require('../services/identity-service/routes/identityAuth');
 const adminAuthRoutes = require('../services/identity-service/routes/identityAdminAuth');
 const adminRoutes = require('../services/identity-service/routes/identityAdmin');
+const database = require('../services/identity-service/database/connection');
+
+// Mount identity service routes
+app.use('/api/v1/identity/auth', authRoutes);
+app.use('/api/v1/identity/admin/auth', adminAuthRoutes);
+app.use('/api/v1/identity/admin', adminRoutes);
 
 // API Routes
 app.get('/api/v1', (req, res) => {
@@ -87,11 +97,6 @@ app.get('/api/v1', (req, res) => {
   });
 });
 
-// Mount identity service routes
-app.use('/api/v1/identity/auth', authRoutes);
-app.use('/api/v1/identity/admin/auth', adminAuthRoutes);
-app.use('/api/v1/identity/admin', adminRoutes);
-
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Gateway Error:', err);
@@ -113,28 +118,21 @@ app.use('*', (req, res) => {
   });
 });
 
-// Initialize identity services
-const identityDatabase = require('../services/identity-service/database/connection');
-const identityRedisClient = require('../services/identity-service/cache/redis');
-const identityEventPublisher = require('../services/identity-service/events/publisher');
 
-async function startGateway() {
+const startServer = async () => {
   try {
-    await identityDatabase.connect();
-    await identityRedisClient.connect();
-    await identityEventPublisher.connect();
-    console.log('✅ Identity services connected successfully');
-  } catch (error) {
-    console.error('❌ Failed to connect identity services:', error);
+    await database.connect();
+    console.log('Database connected');
+  } catch (err) {
+    console.error('WARNING: Failed to connect to database:', err.message);
+    console.error('Auth routes will return errors until the database is reachable.');
   }
 
   app.listen(PORT, () => {
-    console.log(`🚀 API Gateway running on port ${PORT}`);
-    console.log(`📊 Health check: http://localhost:${PORT}/health`);
-    console.log(`📖 API docs: http://localhost:${PORT}/api/v1`);
+    console.log(`Gateway running on port ${PORT}`);
   });
-}
+};
 
-startGateway();
+startServer();
 
 module.exports = app;

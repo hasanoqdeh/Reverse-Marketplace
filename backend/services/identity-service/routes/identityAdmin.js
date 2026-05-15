@@ -1,81 +1,28 @@
+'use strict';
+
 const express = require('express');
 const router = express.Router();
+const IdentityAdminController = require('../controllers/identityAdminController');
+const { authenticate } = require('../../../shared/middleware/authenticate');
+const { requireRole } = require('../../../shared/middleware/authorize');
+const { getRateLimitMiddleware } = require('../../../shared/middleware/rateLimiting');
+const asyncHandler = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 
-const adminController = require('../controllers/identityAdminController');
-const { validate, schemas, validateAuthInput } = require('../middleware/validation');
-const { authenticate, authorize, authorizeAdmin } = require('../middleware/auth');
-
-// Apply common validation middleware to all routes
-router.use(validateAuthInput);
-
-// Protected endpoints - require authentication and admin role
+// All /admin routes require a valid ADMIN JWT
 router.use(authenticate);
-router.use(authorize('ADMIN'));
+router.use(requireRole('ADMIN'));
+router.use(getRateLimitMiddleware('admin'));
 
-// Admin whitelist management
-router.post('/whitelist',
-  authorizeAdmin('SUPER_ADMIN', 'ADMIN'),
-  validate(schemas.addAdmin),
-  adminController.addAdminToWhitelist
-);
+// ── User management ────────────────────────────────────────────────────────
+router.get('/users', asyncHandler(IdentityAdminController.getUsers));
+router.get('/users/:userId', asyncHandler(IdentityAdminController.getUserById));
+router.post('/users/:userId/suspend', asyncHandler(IdentityAdminController.suspendUser));
+router.post('/users/:userId/ban', asyncHandler(IdentityAdminController.banUser));
+router.post('/users/:userId/activate', asyncHandler(IdentityAdminController.activateUser));
+router.post('/users/bulk-action', asyncHandler(IdentityAdminController.bulkAction));
 
-router.get('/whitelist',
-  authorizeAdmin('SUPER_ADMIN', 'ADMIN', 'SUPPORT'),
-  validate(schemas.pagination, 'query'),
-  adminController.getAdminWhitelist
-);
-
-router.delete('/whitelist/:adminId',
-  authorizeAdmin('SUPER_ADMIN'),
-  adminController.removeAdminFromWhitelist
-);
-
-// User management endpoints
-router.get('/users',
-  authorizeAdmin('SUPER_ADMIN', 'ADMIN', 'SUPPORT'),
-  adminController.getUsers
-);
-
-router.get('/users/:userId',
-  authorizeAdmin('SUPER_ADMIN', 'ADMIN', 'SUPPORT'),
-  adminController.getUserById
-);
-
-router.post('/users/:userId/suspend',
-  authorizeAdmin('SUPER_ADMIN', 'ADMIN'),
-  adminController.suspendUser
-);
-
-router.post('/users/:userId/ban',
-  authorizeAdmin('SUPER_ADMIN', 'ADMIN'),
-  adminController.banUser
-);
-
-router.post('/users/:userId/verify',
-  authorizeAdmin('SUPER_ADMIN', 'ADMIN'),
-  adminController.verifyUser
-);
-
-router.post('/users/bulk-action',
-  authorizeAdmin('SUPER_ADMIN', 'ADMIN'),
-  adminController.bulkUserAction
-);
-
-// Dashboard endpoints
-router.get('/dashboard/metrics',
-  authorizeAdmin('SUPER_ADMIN', 'ADMIN', 'SUPPORT'),
-  adminController.getDashboardMetrics
-);
-
-// Security endpoints
-router.get('/security/alerts',
-  authorizeAdmin('SUPER_ADMIN', 'ADMIN', 'SUPPORT'),
-  adminController.getSecurityAlerts
-);
-
-router.post('/security/alerts/:alertId/resolve',
-  authorizeAdmin('SUPER_ADMIN', 'ADMIN'),
-  adminController.resolveSecurityAlert
-);
+// ── Dashboard & logs ───────────────────────────────────────────────────────
+router.get('/dashboard/metrics', asyncHandler(IdentityAdminController.getDashboardMetrics));
+router.get('/logs', asyncHandler(IdentityAdminController.getActivityLogs));
 
 module.exports = router;

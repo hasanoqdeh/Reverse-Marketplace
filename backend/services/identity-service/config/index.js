@@ -1,187 +1,125 @@
-const dotenv = require('dotenv');
+'use strict';
 
-// Load environment variables
-dotenv.config();
+require('dotenv').config();
 
 const config = {
-  // Environment
   env: process.env.NODE_ENV || 'development',
   port: parseInt(process.env.PORT, 10) || 3001,
-  logLevel: process.env.LOG_LEVEL || 'info',
 
-  // Database Configuration
   database: {
-    url: process.env.DATABASE_URL,
-    host: process.env.DB_HOST || process.env.DATABASE_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT || process.env.DATABASE_PORT, 10) || 5432,
-    name: process.env.DB_NAME || process.env.DATABASE_NAME || 'reverse_marketplace_auth',
-    user: process.env.DB_USER || process.env.DATABASE_USER || 'auth_service_user',
-    password: process.env.DB_PASSWORD || process.env.DATABASE_PASSWORD,
-    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-    max: 20, // maximum number of clients in the pool
-    idleTimeoutMillis: 30000, // how long a client is allowed to remain idle before being closed
-    connectionTimeoutMillis: 2000, // how long to wait when connecting a new client
+    url: process.env.IDENTITY_DATABASE_URL || process.env.DATABASE_URL || null,
   },
 
-  // Redis Configuration
   redis: {
-    url: process.env.REDIS_URL,
     host: process.env.REDIS_HOST || 'localhost',
     port: parseInt(process.env.REDIS_PORT, 10) || 6379,
-    password: process.env.REDIS_PASSWORD,
-    db: 0,
-    retryDelayOnFailover: 100,
-    maxRetriesPerRequest: 3,
+    password: process.env.REDIS_PASSWORD || undefined,
+    url: process.env.REDIS_URL || null,
+    ttl: {
+      session: 1800,      // 30 min
+      otp: 600,           // 10 min
+      rateLimit: 300,     // 5 min
+      userCache: 300,     // 5 min
+    },
   },
 
-  // RabbitMQ Configuration
   rabbitmq: {
-    url: process.env.RABBITMQ_URL,
     host: process.env.RABBITMQ_HOST || 'localhost',
     port: parseInt(process.env.RABBITMQ_PORT, 10) || 5672,
-    user: process.env.RABBITMQ_USER || process.env.RABBITMQ_DEFAULT_USER || 'admin',
-    password: process.env.RABBITMQ_PASSWORD || process.env.RABBITMQ_DEFAULT_PASS || 'password',
-    exchanges: {
-      auth: 'auth.events',
-      user: 'user.events',
-      notification: 'notification.events',
-    },
+    user: process.env.RABBITMQ_USER || 'admin',
+    password: process.env.RABBITMQ_PASSWORD || 'password',
+    url: process.env.RABBITMQ_URL || null,
+    exchange: 'reverse-marketplace',
     queues: {
-      authEvents: 'auth.events.queue',
-      userEvents: 'user.events.queue',
-      notificationEvents: 'notification.events.queue',
+      userEvents: 'user.events',
     },
   },
 
-  // JWT Configuration
   jwt: {
-    secret: process.env.JWT_SECRET,
-    refreshSecret: process.env.JWT_REFRESH_SECRET,
-    accessExpiry: process.env.JWT_ACCESS_EXPIRY,
-    refreshExpiry: process.env.JWT_REFRESH_EXPIRY,
-    algorithm: 'HS256',
-    issuer: 'reverse-marketplace',
-    audience: 'reverse-marketplace',
+    secret: process.env.JWT_SECRET || 'fallback-jwt-secret-change-in-production',
+    refreshSecret: process.env.JWT_REFRESH_SECRET || 'fallback-refresh-secret-change-in-production',
+    accessExpiry: process.env.JWT_ACCESS_EXPIRY || '15m',
+    refreshExpiry: process.env.JWT_REFRESH_EXPIRY || '30d',
   },
 
-  // OTP Configuration
   otp: {
-    length: parseInt(process.env.OTP_LENGTH, 10),
-    expiryMinutes: parseInt(process.env.OTP_EXPIRY_MINUTES, 10),
-    maxAttempts: parseInt(process.env.OTP_MAX_ATTEMPTS, 10),
-    resendCooldownSeconds: parseInt(process.env.OTP_RESEND_COOLDOWN_SECONDS, 10),
-    characters: '0123456789',
-    caseSensitive: false,
+    length: parseInt(process.env.OTP_LENGTH, 10) || 6,
+    expiryMinutes: parseInt(process.env.OTP_EXPIRY_MINUTES, 10) || 10,
+    maxAttempts: parseInt(process.env.OTP_MAX_ATTEMPTS, 10) || 3,
+    resendCooldownSeconds: parseInt(process.env.OTP_RESEND_COOLDOWN_SECONDS, 10) || 60,
+    // Per-phone rate limit: 3 per 5 minutes
+    phoneRateLimitCount: 3,
+    phoneRateLimitWindowMinutes: 5,
   },
 
-  // SMS Service Configuration
   sms: {
-    provider: process.env.SMS_PROVIDER,
+    provider: process.env.SMS_PROVIDER || 'console', // 'twilio' | 'console'
     twilio: {
-      accountSid: process.env.TWILIO_ACCOUNT_SID,
-      authToken: process.env.TWILIO_AUTH_TOKEN,
-      phoneNumber: process.env.TWILIO_PHONE_NUMBER,
-    },
-    // Add other SMS providers here if needed
-  },
-
-  // Rate Limiting Configuration
-  rateLimiting: {
-    phoneLogin: {
-      windowMs: 60 * 1000, // 1 minute
-      max: parseInt(process.env.RATE_LIMIT_PHONE_LOGIN, 10) || 5,
-      message: 'Too many phone login attempts, please try again later.',
-    },
-    otpVerify: {
-      windowMs: 60 * 1000, // 1 minute
-      max: parseInt(process.env.RATE_LIMIT_OTP_VERIFY, 10) || 10,
-      message: 'Too many OTP verification attempts, please try again later.',
-    },
-    otpResend: {
-      windowMs: 5 * 60 * 1000, // 5 minutes
-      max: parseInt(process.env.RATE_LIMIT_OTP_RESEND, 10) || 3,
-      message: 'Too many OTP resend requests, please try again later.',
-    },
-    tokenRefresh: {
-      windowMs: 60 * 60 * 1000, // 1 hour
-      max: parseInt(process.env.RATE_LIMIT_TOKEN_REFRESH, 10) || 20,
-      message: 'Too many token refresh attempts, please try again later.',
-    },
-    adminAccess: {
-      windowMs: 60 * 1000, // 1 minute
-      max: parseInt(process.env.RATE_LIMIT_ADMIN_ACCESS, 10) || 10,
-      message: 'Too many admin access attempts, please try again later.',
+      accountSid: process.env.TWILIO_ACCOUNT_SID || '',
+      authToken: process.env.TWILIO_AUTH_TOKEN || '',
+      phoneNumber: process.env.TWILIO_PHONE_NUMBER || '',
     },
   },
 
-  // Security Configuration
   security: {
     maxFailedAttempts: parseInt(process.env.MAX_FAILED_ATTEMPTS, 10) || 5,
     lockoutDurationMinutes: parseInt(process.env.LOCKOUT_DURATION_MINUTES, 10) || 30,
     maxConcurrentSessions: parseInt(process.env.MAX_CONCURRENT_SESSIONS, 10) || 5,
     adminSessionTimeoutHours: parseInt(process.env.ADMIN_SESSION_TIMEOUT_HOURS, 10) || 8,
-    progressiveLockout: true, // 30min, 1hr, 4hr, 24hr
-    deviceTracking: {
-      enabled: process.env.DEVICE_FINGERPRINT_ENABLED === 'true',
-      maxDevicesPerUser: 5,
-      salt: process.env.DEVICE_FINGERPRINT_SALT || 'default_salt',
-    },
-    ipSecurity: {
-      maxConcurrentIps: 3,
-      ipWhitelistForAdmin: true,
-      geoAnomalyDetection: true,
-    },
+    deviceFingerprintEnabled: process.env.DEVICE_FINGERPRINT_ENABLED === 'true',
+    deviceFingerprintSalt: process.env.DEVICE_FINGERPRINT_SALT || 'default_salt',
   },
 
-  // CORS Configuration
+  rateLimits: {
+    phoneLogin: parseInt(process.env.RATE_LIMIT_PHONE_LOGIN, 10) || 5,        // per minute per IP
+    otpVerify: parseInt(process.env.RATE_LIMIT_OTP_VERIFY, 10) || 10,         // per minute per phone
+    otpResend: parseInt(process.env.RATE_LIMIT_OTP_RESEND, 10) || 3,          // per 5 min per phone
+    tokenRefresh: parseInt(process.env.RATE_LIMIT_TOKEN_REFRESH, 10) || 20,   // per hour per user
+    adminAccess: parseInt(process.env.RATE_LIMIT_ADMIN_ACCESS, 10) || 10,     // per minute per admin
+    global: 1000,                                                               // per minute
+    useRedis: process.env.USE_REDIS_RATE_LIMITING === 'true',
+  },
+
   cors: {
-    origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : [
-      'http://localhost:3001', // admin panel
-      'http://localhost:3002', // buyer app
-      'http://localhost:3003', // merchant app
-      'http://localhost:3000', // local dev
-    ],
+    origin: process.env.CORS_ORIGIN
+      ? process.env.CORS_ORIGIN.split(',').map((o) => o.trim())
+      : ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://localhost:3003'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Device-Fingerprint', 'X-Requested-With'],
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Device-Fingerprint'],
+    optionsSuccessStatus: 204,
   },
 
-  // Monitoring Configuration
-  monitoring: {
-    enabled: process.env.ENABLE_METRICS === 'true',
-    port: parseInt(process.env.METRICS_PORT, 10) || 9090,
-  },
-
-  // Session Cleanup Configuration
   cleanup: {
     intervalMinutes: parseInt(process.env.CLEANUP_INTERVAL_MINUTES, 10) || 60,
     auditLogRetentionDays: parseInt(process.env.AUDIT_LOG_RETENTION_DAYS, 10) || 90,
   },
 
-  // Validation
-  validate: () => {
-    const required = [
-      'JWT_SECRET',
-      'JWT_REFRESH_SECRET',
-      'DATABASE_URL',
-    ];
+  /**
+   * Validates required configuration values and warns about insecure defaults.
+   */
+  validate() {
+    const errors = [];
 
-    const missing = required.filter(key => !process.env[key]);
-
-    if (missing.length > 0) {
-      throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
+    if (!process.env.JWT_SECRET) {
+      if (this.env === 'production') {
+        errors.push('JWT_SECRET must be set in production');
+      } else {
+        console.warn('[CONFIG] WARNING: JWT_SECRET not set — using insecure fallback (dev only)');
+      }
     }
 
-    // Validate JWT secrets are at least 32 characters
-    if (process.env.JWT_SECRET.length < 32) {
-      throw new Error('JWT_SECRET must be at least 32 characters long');
+    if (!process.env.JWT_REFRESH_SECRET) {
+      if (this.env === 'production') {
+        errors.push('JWT_REFRESH_SECRET must be set in production');
+      } else {
+        console.warn('[CONFIG] WARNING: JWT_REFRESH_SECRET not set — using insecure fallback (dev only)');
+      }
     }
 
-    if (process.env.JWT_REFRESH_SECRET.length < 32) {
-      throw new Error('JWT_REFRESH_SECRET must be at least 32 characters long');
+    if (errors.length > 0) {
+      throw new Error(`Configuration validation failed:\n${errors.join('\n')}`);
     }
-
-    return true;
   },
 };
 

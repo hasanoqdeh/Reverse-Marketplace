@@ -1,458 +1,155 @@
 'use client'
 
-import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react'
-import { 
-  User, 
-  AuthTokens, 
-  AuthAPI, 
-  SessionManager, 
-  AuthError,
-  generateDeviceFingerprint,
-  PhoneLoginRequest,
-  OTPVerificationRequest,
-  ResendOTPRequest,
-  RefreshTokenRequest,
-  RefreshTokenResponse,
-  LogoutRequest,
-} from '@/lib/auth'
-import { 
-  AdminAPI, 
-  AdminPhoneLoginRequest, 
-  AdminOTPVerificationRequest, 
-  AdminResendOTPRequest 
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react'
+import { SessionManager, AdminUser } from '@/lib/auth'
+import {
+  apiPhoneLogin, apiVerifyOTP, apiResendOTP, apiLogout, apiGetMe,
 } from '@/lib/adminAPI'
 
-// Auth state interface
-interface AuthState {
-  user: User | null
+interface AuthContextValue {
+  user: AdminUser | null
   isAuthenticated: boolean
   isLoading: boolean
   error: string | null
   otpSent: boolean
   otpExpiresAt: string | null
-  sessionTimeout: number
-  loginStep: 'phone' | 'otp' | 'authenticated'
+  loginStep: 'phone' | 'otp'
+  phoneLogin(phone: string, countryCode: string): Promise<void>
+  verifyOTP(phone: string, otpCode: string): Promise<void>
+  resendOTP(phone: string): Promise<void>
+  logout(): Promise<void>
+  clearError(): void
+  resetLoginFlow(): void
+  canViewAdminPanel(): boolean
+  adminLevel: string | null
 }
 
-// Auth action types
-type AuthAction =
-  | { type: 'SET_LOADING'; payload: boolean }
-  | { type: 'SET_ERROR'; payload: string | null }
-  | { type: 'SET_USER'; payload: User }
-  | { type: 'CLEAR_USER' }
-  | { type: 'SET_OTP_SENT'; payload: { expiresAt: string } }
-  | { type: 'SET_SESSION_TIMEOUT'; payload: number }
-  | { type: 'SET_LOGIN_STEP'; payload: 'phone' | 'otp' | 'authenticated' }
-  | { type: 'CLEAR_ERROR' }
+const AuthContext = createContext<AuthContextValue | null>(null)
 
-// Initial state
-const initialState: AuthState = {
-  user: null,
-  isAuthenticated: false,
-  isLoading: false,
-  error: null,
-  otpSent: false,
-  otpExpiresAt: null,
-  sessionTimeout: 0,
-  loginStep: 'phone',
-}
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<AdminUser | null>(null)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [otpSent, setOtpSent] = useState(false)
+  const [otpExpiresAt, setOtpExpiresAt] = useState<string | null>(null)
+  const [loginStep, setLoginStep] = useState<'phone' | 'otp'>('phone')
 
-// Auth reducer
-const authReducer = (state: AuthState, action: AuthAction): AuthState => {
-  switch (action.type) {
-    case 'SET_LOADING':
-      return { ...state, isLoading: action.payload }
-    case 'SET_ERROR':
-      return { ...state, error: action.payload, isLoading: false }
-    case 'SET_USER':
-      return { 
-        ...state, 
-        user: action.payload, 
-        isAuthenticated: true, 
-        isLoading: false,
-        loginStep: 'authenticated',
-        error: null 
-      }
-    case 'CLEAR_USER':
-      return { 
-        ...state, 
-        user: null, 
-        isAuthenticated: false, 
-        isLoading: false,
-        loginStep: 'phone',
-        otpSent: false,
-        otpExpiresAt: null,
-      }
-    case 'SET_OTP_SENT':
-      return { 
-        ...state, 
-        otpSent: true, 
-        otpExpiresAt: action.payload.expiresAt,
-        loginStep: 'otp',
-        isLoading: false,
-        error: null,
-      }
-    case 'SET_SESSION_TIMEOUT':
-      return { ...state, sessionTimeout: action.payload }
-    case 'SET_LOGIN_STEP':
-      return { ...state, loginStep: action.payload }
-    case 'CLEAR_ERROR':
-      return { ...state, error: null }
-    default:
-      return state
-  }
-}
-
-// Auth context interface
-interface AuthContextType extends AuthState {
-  // Authentication methods
-  phoneLogin: (phone: string, countryCode?: string) => Promise<void>
-  verifyOTP: (phone: string, otpCode: string) => Promise<void>
-  resendOTP: (phone: string) => Promise<void>
-  logout: (allDevices?: boolean) => Promise<void>
-  refreshTokens: () => Promise<void>
-  
-  // Utility methods
-  clearError: () => void
-  resetLoginFlow: () => void
-  
-  // Admin methods
-  isSuperAdmin: () => boolean
-  canManageAdmins: () => boolean
-  canViewAdminPanel: () => boolean
-}
-
-// Create context
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
-
-// Auth provider component
-interface AuthProviderProps {
-  children: ReactNode
-  apiURL?: string
-}
-
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children, apiURL }) => {
-  const [state, dispatch] = useReducer(authReducer, initialState)
-  const api = new AuthAPI(apiURL)
-  const adminApi = new AdminAPI(apiURL)
-
-  // Initialize device fingerprint
+  // Restore session on mount
   useEffect(() => {
-    const fingerprint = generateDeviceFingerprint()
-    SessionManager.setDeviceFingerprint(fingerprint)
-  }, [])
-
-  // Check for existing session on mount
-  useEffect(() => {
-    const initializeAuth = async () => {
+    async function restore() {
+      if (!SessionManager.isLoggedIn()) {
+        setIsLoading(false)
+        return
+      }
       try {
-        const { accessToken, refreshToken } = SessionManager.getTokens()
-        const user = SessionManager.getUser()
-
-        if (accessToken && refreshToken && user) {
-          // Check if access token is expired
-          if (isTokenExpired(accessToken)) {
-            // Try to refresh tokens
-            await refreshTokens()
-          } else {
-            // Set user from session
-            dispatch({ type: 'SET_USER', payload: user })
-          }
-        }
-      } catch (error) {
-        console.error('Auth initialization error:', error)
+        const { admin } = await apiGetMe()
+        const enriched: AdminUser = { ...admin, adminLevel: admin.adminSubRole ?? undefined }
+        SessionManager.saveUser(enriched)
+        setUser(enriched)
+        setIsAuthenticated(true)
+      } catch {
         SessionManager.clearTokens()
+      } finally {
+        setIsLoading(false)
       }
     }
-
-    initializeAuth()
+    restore()
   }, [])
 
-  // Auto-refresh tokens before expiry
-  useEffect(() => {
-    if (!state.isAuthenticated) return
+  const clearError = useCallback(() => setError(null), [])
 
-    const { accessToken } = SessionManager.getTokens()
-    if (!accessToken) return
+  const resetLoginFlow = useCallback(() => {
+    setLoginStep('phone')
+    setOtpSent(false)
+    setOtpExpiresAt(null)
+    setError(null)
+  }, [])
 
-    const payload = getTokenPayload(accessToken)
-    if (!payload) return
-
-    const timeUntilExpiry = payload.exp * 1000 - Date.now()
-    const refreshTime = timeUntilExpiry - 5 * 60 * 1000 // 5 minutes before expiry
-
-    if (refreshTime > 0) {
-      const timer = setTimeout(() => {
-        refreshTokens().catch(console.error)
-      }, refreshTime)
-
-      return () => clearTimeout(timer)
-    }
-  }, [state.isAuthenticated])
-
-  // Helper functions
-  const isTokenExpired = (token: string): boolean => {
+  const phoneLogin = useCallback(async (phone: string, _countryCode: string) => {
+    setIsLoading(true)
+    setError(null)
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]))
-      return Date.now() >= payload.exp * 1000
-    } catch {
-      return true
-    }
-  }
-
-  const getTokenPayload = (token: string): any => {
-    try {
-      return JSON.parse(atob(token.split('.')[1]))
-    } catch {
-      return null
-    }
-  }
-
-  // Authentication methods
-  const phoneLogin = async (phone: string, countryCode?: string): Promise<void> => {
-    try {
-      dispatch({ type: 'SET_LOADING', payload: true })
-      dispatch({ type: 'CLEAR_ERROR' })
-
-      const request: AdminPhoneLoginRequest = { phone, countryCode }
-      console.log('📱 Admin AuthContext phoneLogin Debug:', {
-        phone,
-        countryCode,
-        request
-      });
-      
-      // Use admin-specific login endpoint
-      const response = await adminApi.adminPhoneLogin(request)
-      
-      console.log('✅ Admin AuthContext Response Debug:', response);
-
-      if (!response.success) {
-        throw new AuthError(response.message, 'ADMIN_PHONE_LOGIN_FAILED')
+      const result = await apiPhoneLogin(phone)
+      if (!result.success) {
+        setError(result.message ?? 'Failed to send OTP')
+        return
       }
-
-      if (response.rateLimitExceeded) {
-        throw new AuthError(
-          'Too many login attempts. Please try again later.',
-          'RATE_LIMIT_EXCEEDED'
-        )
-      }
-
-      if (response.accountLocked) {
-        throw new AuthError(
-          'Account temporarily locked. Please try again later.',
-          'ACCOUNT_LOCKED'
-        )
-      }
-
-      dispatch({ 
-        type: 'SET_OTP_SENT', 
-        payload: { expiresAt: response.expiresAt || new Date().toISOString() }
-      })
-    } catch (error) {
-      const errorMessage = error instanceof AuthError ? error.message : 'Admin login failed'
-      dispatch({ type: 'SET_ERROR', payload: errorMessage })
-      throw error
-    }
-  }
-
-  const verifyOTP = async (phone: string, otpCode: string): Promise<void> => {
-    try {
-      dispatch({ type: 'SET_LOADING', payload: true })
-      dispatch({ type: 'CLEAR_ERROR' })
-
-      const deviceFingerprint = SessionManager.getDeviceFingerprint() || undefined
-      const request: AdminOTPVerificationRequest = { phone, otpCode, deviceFingerprint }
-      const response = await adminApi.adminVerifyOTP(request)
-
-      if (!response.success) {
-        throw new AuthError('OTP verification failed', 'ADMIN_OTP_VERIFICATION_FAILED')
-      }
-
-      // Store tokens and user
-      SessionManager.setTokens(
-        response.tokens.accessToken,
-        response.tokens.refreshToken,
-        response.user
-      )
-
-      dispatch({ type: 'SET_USER', payload: response.user })
-      dispatch({ type: 'SET_SESSION_TIMEOUT', payload: response.sessionTimeout })
-    } catch (error) {
-      const errorMessage = error instanceof AuthError ? error.message : 'Admin OTP verification failed'
-      dispatch({ type: 'SET_ERROR', payload: errorMessage })
-      throw error
-    }
-  }
-
-  const resendOTP = async (phone: string): Promise<void> => {
-    try {
-      dispatch({ type: 'SET_LOADING', payload: true })
-      dispatch({ type: 'CLEAR_ERROR' })
-
-      const request: AdminResendOTPRequest = { phone }
-      const response = await adminApi.adminResendOTP(request)
-
-      if (!response.success) {
-        throw new AuthError(response.message, 'ADMIN_OTP_RESEND_FAILED')
-      }
-
-      dispatch({ 
-        type: 'SET_OTP_SENT', 
-        payload: { expiresAt: response.expiresAt || new Date().toISOString() }
-      })
-    } catch (error) {
-      const errorMessage = error instanceof AuthError ? error.message : 'Failed to resend admin OTP'
-      dispatch({ type: 'SET_ERROR', payload: errorMessage })
-      throw error
-    }
-  }
-
-  const refreshTokens = async (): Promise<void> => {
-    try {
-      const { refreshToken } = SessionManager.getTokens()
-      if (!refreshToken) {
-        throw new AuthError('No refresh token available', 'NO_REFRESH_TOKEN')
-      }
-
-      const request: RefreshTokenRequest = { refreshToken }
-      const response = await adminApi.adminRefreshToken(request)
-
-      if (!response.success) {
-        throw new AuthError('Token refresh failed', 'TOKEN_REFRESH_FAILED')
-      }
-
-      // Update stored tokens
-      const { accessToken } = SessionManager.getTokens()
-      SessionManager.setTokens(response.tokens.accessToken, response.tokens.refreshToken, response.user)
-
-      dispatch({ type: 'SET_USER', payload: response.user })
-      dispatch({ type: 'SET_SESSION_TIMEOUT', payload: response.sessionTimeout })
-    } catch (error) {
-      const errorMessage = error instanceof AuthError ? error.message : 'Token refresh failed'
-      dispatch({ type: 'SET_ERROR', payload: errorMessage })
-      throw error
-    }
-  }
-
-  const logout = async (allDevices: boolean = false): Promise<void> => {
-    try {
-      const { refreshToken } = SessionManager.getTokens()
-      
-      if (refreshToken) {
-        const request: LogoutRequest = { refreshToken, allDevices }
-        await adminApi.adminLogout(request)
-      }
-    } catch (error) {
-      console.error('Logout error:', error)
+      setOtpSent(true)
+      setOtpExpiresAt(result.expiresAt ?? null)
+      setLoginStep('otp')
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message ?? 'Failed to send OTP'
+      setError(msg)
     } finally {
-      // Always clear local tokens regardless of API call success
+      setIsLoading(false)
+    }
+  }, [])
+
+  const verifyOTP = useCallback(async (phone: string, otpCode: string) => {
+    setIsLoading(true)
+    setError(null)
+    try {
+      const result = await apiVerifyOTP(phone, otpCode)
+      if (!result.success) {
+        setError('OTP verification failed')
+        return
+      }
+      SessionManager.saveTokens(result.tokens.accessToken, result.tokens.refreshToken)
+      const enriched: AdminUser = { ...result.user, adminLevel: result.user.adminSubRole ?? undefined }
+      SessionManager.saveUser(enriched)
+      setUser(enriched)
+      setIsAuthenticated(true)
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message ?? 'Invalid OTP'
+      setError(msg)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
+
+  const resendOTP = useCallback(async (phone: string) => {
+    setError(null)
+    try {
+      const result = await apiResendOTP(phone)
+      if (!result.success) setError(result.message ?? 'Failed to resend OTP')
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message ?? 'Failed to resend OTP'
+      setError(msg)
+    }
+  }, [])
+
+  const logout = useCallback(async () => {
+    try {
+      const refreshToken = SessionManager.getRefreshToken()
+      await apiLogout(refreshToken ?? undefined)
+    } catch { /* ignore */ } finally {
       SessionManager.clearTokens()
-      dispatch({ type: 'CLEAR_USER' })
+      setUser(null)
+      setIsAuthenticated(false)
+      resetLoginFlow()
     }
-  }
+  }, [resetLoginFlow])
 
-  // Utility methods
-  const clearError = (): void => {
-    dispatch({ type: 'CLEAR_ERROR' })
-  }
+  const canViewAdminPanel = useCallback(() => {
+    return isAuthenticated && user?.role === 'ADMIN'
+  }, [isAuthenticated, user])
 
-  const resetLoginFlow = (): void => {
-    dispatch({ type: 'SET_LOGIN_STEP', payload: 'phone' })
-    dispatch({ type: 'CLEAR_ERROR' })
-  }
+  const adminLevel = user?.adminSubRole ?? null
 
-  // Admin permission methods
-  const isSuperAdmin = (): boolean => {
-    return state.user?.adminLevel === 'SUPER_ADMIN'
-  }
-
-  const canManageAdmins = (): boolean => {
-    return state.user?.adminLevel === 'SUPER_ADMIN' || state.user?.adminLevel === 'ADMIN'
-  }
-
-  const canViewAdminPanel = (): boolean => {
-    return state.user?.role === 'ADMIN' && state.user?.status === 'ACTIVE'
-  }
-
-  const value: AuthContextType = {
-    ...state,
-    phoneLogin,
-    verifyOTP,
-    resendOTP,
-    logout,
-    refreshTokens,
-    clearError,
-    resetLoginFlow,
-    isSuperAdmin,
-    canManageAdmins,
-    canViewAdminPanel,
-  }
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+  return (
+    <AuthContext.Provider value={{
+      user, isAuthenticated, isLoading, error, otpSent, otpExpiresAt, loginStep,
+      phoneLogin, verifyOTP, resendOTP, logout, clearError, resetLoginFlow,
+      canViewAdminPanel, adminLevel,
+    }}>
+      {children}
+    </AuthContext.Provider>
+  )
 }
 
-// Hook to use auth context
-export const useAuth = (): AuthContextType => {
-  const context = useContext(AuthContext)
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider')
-  }
-  return context
-}
-
-// Higher-order component for protected routes
-export const withAuth = (
-  Component: React.ComponentType<any>,
-  requiredRole?: 'ADMIN' | 'SUPER_ADMIN'
-) => {
-  const WrappedComponent = React.forwardRef<any>((props, ref) => {
-    const { isAuthenticated, user, isLoading } = useAuth()
-
-    if (isLoading) {
-      return (
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        </div>
-      )
-    }
-
-    if (!isAuthenticated) {
-      return (
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Authentication Required</h2>
-            <p className="text-gray-600">Please log in to access this page.</p>
-          </div>
-        </div>
-      )
-    }
-
-    if (requiredRole === 'ADMIN' && user?.role !== 'ADMIN') {
-      return (
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h2>
-            <p className="text-gray-600">Admin access required to view this page.</p>
-          </div>
-        </div>
-      )
-    }
-
-    if (requiredRole === 'SUPER_ADMIN' && user?.adminLevel !== 'SUPER_ADMIN') {
-      return (
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h2>
-            <p className="text-gray-600">Super Admin access required to view this page.</p>
-          </div>
-        </div>
-      )
-    }
-
-    return <Component {...props} ref={ref} />
-  })
-
-  WrappedComponent.displayName = `withAuth(${Component.displayName || Component.name})`
-  
-  return WrappedComponent
+export function useAuth(): AuthContextValue {
+  const ctx = useContext(AuthContext)
+  if (!ctx) throw new Error('useAuth must be used inside AuthProvider')
+  return ctx
 }

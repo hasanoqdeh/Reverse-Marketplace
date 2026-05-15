@@ -9,7 +9,7 @@ const eventPublisher = require('./events/publisher');
 const authRoutes = require('./routes/identityAuth');
 const adminAuthRoutes = require('./routes/identityAdminAuth');
 const adminRoutes = require('./routes/identityAdmin');
-const { getRateLimitMiddleware } = require('./middleware/rateLimiting');
+const { getRateLimitMiddleware } = require('../../shared/middleware/rateLimiting');
 
 // Validate configuration
 config.validate();

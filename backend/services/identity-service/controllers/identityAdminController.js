@@ -1,759 +1,439 @@
-const authService = require('../services/authService');
+'use strict';
+
+const Joi = require('joi');
+const UserRepository = require('../repositories/UserRepository');
+const AdminRepository = require('../repositories/AdminRepository');
+const TokenRepository = require('../repositories/TokenRepository');
+const eventPublisher = require('../events/publisher');
 const logger = require('../utils/logger');
 
-class AdminController {
-  // Admin management endpoints
-  async addAdminToWhitelist(req, res) {
-    try {
-      const { phone, name, adminLevel, department } = req.body;
-      const addedBy = req.user?.userId;
+// ─── Validation Schemas ────────────────────────────────────────────────────
 
-      const result = await authService.addAdminToWhitelist(phone, name, adminLevel, department, addedBy);
+const getUsersSchema = Joi.object({
+  page: Joi.number().integer().min(1).default(1),
+  limit: Joi.number().integer().min(1).max(100).default(20),
+  search: Joi.string().max(100).optional().allow(''),
+  role: Joi.string().valid('BUYER', 'MERCHANT', 'ADMIN', 'ALL').default('ALL'),
+  status: Joi.string().valid('PENDING', 'ACTIVE', 'BANNED', 'SUSPENDED', 'ALL').default('ALL'),
+  registrationDateFrom: Joi.string().isoDate().optional(),
+  registrationDateTo: Joi.string().isoDate().optional(),
+  lastLoginFrom: Joi.string().isoDate().optional(),
+  lastLoginTo: Joi.string().isoDate().optional(),
+  sortBy: Joi.string().valid('createdAt', 'lastLoginAt', 'phone', 'name').default('createdAt'),
+  sortOrder: Joi.string().valid('asc', 'desc').default('desc'),
+});
 
-      res.status(201).json({
-        success: result.success,
-        adminId: result.adminId,
-        message: result.message,
-      });
-    } catch (error) {
-      logger.error('Add admin error:', error);
-      
-      if (error.message.includes('Invalid phone number')) {
-        return res.status(400).json({
-          success: false,
-          message: error.message,
-          error: 'INVALID_PHONE',
-        });
-      } else if (error.message.includes('Admin already exists')) {
-        return res.status(409).json({
-          success: false,
-          message: error.message,
-          error: 'ADMIN_EXISTS',
-        });
-      } else {
-        res.status(500).json({
-          success: false,
-          message: 'Internal server error',
-          error: 'INTERNAL_ERROR',
-        });
-      }
-    }
-  }
+const suspendUserSchema = Joi.object({
+  reason: Joi.string().min(5).max(500).required(),
+  duration: Joi.number().integer().min(1).optional().allow(null), // hours
+  notifyUser: Joi.boolean().default(false),
+  internalNote: Joi.string().max(1000).optional(),
+});
 
-  async getAdminWhitelist(req, res) {
-    try {
-      const { page, limit } = req.query;
+const banUserSchema = Joi.object({
+  reason: Joi.string().min(5).max(500).required(),
+  permanent: Joi.boolean().required(),
+  notifyUser: Joi.boolean().default(false),
+  internalNote: Joi.string().max(1000).optional(),
+  deleteData: Joi.boolean().default(false),
+});
 
-      const result = await authService.getAdminWhitelist(parseInt(page), parseInt(limit));
+const bulkActionSchema = Joi.object({
+  userIds: Joi.array().items(Joi.string().uuid()).min(1).max(100).required(),
+  action: Joi.string().valid('SUSPEND', 'BAN', 'DELETE', 'VERIFY', 'SEND_NOTIFICATION').required(),
+  actionData: Joi.object({
+    reason: Joi.string().max(500).optional(),
+    duration: Joi.number().integer().min(1).optional(),
+    notifyUsers: Joi.boolean().default(false),
+    internalNote: Joi.string().max(1000).optional(),
+    message: Joi.string().max(1000).optional(),
+  }).default({}),
+});
 
-      res.status(200).json({
-        success: true,
-        admins: result.admins,
-        pagination: result.pagination,
-      });
-    } catch (error) {
-      logger.error('Get admin whitelist error:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Internal server error',
-        error: 'INTERNAL_ERROR',
-      });
-    }
-  }
+// ─── Controller ────────────────────────────────────────────────────────────
 
-  async removeAdminFromWhitelist(req, res) {
-    try {
-      const { adminId } = req.params;
-      const removedBy = req.user?.userId;
+const IdentityAdminController = {
+  // ────────────────────────────────────────────────────────────────
+  // User Management
+  // ────────────────────────────────────────────────────────────────
 
-      const result = await authService.removeAdminFromWhitelist(adminId, removedBy);
-
-      res.status(200).json({
-        success: result.success,
-        message: result.message,
-      });
-    } catch (error) {
-      logger.error('Remove admin error:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Internal server error',
-        error: 'INTERNAL_ERROR',
-      });
-    }
-  }
-
-  // User Management endpoints
+  /**
+   * GET /admin/users
+   * Paginated user list with filtering and sorting.
+   */
   async getUsers(req, res) {
-    try {
-      const database = require('../database/connection');
-      const {
-        page = 1,
-        limit = 20,
-        search,
-        role = 'ALL',
-        status = 'ALL',
-        registrationDateFrom,
-        registrationDateTo,
-        lastLoginFrom,
-        lastLoginTo,
-        sortOrder = 'desc'
-      } = req.query;
-
-      // Map camelCase sort fields to database snake_case columns
-      const sortByMap = {
-        'createdAt': 'u.created_at',
-        'created_at': 'u.created_at',
-        'lastLoginAt': 'u.last_login_at',
-        'last_login_at': 'u.last_login_at',
-        'phone': 'u.phone',
-        'role': 'u.role',
-        'status': 'u.status'
-      };
-
-      const sortColumn = sortByMap[sortBy] || 'u.created_at';
-      const offset = (parseInt(page) - 1) * parseInt(limit);
-      
-      // Build WHERE conditions
-      let whereConditions = [];
-      let queryParams = [];
-      let paramIndex = 1;
-
-      if (role !== 'ALL') {
-        whereConditions.push(`u.role = $${paramIndex++}`);
-        queryParams.push(role);
-      }
-
-      if (status !== 'ALL') {
-        whereConditions.push(`u.status = $${paramIndex++}`);
-        queryParams.push(status);
-      }
-
-      if (search) {
-        whereConditions.push(`(u.phone ILIKE $${paramIndex++} OR up.first_name ILIKE $${paramIndex++} OR up.last_name ILIKE $${paramIndex++})`);
-        queryParams.push(`%${search}%`, `%${search}%`, `%${search}%`);
-      }
-
-      if (registrationDateFrom) {
-        whereConditions.push(`u.created_at >= $${paramIndex++}`);
-        queryParams.push(registrationDateFrom);
-      }
-
-      if (registrationDateTo) {
-        whereConditions.push(`u.created_at <= $${paramIndex++}`);
-        queryParams.push(registrationDateTo);
-      }
-
-      if (lastLoginFrom) {
-        whereConditions.push(`u.last_login_at >= $${paramIndex++}`);
-        queryParams.push(lastLoginFrom);
-      }
-
-      if (lastLoginTo) {
-        whereConditions.push(`u.last_login_at <= $${paramIndex++}`);
-        queryParams.push(lastLoginTo);
-      }
-
-      const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
-
-      // Get total count
-      const countQuery = `
-        SELECT COUNT(*) as total
-        FROM users u
-        LEFT JOIN user_profiles up ON u.id = up.user_id
-        ${whereClause}
-      `;
-      
-      const countResult = await database.query(countQuery, queryParams);
-      const total = parseInt(countResult.rows[0].total);
-
-      // Get users with pagination
-      const usersQuery = `
-        SELECT 
-          u.id,
-          u.phone,
-          u.role,
-          u.status,
-          u.phone_verified,
-          u.created_at,
-          u.updated_at,
-          u.last_login_at,
-          u.failed_login_attempts,
-          u.locked_until,
-          up.first_name,
-          up.last_name,
-          up.city,
-          up.country,
-          aw.admin_level,
-          aw.department,
-          aw.is_active as admin_is_active
-        FROM users u
-        LEFT JOIN user_profiles up ON u.id = up.user_id
-        LEFT JOIN admin_whitelist aw ON u.phone = aw.phone AND u.role = 'ADMIN'
-        ${whereClause}
-        ORDER BY ${sortColumn} ${sortOrder}
-        LIMIT $${paramIndex++} OFFSET $${paramIndex++}
-      `;
-
-      queryParams.push(parseInt(limit), offset);
-      const usersResult = await database.query(usersQuery, queryParams);
-
-      const users = usersResult.rows.map(row => ({
-        id: row.id,
-        phone: row.phone,
-        role: row.role,
-        status: row.status,
-        phoneVerified: row.phone_verified,
-        createdAt: row.created_at,
-        lastLoginAt: row.last_login_at,
-        failedLoginAttempts: row.failed_login_attempts,
-        lockedUntil: row.locked_until,
-        profile: row.first_name ? {
-          firstName: row.first_name,
-          lastName: row.last_name,
-          city: row.city,
-          country: row.country
-        } : null,
-        adminInfo: row.role === 'ADMIN' ? {
-          adminLevel: row.admin_level,
-          department: row.department,
-          isActive: row.admin_is_active
-        } : null
-      }));
-
-      res.status(200).json({
-        success: true,
-        users,
-        pagination: {
-          page: parseInt(page),
-          limit: parseInt(limit),
-          total,
-          totalPages: Math.ceil(total / parseInt(limit))
-        },
-        filters: {
-          appliedFilters: { page, limit, search, role, status },
-          availableFilters: [
-            { key: 'role', label: 'Role', type: 'select', options: [
-              { value: 'ALL', label: 'All Roles' },
-              { value: 'BUYER', label: 'Buyer' },
-              { value: 'MERCHANT', label: 'Merchant' },
-              { value: 'ADMIN', label: 'Admin' }
-            ]},
-            { key: 'status', label: 'Status', type: 'select', options: [
-              { value: 'ALL', label: 'All Status' },
-              { value: 'ACTIVE', label: 'Active' },
-              { value: 'PENDING', label: 'Pending' },
-              { value: 'SUSPENDED', label: 'Suspended' },
-              { value: 'BANNED', label: 'Banned' }
-            ]}
-          ]
-        }
-      });
-    } catch (error) {
-      logger.error('Get users error:', error);
-      res.status(500).json({
+    const { error, value } = getUsersSchema.validate(req.query, { abortEarly: false });
+    if (error) {
+      return res.status(400).json({
         success: false,
-        message: 'Internal server error',
-        error: 'INTERNAL_ERROR',
+        message: 'Validation error',
+        errors: error.details.map((d) => d.message),
       });
     }
-  }
 
+    const { users, total, page, limit } = await UserRepository.listUsers(value);
+    const totalPages = Math.ceil(total / limit);
+
+    // Log admin action
+    await AdminRepository.logAction({
+      adminId: req.user.id,
+      actionType: 'USER_VIEW',
+      targetType: 'USER_LIST',
+      actionDetails: { filters: value },
+      ipAddress: req.ip,
+      userAgent: req.get('User-Agent'),
+      success: true,
+    }).catch(() => {});
+
+    return res.status(200).json({
+      success: true,
+      users: users.map(_formatUserRow),
+      pagination: { page, limit, total, totalPages },
+      filters: {
+        appliedFilters: value,
+        availableFilters: _getAvailableFilters(),
+      },
+    });
+  },
+
+  /**
+   * GET /admin/users/:userId
+   * Single user detail view.
+   */
   async getUserById(req, res) {
-    try {
-      const database = require('../database/connection');
-      const { userId } = req.params;
-
-      const query = `
-        SELECT 
-          u.id,
-          u.phone,
-          u.role,
-          u.status,
-          u.phone_verified,
-          u.created_at,
-          u.updated_at,
-          u.last_login_at,
-          u.failed_login_attempts,
-          u.locked_until,
-          up.first_name,
-          up.last_name,
-          up.profile_image_url,
-          up.location_lat,
-          up.location_lng,
-          up.address,
-          up.city,
-          up.country,
-          up.preferences,
-          aw.admin_level,
-          aw.department,
-          aw.is_active as admin_is_active
-        FROM users u
-        LEFT JOIN user_profiles up ON u.id = up.user_id
-        LEFT JOIN admin_whitelist aw ON u.phone = aw.phone AND u.role = 'ADMIN'
-        WHERE u.id = $1
-      `;
-
-      const result = await database.query(query, [userId]);
-
-      if (result.rows.length === 0) {
-        return res.status(404).json({
-          success: false,
-          message: 'User not found',
-          error: 'USER_NOT_FOUND',
-        });
-      }
-
-      const row = result.rows[0];
-      const user = {
-        id: row.id,
-        phone: row.phone,
-        role: row.role,
-        status: row.status,
-        phoneVerified: row.phone_verified,
-        createdAt: row.created_at,
-        lastLoginAt: row.last_login_at,
-        failedLoginAttempts: row.failed_login_attempts,
-        lockedUntil: row.locked_until,
-        profile: row.first_name ? {
-          id: row.id,
-          firstName: row.first_name,
-          lastName: row.last_name,
-          profileImageUrl: row.profile_image_url,
-          locationLat: row.location_lat,
-          locationLng: row.location_lng,
-          address: row.address,
-          city: row.city,
-          country: row.country,
-          preferences: row.preferences || {},
-          createdAt: row.created_at,
-          updatedAt: row.updated_at
-        } : null,
-        adminInfo: row.role === 'ADMIN' ? {
-          adminLevel: row.admin_level,
-          department: row.department,
-          isActive: row.admin_is_active
-        } : null
-      };
-
-      res.status(200).json({
-        success: true,
-        user
-      });
-    } catch (error) {
-      logger.error('Get user by ID error:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Internal server error',
-        error: 'INTERNAL_ERROR',
-      });
+    const user = await UserRepository.findById(req.params.userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found', error: 'USER_NOT_FOUND' });
     }
-  }
 
+    await AdminRepository.logAction({
+      adminId: req.user.id,
+      actionType: 'USER_VIEW',
+      targetType: 'USER',
+      targetId: user.id,
+      targetPhone: user.phone,
+      ipAddress: req.ip,
+      userAgent: req.get('User-Agent'),
+      success: true,
+    }).catch(() => {});
+
+    return res.status(200).json({ success: true, user: _formatUserRow(user) });
+  },
+
+  /**
+   * POST /admin/users/:userId/suspend
+   */
   async suspendUser(req, res) {
-    try {
-      const database = require('../database/connection');
-      const { userId } = req.params;
-      const { reason, duration, notifyUser, internalNote } = req.body;
-      const suspendedBy = req.user?.userId;
-
-      // Check if user exists
-      const userCheck = await database.query('SELECT * FROM users WHERE id = $1', [userId]);
-      if (userCheck.rows.length === 0) {
-        return res.status(404).json({
-          success: false,
-          message: 'User not found',
-          error: 'USER_NOT_FOUND',
-        });
-      }
-
-      // Calculate suspension end time
-      let suspendedUntil = null;
-      if (duration) {
-        suspendedUntil = new Date();
-        suspendedUntil.setHours(suspendedUntil.getHours() + parseInt(duration));
-      }
-
-      // Update user status
-      await database.query(
-        'UPDATE users SET status = $1, locked_until = $2, updated_at = NOW() WHERE id = $3',
-        ['SUSPENDED', suspendedUntil, userId]
-      );
-
-      // Add internal note if provided
-      if (internalNote) {
-        await database.query(
-          'INSERT INTO user_notes (user_id, admin_id, note_type, note_content, is_internal) VALUES ($1, $2, $3, $4, $5)',
-          [userId, suspendedBy, 'SUPPORT', internalNote, true]
-        );
-      }
-
-      // Log the action
-      await database.query(
-        'INSERT INTO admin_activity_logs (admin_id, action_type, target_type, target_id, action_details, ip_address, user_agent, success) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
-        [suspendedBy, 'USER_SUSPEND', 'USER', userId, { reason, duration }, req.clientIP, req.userAgent, true]
-      );
-
-      res.status(200).json({
-        success: true,
-        message: 'User suspended successfully',
-        user: {
-          id: userId,
-          status: 'SUSPENDED',
-          suspendedUntil
-        }
-      });
-    } catch (error) {
-      logger.error('Suspend user error:', error);
-      res.status(500).json({
+    const { error, value } = suspendUserSchema.validate(req.body, { abortEarly: false });
+    if (error) {
+      return res.status(400).json({
         success: false,
-        message: 'Internal server error',
-        error: 'INTERNAL_ERROR',
+        message: 'Validation error',
+        errors: error.details.map((d) => d.message),
       });
     }
-  }
 
+    const user = await UserRepository.findById(req.params.userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found', error: 'USER_NOT_FOUND' });
+    }
+
+    // Cannot suspend another admin (must be SUPER_ADMIN to do so)
+    if (user.role === 'ADMIN' && req.user.adminSubRole !== 'SUPER_ADMIN') {
+      return res.status(403).json({
+        success: false,
+        message: 'Only SUPER_ADMIN can suspend admin accounts.',
+        error: 'INSUFFICIENT_PERMISSIONS',
+      });
+    }
+
+    await UserRepository.updateStatus(user.id, 'SUSPENDED');
+
+    // If duration specified — set locked_until as suspension expiry
+    if (value.duration) {
+      const lockedUntil = new Date(Date.now() + value.duration * 60 * 60 * 1000);
+      await UserRepository.lockAccount(user.id, value.duration * 60);
+    }
+
+    // Revoke all active sessions
+    await TokenRepository.deactivateAllUserSessions(user.id);
+
+    // Publish event
+    await eventPublisher.userUpdated(user.id, user.phone, user.role, req.user.id, value.reason);
+
+    // Log admin action
+    await AdminRepository.logAction({
+      adminId: req.user.id,
+      actionType: 'USER_SUSPEND',
+      targetType: 'USER',
+      targetId: user.id,
+      targetPhone: user.phone,
+      actionDetails: { reason: value.reason, duration: value.duration, internalNote: value.internalNote },
+      ipAddress: req.ip,
+      userAgent: req.get('User-Agent'),
+      success: true,
+    }).catch(() => {});
+
+    logger.info('User suspended by admin', { targetUserId: user.id, adminId: req.user.id });
+
+    return res.status(200).json({
+      success: true,
+      message: 'User suspended successfully.',
+      user: { id: user.id, status: 'SUSPENDED', suspendedUntil: value.duration
+        ? new Date(Date.now() + value.duration * 3600000).toISOString() : null },
+    });
+  },
+
+  /**
+   * POST /admin/users/:userId/ban
+   */
   async banUser(req, res) {
-    try {
-      const database = require('../database/connection');
-      const { userId } = req.params;
-      const { reason, permanent, notifyUser, internalNote, deleteData } = req.body;
-      const bannedBy = req.user?.userId;
-
-      // Check if user exists
-      const userCheck = await database.query('SELECT * FROM users WHERE id = $1', [userId]);
-      if (userCheck.rows.length === 0) {
-        return res.status(404).json({
-          success: false,
-          message: 'User not found',
-          error: 'USER_NOT_FOUND',
-        });
-      }
-
-      // Update user status
-      await database.query(
-        'UPDATE users SET status = $1, updated_at = NOW() WHERE id = $2',
-        ['BANNED', userId]
-      );
-
-      // Add internal note if provided
-      if (internalNote) {
-        await database.query(
-          'INSERT INTO user_notes (user_id, admin_id, note_type, note_content, is_internal) VALUES ($1, $2, $3, $4, $5)',
-          [userId, bannedBy, 'SECURITY', internalNote, true]
-        );
-      }
-
-      // Log the action
-      await database.query(
-        'INSERT INTO admin_activity_logs (admin_id, action_type, target_type, target_id, action_details, ip_address, user_agent, success) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
-        [bannedBy, 'USER_BAN', 'USER', userId, { reason, permanent, deleteData }, req.clientIP, req.userAgent, true]
-      );
-
-      res.status(200).json({
-        success: true,
-        message: 'User banned successfully',
-        user: {
-          id: userId,
-          status: 'BANNED',
-          bannedAt: new Date().toISOString()
-        }
-      });
-    } catch (error) {
-      logger.error('Ban user error:', error);
-      res.status(500).json({
+    const { error, value } = banUserSchema.validate(req.body, { abortEarly: false });
+    if (error) {
+      return res.status(400).json({
         success: false,
-        message: 'Internal server error',
-        error: 'INTERNAL_ERROR',
+        message: 'Validation error',
+        errors: error.details.map((d) => d.message),
       });
     }
-  }
 
-  async verifyUser(req, res) {
-    try {
-      const database = require('../database/connection');
-      const { userId } = req.params;
-      const verifiedBy = req.user?.userId;
+    const user = await UserRepository.findById(req.params.userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found', error: 'USER_NOT_FOUND' });
+    }
 
-      // Check if user exists
-      const userCheck = await database.query('SELECT * FROM users WHERE id = $1', [userId]);
-      if (userCheck.rows.length === 0) {
-        return res.status(404).json({
-          success: false,
-          message: 'User not found',
-          error: 'USER_NOT_FOUND',
-        });
-      }
-
-      // Update user verification status
-      await database.query(
-        'UPDATE users SET phone_verified = true, status = $1, updated_at = NOW() WHERE id = $2',
-        ['ACTIVE', userId]
-      );
-
-      // Log the action
-      await database.query(
-        'INSERT INTO admin_activity_logs (admin_id, action_type, target_type, target_id, action_details, ip_address, user_agent, success) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
-        [verifiedBy, 'VERIFICATION_OVERRIDE', 'USER', userId, {}, req.clientIP, req.userAgent, true]
-      );
-
-      res.status(200).json({
-        success: true,
-        message: 'User verified successfully'
-      });
-    } catch (error) {
-      logger.error('Verify user error:', error);
-      res.status(500).json({
+    if (user.role === 'ADMIN' && req.user.adminSubRole !== 'SUPER_ADMIN') {
+      return res.status(403).json({
         success: false,
-        message: 'Internal server error',
-        error: 'INTERNAL_ERROR',
+        message: 'Only SUPER_ADMIN can ban admin accounts.',
+        error: 'INSUFFICIENT_PERMISSIONS',
       });
     }
-  }
 
-  async bulkUserAction(req, res) {
-    try {
-      const { userIds, action, actionData } = req.body;
+    await UserRepository.updateStatus(user.id, 'BANNED');
+    await TokenRepository.deactivateAllUserSessions(user.id);
+    await eventPublisher.userUpdated(user.id, user.phone, user.role, req.user.id, value.reason);
 
-      const results = {
-        successful: [],
-        failed: []
-      };
+    await AdminRepository.logAction({
+      adminId: req.user.id,
+      actionType: 'USER_BAN',
+      targetType: 'USER',
+      targetId: user.id,
+      targetPhone: user.phone,
+      actionDetails: { reason: value.reason, permanent: value.permanent, internalNote: value.internalNote },
+      ipAddress: req.ip,
+      userAgent: req.get('User-Agent'),
+      success: true,
+    }).catch(() => {});
 
-      for (const userId of userIds) {
-        try {
-          switch (action) {
-            case 'SUSPEND':
-              await this.suspendUser({ params: { userId }, body: actionData, user: req.user, clientIP: req.clientIP, userAgent: req.userAgent }, { status: () => {} });
-              results.successful.push({ userId, success: true });
-              break;
-            case 'BAN':
-              await this.banUser({ params: { userId }, body: actionData, user: req.user, clientIP: req.clientIP, userAgent: req.userAgent }, { status: () => {} });
-              results.successful.push({ userId, success: true });
-              break;
-            case 'VERIFY':
-              await this.verifyUser({ params: { userId }, user: req.user, clientIP: req.clientIP, userAgent: req.userAgent }, { status: () => {} });
-              results.successful.push({ userId, success: true });
-              break;
-            default:
-              results.failed.push({ userId, error: 'Invalid action' });
-          }
-        } catch (error) {
-          results.failed.push({ userId, error: error.message });
-        }
-      }
+    logger.info('User banned by admin', { targetUserId: user.id, adminId: req.user.id });
 
-      res.status(200).json({
-        success: true,
-        processed: userIds.length,
-        successful: results.successful,
-        failed: results.failed,
-        summary: {
-          totalProcessed: userIds.length,
-          successCount: results.successful.length,
-          failureCount: results.failed.length
-        }
-      });
-    } catch (error) {
-      logger.error('Bulk user action error:', error);
-      res.status(500).json({
+    return res.status(200).json({
+      success: true,
+      message: 'User banned successfully.',
+      user: { id: user.id, status: 'BANNED', bannedAt: new Date().toISOString() },
+    });
+  },
+
+  /**
+   * POST /admin/users/:userId/activate
+   * Reactivate a suspended/banned user.
+   */
+  async activateUser(req, res) {
+    const user = await UserRepository.findById(req.params.userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    await UserRepository.updateStatus(user.id, 'ACTIVE');
+    await UserRepository.unlockAccount(user.id);
+
+    await AdminRepository.logAction({
+      adminId: req.user.id,
+      actionType: 'USER_EDIT',
+      targetType: 'USER',
+      targetId: user.id,
+      targetPhone: user.phone,
+      actionDetails: { action: 'ACTIVATE', previousStatus: user.status },
+      ipAddress: req.ip,
+      userAgent: req.get('User-Agent'),
+      success: true,
+    }).catch(() => {});
+
+    return res.status(200).json({
+      success: true,
+      message: 'User activated successfully.',
+      user: { id: user.id, status: 'ACTIVE' },
+    });
+  },
+
+  /**
+   * POST /admin/users/bulk-action
+   */
+  async bulkAction(req, res) {
+    const { error, value } = bulkActionSchema.validate(req.body, { abortEarly: false });
+    if (error) {
+      return res.status(400).json({
         success: false,
-        message: 'Internal server error',
-        error: 'INTERNAL_ERROR',
+        message: 'Validation error',
+        errors: error.details.map((d) => d.message),
       });
     }
-  }
 
-  // Dashboard endpoints
+    const successful = [];
+    const failed = [];
+
+    for (const userId of value.userIds) {
+      try {
+        const user = await UserRepository.findById(userId);
+        if (!user) {
+          failed.push({ userId, error: 'User not found' });
+          continue;
+        }
+
+        switch (value.action) {
+          case 'SUSPEND':
+            await UserRepository.updateStatus(userId, 'SUSPENDED');
+            await TokenRepository.deactivateAllUserSessions(userId);
+            break;
+          case 'BAN':
+            await UserRepository.updateStatus(userId, 'BANNED');
+            await TokenRepository.deactivateAllUserSessions(userId);
+            break;
+          case 'VERIFY':
+            await UserRepository.markPhoneVerified(userId);
+            break;
+          case 'DELETE':
+            // Soft-delete via BANNED status
+            await UserRepository.updateStatus(userId, 'BANNED');
+            break;
+          default:
+            break;
+        }
+
+        successful.push({ userId, success: true, message: `${value.action} applied` });
+      } catch (err) {
+        logger.error('Bulk action failed for user', { userId, action: value.action, error: err.message });
+        failed.push({ userId, error: err.message });
+      }
+    }
+
+    await AdminRepository.logAction({
+      adminId: req.user.id,
+      actionType: 'USER_BULK_ACTION',
+      targetType: 'USER_LIST',
+      actionDetails: { action: value.action, count: value.userIds.length, successCount: successful.length, failCount: failed.length },
+      ipAddress: req.ip,
+      userAgent: req.get('User-Agent'),
+      success: failed.length === 0,
+    }).catch(() => {});
+
+    return res.status(200).json({
+      success: true,
+      processed: value.userIds.length,
+      successful,
+      failed,
+      summary: {
+        totalProcessed: value.userIds.length,
+        successCount: successful.length,
+        failureCount: failed.length,
+      },
+    });
+  },
+
+  // ────────────────────────────────────────────────────────────────
+  // Dashboard Metrics
+  // ────────────────────────────────────────────────────────────────
+
+  /**
+   * GET /admin/dashboard/metrics
+   */
   async getDashboardMetrics(req, res) {
-    try {
-      const database = require('../database/connection');
+    const [userMetrics, authMetrics, registrationTrend] = await Promise.all([
+      UserRepository.getDashboardMetrics(),
+      AdminRepository.getAuthMetrics(),
+      AdminRepository.getRegistrationTrend(7),
+    ]);
 
-      // Get user metrics
-      const userMetrics = await database.query(`
-        SELECT 
-          COUNT(*) as total,
-          COUNT(CASE WHEN status = 'ACTIVE' THEN 1 END) as active,
-          COUNT(CASE WHEN created_at >= CURRENT_DATE THEN 1 END) as new_today,
-          COUNT(CASE WHEN created_at >= CURRENT_DATE - INTERVAL '7 days' THEN 1 END) as new_this_week,
-          COUNT(CASE WHEN role = 'BUYER' THEN 1 END) as buyers,
-          COUNT(CASE WHEN role = 'MERCHANT' THEN 1 END) as merchants,
-          COUNT(CASE WHEN role = 'ADMIN' THEN 1 END) as admins,
-          COUNT(CASE WHEN status = 'PENDING' THEN 1 END) as pending,
-          COUNT(CASE WHEN status = 'SUSPENDED' THEN 1 END) as suspended,
-          COUNT(CASE WHEN status = 'BANNED' THEN 1 END) as banned
-        FROM users
-      `);
-
-      // Get authentication metrics
-      const authMetrics = await database.query(`
-        SELECT 
-          COUNT(CASE WHEN event_type = 'PHONE_LOGIN_ATTEMPT' OR event_type = 'ADMIN_PHONE_LOGIN_ATTEMPT' THEN 1 END) as login_attempts_today,
-          COUNT(CASE WHEN event_type = 'LOGIN_SUCCESS' THEN 1 END) as successful_logins_today,
-          COUNT(CASE WHEN event_type = 'LOGIN_FAILURE' THEN 1 END) as failed_logins_today,
-          COUNT(CASE WHEN event_type = 'OTP_SENT' THEN 1 END) as otp_sent_today
-        FROM auth_audit_logs
-        WHERE created_at >= CURRENT_DATE
-      `);
-
-      // Get security metrics
-      const securityMetrics = await database.query(`
-        SELECT 
-          (SELECT COUNT(*) FROM auth_audit_logs WHERE created_at >= CURRENT_DATE AND (event_type = 'SUSPICIOUS_LOGIN' OR event_type = 'RATE_LIMIT_EXCEEDED')) as suspicious_activities,
-          COUNT(CASE WHEN status = 'LOCKED' THEN 1 END) as locked_accounts,
-          COUNT(CASE WHEN status = 'ACTIVE' AND role = 'ADMIN' THEN 1 END) as active_admin_sessions
-        FROM users
-      `);
-
-      const metrics = userMetrics.rows[0];
-      const auth = authMetrics.rows[0];
-      const security = securityMetrics.rows[0];
-
-      res.status(200).json({
-        success: true,
-        metrics: {
-          users: {
-            total: parseInt(metrics.total),
-            active: parseInt(metrics.active),
-            newToday: parseInt(metrics.new_today),
-            newThisWeek: parseInt(metrics.new_this_week),
-            byRole: {
-              BUYER: parseInt(metrics.buyers),
-              MERCHANT: parseInt(metrics.merchants),
-              ADMIN: parseInt(metrics.admins)
-            },
-            byStatus: {
-              ACTIVE: parseInt(metrics.active),
-              PENDING: parseInt(metrics.pending),
-              SUSPENDED: parseInt(metrics.suspended),
-              BANNED: parseInt(metrics.banned)
-            }
+    return res.status(200).json({
+      success: true,
+      metrics: {
+        users: {
+          total: parseInt(userMetrics.total, 10),
+          active: parseInt(userMetrics.active, 10),
+          newToday: parseInt(userMetrics.new_today, 10),
+          newThisWeek: parseInt(userMetrics.new_this_week, 10),
+          byRole: {
+            BUYER: parseInt(userMetrics.buyers, 10),
+            MERCHANT: parseInt(userMetrics.merchants, 10),
+            ADMIN: parseInt(userMetrics.admins, 10),
           },
-          authentication: {
-            loginAttemptsToday: parseInt(auth.login_attempts_today),
-            successfulLoginsToday: parseInt(auth.successful_logins_today),
-            failedLoginsToday: parseInt(auth.failed_logins_today),
-            otpSentToday: parseInt(auth.otp_sent_today),
-            averageLoginTime: 2.5 // placeholder
+          byStatus: {
+            PENDING: parseInt(userMetrics.pending, 10),
+            ACTIVE: parseInt(userMetrics.active, 10),
+            BANNED: parseInt(userMetrics.banned, 10),
+            SUSPENDED: parseInt(userMetrics.suspended, 10),
           },
-          security: {
-            suspiciousActivities: parseInt(security.suspicious_activities),
-            blockedIPs: 0, // placeholder
-            lockedAccounts: parseInt(security.locked_accounts),
-            activeAdminSessions: parseInt(security.active_admin_sessions)
-          },
-          system: {
-            uptime: 99.9,
-            apiResponseTime: 150,
-            databaseConnections: 5,
-            errorRate: 0.01
-          }
         },
-        trends: {
-          userRegistrations: [], // Would need date-based query
-          loginActivity: [], // Would need date-based query
-          securityEvents: [] // Would need date-based query
-        }
-      });
-    } catch (error) {
-      logger.error('Get dashboard metrics error:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Internal server error',
-        error: 'INTERNAL_ERROR',
-      });
-    }
-  }
-
-  // Security endpoints
-  async getSecurityAlerts(req, res) {
-    try {
-      // For now, return mock data - this can be enhanced later with real security alerts
-      const mockAlerts = [
-        {
-          id: '1',
-          type: 'SUSPICIOUS_LOGIN',
-          severity: 'MEDIUM',
-          title: 'Suspicious login attempt detected',
-          description: 'Multiple failed login attempts from unusual IP address',
-          userId: null,
-          phone: '+962712345678',
-          ipAddress: '192.168.1.100',
-          occurredAt: new Date().toISOString(),
-          status: 'NEW',
-          actions: [
-            { action: 'investigate', label: 'Investigate', requiresConfirmation: false },
-            { action: 'block_ip', label: 'Block IP', requiresConfirmation: true }
-          ]
+        authentication: {
+          loginAttemptsToday: parseInt(authMetrics.login_attempts_today || 0, 10),
+          successfulLoginsToday: parseInt(authMetrics.successful_today || 0, 10),
+          failedLoginsToday: parseInt(authMetrics.failed_today || 0, 10),
+          otpSentToday: parseInt(authMetrics.otp_sent_today || 0, 10),
+          averageLoginTime: 0, // Placeholder — would need event timing data
         },
-        {
-          id: '2',
-          type: 'RATE_LIMIT_EXCEEDED',
-          severity: 'LOW',
-          title: 'Rate limit exceeded',
-          description: 'User exceeded rate limit for OTP requests',
-          userId: 'user-123',
-          phone: '+962798765432',
-          ipAddress: '10.0.0.1',
-          occurredAt: new Date(Date.now() - 3600000).toISOString(),
-          status: 'INVESTIGATING',
-          actions: [
-            { action: 'resolve', label: 'Resolve', requiresConfirmation: false }
-          ]
-        }
-      ];
+      },
+      trends: {
+        userRegistrations: registrationTrend,
+        loginActivity: [],   // Extend with audit log data if needed
+        securityEvents: [],
+      },
+    });
+  },
 
-      const summary = {
-        total: mockAlerts.length,
-        bySeverity: {
-          'LOW': mockAlerts.filter(a => a.severity === 'LOW').length,
-          'MEDIUM': mockAlerts.filter(a => a.severity === 'MEDIUM').length,
-          'HIGH': mockAlerts.filter(a => a.severity === 'HIGH').length,
-          'CRITICAL': mockAlerts.filter(a => a.severity === 'CRITICAL').length
-        },
-        byStatus: {
-          'NEW': mockAlerts.filter(a => a.status === 'NEW').length,
-          'INVESTIGATING': mockAlerts.filter(a => a.status === 'INVESTIGATING').length,
-          'RESOLVED': mockAlerts.filter(a => a.status === 'RESOLVED').length,
-          'FALSE_POSITIVE': mockAlerts.filter(a => a.status === 'FALSE_POSITIVE').length
-        }
-      };
+  /**
+   * GET /admin/activity-logs
+   */
+  async getActivityLogs(req, res) {
+    const { page = 1, limit = 50, adminId, actionType } = req.query;
+    const logs = await AdminRepository.getActivityLogs({
+      adminId, actionType,
+      page: parseInt(page, 10),
+      limit: parseInt(limit, 10),
+    });
+    return res.status(200).json({ success: true, logs });
+  },
+};
 
-      res.status(200).json({
-        success: true,
-        alerts: mockAlerts,
-        summary
-      });
-    } catch (error) {
-      logger.error('Get security alerts error:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Failed to fetch security alerts',
-        error: 'GET_SECURITY_ALERTS_FAILED'
-      });
-    }
-  }
+// ─── Helpers ───────────────────────────────────────────────────────────────
 
-  async resolveSecurityAlert(req, res) {
-    try {
-      const { alertId } = req.params;
-      const { resolution } = req.body;
-
-      // For now, just return success - this can be enhanced later with actual database updates
-      logger.info(`Security alert ${alertId} resolved with resolution: ${resolution}`);
-
-      res.status(200).json({
-        success: true,
-        message: 'Security alert resolved successfully'
-      });
-    } catch (error) {
-      logger.error('Resolve security alert error:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Failed to resolve security alert',
-        error: 'RESOLVE_SECURITY_ALERT_FAILED'
-      });
-    }
-  }
+function _formatUserRow(u) {
+  return {
+    id: u.id,
+    phone: u.phone,
+    role: u.role,
+    status: u.status,
+    phoneVerified: u.phone_verified,
+    createdAt: u.created_at,
+    lastLoginAt: u.last_login_at || null,
+    failedLoginAttempts: u.failed_login_attempts,
+    lockedUntil: u.locked_until || null,
+    profile: u.first_name
+      ? { firstName: u.first_name, lastName: u.last_name, city: u.city || null, country: u.country || null }
+      : null,
+  };
 }
 
-module.exports = new AdminController();
+function _getAvailableFilters() {
+  return [
+    { key: 'role', label: 'Role', type: 'select',
+      options: ['BUYER', 'MERCHANT', 'ADMIN', 'ALL'].map((v) => ({ value: v, label: v })) },
+    { key: 'status', label: 'Status', type: 'select',
+      options: ['PENDING', 'ACTIVE', 'BANNED', 'SUSPENDED', 'ALL'].map((v) => ({ value: v, label: v })) },
+    { key: 'search', label: 'Search (phone/name)', type: 'text' },
+    { key: 'registrationDateFrom', label: 'Registered After', type: 'date' },
+    { key: 'registrationDateTo', label: 'Registered Before', type: 'date' },
+  ];
+}
+
+module.exports = IdentityAdminController;
