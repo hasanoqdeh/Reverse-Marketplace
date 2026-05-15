@@ -16,6 +16,7 @@ router.use(getRateLimitMiddleware('admin'));
 // ── User management ────────────────────────────────────────────────────────
 router.get('/users', asyncHandler(IdentityAdminController.getUsers));
 router.get('/users/:userId', asyncHandler(IdentityAdminController.getUserById));
+router.patch('/users/:userId', asyncHandler(IdentityAdminController.updateUser));
 router.post('/users/:userId/suspend', asyncHandler(IdentityAdminController.suspendUser));
 router.post('/users/:userId/ban', asyncHandler(IdentityAdminController.banUser));
 router.post('/users/:userId/activate', asyncHandler(IdentityAdminController.activateUser));

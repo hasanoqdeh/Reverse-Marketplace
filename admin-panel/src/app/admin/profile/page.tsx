@@ -2,22 +2,65 @@
 
 import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { apiGetMe, AdminUser } from '@/lib/adminAPI'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { apiGetMe, apiUpdateMyProfile, AdminUser } from '@/lib/adminAPI'
 import { format } from 'date-fns'
-import { User, Phone, Shield, Clock, CheckCircle, AlertCircle } from 'lucide-react'
+import { User, Phone, Shield, Clock, CheckCircle, AlertCircle, Pencil, X } from 'lucide-react'
 
 export default function ProfilePage() {
   const [admin, setAdmin] = useState<AdminUser | null>(null)
   const [permissions, setPermissions] = useState<Record<string, boolean>>({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [editing, setEditing] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [feedback, setFeedback] = useState<string | null>(null)
+  const [form, setForm] = useState({ firstName: '', lastName: '', city: '', country: '' })
 
   useEffect(() => {
     apiGetMe()
-      .then(res => { setAdmin(res.admin); setPermissions(res.permissions ?? {}) })
+      .then(res => {
+        setAdmin(res.admin)
+        setPermissions(res.permissions ?? {})
+        setForm({
+          firstName: res.admin.profile?.firstName ?? '',
+          lastName:  res.admin.profile?.lastName  ?? '',
+          city:      res.admin.profile?.city      ?? '',
+          country:   res.admin.profile?.country   ?? '',
+        })
+      })
       .catch(() => setError('Failed to load profile'))
       .finally(() => setLoading(false))
   }, [])
+
+  function startEdit() { setEditing(true); setFeedback(null) }
+  function cancelEdit() {
+    setEditing(false)
+    setForm({
+      firstName: admin?.profile?.firstName ?? '',
+      lastName:  admin?.profile?.lastName  ?? '',
+      city:      admin?.profile?.city      ?? '',
+      country:   admin?.profile?.country   ?? '',
+    })
+  }
+
+  async function save() {
+    setSaving(true)
+    setFeedback(null)
+    try {
+      const res = await apiUpdateMyProfile(form)
+      setAdmin(res.admin)
+      setFeedback('Profile updated successfully.')
+      setEditing(false)
+    } catch {
+      setFeedback('Failed to save changes.')
+    } finally {
+      setSaving(false)
+    }
+  }
 
   if (loading) return <ProfileSkeleton />
   if (error) return <div className="p-6 text-red-600">{error}</div>
@@ -31,42 +74,87 @@ export default function ProfilePage() {
     ? `${admin.profile.firstName[0]}${admin.profile.lastName?.[0] ?? ''}`.toUpperCase()
     : admin.phone[0].toUpperCase()
 
-  const subRoleLabel: Record<string, string> = {
-    SUPER_ADMIN: 'Super Admin',
-    ADMIN: 'Admin',
-    SUPPORT: 'Support',
-  }
-
+  const subRoleLabel: Record<string, string> = { SUPER_ADMIN: 'Super Admin', ADMIN: 'Admin', SUPPORT: 'Support' }
   const statusColor = admin.status === 'ACTIVE' ? 'text-green-600' : 'text-red-600'
   const StatusIcon = admin.status === 'ACTIVE' ? CheckCircle : AlertCircle
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6 max-w-4xl">
       <h1 className="text-2xl font-bold text-gray-900">My Profile</h1>
+
+      {feedback && (
+        <Alert className={feedback.includes('success') ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}>
+          <AlertDescription className={feedback.includes('success') ? 'text-green-800' : 'text-red-800'}>
+            {feedback}
+          </AlertDescription>
+        </Alert>
+      )}
 
       {/* Identity card */}
       <Card>
         <CardContent className="pt-6">
-          <div className="flex items-center gap-5">
-            <div className="h-16 w-16 rounded-full bg-blue-600 flex items-center justify-center text-white text-2xl font-bold flex-shrink-0">
-              {initials}
-            </div>
-            <div>
-              <p className="text-xl font-semibold text-gray-900">{fullName}</p>
-              <p className="text-sm text-gray-500">{admin.phone}</p>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                  {subRoleLabel[admin.adminSubRole ?? ''] ?? admin.adminSubRole ?? 'Admin'}
-                </span>
-                <span className={`inline-flex items-center gap-1 text-xs font-medium ${statusColor}`}>
-                  <StatusIcon className="h-3 w-3" />
-                  {admin.status}
-                </span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-5">
+              <div className="h-16 w-16 rounded-full bg-blue-600 flex items-center justify-center text-white text-2xl font-bold flex-shrink-0">
+                {initials}
+              </div>
+              <div>
+                <p className="text-xl font-semibold text-gray-900">{fullName}</p>
+                <p className="text-sm text-gray-500">{admin.phone}</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                    {subRoleLabel[admin.adminSubRole ?? ''] ?? admin.adminSubRole ?? 'Admin'}
+                  </span>
+                  <span className={`inline-flex items-center gap-1 text-xs font-medium ${statusColor}`}>
+                    <StatusIcon className="h-3 w-3" />
+                    {admin.status}
+                  </span>
+                </div>
               </div>
             </div>
+            {!editing && (
+              <Button variant="outline" size="sm" onClick={startEdit} className="flex items-center gap-1.5">
+                <Pencil className="h-3.5 w-3.5" /> Edit Profile
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
+
+      {/* Edit form */}
+      {editing && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm font-semibold text-gray-700">Edit Profile</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label htmlFor="firstName">First Name</Label>
+                <Input id="firstName" value={form.firstName} onChange={e => setForm(f => ({ ...f, firstName: e.target.value }))} />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input id="lastName" value={form.lastName} onChange={e => setForm(f => ({ ...f, lastName: e.target.value }))} />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="city">City</Label>
+                <Input id="city" value={form.city} onChange={e => setForm(f => ({ ...f, city: e.target.value }))} placeholder="Optional" />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="country">Country</Label>
+                <Input id="country" value={form.country} onChange={e => setForm(f => ({ ...f, country: e.target.value }))} placeholder="e.g. JO" />
+              </div>
+            </div>
+            <div className="flex gap-3 pt-2">
+              <Button onClick={save} disabled={saving}>{saving ? 'Saving…' : 'Save Changes'}</Button>
+              <Button variant="outline" onClick={cancelEdit} disabled={saving}>
+                <X className="h-4 w-4 mr-1" /> Cancel
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid gap-6 sm:grid-cols-2">
         {/* Account details */}
@@ -166,13 +254,8 @@ export default function ProfilePage() {
   )
 }
 
-function Detail({
-  label, value, icon, valueClass,
-}: {
-  label: string
-  value: string
-  icon?: React.ReactNode
-  valueClass?: string
+function Detail({ label, value, icon, valueClass }: {
+  label: string; value: string; icon?: React.ReactNode; valueClass?: string
 }) {
   return (
     <div className="flex items-start justify-between gap-4">

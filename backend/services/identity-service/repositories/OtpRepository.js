@@ -16,7 +16,7 @@ const OtpRepository = {
     });
 
     const otp = await prisma.otpCode.create({
-      data: { userId, phone, code, purpose, expiresAt: new Date(expiresAt) },
+      data: { userId, phone, code: String(code), purpose, expiresAt: new Date(expiresAt) },
     });
     return flattenOtp(otp);
   },

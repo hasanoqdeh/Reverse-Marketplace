@@ -252,6 +252,60 @@ const IdentityAuthController = {
   },
 
   /**
+   * PATCH /auth/profile
+   * Authenticated user (BUYER or MERCHANT) updates their own profile.
+   */
+  async updateProfile(req, res) {
+    const schema = Joi.object({
+      firstName: Joi.string().max(100).optional(),
+      lastName:  Joi.string().max(100).optional(),
+      city:      Joi.string().max(100).optional().allow('', null),
+      country:   Joi.string().max(100).optional().allow('', null),
+    });
+
+    const { error, value } = schema.validate(req.body, { abortEarly: false });
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation error',
+        errors: error.details.map(d => d.message),
+      });
+    }
+
+    const UserRepository = require('../repositories/UserRepository');
+
+    const data = {};
+    if (value.firstName !== undefined) data.first_name = value.firstName;
+    if (value.lastName  !== undefined) data.last_name  = value.lastName;
+    if (value.city      !== undefined) data.city       = value.city || null;
+    if (value.country   !== undefined) data.country    = value.country || null;
+
+    if (Object.keys(data).length === 0) {
+      return res.status(400).json({ success: false, message: 'No fields provided to update.', error: 'NO_FIELDS' });
+    }
+
+    await UserRepository.updateProfile(req.user.id, data);
+    const updated = await UserRepository.findById(req.user.id);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Profile updated successfully.',
+      user: {
+        id: updated.id,
+        phone: updated.phone,
+        role: updated.role,
+        status: updated.status,
+        profile: {
+          firstName: updated.first_name,
+          lastName:  updated.last_name,
+          city:      updated.city,
+          country:   updated.country,
+        },
+      },
+    });
+  },
+
+  /**
    * GET /auth/health
    */
   health(req, res) {

@@ -102,6 +102,18 @@ export async function apiGetMe() {
   return data as { success: boolean; admin: AdminUser; permissions: Record<string, boolean> }
 }
 
+export interface UpdateProfilePayload { firstName?: string; lastName?: string; city?: string; country?: string }
+
+export async function apiUpdateMyProfile(payload: UpdateProfilePayload) {
+  const { data } = await getClient().patch('/admin/auth/me', payload)
+  return data as { success: boolean; message: string; admin: AdminUser }
+}
+
+export async function apiUpdateUser(userId: string, payload: UpdateProfilePayload) {
+  const { data } = await getClient().patch(`/admin/users/${userId}`, payload)
+  return data as { success: boolean; message: string; user: AdminUser }
+}
+
 // ─── Users ───────────────────────────────────────────────────────────────────
 
 export interface GetUsersParams {

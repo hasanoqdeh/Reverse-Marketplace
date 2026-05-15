@@ -58,3 +58,20 @@ export async function logout(token: string): Promise<void> {
     },
   );
 }
+
+export interface UpdateProfilePayload {
+  firstName?: string;
+  lastName?: string;
+  city?: string;
+  country?: string;
+}
+
+export async function updateProfile(
+  payload: UpdateProfilePayload,
+): Promise<{success: boolean; message: string; user: import('../types/api').User}> {
+  const response = await apiClient.patch(
+    `${AUTH_PREFIX}/profile`,
+    payload,
+  );
+  return response.data;
+}

@@ -33,6 +33,7 @@ interface AuthContextValue extends AuthState {
   resendOTP: (phone: string) => Promise<void>;
   logout: () => Promise<void>;
   clearError: () => void;
+  updateProfile: (payload: {firstName?: string; lastName?: string; city?: string; country?: string}) => Promise<void>;
   navigationRef: React.RefObject<NavigationContainerRef<RootStackParamList>>;
 }
 
@@ -241,6 +242,16 @@ export function AuthProvider({children}: {children: React.ReactNode}) {
     setState(prev => ({...prev, error: null}));
   }, []);
 
+  const updateProfile = useCallback(
+    async (payload: {firstName?: string; lastName?: string; city?: string; country?: string}) => {
+      const response = await AuthAPI.updateProfile(payload);
+      const updated = response.user;
+      setState(prev => ({...prev, user: updated}));
+      await AsyncStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(updated));
+    },
+    [],
+  );
+
   // ── Value ────────────────────────────────────────────────────────────────
 
   const value: AuthContextValue = {
@@ -250,6 +261,7 @@ export function AuthProvider({children}: {children: React.ReactNode}) {
     resendOTP,
     logout: logoutAction,
     clearError,
+    updateProfile,
     navigationRef,
   };
 

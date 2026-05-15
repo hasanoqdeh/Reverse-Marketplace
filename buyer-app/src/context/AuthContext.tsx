@@ -22,6 +22,7 @@ interface AuthContextValue {
   resendOTP: (phone: string) => Promise<void>;
   logout: () => Promise<void>;
   clearError: () => void;
+  updateProfile: (payload: {firstName?: string; lastName?: string; city?: string; country?: string}) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -157,6 +158,16 @@ export function AuthProvider({children}: {children: React.ReactNode}) {
     setError(null);
   }, []);
 
+  const updateProfile = useCallback(
+    async (payload: {firstName?: string; lastName?: string; city?: string; country?: string}) => {
+      const response = await AuthAPI.updateProfile(payload);
+      const updated = response.user;
+      setUser(updated);
+      await AsyncStorage.setItem('user', JSON.stringify(updated));
+    },
+    [],
+  );
+
   const value: AuthContextValue = {
     user,
     isAuthenticated,
@@ -169,6 +180,7 @@ export function AuthProvider({children}: {children: React.ReactNode}) {
     resendOTP,
     logout: performLogout,
     clearError,
+    updateProfile,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -64,3 +64,17 @@ export const logout = async (token: string): Promise<AuthLogoutResponse> => {
   );
   return response.data;
 };
+
+export interface UpdateProfilePayload {
+  firstName?: string;
+  lastName?: string;
+  city?: string;
+  country?: string;
+}
+
+export const updateProfile = async (
+  payload: UpdateProfilePayload,
+): Promise<{success: boolean; message: string; user: import('../types/api').User}> => {
+  const response = await apiClient.patch('/identity/auth/profile', payload);
+  return response.data;
+};

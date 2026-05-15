@@ -46,6 +46,13 @@ router.post(
   asyncHandler(IdentityAuthController.logout),
 );
 
+// PATCH /auth/profile — authenticated user updates their own profile
+router.patch(
+  '/profile',
+  authenticate,
+  asyncHandler(IdentityAuthController.updateProfile),
+);
+
 // ── Health ─────────────────────────────────────────────────────────────────
 
 router.get('/health', IdentityAuthController.health);

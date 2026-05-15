@@ -4,10 +4,14 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { apiGetUser, apiSuspendUser, apiBanUser, apiActivateUser, AdminUser } from '@/lib/adminAPI'
+import {
+  apiGetUser, apiSuspendUser, apiBanUser, apiActivateUser, apiUpdateUser, AdminUser,
+} from '@/lib/adminAPI'
 import { format } from 'date-fns'
-import { AlertCircle, ArrowLeft } from 'lucide-react'
+import { AlertCircle, ArrowLeft, Pencil, X } from 'lucide-react'
 
 const STATUS_COLORS: Record<string, string> = {
   ACTIVE: 'bg-green-100 text-green-800', PENDING: 'bg-yellow-100 text-yellow-800',
@@ -17,20 +21,56 @@ const STATUS_COLORS: Record<string, string> = {
 export default function UserDetailPage() {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
+
   const [user, setUser] = useState<AdminUser | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [feedback, setFeedback] = useState<string | null>(null)
+
+  // status actions
   const [showModal, setShowModal] = useState<'suspend' | 'ban' | null>(null)
   const [reason, setReason] = useState('')
   const [acting, setActing] = useState(false)
 
+  // profile edit
+  const [editing, setEditing] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [form, setForm] = useState({ firstName: '', lastName: '', city: '', country: '' })
+
   useEffect(() => {
     apiGetUser(id)
-      .then(r => setUser(r.user))
+      .then(r => { setUser(r.user); syncForm(r.user) })
       .catch(() => setError('User not found'))
       .finally(() => setLoading(false))
   }, [id])
+
+  function syncForm(u: AdminUser) {
+    setForm({
+      firstName: u.profile?.firstName ?? '',
+      lastName:  u.profile?.lastName  ?? '',
+      city:      u.profile?.city      ?? '',
+      country:   u.profile?.country   ?? '',
+    })
+  }
+
+  function startEdit() { setEditing(true); setFeedback(null) }
+  function cancelEdit() { setEditing(false); if (user) syncForm(user) }
+
+  async function saveProfile() {
+    if (!user) return
+    setSaving(true); setFeedback(null)
+    try {
+      const res = await apiUpdateUser(user.id, form)
+      setUser(res.user)
+      syncForm(res.user)
+      setFeedback('Profile updated successfully.')
+      setEditing(false)
+    } catch {
+      setFeedback('Failed to save changes.')
+    } finally {
+      setSaving(false)
+    }
+  }
 
   async function doAction(type: 'suspend' | 'ban' | 'activate') {
     if (!user) return
@@ -39,19 +79,23 @@ export default function UserDetailPage() {
       if (type === 'suspend') await apiSuspendUser(user.id, { reason })
       else if (type === 'ban') await apiBanUser(user.id, { reason, permanent: true })
       else await apiActivateUser(user.id)
-      setFeedback(`User ${type}d successfully`)
-      setShowModal(null)
-      setReason('')
+      setFeedback(`User ${type}d successfully.`)
+      setShowModal(null); setReason('')
       const refreshed = await apiGetUser(user.id)
       setUser(refreshed.user)
     } catch {
-      setError(`Failed to ${type} user`)
+      setFeedback(`Failed to ${type} user.`)
     } finally {
       setActing(false)
     }
   }
 
-  if (loading) return <div className="p-6 animate-pulse"><div className="h-8 bg-gray-200 rounded w-48 mb-4" /><div className="h-48 bg-gray-200 rounded-lg" /></div>
+  if (loading) return (
+    <div className="p-6 animate-pulse">
+      <div className="h-8 bg-gray-200 rounded w-48 mb-4" />
+      <div className="h-48 bg-gray-200 rounded-lg" />
+    </div>
+  )
   if (error && !user) return <div className="p-6 text-red-600">{error}</div>
   if (!user) return null
 
@@ -61,29 +105,81 @@ export default function UserDetailPage() {
         <ArrowLeft className="h-4 w-4 mr-1" /> Back to Users
       </button>
 
-      {feedback && <Alert className="border-green-200 bg-green-50"><AlertDescription className="text-green-800">{feedback}</AlertDescription></Alert>}
-      {error   && <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertDescription>{error}</AlertDescription></Alert>}
+      {feedback && (
+        <Alert className={feedback.includes('success') ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}>
+          <AlertDescription className={feedback.includes('success') ? 'text-green-800' : 'text-red-800'}>
+            {feedback}
+          </AlertDescription>
+        </Alert>
+      )}
 
-      {/* Profile */}
+      {/* Profile info */}
       <Card>
-        <CardHeader><CardTitle>User Profile</CardTitle></CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>User Profile</CardTitle>
+          {!editing && (
+            <Button variant="outline" size="sm" onClick={startEdit} className="flex items-center gap-1.5">
+              <Pencil className="h-3.5 w-3.5" /> Edit
+            </Button>
+          )}
+        </CardHeader>
         <CardContent className="space-y-3">
           <Row label="Phone"  value={user.phone} />
           <Row label="Role"   value={<Badge label={user.role} colorClass="bg-blue-100 text-blue-800" />} />
           <Row label="Status" value={<Badge label={user.status} colorClass={STATUS_COLORS[user.status] ?? 'bg-gray-100 text-gray-800'} />} />
           <Row label="Phone Verified" value={user.phoneVerified ? '✅ Verified' : '❌ Not verified'} />
-          {user.profile && <>
+          {user.profile && (
             <Row label="Name" value={`${user.profile.firstName} ${user.profile.lastName}`} />
-            {user.profile.city && <Row label="City" value={user.profile.city} />}
-          </>}
+          )}
+          {user.profile?.city    && <Row label="City"    value={user.profile.city} />}
+          {user.profile?.country && <Row label="Country" value={user.profile.country} />}
           <Row label="Registered" value={format(new Date(user.createdAt), 'PPP')} />
           <Row label="Last Login" value={user.lastLoginAt ? format(new Date(user.lastLoginAt), 'PPP p') : '—'} />
-          {user.failedLoginAttempts > 0 && <Row label="Failed Attempts" value={<span className="text-red-600">{user.failedLoginAttempts}</span>} />}
-          {user.lockedUntil && <Row label="Locked Until" value={<span className="text-red-600">{format(new Date(user.lockedUntil), 'PPP p')}</span>} />}
+          {Number(user.failedLoginAttempts) > 0 && (
+            <Row label="Failed Attempts" value={<span className="text-red-600">{user.failedLoginAttempts}</span>} />
+          )}
+          {user.lockedUntil && (
+            <Row label="Locked Until" value={<span className="text-red-600">{format(new Date(user.lockedUntil), 'PPP p')}</span>} />
+          )}
         </CardContent>
       </Card>
 
-      {/* Actions */}
+      {/* Edit form */}
+      {editing && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm font-semibold text-gray-700">Edit Profile</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label htmlFor="firstName">First Name</Label>
+                <Input id="firstName" value={form.firstName} onChange={e => setForm(f => ({ ...f, firstName: e.target.value }))} />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input id="lastName" value={form.lastName} onChange={e => setForm(f => ({ ...f, lastName: e.target.value }))} />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="city">City</Label>
+                <Input id="city" value={form.city} onChange={e => setForm(f => ({ ...f, city: e.target.value }))} placeholder="Optional" />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="country">Country</Label>
+                <Input id="country" value={form.country} onChange={e => setForm(f => ({ ...f, country: e.target.value }))} placeholder="e.g. JO" />
+              </div>
+            </div>
+            <div className="flex gap-3 pt-2">
+              <Button onClick={saveProfile} disabled={saving}>{saving ? 'Saving…' : 'Save Changes'}</Button>
+              <Button variant="outline" onClick={cancelEdit} disabled={saving}>
+                <X className="h-4 w-4 mr-1" /> Cancel
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Status actions */}
       {user.role !== 'ADMIN' && (
         <Card>
           <CardHeader><CardTitle>Actions</CardTitle></CardHeader>
@@ -107,7 +203,7 @@ export default function UserDetailPage() {
         </Card>
       )}
 
-      {/* Modal */}
+      {/* Suspend / Ban modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md space-y-4">

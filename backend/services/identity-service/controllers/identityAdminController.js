@@ -38,6 +38,13 @@ const banUserSchema = Joi.object({
   deleteData: Joi.boolean().default(false),
 });
 
+const updateUserSchema = Joi.object({
+  firstName: Joi.string().max(100).optional(),
+  lastName:  Joi.string().max(100).optional(),
+  city:      Joi.string().max(100).optional().allow('', null),
+  country:   Joi.string().max(100).optional().allow('', null),
+});
+
 const bulkActionSchema = Joi.object({
   userIds: Joi.array().items(Joi.string().uuid()).min(1).max(100).required(),
   action: Joi.string().valid('SUSPEND', 'BAN', 'DELETE', 'VERIFY', 'SEND_NOTIFICATION').required(),
@@ -118,6 +125,55 @@ const IdentityAdminController = {
     }).catch(() => {});
 
     return res.status(200).json({ success: true, user: _formatUserRow(user) });
+  },
+
+  /**
+   * PATCH /admin/users/:userId
+   * Update a user's profile info (name, city, country).
+   */
+  async updateUser(req, res) {
+    const { error, value } = updateUserSchema.validate(req.body, { abortEarly: false });
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation error',
+        errors: error.details.map((d) => d.message),
+      });
+    }
+
+    const user = await UserRepository.findById(req.params.userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found', error: 'USER_NOT_FOUND' });
+    }
+
+    const data = {};
+    if (value.firstName !== undefined) data.first_name = value.firstName;
+    if (value.lastName  !== undefined) data.last_name  = value.lastName;
+    if (value.city      !== undefined) data.city       = value.city || null;
+    if (value.country   !== undefined) data.country    = value.country || null;
+
+    if (Object.keys(data).length === 0) {
+      return res.status(400).json({ success: false, message: 'No fields provided to update.', error: 'NO_FIELDS' });
+    }
+
+    await UserRepository.updateProfile(user.id, data);
+
+    await AdminRepository.logAction({
+      adminId: req.user.id,
+      actionType: 'USER_EDIT',
+      targetType: 'USER',
+      targetId: user.id,
+      targetPhone: user.phone,
+      actionDetails: { updatedFields: Object.keys(data) },
+      ipAddress: req.ip,
+      userAgent: req.get('User-Agent'),
+      success: true,
+    }).catch(() => {});
+
+    logger.info('User profile updated by admin', { targetUserId: user.id, adminId: req.user.id });
+
+    const updated = await UserRepository.findById(user.id);
+    return res.status(200).json({ success: true, message: 'User updated successfully.', user: _formatUserRow(updated) });
   },
 
   /**

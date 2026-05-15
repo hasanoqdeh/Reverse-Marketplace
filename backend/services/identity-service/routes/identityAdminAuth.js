@@ -46,6 +46,57 @@ router.get('/me', asyncHandler(async (req, res) => {
 }));
 
 /**
+ * PATCH /admin/auth/me
+ * Update the authenticated admin's own profile fields.
+ */
+router.patch('/me', asyncHandler(async (req, res) => {
+  const { firstName, lastName, city, country } = req.body;
+
+  const data = {};
+  if (firstName !== undefined) data.first_name = String(firstName).trim();
+  if (lastName  !== undefined) data.last_name  = String(lastName).trim();
+  if (city      !== undefined) data.city        = city ? String(city).trim() : null;
+  if (country   !== undefined) data.country     = country ? String(country).trim() : null;
+
+  if (Object.keys(data).length === 0) {
+    return res.status(400).json({ success: false, message: 'No fields provided to update.', error: 'NO_FIELDS' });
+  }
+
+  await UserRepository.updateProfile(req.user.id, data);
+
+  const updated = await UserRepository.findById(req.user.id);
+
+  await AdminRepository.logAction({
+    adminId: req.user.id,
+    actionType: 'USER_EDIT',
+    targetType: 'ADMIN_PROFILE',
+    targetId: req.user.id,
+    actionDetails: { updatedFields: Object.keys(data) },
+    ipAddress: req.ip,
+    userAgent: req.get('User-Agent'),
+    success: true,
+  }).catch(() => {});
+
+  return res.status(200).json({
+    success: true,
+    message: 'Profile updated successfully.',
+    admin: {
+      id: updated.id,
+      phone: updated.phone,
+      role: updated.role,
+      adminSubRole: updated.admin_sub_role,
+      status: updated.status,
+      profile: {
+        firstName: updated.first_name,
+        lastName: updated.last_name,
+        city: updated.city,
+        country: updated.country,
+      },
+    },
+  });
+}));
+
+/**
  * GET /admin/auth/sessions
  * Lists the authenticated admin's active sessions.
  */

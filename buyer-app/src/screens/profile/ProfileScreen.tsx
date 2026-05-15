@@ -2,166 +2,292 @@ import React, {useState} from 'react';
 import {
   View,
   Text,
+  TextInput,
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
   Alert,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useAuth} from '../../context/AuthContext';
 
-export default function ProfileScreen() {
-  const {user, logout} = useAuth();
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
+const PRIMARY = '#2563EB';
 
-  const handleLogout = () => {
+export default function ProfileScreen() {
+  const {user, logout, updateProfile} = useAuth();
+
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+  const [form, setForm] = useState({
+    firstName: user?.profile?.firstName ?? '',
+    lastName:  user?.profile?.lastName  ?? '',
+    city:      (user?.profile as any)?.city    ?? '',
+    country:   (user?.profile as any)?.country ?? '',
+  });
+
+  const initials = user?.profile?.firstName
+    ? `${user.profile.firstName[0]}${user.profile.lastName?.[0] ?? ''}`.toUpperCase()
+    : (user?.phone?.[4] ?? 'U').toUpperCase();
+
+  const displayName =
+    user?.profile?.firstName && user?.profile?.lastName
+      ? `${user.profile.firstName} ${user.profile.lastName}`
+      : user?.phone ?? '';
+
+  function startEdit() {
+    setForm({
+      firstName: user?.profile?.firstName ?? '',
+      lastName:  user?.profile?.lastName  ?? '',
+      city:      (user?.profile as any)?.city    ?? '',
+      country:   (user?.profile as any)?.country ?? '',
+    });
+    setEditing(true);
+  }
+
+  function cancelEdit() {
+    setEditing(false);
+  }
+
+  async function handleSave() {
+    setSaving(true);
+    try {
+      await updateProfile(form);
+      setEditing(false);
+      Alert.alert('Success', 'Profile updated successfully.');
+    } catch {
+      Alert.alert('Error', 'Failed to save changes. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  function handleLogout() {
     Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
       {text: 'Cancel', style: 'cancel'},
       {
         text: 'Sign Out',
         style: 'destructive',
         onPress: async () => {
-          setIsLoggingOut(true);
-          try {
-            await logout();
-          } finally {
-            setIsLoggingOut(false);
-          }
+          setLoggingOut(true);
+          try { await logout(); } finally { setLoggingOut(false); }
         },
       },
     ]);
-  };
-
-  const initials = user?.profile?.firstName
-    ? (user.profile.firstName[0] ?? 'U').toUpperCase()
-    : (user?.phone?.[4] ?? 'U').toUpperCase();
-
-  const displayName =
-    user?.profile?.firstName && user?.profile?.lastName
-      ? `${user.profile.firstName} ${user.profile.lastName}`
-      : null;
+  }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Profile</Text>
-      </View>
+    <SafeAreaView style={styles.safe}>
+      <KeyboardAvoidingView
+        style={{flex: 1}}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={styles.headerTitle}>Profile</Text>
+            {!editing && (
+              <TouchableOpacity onPress={startEdit} style={styles.editBtn}>
+                <Text style={styles.editBtnText}>Edit</Text>
+              </TouchableOpacity>
+            )}
+          </View>
 
-      {/* Avatar */}
-      <View style={styles.avatarSection}>
-        <View style={styles.avatarCircle}>
-          <Text style={styles.avatarInitials}>{initials}</Text>
-        </View>
-        {displayName ? (
-          <Text style={styles.displayName}>{displayName}</Text>
-        ) : null}
-        <View style={styles.roleBadge}>
-          <Text style={styles.roleText}>
-            {user?.role ?? 'BUYER'}
-          </Text>
-        </View>
-      </View>
+          {/* Avatar section */}
+          <View style={styles.avatarSection}>
+            <View style={styles.avatarCircle}>
+              <Text style={styles.avatarInitials}>{initials}</Text>
+            </View>
+            <Text style={styles.displayName}>{displayName}</Text>
+            <View style={styles.roleBadge}>
+              <Text style={styles.roleText}>{user?.role ?? 'BUYER'}</Text>
+            </View>
+          </View>
 
-      {/* Info cards */}
-      <View style={styles.infoSection}>
-        <InfoRow label="Phone Number" value={user?.phone ?? '-'} />
-        <InfoRow label="Role" value={user?.role ?? '-'} />
-        <InfoRow
-          label="Account Status"
-          value={user?.status ?? '-'}
-          valueStyle={
-            user?.status === 'ACTIVE'
-              ? styles.statusActive
-              : styles.statusInactive
-          }
-        />
-        {user?.profile?.email ? (
-          <InfoRow label="Email" value={user.profile.email} />
-        ) : null}
-      </View>
+          {/* Edit form */}
+          {editing && (
+            <View style={styles.card}>
+              <Text style={styles.cardTitle}>Edit Profile</Text>
 
-      {/* Logout button */}
-      <View style={styles.logoutSection}>
-        <TouchableOpacity
-          style={[styles.logoutButton, isLoggingOut && styles.logoutButtonDisabled]}
-          onPress={handleLogout}
-          disabled={isLoggingOut}
-          activeOpacity={0.8}>
-          {isLoggingOut ? (
-            <ActivityIndicator color="#DC2626" size="small" />
-          ) : (
-            <Text style={styles.logoutText}>Sign Out</Text>
+              <Field
+                label="First Name"
+                value={form.firstName}
+                onChangeText={v => setForm(f => ({...f, firstName: v}))}
+                placeholder="Enter first name"
+              />
+              <Field
+                label="Last Name"
+                value={form.lastName}
+                onChangeText={v => setForm(f => ({...f, lastName: v}))}
+                placeholder="Enter last name"
+              />
+              <Field
+                label="City"
+                value={form.city}
+                onChangeText={v => setForm(f => ({...f, city: v}))}
+                placeholder="e.g. Amman"
+              />
+              <Field
+                label="Country"
+                value={form.country}
+                onChangeText={v => setForm(f => ({...f, country: v}))}
+                placeholder="e.g. JO"
+              />
+
+              <View style={styles.formActions}>
+                <TouchableOpacity
+                  style={[styles.saveBtn, saving && styles.btnDisabled]}
+                  onPress={handleSave}
+                  disabled={saving}
+                  activeOpacity={0.8}>
+                  {saving ? (
+                    <ActivityIndicator color="#fff" size="small" />
+                  ) : (
+                    <Text style={styles.saveBtnText}>Save Changes</Text>
+                  )}
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.cancelBtn}
+                  onPress={cancelEdit}
+                  disabled={saving}
+                  activeOpacity={0.8}>
+                  <Text style={styles.cancelBtnText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           )}
-        </TouchableOpacity>
-      </View>
+
+          {/* Info card */}
+          {!editing && (
+            <View style={styles.card}>
+              <Text style={styles.cardTitle}>Account Information</Text>
+              <InfoRow label="Phone" value={user?.phone ?? '—'} />
+              <InfoRow label="Role" value={user?.role ?? '—'} />
+              <InfoRow
+                label="Status"
+                value={user?.status ?? '—'}
+                valueStyle={
+                  user?.status === 'ACTIVE' ? styles.statusActive : styles.statusInactive
+                }
+              />
+              {user?.profile?.firstName ? (
+                <InfoRow label="First Name" value={user.profile.firstName} />
+              ) : null}
+              {user?.profile?.lastName ? (
+                <InfoRow label="Last Name" value={user.profile.lastName} />
+              ) : null}
+              {(user?.profile as any)?.city ? (
+                <InfoRow label="City" value={(user?.profile as any).city} />
+              ) : null}
+              {(user?.profile as any)?.country ? (
+                <InfoRow label="Country" value={(user?.profile as any).country} />
+              ) : null}
+            </View>
+          )}
+
+          {/* Logout */}
+          <View style={styles.logoutSection}>
+            <TouchableOpacity
+              style={[styles.logoutBtn, loggingOut && styles.btnDisabled]}
+              onPress={handleLogout}
+              disabled={loggingOut}
+              activeOpacity={0.8}>
+              {loggingOut ? (
+                <ActivityIndicator color="#DC2626" size="small" />
+              ) : (
+                <Text style={styles.logoutText}>Sign Out</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
-function InfoRow({
-  label,
-  value,
-  valueStyle,
-}: {
-  label: string;
-  value: string;
-  valueStyle?: object;
-}) {
+function InfoRow({label, value, valueStyle}: {label: string; value: string; valueStyle?: object}) {
   return (
-    <View style={infoRowStyles.row}>
-      <Text style={infoRowStyles.label}>{label}</Text>
-      <Text style={[infoRowStyles.value, valueStyle]}>{value}</Text>
+    <View style={infoStyles.row}>
+      <Text style={infoStyles.label}>{label}</Text>
+      <Text style={[infoStyles.value, valueStyle]}>{value}</Text>
     </View>
   );
 }
 
-const infoRowStyles = StyleSheet.create({
+function Field({label, value, onChangeText, placeholder}: {
+  label: string;
+  value: string;
+  onChangeText: (v: string) => void;
+  placeholder?: string;
+}) {
+  return (
+    <View style={fieldStyles.wrap}>
+      <Text style={fieldStyles.label}>{label}</Text>
+      <TextInput
+        style={fieldStyles.input}
+        value={value}
+        onChangeText={onChangeText}
+        placeholder={placeholder}
+        placeholderTextColor="#9CA3AF"
+      />
+    </View>
+  );
+}
+
+const fieldStyles = StyleSheet.create({
+  wrap: {marginBottom: 14},
+  label: {fontSize: 13, color: '#6B7280', fontWeight: '600', marginBottom: 6},
+  input: {
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+    fontSize: 15,
+    color: '#111827',
+    backgroundColor: '#F9FAFB',
+  },
+});
+
+const infoStyles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 14,
-    paddingHorizontal: 16,
+    paddingVertical: 13,
     borderBottomWidth: 1,
     borderBottomColor: '#F3F4F6',
   },
-  label: {
-    fontSize: 14,
-    color: '#6B7280',
-    fontWeight: '500',
-  },
-  value: {
-    fontSize: 14,
-    color: '#111827',
-    fontWeight: '600',
-    maxWidth: '60%',
-    textAlign: 'right',
-  },
+  label: {fontSize: 14, color: '#6B7280', fontWeight: '500'},
+  value: {fontSize: 14, color: '#111827', fontWeight: '600', maxWidth: '60%', textAlign: 'right'},
 });
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#F3F4F6',
-  },
+  safe: {flex: 1, backgroundColor: '#F3F4F6'},
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#E5E7EB',
   },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#111827',
+  headerTitle: {fontSize: 20, fontWeight: '700', color: '#111827'},
+  editBtn: {
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    backgroundColor: '#EFF6FF',
+    borderRadius: 8,
   },
+  editBtnText: {fontSize: 14, fontWeight: '700', color: PRIMARY},
   avatarSection: {
-    backgroundColor: '#2563EB',
+    backgroundColor: PRIMARY,
     alignItems: 'center',
-    paddingTop: 32,
-    paddingBottom: 32,
+    paddingVertical: 32,
   },
   avatarCircle: {
     width: 80,
@@ -174,66 +300,62 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'rgba(255,255,255,0.4)',
   },
-  avatarInitials: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
-  displayName: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#FFFFFF',
-    marginBottom: 8,
-  },
+  avatarInitials: {fontSize: 32, fontWeight: '700', color: '#FFFFFF'},
+  displayName: {fontSize: 18, fontWeight: '700', color: '#FFFFFF', marginBottom: 8},
   roleBadge: {
     backgroundColor: 'rgba(255,255,255,0.2)',
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 20,
   },
-  roleText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#FFFFFF',
-    letterSpacing: 1,
-  },
-  infoSection: {
+  roleText: {fontSize: 12, fontWeight: '600', color: '#FFFFFF', letterSpacing: 1},
+  card: {
     backgroundColor: '#FFFFFF',
     marginTop: 16,
     marginHorizontal: 16,
     borderRadius: 16,
-    overflow: 'hidden',
+    padding: 16,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 2,
   },
-  statusActive: {
-    color: '#059669',
+  cardTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#6B7280',
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+    marginBottom: 14,
   },
-  statusInactive: {
-    color: '#DC2626',
+  formActions: {gap: 10, marginTop: 6},
+  saveBtn: {
+    backgroundColor: PRIMARY,
+    borderRadius: 10,
+    paddingVertical: 14,
+    alignItems: 'center',
   },
-  logoutSection: {
-    marginTop: 24,
-    marginHorizontal: 16,
+  saveBtnText: {color: '#FFFFFF', fontSize: 15, fontWeight: '700'},
+  cancelBtn: {
+    borderWidth: 1.5,
+    borderColor: '#D1D5DB',
+    borderRadius: 10,
+    paddingVertical: 13,
+    alignItems: 'center',
   },
-  logoutButton: {
+  cancelBtnText: {color: '#374151', fontSize: 15, fontWeight: '600'},
+  btnDisabled: {opacity: 0.6},
+  statusActive: {color: '#059669'},
+  statusInactive: {color: '#DC2626'},
+  logoutSection: {marginTop: 16, marginHorizontal: 16, marginBottom: 32},
+  logoutBtn: {
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
     paddingVertical: 16,
     alignItems: 'center',
-    justifyContent: 'center',
     borderWidth: 1.5,
     borderColor: '#FCA5A5',
   },
-  logoutButtonDisabled: {
-    opacity: 0.6,
-  },
-  logoutText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#DC2626',
-  },
+  logoutText: {fontSize: 16, fontWeight: '700', color: '#DC2626'},
 });
