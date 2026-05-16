@@ -11,7 +11,7 @@ import {AuthStackParamList, RootStackParamList} from '../types/navigation';
 const Stack = createStackNavigator<AuthStackParamList>();
 
 export default function AuthNavigator() {
-  const {isAuthenticated} = useAuth();
+  const {isAuthenticated, needsProfileSetup} = useAuth();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
@@ -19,10 +19,10 @@ export default function AuthNavigator() {
     if (isAuthenticated) {
       navigation.reset({
         index: 0,
-        routes: [{name: 'App'}],
+        routes: [{name: needsProfileSetup ? 'ProfileSetup' : 'App'}],
       });
     }
-  }, [isAuthenticated, navigation]);
+  }, [isAuthenticated, needsProfileSetup, navigation]);
 
   return (
     <Stack.Navigator

@@ -36,6 +36,8 @@ export interface UserProfile {
   lastName?: string;
   email?: string;
   avatarUrl?: string;
+  city?: string;
+  country?: string;
 }
 
 export interface User {

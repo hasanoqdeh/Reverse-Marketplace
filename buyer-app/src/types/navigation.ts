@@ -15,5 +15,6 @@ export type RootStackParamList = {
   Splash: undefined;
   Onboarding: undefined;
   Auth: undefined;
+  ProfileSetup: undefined;
   App: undefined;
 };

@@ -14,6 +14,7 @@ interface AuthContextValue {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  needsProfileSetup: boolean;
   loginStep: 'phone' | 'otp';
   otpExpiresAt: string | null;
   error: string | null;
@@ -165,10 +166,14 @@ export function AuthProvider({children}: {children: React.ReactNode}) {
     [],
   );
 
+  const needsProfileSetup =
+    isAuthenticated && !isLoading && !user?.profile?.firstName;
+
   const value: AuthContextValue = {
     user,
     isAuthenticated,
     isLoading,
+    needsProfileSetup,
     loginStep,
     otpExpiresAt,
     error,
