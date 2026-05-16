@@ -1,0 +1,5 @@
+node_modules/
+logs/*.log
+prisma/generated2/
+uploads/
+.env

@@ -98,9 +98,10 @@ logs/
 *.sqlite3
 *.db
 
-# Database
-database/
+# Database binary files (but allow service database/ migration dirs)
 migrations/executed/
+!services/*/database/
+!services/*/database/**
 
 # SSL certificates
 *.pem
