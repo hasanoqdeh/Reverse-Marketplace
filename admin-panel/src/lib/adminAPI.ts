@@ -3,20 +3,14 @@ import { SessionManager } from './auth'
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000'
 
-let _client: AxiosInstance | null = null
-
-function getClient(): AxiosInstance {
-  if (_client) return _client
-
-  _client = axios.create({ baseURL: `${BASE_URL}/identity` })
-
-  _client.interceptors.request.use(config => {
+function makeAuthInterceptors(client: AxiosInstance) {
+  client.interceptors.request.use(config => {
     const token = SessionManager.getAccessToken()
     if (token) config.headers.Authorization = `Bearer ${token}`
     return config
   })
 
-  _client.interceptors.response.use(
+  client.interceptors.response.use(
     res => res,
     async err => {
       const original = err.config
@@ -28,7 +22,7 @@ function getClient(): AxiosInstance {
             const { data } = await axios.post(`${BASE_URL}/identity/auth/refresh-token`, { refreshToken })
             SessionManager.saveTokens(data.tokens.accessToken, data.tokens.refreshToken)
             original.headers.Authorization = `Bearer ${data.tokens.accessToken}`
-            return _client!(original)
+            return client(original)
           } catch {
             SessionManager.clearTokens()
             if (typeof window !== 'undefined') window.location.href = '/login'
@@ -41,8 +35,23 @@ function getClient(): AxiosInstance {
       return Promise.reject(err)
     },
   )
+}
 
+let _client: AxiosInstance | null = null
+let _requestClient: AxiosInstance | null = null
+
+function getClient(): AxiosInstance {
+  if (_client) return _client
+  _client = axios.create({ baseURL: `${BASE_URL}/identity` })
+  makeAuthInterceptors(_client)
   return _client
+}
+
+function getRequestClient(): AxiosInstance {
+  if (_requestClient) return _requestClient
+  _requestClient = axios.create({ baseURL: `${BASE_URL}/requests` })
+  makeAuthInterceptors(_requestClient)
+  return _requestClient
 }
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -186,4 +195,104 @@ export async function apiGetDashboardMetrics() {
 export async function apiGetLogs(params: { page?: number; limit?: number; adminId?: string; actionType?: string } = {}) {
   const { data } = await getClient().get('/admin/logs', { params })
   return data as { success: boolean; logs: ActivityLog[] }
+}
+
+// ─── Request Service Types ────────────────────────────────────────────────────
+
+export interface RequestCategory {
+  id: string; name: string; slug: string; description: string | null
+  icon: string | null; parentId: string | null; isActive: boolean
+  sortOrder: number; createdAt: string; updatedAt: string
+  children?: RequestCategory[]
+}
+
+export interface RequestImage {
+  id: string; requestId: string; imageUrl: string; thumbnailUrl: string | null
+  isPrimary: boolean; sortOrder: number; mimeType: string
+  width: number | null; height: number | null
+}
+
+export interface RequestItem {
+  id: string; buyerId: string; categoryId: string | null; title: string
+  description: string; status: string; budgetMin: number | null
+  budgetMax: number | null; locationAddress: string | null
+  locationCity: string | null; locationCountry: string | null
+  bidCount: number; expiresAt: string | null; viewCount: number
+  priorityScore: number; createdAt: string; updatedAt: string
+  publishedAt: string | null
+  category?: { id: string; name: string; slug: string } | null
+  images?: RequestImage[]
+}
+
+export interface RequestAnalytics {
+  totalRequests: number; activeRequests: number; completedRequests: number
+  totalValue: number; conversionRate: number
+  statusBreakdown?: { status: string; count: number }[]
+}
+
+// ─── Request Admin API ────────────────────────────────────────────────────────
+
+export interface GetAdminRequestsParams {
+  page?: number; limit?: number; status?: string
+  categories?: string; buyerId?: string; startDate?: string; endDate?: string
+}
+
+export async function apiGetAdminRequests(params: GetAdminRequestsParams = {}) {
+  const { data } = await getRequestClient().get('/admin/requests', { params })
+  return data as {
+    success: boolean; requests: RequestItem[]
+    pagination: Pagination; analytics: RequestAnalytics
+  }
+}
+
+export async function apiGetAdminRequest(id: string) {
+  const { data } = await getRequestClient().get(`/admin/requests/${id}`)
+  return data as { success: boolean; request: RequestItem }
+}
+
+export async function apiUpdateRequestStatus(id: string, status: string, reason?: string) {
+  const { data } = await getRequestClient().patch(`/admin/requests/${id}/status`, { status, reason })
+  return data as { success: boolean; message: string }
+}
+
+export async function apiDeleteRequest(id: string) {
+  const { data } = await getRequestClient().delete(`/admin/requests/${id}`)
+  return data as { success: boolean; message: string }
+}
+
+export async function apiTriggerExpiry() {
+  const { data } = await getRequestClient().post('/admin/requests/process-expired')
+  return data as { success: boolean; message: string }
+}
+
+export async function apiGetRequestAnalytics() {
+  const { data } = await getRequestClient().get('/admin/analytics')
+  return data as { success: boolean; analytics: RequestAnalytics }
+}
+
+// ─── Category Admin API ───────────────────────────────────────────────────────
+
+export async function apiGetCategories() {
+  const { data } = await getRequestClient().get('/categories')
+  return data as { success: boolean; categories: RequestCategory[] }
+}
+
+export interface CategoryPayload {
+  name: string; slug?: string; description?: string; icon?: string
+  parentId?: string | null; isActive?: boolean; sortOrder?: number
+}
+
+export async function apiCreateCategory(payload: CategoryPayload) {
+  const { data } = await getRequestClient().post('/admin/categories', payload)
+  return data as { success: boolean; category: RequestCategory; message: string }
+}
+
+export async function apiUpdateCategory(id: string, payload: Partial<CategoryPayload>) {
+  const { data } = await getRequestClient().put(`/admin/categories/${id}`, payload)
+  return data as { success: boolean; category: RequestCategory; message: string }
+}
+
+export async function apiDeleteCategory(id: string) {
+  const { data } = await getRequestClient().delete(`/admin/categories/${id}`)
+  return data as { success: boolean; message: string }
 }

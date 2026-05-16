@@ -1,29 +1,32 @@
 # Reverse Marketplace — Claude Code Guide
 
 ## Project Overview
-A reverse marketplace platform where buyers post requests and merchants bid to fulfill them. Full-stack monorepo with microservices backend and multiple frontends.
+A reverse marketplace platform where buyers post requests and merchants bid to fulfill them. Full-stack monorepo with a modular monolith backend and multiple frontends.
 
 ## Architecture
 
 ```
 reverse-marketplace/
 ├── backend/
-│   ├── gateway/          # Express API Gateway (entry point, port 3000)
-│   └── services/
-│       ├── identity-service/
-│       ├── user-service/
-│       ├── bidding-service/
-│       ├── chat-service/
-│       ├── notification-service/
-│       ├── order-service/
-│       ├── payment-service/
-│       ├── product-service/
-│       └── subscription-service/
-├── admin-panel/          # Next.js 14 App Router (admin dashboard)
-├── app/                  # React Native (buyers)
-├── prisma/               # Shared Prisma schema
-├── rabbitmq/             # RabbitMQ config
-├── nginx/                # Nginx config
+│   ├── src/
+│   │   ├── server.js          # Entry point (Express, port 3000)
+│   │   ├── config/            # Merged app config
+│   │   ├── prisma/            # Merged schema + single PrismaClient
+│   │   ├── cache/             # Shared Redis client
+│   │   ├── database/          # DB connection wrapper
+│   │   ├── events/            # RabbitMQ publisher
+│   │   ├── middleware/        # authenticate, authorize, rateLimiting
+│   │   ├── utils/             # logger
+│   │   └── modules/
+│   │       ├── identity/      # Auth, users, admin (routes/controllers/repos/services)
+│   │       └── requests/      # Requests, categories (routes/controllers/repos/services)
+│   ├── database/
+│   │   ├── migrate.js         # Migration runner
+│   │   └── migrations/        # SQL migration files (001_identity, 002_requests)
+│   └── init.sql               # Postgres bootstrap (Docker)
+├── admin-panel/               # Next.js 14 App Router (admin dashboard)
+├── rabbitmq/                  # RabbitMQ config
+├── nginx/                     # Nginx config
 └── docker-compose.yml
 ```
 
@@ -31,8 +34,8 @@ reverse-marketplace/
 
 | Layer | Technology |
 |---|---|
-| Backend | Node.js + Express, microservices |
-| ORM | Knex (SQL queries) + Prisma (schema/types) |
+| Backend | Node.js + Express, modular monolith |
+| ORM | Prisma (single merged schema) |
 | Database | PostgreSQL |
 | Cache | Redis |
 | Queue | RabbitMQ + Bull |
@@ -50,21 +53,20 @@ reverse-marketplace/
 ## Dev Commands
 
 ```bash
-# Run all services
-npm run dev:backend      # backend gateway on :3000
-npm run dev:admin        # admin panel (Next.js)
-npm run dev:app        # buyer app (React Native)
+# Run backend (port 3000)
+cd backend && npm run dev
 
-# Individual installs
-npm run install:all
+# Run admin panel (Next.js, port 3001)
+cd admin-panel && npm run dev
 
-# Tests & lint
-npm run test:backend
-npm run lint:all
+# DB — run migrations
+cd backend && npm run db:migrate
 
-# DB
-cd backend && npm run migrate
+# DB — seed
 cd backend && npm run seed
+
+# Generate Prisma client (after schema changes)
+cd backend && npx prisma generate --schema=src/prisma/schema.prisma
 ```
 
 ## Git Workflow
@@ -75,12 +77,12 @@ cd backend && npm run seed
 
 ## Key Patterns
 
-- Each microservice is self-contained under `backend/services/<name>/`
-- Inter-service communication via RabbitMQ (amqplib)
-- All routes go through the API Gateway (`backend/gateway/`)
-- Shared types/utilities in `backend/shared/`
+- Each module lives under `backend/src/modules/<name>/` with routes, controllers, repositories, services
+- Shared infrastructure (config, prisma, cache, events, middleware, utils) in `backend/src/`
+- Single `DATABASE_URL` — one PostgreSQL database, one Prisma schema, one client
+- Migrations are numbered SQL files in `backend/database/migrations/` tracked by a `migrations` table
+- Inter-module events via RabbitMQ through `src/events/publisher.js`
 - Admin panel uses Next.js App Router with `app/admin/` routes
-- Mobile apps use React Navigation (stack + bottom tabs)
 
 ## Security Reminders
 - Never commit `.env` files

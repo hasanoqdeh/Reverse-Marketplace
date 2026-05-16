@@ -69,8 +69,10 @@ services:
       DATABASE_USER: postgres
       DATABASE_NAME: reverse_marketplace
       IDENTITY_DATABASE_URL: "postgresql://postgres:password@postgres:5432/reverse_marketplace"
+      REQUEST_DATABASE_URL: "postgresql://postgres:password@postgres:5432/reverse_marketplace"
       REDIS_HOST: ${REDIS_HOST_DOCKER}
       RABBITMQ_HOST: ${RABBITMQ_HOST_DOCKER}
+      MONGO_URI: "mongodb://mongo:27017/reverse_marketplace"
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL_DOCKER}
       NEXT_PUBLIC_WS_URL: ${NEXT_PUBLIC_WS_URL_DOCKER}
     ports:
@@ -79,6 +81,7 @@ services:
       - postgres
       - redis
       - rabbitmq
+      - mongo
     volumes:
       - ./backend:/app
       - /app/node_modules
@@ -86,8 +89,8 @@ services:
       - ${DOCKER_NETWORK}
     restart: unless-stopped
     command: >
-      sh -c "npx prisma generate --schema=services/identity-service/prisma/schema.prisma &&
-             npx prisma db push --schema=services/identity-service/prisma/schema.prisma --skip-generate &&
+      sh -c "npx prisma generate --schema=src/prisma/schema.prisma &&
+             node database/migrate.js &&
              npm run dev"
 
   # Admin Panel

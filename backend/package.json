@@ -2,18 +2,16 @@
   "name": "reverse-marketplace-backend",
   "version": "1.0.0",
   "description": "Backend services for Reverse Marketplace",
-  "main": "gateway/index.js",
+  "main": "src/server.js",
   "scripts": {
-    "dev": "nodemon gateway/index.js",
-    "start": "node gateway/index.js",
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
     "test": "jest",
     "lint": "eslint . --ext .js,.ts",
-    "migrate": "knex migrate:latest",
-    "seed": "knex seed:run"
+    "db:migrate": "node database/migrate.js",
+    "db:seed": "node database/seed.js",
+    "db:fresh": "node database/migrate.js && node database/seed.js"
   },
-  "workspaces": [
-    "services/*"
-  ],
   "dependencies": {
     "amqplib": "^0.10.3",
     "bcryptjs": "^2.4.3",
@@ -27,6 +25,7 @@
     "jsonwebtoken": "^9.0.2",
     "knex": "^2.5.1",
     "moment": "^2.29.4",
+    "mongoose": "^9.6.2",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.4",
     "pg": "^8.11.3",
@@ -51,7 +50,7 @@
     "marketplace",
     "reverse-auction",
     "backend",
-    "microservices"
+    "modular-monolith"
   ],
   "author": "Reverse Marketplace Team",
   "license": "MIT"

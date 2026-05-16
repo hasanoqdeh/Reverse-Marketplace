@@ -1,0 +1,15 @@
+'use strict';
+
+function authorizeAdmin(req, res, next) {
+  if (!req.user) {
+    return res.status(401).json({ success: false, message: 'Authentication required', error: 'UNAUTHORIZED' });
+  }
+
+  if (req.user.role !== 'ADMIN') {
+    return res.status(403).json({ success: false, message: 'Admin access required', error: 'FORBIDDEN' });
+  }
+
+  next();
+}
+
+module.exports = { authorizeAdmin };

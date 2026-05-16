@@ -1,0 +1,258 @@
+generator client {
+  provider      = "prisma-client-js"
+  output        = "./generated"
+  binaryTargets = ["native", "debian-openssl-3.0.x", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Identity enums ────────────────────────────────────────────────────────
+
+enum UserRole {
+  BUYER
+  MERCHANT
+  ADMIN
+}
+
+enum UserStatus {
+  PENDING
+  ACTIVE
+  BANNED
+  SUSPENDED
+}
+
+enum TokenType {
+  ACCESS
+  REFRESH
+}
+
+enum AdminActionType {
+  USER_VIEW
+  USER_EDIT
+  USER_SUSPEND
+  USER_BAN
+  USER_DELETE
+  USER_BULK_ACTION
+  ADMIN_ADD
+  ADMIN_EDIT
+  ADMIN_REMOVE
+  SYSTEM_CONFIG_CHANGE
+  EXPORT_DATA
+  IMPORT_DATA
+  SECURITY_ALERT
+  SESSION_TERMINATE
+  PASSWORD_RESET
+  VERIFICATION_OVERRIDE
+}
+
+enum AdminSubRole {
+  SUPER_ADMIN
+  ADMIN
+  SUPPORT
+}
+
+// ─── Identity models ───────────────────────────────────────────────────────
+
+model User {
+  id                  String        @id @default(uuid()) @db.Uuid
+  phone               String        @unique
+  role                UserRole      @default(BUYER)
+  status              UserStatus    @default(PENDING)
+  phoneVerified       Boolean       @default(false) @map("phone_verified")
+  createdAt           DateTime      @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt           DateTime      @updatedAt @map("updated_at") @db.Timestamptz
+  lastLoginAt         DateTime?     @map("last_login_at") @db.Timestamptz
+  failedLoginAttempts Int           @default(0) @map("failed_login_attempts")
+  lockedUntil         DateTime?     @map("locked_until") @db.Timestamptz
+  adminSubRole        AdminSubRole? @map("admin_sub_role")
+
+  profile    UserProfile?
+  authTokens AuthToken[]
+
+  @@map("users")
+}
+
+model UserProfile {
+  id              String   @id @default(uuid()) @db.Uuid
+  userId          String   @unique @map("user_id") @db.Uuid
+  firstName       String   @default("") @map("first_name")
+  lastName        String   @default("") @map("last_name")
+  profileImageUrl String?  @map("profile_image_url")
+  locationLat     Decimal? @map("location_lat") @db.Decimal(10, 8)
+  locationLng     Decimal? @map("location_lng") @db.Decimal(11, 8)
+  address         String?
+  city            String?
+  country         String?
+  preferences     Json     @default("{}")
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_profiles")
+}
+
+model AuthToken {
+  id                String    @id @default(uuid()) @db.Uuid
+  userId            String    @map("user_id") @db.Uuid
+  tokenType         TokenType @map("token_type")
+  tokenHash         String    @map("token_hash")
+  deviceFingerprint String?   @map("device_fingerprint")
+  ipAddress         String?   @map("ip_address")
+  userAgent         String?   @map("user_agent")
+  expiresAt         DateTime  @map("expires_at") @db.Timestamptz
+  lastUsedAt        DateTime? @map("last_used_at") @db.Timestamptz
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  revokedAt         DateTime? @map("revoked_at") @db.Timestamptz
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("auth_tokens")
+}
+
+// ─── Request enums ─────────────────────────────────────────────────────────
+
+enum RequestStatus {
+  DRAFT
+  ACTIVE
+  HAS_BIDS
+  COMPLETED
+  CANCELLED
+  EXPIRED
+}
+
+// ─── Request models ────────────────────────────────────────────────────────
+
+model RequestCategory {
+  id          String    @id @default(uuid()) @db.Uuid
+  name        String    @db.VarChar(100)
+  slug        String    @unique @db.VarChar(100)
+  description String?
+  parentId    String?   @map("parent_id") @db.Uuid
+  iconUrl     String?   @map("icon_url") @db.VarChar(500)
+  isActive    Boolean   @default(true) @map("is_active")
+  sortOrder   Int       @default(0) @map("sort_order")
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  parent   RequestCategory?  @relation("CategoryTree", fields: [parentId], references: [id])
+  children RequestCategory[] @relation("CategoryTree")
+  requests Request[]
+  drafts   RequestDraft[]
+
+  @@map("request_categories")
+}
+
+model Request {
+  id              String         @id @default(uuid()) @db.Uuid
+  buyerId         String         @map("buyer_id") @db.Uuid
+  categoryId      String         @map("category_id") @db.Uuid
+  title           String         @db.VarChar(255)
+  description     String
+  budgetMin       Decimal?       @map("budget_min") @db.Decimal(12, 2)
+  budgetMax       Decimal?       @map("budget_max") @db.Decimal(12, 2)
+  locationLat     Decimal?       @map("location_lat") @db.Decimal(10, 8)
+  locationLng     Decimal?       @map("location_lng") @db.Decimal(11, 8)
+  locationAddress String?        @map("location_address")
+  locationCity    String?        @map("location_city") @db.VarChar(100)
+  locationCountry String?        @map("location_country") @db.VarChar(100)
+  status          RequestStatus  @default(DRAFT)
+  priorityScore   Int            @default(0) @map("priority_score")
+  bidCount        Int            @default(0) @map("bid_count")
+  viewCount       Int            @default(0) @map("view_count")
+  expiresAt       DateTime?      @map("expires_at") @db.Timestamptz
+  publishedAt     DateTime?      @map("published_at") @db.Timestamptz
+  createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime       @updatedAt @map("updated_at") @db.Timestamptz
+
+  category    RequestCategory    @relation(fields: [categoryId], references: [id])
+  images      RequestImage[]
+  extensions  RequestExtension[]
+  searchIndex RequestSearchIndex?
+
+  @@map("requests")
+}
+
+model RequestImage {
+  id               String   @id @default(uuid()) @db.Uuid
+  requestId        String   @map("request_id") @db.Uuid
+  imageUrl         String   @map("image_url") @db.VarChar(500)
+  thumbnailUrl     String?  @map("thumbnail_url") @db.VarChar(500)
+  originalFilename String?  @map("original_filename") @db.VarChar(255)
+  fileSize         BigInt   @map("file_size")
+  mimeType         String   @map("mime_type") @db.VarChar(100)
+  width            Int?
+  height           Int?
+  sortOrder        Int      @default(0) @map("sort_order")
+  isPrimary        Boolean  @default(false) @map("is_primary")
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  request Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  @@map("request_images")
+}
+
+model RequestDraft {
+  id              String    @id @default(uuid()) @db.Uuid
+  buyerId         String    @map("buyer_id") @db.Uuid
+  categoryId      String?   @map("category_id") @db.Uuid
+  title           String?   @db.VarChar(255)
+  description     String?
+  budgetMin       Decimal?  @map("budget_min") @db.Decimal(12, 2)
+  budgetMax       Decimal?  @map("budget_max") @db.Decimal(12, 2)
+  locationLat     Decimal?  @map("location_lat") @db.Decimal(10, 8)
+  locationLng     Decimal?  @map("location_lng") @db.Decimal(11, 8)
+  locationAddress String?   @map("location_address")
+  autoSaveData    Json      @default("{}") @map("auto_save_data")
+  expiresAt       DateTime  @map("expires_at") @db.Timestamptz
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  category RequestCategory? @relation(fields: [categoryId], references: [id])
+
+  @@map("request_drafts")
+}
+
+model RequestExtension {
+  id                String   @id @default(uuid()) @db.Uuid
+  requestId         String   @map("request_id") @db.Uuid
+  originalExpiresAt DateTime @map("original_expires_at") @db.Timestamptz
+  newExpiresAt      DateTime @map("new_expires_at") @db.Timestamptz
+  extensionReason   String?  @map("extension_reason")
+  extendedBy        String?  @map("extended_by") @db.Uuid
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  request Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  @@map("request_extensions")
+}
+
+model RequestSearchIndex {
+  id           String    @id @default(uuid()) @db.Uuid
+  requestId    String    @unique @map("request_id") @db.Uuid
+  searchVector String?   @map("search_vector")
+  categoryPath String?   @map("category_path")
+  locationText String?   @map("location_text")
+  budgetRange  String?   @map("budget_range")
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  request Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  @@map("request_search_index")
+}
+
+model SavedSearch {
+  id             String   @id @default(uuid()) @db.Uuid
+  userId         String   @map("user_id") @db.Uuid
+  name           String   @db.VarChar(255)
+  searchCriteria Json     @map("search_criteria")
+  isActive       Boolean  @default(true) @map("is_active")
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@map("saved_searches")
+}
+
