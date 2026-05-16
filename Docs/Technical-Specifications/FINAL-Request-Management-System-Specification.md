@@ -17,7 +17,7 @@ This document provides the complete and final technical specification for the re
 - Comprehensive audit logging
 
 ✅ **Content Management**
-- Rich media support with CDN delivery
+- Rich media support with CDN delivery note:for starting will upload on server
 - Content moderation and validation
 - Geographic indexing and location-based features
 - Advanced search and filtering capabilities

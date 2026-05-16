@@ -115,6 +115,31 @@ const TokenRepository = {
     });
   },
 
+  async getUserSessions(userId) {
+    const sessions = await prisma.userSession.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+      take: 20,
+    });
+    return sessions.map(s => ({
+      id: s.id,
+      isActive: s.isActive && s.expiresAt > new Date(),
+      ipAddress: s.ipAddress,
+      userAgent: s.userAgent,
+      deviceFingerprint: s.deviceFingerprint,
+      lastActivityAt: s.lastActivityAt,
+      createdAt: s.createdAt,
+      expiresAt: s.expiresAt,
+    }));
+  },
+
+  async revokeSession(sessionId) {
+    await prisma.userSession.update({
+      where: { id: sessionId },
+      data: { isActive: false },
+    });
+  },
+
   async countActiveRefreshTokens(userId) {
     return prisma.authToken.count({
       where: { userId, tokenType: 'REFRESH', revokedAt: null, expiresAt: { gt: new Date() } },

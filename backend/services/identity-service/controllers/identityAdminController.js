@@ -39,6 +39,7 @@ const banUserSchema = Joi.object({
 });
 
 const updateUserSchema = Joi.object({
+  role:      Joi.string().valid('BUYER', 'MERCHANT').optional(),
   firstName: Joi.string().max(100).optional(),
   lastName:  Joi.string().max(100).optional(),
   city:      Joi.string().max(100).optional().allow('', null),
@@ -152,11 +153,15 @@ const IdentityAdminController = {
     if (value.city      !== undefined) data.city       = value.city || null;
     if (value.country   !== undefined) data.country    = value.country || null;
 
-    if (Object.keys(data).length === 0) {
+    const hasRole    = !!value.role;
+    const hasProfile = Object.keys(data).length > 0;
+
+    if (!hasRole && !hasProfile) {
       return res.status(400).json({ success: false, message: 'No fields provided to update.', error: 'NO_FIELDS' });
     }
 
-    await UserRepository.updateProfile(user.id, data);
+    if (hasRole)    await UserRepository.updateRole(user.id, value.role);
+    if (hasProfile) await UserRepository.updateProfile(user.id, data);
 
     await AdminRepository.logAction({
       adminId: req.user.id,
@@ -395,6 +400,49 @@ const IdentityAdminController = {
         failureCount: failed.length,
       },
     });
+  },
+
+  /**
+   * GET /admin/users/:userId/sessions
+   * Return all sessions (recent 20) for a user.
+   */
+  async getUserSessions(req, res) {
+    const user = await UserRepository.findById(req.params.userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found', error: 'USER_NOT_FOUND' });
+    }
+    const sessions = await TokenRepository.getUserSessions(req.params.userId);
+    return res.status(200).json({ success: true, sessions });
+  },
+
+  /**
+   * DELETE /admin/users/:userId/sessions/:sessionId
+   * Revoke a specific session.
+   */
+  async revokeUserSession(req, res) {
+    await TokenRepository.revokeSession(req.params.sessionId);
+    await AdminRepository.logAction({
+      adminId: req.user.id,
+      actionType: 'USER_EDIT',
+      targetType: 'USER',
+      targetId: req.params.userId,
+      actionDetails: { action: 'REVOKE_SESSION', sessionId: req.params.sessionId },
+      ipAddress: req.ip,
+      userAgent: req.get('User-Agent'),
+      success: true,
+    }).catch(() => {});
+    return res.status(200).json({ success: true, message: 'Session revoked.' });
+  },
+
+  /**
+   * GET /admin/users/:userId/logs
+   * Activity logs targeting this user.
+   */
+  async getUserLogs(req, res) {
+    const page  = parseInt(req.query.page  ?? '1',  10);
+    const limit = parseInt(req.query.limit ?? '20', 10);
+    const result = await AdminRepository.getLogsForUser(req.params.userId, { page, limit });
+    return res.status(200).json({ success: true, ...result });
   },
 
   // ────────────────────────────────────────────────────────────────

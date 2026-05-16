@@ -102,7 +102,15 @@ export async function apiGetMe() {
   return data as { success: boolean; admin: AdminUser; permissions: Record<string, boolean> }
 }
 
-export interface UpdateProfilePayload { firstName?: string; lastName?: string; city?: string; country?: string }
+export interface UserSession {
+  id: string; isActive: boolean; ipAddress: string | null; userAgent: string | null
+  deviceFingerprint: string | null; lastActivityAt: string | null
+  createdAt: string; expiresAt: string
+}
+
+export interface UpdateProfilePayload {
+  role?: string; firstName?: string; lastName?: string; city?: string; country?: string
+}
 
 export async function apiUpdateMyProfile(payload: UpdateProfilePayload) {
   const { data } = await getClient().patch('/admin/auth/me', payload)
@@ -112,6 +120,21 @@ export async function apiUpdateMyProfile(payload: UpdateProfilePayload) {
 export async function apiUpdateUser(userId: string, payload: UpdateProfilePayload) {
   const { data } = await getClient().patch(`/admin/users/${userId}`, payload)
   return data as { success: boolean; message: string; user: AdminUser }
+}
+
+export async function apiGetUserSessions(userId: string) {
+  const { data } = await getClient().get(`/admin/users/${userId}/sessions`)
+  return data as { success: boolean; sessions: UserSession[] }
+}
+
+export async function apiRevokeUserSession(userId: string, sessionId: string) {
+  const { data } = await getClient().delete(`/admin/users/${userId}/sessions/${sessionId}`)
+  return data as { success: boolean; message: string }
+}
+
+export async function apiGetUserLogs(userId: string, params: { page?: number; limit?: number } = {}) {
+  const { data } = await getClient().get(`/admin/users/${userId}/logs`, { params })
+  return data as { success: boolean; logs: ActivityLog[]; total: number }
 }
 
 // ─── Users ───────────────────────────────────────────────────────────────────

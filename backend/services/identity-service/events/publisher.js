@@ -115,14 +115,6 @@ const publisher = {
     }, { userId });
   },
 
-  async merchantVerified(userId, phone, businessName, verifiedBy) {
-    return this.publish('merchant.verified', {
-      userId, phone, businessName,
-      verifiedAt: new Date().toISOString(),
-      verifiedBy,
-    }, { userId });
-  },
-
   async otpRequested(userId, phone, code, purpose, expiresAt) {
     return this.publish('notification.otp.requested', {
       userId,
@@ -139,13 +131,6 @@ const publisher = {
       userId, phone, role,
       bannedAt: new Date().toISOString(),
       bannedBy, reason,
-    }, { userId });
-  },
-
-  async userProfileUpdated(userId, phone, role, updatedFields) {
-    return this.publish('user.profile.updated', {
-      userId, phone, role, updatedFields,
-      updatedAt: new Date().toISOString(),
     }, { userId });
   },
 

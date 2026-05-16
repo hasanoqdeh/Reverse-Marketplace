@@ -20,8 +20,7 @@ reverse-marketplace/
 │       ├── product-service/
 │       └── subscription-service/
 ├── admin-panel/          # Next.js 14 App Router (admin dashboard)
-├── buyer-app/            # React Native (buyers)
-├── merchant-app/         # React Native (merchants)
+├── app/                  # React Native (buyers)
 ├── prisma/               # Shared Prisma schema
 ├── rabbitmq/             # RabbitMQ config
 ├── nginx/                # Nginx config
@@ -54,8 +53,7 @@ reverse-marketplace/
 # Run all services
 npm run dev:backend      # backend gateway on :3000
 npm run dev:admin        # admin panel (Next.js)
-npm run dev:buyer        # buyer app (React Native)
-npm run dev:merchant     # merchant app (React Native)
+npm run dev:app        # buyer app (React Native)
 
 # Individual installs
 npm run install:all

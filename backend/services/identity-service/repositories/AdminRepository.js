@@ -96,6 +96,40 @@ const AdminRepository = {
     };
   },
 
+  async getLogsForUser(userId, { page = 1, limit = 20 } = {}) {
+    const where = { targetId: userId };
+    const [total, logs] = await prisma.$transaction([
+      prisma.adminActivityLog.count({ where }),
+      prisma.adminActivityLog.findMany({
+        where,
+        include: { admin: { include: { profile: true } } },
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+    ]);
+    return {
+      total,
+      logs: logs.map(({ admin, adminId, actionType, targetType, targetId, targetPhone,
+                        actionDetails, ipAddress, userAgent, createdAt, ...rest }) => ({
+        ...rest,
+        admin_id: adminId,
+        action_type: actionType,
+        target_type: targetType,
+        target_id: targetId,
+        target_phone: targetPhone,
+        action_details: actionDetails,
+        ip_address: ipAddress,
+        user_agent: userAgent,
+        created_at: createdAt,
+        failure_reason: rest.failureReason,
+        admin_phone: admin?.phone ?? null,
+        first_name: admin?.profile?.firstName ?? null,
+        last_name: admin?.profile?.lastName ?? null,
+      })),
+    };
+  },
+
   async getRegistrationTrend(days = 7) {
     const since = new Date(Date.now() - days * 86400000);
     const rows = await prisma.$queryRaw`
