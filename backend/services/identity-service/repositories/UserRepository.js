@@ -105,6 +105,15 @@ const UserRepository = {
     });
   },
 
+  async updateRole(userId, role) {
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: { role },
+      include: WITH_PROFILE,
+    });
+    return flattenUser(user);
+  },
+
   async updateProfile(userId, fields) {
     const fieldMap = {
       first_name: 'firstName', last_name: 'lastName',
@@ -118,7 +127,11 @@ const UserRepository = {
       if (fields[snake] !== undefined) data[camel] = fields[snake];
     }
     if (Object.keys(data).length === 0) return null;
-    return prisma.userProfile.update({ where: { userId }, data });
+    return prisma.userProfile.upsert({
+      where: { userId },
+      create: { userId, ...data },
+      update: data,
+    });
   },
 
   // ─── Admin user management ─────────────────────────────────────

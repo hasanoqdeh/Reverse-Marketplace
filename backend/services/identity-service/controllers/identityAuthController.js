@@ -257,6 +257,7 @@ const IdentityAuthController = {
    */
   async updateProfile(req, res) {
     const schema = Joi.object({
+      role:      Joi.string().valid('BUYER', 'MERCHANT').optional(),
       firstName: Joi.string().max(100).optional(),
       lastName:  Joi.string().max(100).optional(),
       city:      Joi.string().max(100).optional().allow('', null),
@@ -274,17 +275,22 @@ const IdentityAuthController = {
 
     const UserRepository = require('../repositories/UserRepository');
 
-    const data = {};
-    if (value.firstName !== undefined) data.first_name = value.firstName;
-    if (value.lastName  !== undefined) data.last_name  = value.lastName;
-    if (value.city      !== undefined) data.city       = value.city || null;
-    if (value.country   !== undefined) data.country    = value.country || null;
+    const profileData = {};
+    if (value.firstName !== undefined) profileData.first_name = value.firstName;
+    if (value.lastName  !== undefined) profileData.last_name  = value.lastName;
+    if (value.city      !== undefined) profileData.city       = value.city || null;
+    if (value.country   !== undefined) profileData.country    = value.country || null;
 
-    if (Object.keys(data).length === 0) {
+    const hasRole    = !!value.role;
+    const hasProfile = Object.keys(profileData).length > 0;
+
+    if (!hasRole && !hasProfile) {
       return res.status(400).json({ success: false, message: 'No fields provided to update.', error: 'NO_FIELDS' });
     }
 
-    await UserRepository.updateProfile(req.user.id, data);
+    if (hasRole)    await UserRepository.updateRole(req.user.id, value.role);
+    if (hasProfile) await UserRepository.updateProfile(req.user.id, profileData);
+
     const updated = await UserRepository.findById(req.user.id);
 
     return res.status(200).json({
