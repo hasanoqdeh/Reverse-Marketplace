@@ -12,6 +12,8 @@ export type AppTabParamList = {
 };
 
 export type RootStackParamList = {
+  Splash: undefined;
+  Onboarding: undefined;
   Auth: undefined;
   App: undefined;
 };

@@ -5,8 +5,11 @@ export interface AuthLoginResponse {
 }
 
 export interface AuthVerifyOTPResponse {
-  accessToken: string;
-  refreshToken: string;
+  success: boolean;
+  tokens: {
+    accessToken: string;
+    refreshToken: string;
+  };
   user: User;
 }
 
@@ -17,8 +20,11 @@ export interface AuthResendOTPResponse {
 }
 
 export interface AuthRefreshTokenResponse {
-  accessToken: string;
-  refreshToken: string;
+  success: boolean;
+  tokens: {
+    accessToken: string;
+    refreshToken: string;
+  };
 }
 
 export interface AuthLogoutResponse {

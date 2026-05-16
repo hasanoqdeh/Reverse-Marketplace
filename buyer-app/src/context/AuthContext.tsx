@@ -111,11 +111,8 @@ export function AuthProvider({children}: {children: React.ReactNode}) {
     setError(null);
     try {
       const response = await AuthAPI.verifyOTP(phone, otp);
-      const {
-        accessToken,
-        refreshToken,
-        user: responseUser,
-      } = response;
+      const { tokens, user: responseUser } = response;
+      const { accessToken, refreshToken } = tokens;
 
       await Promise.all([
         AsyncStorage.setItem('accessToken', accessToken),

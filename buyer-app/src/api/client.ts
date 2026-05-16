@@ -84,13 +84,13 @@ apiClient.interceptors.response.use(
         }
 
         const response = await axios.post<{
-          accessToken: string;
-          refreshToken: string;
+          success: boolean;
+          tokens: {accessToken: string; refreshToken: string};
         }>(`${BASE_URL}/identity/auth/refresh-token`, {
           refreshToken: storedRefreshToken,
         });
 
-        const {accessToken, refreshToken: newRefreshToken} = response.data;
+        const {accessToken, refreshToken: newRefreshToken} = response.data.tokens;
 
         await AsyncStorage.setItem('accessToken', accessToken);
         await AsyncStorage.setItem('refreshToken', newRefreshToken);
