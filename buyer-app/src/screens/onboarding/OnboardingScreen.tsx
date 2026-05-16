@@ -9,7 +9,6 @@ import {
   ViewToken,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../types/navigation';
@@ -59,8 +58,7 @@ export default function OnboardingScreen() {
   const [activeIndex, setActiveIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
 
-  const finish = async () => {
-    await AsyncStorage.setItem('onboardingSeen', 'true');
+  const finish = () => {
     navigation.reset({index: 0, routes: [{name: 'Auth'}]});
   };
 

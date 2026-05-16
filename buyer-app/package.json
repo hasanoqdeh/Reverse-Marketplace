@@ -1,7 +1,7 @@
 {
-  "name": "ReverseMarketplaceBuyer",
+  "name": "ReverseMarketplace",
   "version": "1.0.0",
-  "description": "Buyer mobile app for Reverse Marketplace",
+  "description": "Unified Reverse Marketplace app for buyers and merchants",
   "main": "index.js",
   "scripts": {
     "android": "react-native run-android",

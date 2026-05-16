@@ -18,28 +18,30 @@ import {useAuth} from '../../context/AuthContext';
 import {RootStackParamList} from '../../types/navigation';
 
 type NavProp = NativeStackNavigationProp<RootStackParamList, 'ProfileSetup'>;
+type Role = 'BUYER' | 'MERCHANT';
 
-const ACCENT = '#2563EB';
-const TOTAL_STEPS = 3;
+const BUYER_ACCENT = '#2563EB';
+const MERCHANT_ACCENT = '#16A34A';
+const TOTAL_STEPS = 4;
 
-const STEPS = [
+const ROLE_OPTIONS: {value: Role; emoji: string; label: string; desc: string; color: string; bg: string; light: string}[] = [
   {
-    step: 1,
-    emoji: '👤',
-    title: "What's your name?",
-    subtitle: 'Help merchants know who they are talking to.',
+    value: 'BUYER',
+    emoji: '🛒',
+    label: 'Buyer',
+    desc: 'Post requests and receive competitive offers from merchants.',
+    color: BUYER_ACCENT,
+    bg: '#EFF6FF',
+    light: '#DBEAFE',
   },
   {
-    step: 2,
-    emoji: '📍',
-    title: 'Where are you based?',
-    subtitle: 'We use this to show you relevant offers near you.',
-  },
-  {
-    step: 3,
-    emoji: '🎉',
-    title: "You're all set!",
-    subtitle: 'Your profile is ready. Start posting requests and get the best deals.',
+    value: 'MERCHANT',
+    emoji: '🏪',
+    label: 'Merchant',
+    desc: 'Browse buyer requests and place bids to grow your business.',
+    color: MERCHANT_ACCENT,
+    bg: '#F0FDF4',
+    light: '#DCFCE7',
   },
 ];
 
@@ -48,6 +50,7 @@ export default function ProfileSetupScreen() {
   const {updateProfile, user} = useAuth();
 
   const [step, setStep] = useState(1);
+  const [role, setRole] = useState<Role>('BUYER');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [city, setCity] = useState('');
@@ -56,12 +59,15 @@ export default function ProfileSetupScreen() {
   const [error, setError] = useState<string | null>(null);
 
   const fadeAnim = useRef(new Animated.Value(1)).current;
+  const ACCENT = role === 'MERCHANT' ? MERCHANT_ACCENT : BUYER_ACCENT;
+  const ICON_BG = role === 'MERCHANT' ? '#F0FDF4' : '#EFF6FF';
 
-  const transitionToStep = (next: number) => {
+  const fade = (next: number) => {
     Animated.sequence([
-      Animated.timing(fadeAnim, {toValue: 0, duration: 150, useNativeDriver: true}),
+      Animated.timing(fadeAnim, {toValue: 0, duration: 140, useNativeDriver: true}),
       Animated.timing(fadeAnim, {toValue: 1, duration: 200, useNativeDriver: true}),
     ]).start();
+    setError(null);
     setStep(next);
   };
 
@@ -69,15 +75,20 @@ export default function ProfileSetupScreen() {
     setError(null);
 
     if (step === 1) {
-      if (!firstName.trim()) {
-        setError('Please enter your first name.');
-        return;
-      }
-      transitionToStep(2);
+      fade(2);
       return;
     }
 
     if (step === 2) {
+      if (!firstName.trim()) {
+        setError('Please enter your first name.');
+        return;
+      }
+      fade(3);
+      return;
+    }
+
+    if (step === 3) {
       if (!city.trim()) {
         setError('Please enter your city.');
         return;
@@ -85,12 +96,13 @@ export default function ProfileSetupScreen() {
       setIsSaving(true);
       try {
         await updateProfile({
+          role,
           firstName: firstName.trim(),
           lastName: lastName.trim() || undefined,
           city: city.trim(),
           country: country.trim() || undefined,
         });
-        transitionToStep(3);
+        fade(4);
       } catch {
         setError('Failed to save your profile. Please try again.');
       } finally {
@@ -99,133 +111,178 @@ export default function ProfileSetupScreen() {
       return;
     }
 
-    if (step === 3) {
+    if (step === 4) {
       navigation.reset({index: 0, routes: [{name: 'App'}]});
     }
   };
 
-  const current = STEPS[step - 1];
-  const isLastStep = step === TOTAL_STEPS;
+  const stepLabel =
+    step === TOTAL_STEPS ? 'Done' : `Step ${step} of ${TOTAL_STEPS - 1}`;
+
+  const btnLabel =
+    step === 1 ? 'Continue →'
+    : step === 2 ? 'Continue →'
+    : step === 3 ? 'Save Profile →'
+    : 'Go to App →';
 
   return (
     <SafeAreaView style={styles.safe}>
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-        <ScrollView
-          contentContainerStyle={styles.scroll}
-          keyboardShouldPersistTaps="handled">
+      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
 
-          {/* Progress bar */}
-          <View style={styles.progressContainer}>
+          {/* Progress */}
+          <View style={styles.progressRow}>
             {Array.from({length: TOTAL_STEPS}).map((_, i) => (
-              <View key={i} style={styles.progressSegmentWrap}>
-                <View
-                  style={[
-                    styles.progressSegment,
-                    i < step ? styles.progressSegmentDone : styles.progressSegmentPending,
-                  ]}
-                />
+              <View key={i} style={styles.segWrap}>
+                <View style={[styles.seg, i < step ? {backgroundColor: ACCENT} : styles.segPending]} />
               </View>
             ))}
           </View>
 
           <Animated.View style={[styles.content, {opacity: fadeAnim}]}>
-            {/* Emoji icon */}
-            <View style={styles.iconCircle}>
-              <Text style={styles.iconEmoji}>{current.emoji}</Text>
-            </View>
 
-            {/* Step label */}
-            <Text style={styles.stepLabel}>
-              {isLastStep ? 'Done' : `Step ${step} of ${TOTAL_STEPS - 1}`}
-            </Text>
-
-            <Text style={styles.title}>{current.title}</Text>
-            <Text style={styles.subtitle}>{current.subtitle}</Text>
-
-            {/* Step 1 — Name */}
+            {/* ──────────── STEP 1 — ROLE ──────────── */}
             {step === 1 && (
-              <View style={styles.fields}>
-                <View style={styles.fieldGroup}>
-                  <Text style={styles.label}>First Name *</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="e.g. Ahmad"
-                    placeholderTextColor="#9CA3AF"
-                    value={firstName}
-                    onChangeText={v => {setFirstName(v); setError(null);}}
-                    autoFocus
-                    returnKeyType="next"
-                  />
+              <>
+                <Text style={[styles.stepLabel, {color: ACCENT}]}>{stepLabel}</Text>
+                <Text style={styles.title}>What's your role?</Text>
+                <Text style={styles.subtitle}>
+                  Choose how you'll use the marketplace. You can only have one role per account.
+                </Text>
+
+                <View style={styles.roleList}>
+                  {ROLE_OPTIONS.map(r => {
+                    const selected = role === r.value;
+                    return (
+                      <TouchableOpacity
+                        key={r.value}
+                        style={[
+                          styles.roleCard,
+                          selected && {borderColor: r.color, backgroundColor: r.bg},
+                        ]}
+                        onPress={() => setRole(r.value)}
+                        activeOpacity={0.8}>
+                        <View style={[styles.roleIconCircle, {backgroundColor: selected ? r.light : '#F3F4F6'}]}>
+                          <Text style={styles.roleEmoji}>{r.emoji}</Text>
+                        </View>
+                        <View style={styles.roleBody}>
+                          <Text style={[styles.roleLabel, selected && {color: r.color}]}>{r.label}</Text>
+                          <Text style={styles.roleDesc}>{r.desc}</Text>
+                        </View>
+                        <View style={[styles.radio, selected && {borderColor: r.color}]}>
+                          {selected && <View style={[styles.radioDot, {backgroundColor: r.color}]} />}
+                        </View>
+                      </TouchableOpacity>
+                    );
+                  })}
                 </View>
-                <View style={styles.fieldGroup}>
-                  <Text style={styles.label}>Last Name</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="e.g. Al-Hassan (optional)"
-                    placeholderTextColor="#9CA3AF"
-                    value={lastName}
-                    onChangeText={setLastName}
-                    returnKeyType="done"
-                    onSubmitEditing={handleNext}
-                  />
-                </View>
-              </View>
+              </>
             )}
 
-            {/* Step 2 — Location */}
+            {/* ──────────── STEP 2 — NAME ──────────── */}
             {step === 2 && (
-              <View style={styles.fields}>
-                <View style={styles.fieldGroup}>
-                  <Text style={styles.label}>City *</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="e.g. Amman"
-                    placeholderTextColor="#9CA3AF"
-                    value={city}
-                    onChangeText={v => {setCity(v); setError(null);}}
-                    autoFocus
-                    returnKeyType="next"
-                  />
+              <>
+                <View style={[styles.iconCircle, {backgroundColor: ICON_BG}]}>
+                  <Text style={styles.iconEmoji}>👤</Text>
                 </View>
-                <View style={styles.fieldGroup}>
-                  <Text style={styles.label}>Country</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="e.g. Jordan (optional)"
-                    placeholderTextColor="#9CA3AF"
-                    value={country}
-                    onChangeText={setCountry}
-                    returnKeyType="done"
-                    onSubmitEditing={handleNext}
-                  />
+                <Text style={[styles.stepLabel, {color: ACCENT}]}>{stepLabel}</Text>
+                <Text style={styles.title}>What's your name?</Text>
+                <Text style={styles.subtitle}>
+                  {role === 'BUYER'
+                    ? 'Help merchants know who they are talking to.'
+                    : 'Let buyers know who is sending them offers.'}
+                </Text>
+                <View style={styles.fields}>
+                  <View style={styles.fieldGroup}>
+                    <Text style={styles.label}>First Name *</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="e.g. Ahmad"
+                      placeholderTextColor="#9CA3AF"
+                      value={firstName}
+                      onChangeText={v => {setFirstName(v); setError(null);}}
+                      autoFocus
+                      returnKeyType="next"
+                    />
+                  </View>
+                  <View style={styles.fieldGroup}>
+                    <Text style={styles.label}>Last Name</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="e.g. Al-Hassan (optional)"
+                      placeholderTextColor="#9CA3AF"
+                      value={lastName}
+                      onChangeText={setLastName}
+                      returnKeyType="done"
+                      onSubmitEditing={handleNext}
+                    />
+                  </View>
                 </View>
-              </View>
+              </>
             )}
 
-            {/* Step 3 — Confirmation */}
+            {/* ──────────── STEP 3 — LOCATION ──────────── */}
             {step === 3 && (
-              <View style={styles.summaryBox}>
-                <Text style={styles.summaryRow}>
-                  <Text style={styles.summaryKey}>Name  </Text>
-                  <Text style={styles.summaryVal}>
-                    {[firstName, lastName].filter(Boolean).join(' ')}
-                  </Text>
+              <>
+                <View style={[styles.iconCircle, {backgroundColor: ICON_BG}]}>
+                  <Text style={styles.iconEmoji}>📍</Text>
+                </View>
+                <Text style={[styles.stepLabel, {color: ACCENT}]}>{stepLabel}</Text>
+                <Text style={styles.title}>Where are you based?</Text>
+                <Text style={styles.subtitle}>
+                  We use this to show you relevant {role === 'BUYER' ? 'offers' : 'requests'} near you.
                 </Text>
-                {city ? (
-                  <Text style={styles.summaryRow}>
-                    <Text style={styles.summaryKey}>City  </Text>
-                    <Text style={styles.summaryVal}>
-                      {[city, country].filter(Boolean).join(', ')}
-                    </Text>
-                  </Text>
-                ) : null}
-                <Text style={styles.summaryRow}>
-                  <Text style={styles.summaryKey}>Phone  </Text>
-                  <Text style={styles.summaryVal}>{user?.phone}</Text>
+                <View style={styles.fields}>
+                  <View style={styles.fieldGroup}>
+                    <Text style={styles.label}>City *</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="e.g. Amman"
+                      placeholderTextColor="#9CA3AF"
+                      value={city}
+                      onChangeText={v => {setCity(v); setError(null);}}
+                      autoFocus
+                      returnKeyType="next"
+                    />
+                  </View>
+                  <View style={styles.fieldGroup}>
+                    <Text style={styles.label}>Country</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="e.g. Jordan (optional)"
+                      placeholderTextColor="#9CA3AF"
+                      value={country}
+                      onChangeText={setCountry}
+                      returnKeyType="done"
+                      onSubmitEditing={handleNext}
+                    />
+                  </View>
+                </View>
+              </>
+            )}
+
+            {/* ──────────── STEP 4 — DONE ──────────── */}
+            {step === 4 && (
+              <>
+                <View style={[styles.iconCircle, {backgroundColor: ICON_BG}]}>
+                  <Text style={styles.iconEmoji}>🎉</Text>
+                </View>
+                <Text style={[styles.stepLabel, {color: ACCENT}]}>{stepLabel}</Text>
+                <Text style={styles.title}>You're all set!</Text>
+                <Text style={styles.subtitle}>
+                  Your {role === 'BUYER' ? 'buyer' : 'merchant'} profile is ready.{' '}
+                  {role === 'BUYER'
+                    ? 'Start posting requests and get the best deals.'
+                    : 'Browse requests and start placing bids.'}
                 </Text>
-              </View>
+
+                <View style={[styles.summaryBox, {borderColor: ACCENT + '40'}]}>
+                  <SummaryRow label="Role" value={role === 'BUYER' ? '🛒  Buyer' : '🏪  Merchant'} color={ACCENT} />
+                  <SummaryRow label="Name" value={[firstName, lastName].filter(Boolean).join(' ')} color={ACCENT} />
+                  {city ? <SummaryRow label="City" value={[city, country].filter(Boolean).join(', ')} color={ACCENT} /> : null}
+                  <SummaryRow label="Phone" value={user?.phone ?? ''} color={ACCENT} />
+                </View>
+              </>
             )}
 
             {/* Error */}
@@ -235,27 +292,27 @@ export default function ProfileSetupScreen() {
               </View>
             ) : null}
 
-            {/* CTA button */}
+            {/* CTA */}
             <TouchableOpacity
-              style={[styles.btn, isSaving && styles.btnDisabled]}
+              style={[styles.btn, {backgroundColor: ACCENT, shadowColor: ACCENT}, isSaving && styles.btnDisabled]}
               onPress={handleNext}
               disabled={isSaving}
               activeOpacity={0.85}>
               {isSaving ? (
                 <ActivityIndicator color="#fff" size="small" />
               ) : (
-                <Text style={styles.btnText}>
-                  {step === 1 ? 'Continue →' : step === 2 ? 'Save & Continue →' : 'Go to App →'}
-                </Text>
+                <Text style={styles.btnText}>{btnLabel}</Text>
               )}
             </TouchableOpacity>
 
-            {/* Back link (steps 2 only) */}
+            {/* Back */}
             {step === 2 && (
-              <TouchableOpacity
-                style={styles.backBtn}
-                onPress={() => transitionToStep(1)}
-                activeOpacity={0.7}>
+              <TouchableOpacity style={styles.backBtn} onPress={() => fade(1)} activeOpacity={0.7}>
+                <Text style={styles.backText}>← Back</Text>
+              </TouchableOpacity>
+            )}
+            {step === 3 && (
+              <TouchableOpacity style={styles.backBtn} onPress={() => fade(2)} activeOpacity={0.7}>
                 <Text style={styles.backText}>← Back</Text>
               </TouchableOpacity>
             )}
@@ -266,114 +323,85 @@ export default function ProfileSetupScreen() {
   );
 }
 
+function SummaryRow({label, value, color}: {label: string; value: string; color: string}) {
+  return (
+    <View style={summaryStyles.row}>
+      <Text style={summaryStyles.key}>{label}</Text>
+      <Text style={[summaryStyles.val, {color}]}>{value}</Text>
+    </View>
+  );
+}
+
+const summaryStyles = StyleSheet.create({
+  row: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#F3F4F6'},
+  key: {fontSize: 14, color: '#6B7280', fontWeight: '500'},
+  val: {fontSize: 14, fontWeight: '700', maxWidth: '60%', textAlign: 'right'},
+});
+
 const styles = StyleSheet.create({
   safe: {flex: 1, backgroundColor: '#FFFFFF'},
   flex: {flex: 1},
-  scroll: {flexGrow: 1, paddingHorizontal: 24, paddingBottom: 32},
+  scroll: {flexGrow: 1, paddingHorizontal: 24, paddingBottom: 40},
 
-  progressContainer: {
-    flexDirection: 'row',
-    marginTop: 16,
-    marginBottom: 32,
-    gap: 6,
-  },
-  progressSegmentWrap: {flex: 1},
-  progressSegment: {
-    height: 4,
-    borderRadius: 2,
-  },
-  progressSegmentDone: {backgroundColor: ACCENT},
-  progressSegmentPending: {backgroundColor: '#E5E7EB'},
+  progressRow: {flexDirection: 'row', marginTop: 16, marginBottom: 28, gap: 6},
+  segWrap: {flex: 1},
+  seg: {height: 4, borderRadius: 2},
+  segPending: {backgroundColor: '#E5E7EB'},
 
   content: {alignItems: 'center'},
 
-  iconCircle: {
-    width: 88,
-    height: 88,
-    borderRadius: 44,
-    backgroundColor: '#EFF6FF',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 20,
-  },
+  stepLabel: {fontSize: 12, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 8},
+  title: {fontSize: 26, fontWeight: '800', color: '#111827', textAlign: 'center', marginBottom: 8, letterSpacing: -0.3},
+  subtitle: {fontSize: 15, color: '#6B7280', textAlign: 'center', lineHeight: 22, marginBottom: 28, paddingHorizontal: 4},
+
+  iconCircle: {width: 88, height: 88, borderRadius: 44, alignItems: 'center', justifyContent: 'center', marginBottom: 20},
   iconEmoji: {fontSize: 40},
 
-  stepLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: ACCENT,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginBottom: 8,
+  /* Role step */
+  roleList: {width: '100%', gap: 14, marginBottom: 28},
+  roleCard: {
+    flexDirection: 'row', alignItems: 'center',
+    borderWidth: 1.5, borderColor: '#E5E7EB', borderRadius: 16,
+    padding: 16, backgroundColor: '#FAFAFA',
   },
-  title: {
-    fontSize: 26,
-    fontWeight: '800',
-    color: '#111827',
-    textAlign: 'center',
-    marginBottom: 8,
-    letterSpacing: -0.3,
-  },
-  subtitle: {
-    fontSize: 15,
-    color: '#6B7280',
-    textAlign: 'center',
-    lineHeight: 22,
-    marginBottom: 32,
-    paddingHorizontal: 8,
-  },
+  roleIconCircle: {width: 52, height: 52, borderRadius: 26, alignItems: 'center', justifyContent: 'center', marginRight: 14},
+  roleEmoji: {fontSize: 26},
+  roleBody: {flex: 1},
+  roleLabel: {fontSize: 17, fontWeight: '700', color: '#111827', marginBottom: 3},
+  roleDesc: {fontSize: 12, color: '#9CA3AF', lineHeight: 17},
+  radio: {width: 22, height: 22, borderRadius: 11, borderWidth: 2, borderColor: '#D1D5DB', alignItems: 'center', justifyContent: 'center'},
+  radioDot: {width: 10, height: 10, borderRadius: 5},
 
+  /* Form fields */
   fields: {width: '100%', gap: 16, marginBottom: 24},
   fieldGroup: {width: '100%'},
   label: {fontSize: 13, fontWeight: '600', color: '#374151', marginBottom: 6},
   input: {
-    borderWidth: 1.5,
-    borderColor: '#D1D5DB',
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: Platform.OS === 'ios' ? 14 : 11,
-    fontSize: 16,
-    color: '#111827',
-    backgroundColor: '#F9FAFB',
+    borderWidth: 1.5, borderColor: '#D1D5DB', borderRadius: 12,
+    paddingHorizontal: 14, paddingVertical: Platform.OS === 'ios' ? 14 : 11,
+    fontSize: 16, color: '#111827', backgroundColor: '#F9FAFB',
   },
 
+  /* Summary */
   summaryBox: {
-    width: '100%',
-    backgroundColor: '#F0F9FF',
-    borderRadius: 14,
-    padding: 20,
-    marginBottom: 28,
-    gap: 10,
+    width: '100%', borderWidth: 1, borderRadius: 16, padding: 20, marginBottom: 28,
+    backgroundColor: '#FAFAFA',
   },
-  summaryRow: {fontSize: 15, lineHeight: 22},
-  summaryKey: {fontWeight: '600', color: '#374151'},
-  summaryVal: {color: '#2563EB', fontWeight: '500'},
 
+  /* Error */
   errorBox: {
-    width: '100%',
-    backgroundColor: '#FEF2F2',
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#FECACA',
+    width: '100%', backgroundColor: '#FEF2F2', borderRadius: 10,
+    paddingHorizontal: 14, paddingVertical: 10, marginBottom: 16,
+    borderWidth: 1, borderColor: '#FECACA',
   },
   errorText: {color: '#DC2626', fontSize: 14, textAlign: 'center'},
 
+  /* Buttons */
   btn: {
-    width: '100%',
-    backgroundColor: ACCENT,
-    borderRadius: 14,
-    paddingVertical: 17,
-    alignItems: 'center',
-    shadowColor: ACCENT,
-    shadowOffset: {width: 0, height: 4},
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 4,
+    width: '100%', borderRadius: 14, paddingVertical: 17, alignItems: 'center',
+    shadowOffset: {width: 0, height: 4}, shadowOpacity: 0.25, shadowRadius: 8, elevation: 4,
   },
-  btnDisabled: {backgroundColor: '#93C5FD', shadowOpacity: 0, elevation: 0},
+  btnDisabled: {opacity: 0.5, shadowOpacity: 0, elevation: 0},
   btnText: {color: '#FFFFFF', fontSize: 16, fontWeight: '700', letterSpacing: 0.3},
 
   backBtn: {marginTop: 14, paddingVertical: 8},

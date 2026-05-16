@@ -34,7 +34,7 @@ export default function OTPScreen() {
   const route = useRoute<OTPRouteProp>();
   const {phone} = route.params;
 
-  const {verifyOTP, resendOTP, otpExpiresAt, error, clearError} = useAuth();
+  const {verifyOTP, sendOTP, otpExpiresAt, error, clearError} = useAuth();
 
   const [digits, setDigits] = useState<string[]>(Array(OTP_LENGTH).fill(''));
   const [isVerifying, setIsVerifying] = useState(false);
@@ -141,7 +141,7 @@ export default function OTPScreen() {
     clearError();
     setIsResending(true);
     try {
-      await resendOTP(phone);
+      await sendOTP(phone);
       setResendCooldown(RESEND_COOLDOWN);
       setDigits(Array(OTP_LENGTH).fill(''));
       inputRefs.current[0]?.focus();

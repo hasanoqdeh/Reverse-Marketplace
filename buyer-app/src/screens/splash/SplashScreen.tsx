@@ -1,6 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Animated, View, Text, StyleSheet} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useAuth} from '../../context/AuthContext';
@@ -42,15 +41,11 @@ export default function SplashScreen() {
     if (!timerDone || isLoading) {
       return;
     }
-    AsyncStorage.getItem('onboardingSeen').then(seen => {
-      if (!seen) {
-        navigation.reset({index: 0, routes: [{name: 'Onboarding'}]});
-      } else if (isAuthenticated) {
-        navigation.reset({index: 0, routes: [{name: 'App'}]});
-      } else {
-        navigation.reset({index: 0, routes: [{name: 'Auth'}]});
-      }
-    });
+    if (isAuthenticated) {
+      navigation.reset({index: 0, routes: [{name: 'App'}]});
+    } else {
+      navigation.reset({index: 0, routes: [{name: 'Onboarding'}]});
+    }
   }, [timerDone, isLoading, isAuthenticated, navigation]);
 
   return (

@@ -5,9 +5,16 @@ export type AuthStackParamList = {
   };
 };
 
-export type AppTabParamList = {
+export type BuyerTabParamList = {
   Home: undefined;
   Requests: undefined;
+  Profile: undefined;
+};
+
+export type MerchantTabParamList = {
+  Dashboard: undefined;
+  Requests: undefined;
+  MyBids: undefined;
   Profile: undefined;
 };
 

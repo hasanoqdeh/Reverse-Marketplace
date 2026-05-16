@@ -10,11 +10,7 @@ import {
 export const sendOTP = async (phone: string): Promise<AuthLoginResponse> => {
   const response = await apiClient.post<AuthLoginResponse>(
     '/identity/auth/login',
-    {
-      phone,
-      role: 'BUYER',
-      countryCode: '+962',
-    },
+    {phone, countryCode: '+962'},
   );
   return response.data;
 };
@@ -66,6 +62,7 @@ export const logout = async (token: string): Promise<AuthLogoutResponse> => {
 };
 
 export interface UpdateProfilePayload {
+  role?: 'BUYER' | 'MERCHANT';
   firstName?: string;
   lastName?: string;
   city?: string;

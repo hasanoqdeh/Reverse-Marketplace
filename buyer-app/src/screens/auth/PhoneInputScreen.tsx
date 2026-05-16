@@ -16,17 +16,18 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {useAuth} from '../../context/AuthContext';
 import {AuthStackParamList} from '../../types/navigation';
 
-type PhoneInputNavProp = StackNavigationProp<AuthStackParamList, 'PhoneInput'>;
+type NavProp = StackNavigationProp<AuthStackParamList, 'PhoneInput'>;
 
 const COUNTRY_CODE = '+962';
+const ACCENT = '#2563EB';
 
 export default function PhoneInputScreen() {
-  const navigation = useNavigation<PhoneInputNavProp>();
+  const navigation = useNavigation<NavProp>();
   const {sendOTP, loginStep, error, clearError} = useAuth();
+
   const [localNumber, setLocalNumber] = useState('');
   const [isSending, setIsSending] = useState(false);
 
-  // When loginStep switches to 'otp', navigate to OTP screen
   useEffect(() => {
     if (loginStep === 'otp') {
       navigation.navigate('OTP', {phone: COUNTRY_CODE + localNumber});
@@ -35,9 +36,7 @@ export default function PhoneInputScreen() {
   }, [loginStep]);
 
   const handleSendCode = async () => {
-    if (localNumber.length < 9) {
-      return;
-    }
+    if (localNumber.length < 9) {return;}
     clearError();
     setIsSending(true);
     try {
@@ -48,43 +47,38 @@ export default function PhoneInputScreen() {
   };
 
   const handlePhoneChange = (text: string) => {
-    // Allow only digits
     const digits = text.replace(/\D/g, '');
     setLocalNumber(digits);
-    if (error) {
-      clearError();
-    }
+    if (error) {clearError();}
   };
 
-  const isButtonDisabled = localNumber.length < 9 || isSending;
+  const isDisabled = localNumber.length < 9 || isSending;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled">
+    <SafeAreaView style={styles.safe}>
+      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
           <View style={styles.container}>
-            {/* Logo / Brand area */}
-            <View style={styles.brandArea}>
+
+            {/* Logo */}
+            <View style={styles.logoArea}>
               <View style={styles.logoCircle}>
-                <Text style={styles.logoText}>M</Text>
+                <Text style={styles.logoText}>RM</Text>
               </View>
+              <Text style={styles.logoName}>Reverse Marketplace</Text>
             </View>
 
-            {/* Header */}
-            <Text style={styles.title}>Welcome to Marketplace</Text>
+            {/* Title */}
+            <Text style={styles.title}>Enter your phone number</Text>
             <Text style={styles.subtitle}>
-              Enter your phone number to continue
+              We'll send you a verification code. New users will be guided through a quick setup.
             </Text>
 
             {/* Phone input */}
-            <View style={styles.inputContainer}>
+            <View style={styles.inputWrap}>
               <Text style={styles.inputLabel}>Phone Number</Text>
-              <View style={styles.phoneRow}>
-                <View style={styles.prefixBox}>
+              <View style={[styles.phoneRow, localNumber.length >= 9 && styles.phoneRowFilled]}>
+                <View style={styles.prefix}>
                   <Text style={styles.prefixText}>{COUNTRY_CODE}</Text>
                 </View>
                 <TextInput
@@ -102,29 +96,28 @@ export default function PhoneInputScreen() {
               </View>
             </View>
 
-            {/* Error message */}
+            {/* Error */}
             {error ? (
               <View style={styles.errorBox}>
                 <Text style={styles.errorText}>{error}</Text>
               </View>
             ) : null}
 
-            {/* Send code button */}
+            {/* CTA */}
             <TouchableOpacity
-              style={[styles.button, isButtonDisabled && styles.buttonDisabled]}
+              style={[styles.btn, isDisabled && styles.btnDisabled]}
               onPress={handleSendCode}
-              disabled={isButtonDisabled}
+              disabled={isDisabled}
               activeOpacity={0.8}>
               {isSending ? (
                 <ActivityIndicator color="#FFFFFF" size="small" />
               ) : (
-                <Text style={styles.buttonText}>Send Code</Text>
+                <Text style={styles.btnText}>Continue</Text>
               )}
             </TouchableOpacity>
 
-            <Text style={styles.termsText}>
-              By continuing, you agree to our Terms of Service and Privacy
-              Policy
+            <Text style={styles.terms}>
+              By continuing, you agree to our Terms of Service and Privacy Policy.
             </Text>
           </View>
         </ScrollView>
@@ -134,137 +127,49 @@ export default function PhoneInputScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  flex: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: 24,
-    paddingVertical: 40,
-    justifyContent: 'center',
-  },
-  brandArea: {
-    alignItems: 'center',
-    marginBottom: 32,
-  },
+  safe: {flex: 1, backgroundColor: '#FFFFFF'},
+  flex: {flex: 1},
+  scroll: {flexGrow: 1, justifyContent: 'center'},
+  container: {flex: 1, paddingHorizontal: 24, paddingVertical: 32, justifyContent: 'center'},
+
+  logoArea: {alignItems: 'center', marginBottom: 40},
   logoCircle: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: '#2563EB',
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: 72, height: 72, borderRadius: 36, backgroundColor: ACCENT,
+    alignItems: 'center', justifyContent: 'center', marginBottom: 12,
   },
-  logoText: {
-    color: '#FFFFFF',
-    fontSize: 32,
-    fontWeight: '700',
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: '700',
-    color: '#111827',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 15,
-    color: '#6B7280',
-    textAlign: 'center',
-    marginBottom: 36,
-    lineHeight: 22,
-  },
-  inputContainer: {
-    marginBottom: 16,
-  },
-  inputLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#374151',
-    marginBottom: 8,
-  },
+  logoText: {color: '#FFFFFF', fontSize: 20, fontWeight: '800', letterSpacing: 1},
+  logoName: {fontSize: 15, fontWeight: '600', color: '#374151', letterSpacing: 0.3},
+
+  title: {fontSize: 26, fontWeight: '800', color: '#111827', marginBottom: 8, letterSpacing: -0.3},
+  subtitle: {fontSize: 14, color: '#6B7280', marginBottom: 32, lineHeight: 21},
+
+  inputWrap: {marginBottom: 16},
+  inputLabel: {fontSize: 14, fontWeight: '600', color: '#374151', marginBottom: 8},
   phoneRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1.5,
-    borderColor: '#D1D5DB',
-    borderRadius: 12,
-    overflow: 'hidden',
-    backgroundColor: '#FFFFFF',
+    flexDirection: 'row', alignItems: 'center',
+    borderWidth: 1.5, borderColor: '#D1D5DB', borderRadius: 12, overflow: 'hidden',
   },
-  prefixBox: {
-    backgroundColor: '#F3F4F6',
-    paddingHorizontal: 14,
-    paddingVertical: 14,
-    borderRightWidth: 1.5,
-    borderRightColor: '#D1D5DB',
-    alignItems: 'center',
-    justifyContent: 'center',
+  phoneRowFilled: {borderColor: ACCENT},
+  prefix: {
+    backgroundColor: '#F3F4F6', paddingHorizontal: 14, paddingVertical: 14,
+    borderRightWidth: 1.5, borderRightColor: '#D1D5DB',
   },
-  prefixText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#374151',
-  },
-  phoneInput: {
-    flex: 1,
-    fontSize: 16,
-    color: '#111827',
-    paddingHorizontal: 14,
-    paddingVertical: 14,
-    letterSpacing: 1,
-  },
+  prefixText: {fontSize: 16, fontWeight: '600', color: '#374151'},
+  phoneInput: {flex: 1, fontSize: 16, color: '#111827', paddingHorizontal: 14, paddingVertical: 14, letterSpacing: 1},
+
   errorBox: {
-    backgroundColor: '#FEF2F2',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#FECACA',
+    backgroundColor: '#FEF2F2', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10,
+    marginBottom: 16, borderWidth: 1, borderColor: '#FECACA',
   },
-  errorText: {
-    color: '#DC2626',
-    fontSize: 14,
-    lineHeight: 20,
+  errorText: {color: '#DC2626', fontSize: 14, lineHeight: 20},
+
+  btn: {
+    backgroundColor: ACCENT, borderRadius: 12, paddingVertical: 16,
+    alignItems: 'center', justifyContent: 'center',
+    shadowColor: ACCENT, shadowOffset: {width: 0, height: 4}, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
   },
-  button: {
-    backgroundColor: '#2563EB',
-    borderRadius: 12,
-    paddingVertical: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 8,
-    shadowColor: '#2563EB',
-    shadowOffset: {width: 0, height: 4},
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  buttonDisabled: {
-    backgroundColor: '#93C5FD',
-    shadowOpacity: 0,
-    elevation: 0,
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '700',
-    letterSpacing: 0.5,
-  },
-  termsText: {
-    fontSize: 12,
-    color: '#9CA3AF',
-    textAlign: 'center',
-    marginTop: 24,
-    lineHeight: 18,
-  },
+  btnDisabled: {backgroundColor: '#93C5FD', shadowOpacity: 0, elevation: 0},
+  btnText: {color: '#FFFFFF', fontSize: 16, fontWeight: '700', letterSpacing: 0.5},
+
+  terms: {fontSize: 12, color: '#9CA3AF', textAlign: 'center', marginTop: 24, lineHeight: 18},
 });
