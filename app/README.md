@@ -39,12 +39,6 @@ npm install
 cd ios && pod install && cd ..
 ```
 
-3. Setup environment variables:
-```bash
-cp .env.example .env
-# Edit .env with your configuration
-```
-
 4. Start Metro bundler:
 ```bash
 npm start
