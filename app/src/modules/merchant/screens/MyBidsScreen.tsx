@@ -8,12 +8,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../../types/navigation';
 import {Bid} from '../../../types/api';
 import {getMyBids} from '../../../api/bids';
+import AppHeader from '../../../components/AppHeader';
 
 type RootNav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -89,11 +89,8 @@ export default function MyBidsScreen() {
   }, [load]);
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <View style={styles.header}>
-        <Text style={styles.title}>My Bids</Text>
-        {total > 0 && <Text style={styles.count}>{total}</Text>}
-      </View>
+    <View style={styles.safe}>
+      <AppHeader accentColor={ACCENT} />
 
       {/* Filter tabs */}
       <View style={styles.filterBar}>
@@ -141,7 +138,7 @@ export default function MyBidsScreen() {
           }
         />
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -161,16 +158,6 @@ const row = StyleSheet.create({
 
 const styles = StyleSheet.create({
   safe: {flex: 1, backgroundColor: '#F9FAFB'},
-  header: {
-    backgroundColor: '#FFFFFF', paddingHorizontal: 20, paddingTop: 16, paddingBottom: 16,
-    borderBottomWidth: 1, borderBottomColor: '#E5E7EB',
-    flexDirection: 'row', alignItems: 'center', gap: 8,
-  },
-  title: {fontSize: 22, fontWeight: '700', color: '#111827'},
-  count: {
-    fontSize: 13, fontWeight: '700', color: '#FFFFFF',
-    backgroundColor: ACCENT, borderRadius: 12, paddingHorizontal: 8, paddingVertical: 2,
-  },
   filterBar: {
     flexDirection: 'row', backgroundColor: '#FFFFFF', paddingHorizontal: 14, paddingVertical: 8,
     borderBottomWidth: 1, borderBottomColor: '#E5E7EB', gap: 8,

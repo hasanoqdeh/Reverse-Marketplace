@@ -141,7 +141,6 @@ model RequestCategory {
   parent   RequestCategory?  @relation("CategoryTree", fields: [parentId], references: [id])
   children RequestCategory[] @relation("CategoryTree")
   requests Request[]
-  drafts   RequestDraft[]
 
   @@map("request_categories")
 }
@@ -149,7 +148,7 @@ model RequestCategory {
 model Request {
   id              String        @id @default(uuid()) @db.Uuid
   buyerId         String        @map("buyer_id") @db.Uuid
-  categoryId      String        @map("category_id") @db.Uuid
+  categoryId      String?       @map("category_id") @db.Uuid
   title           String        @db.VarChar(255)
   description     String
   budgetMin       Decimal?      @map("budget_min") @db.Decimal(12, 2)
@@ -168,10 +167,8 @@ model Request {
   createdAt       DateTime      @default(now()) @map("created_at") @db.Timestamptz
   updatedAt       DateTime      @updatedAt @map("updated_at") @db.Timestamptz
 
-  category    RequestCategory     @relation(fields: [categoryId], references: [id])
-  images      RequestImage[]
-  extensions  RequestExtension[]
-  searchIndex RequestSearchIndex?
+  category RequestCategory? @relation(fields: [categoryId], references: [id])
+  images   RequestImage[]
 
   @@map("requests")
 }
@@ -193,55 +190,6 @@ model RequestImage {
   request Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
 
   @@map("request_images")
-}
-
-model RequestDraft {
-  id              String   @id @default(uuid()) @db.Uuid
-  buyerId         String   @map("buyer_id") @db.Uuid
-  categoryId      String?  @map("category_id") @db.Uuid
-  title           String?  @db.VarChar(255)
-  description     String?
-  budgetMin       Decimal? @map("budget_min") @db.Decimal(12, 2)
-  budgetMax       Decimal? @map("budget_max") @db.Decimal(12, 2)
-  locationLat     Decimal? @map("location_lat") @db.Decimal(10, 8)
-  locationLng     Decimal? @map("location_lng") @db.Decimal(11, 8)
-  locationAddress String?  @map("location_address")
-  autoSaveData    Json     @default("{}") @map("auto_save_data")
-  expiresAt       DateTime @map("expires_at") @db.Timestamptz
-  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz
-
-  category RequestCategory? @relation(fields: [categoryId], references: [id])
-
-  @@map("request_drafts")
-}
-
-model RequestExtension {
-  id                String   @id @default(uuid()) @db.Uuid
-  requestId         String   @map("request_id") @db.Uuid
-  originalExpiresAt DateTime @map("original_expires_at") @db.Timestamptz
-  newExpiresAt      DateTime @map("new_expires_at") @db.Timestamptz
-  extensionReason   String?  @map("extension_reason")
-  extendedBy        String?  @map("extended_by") @db.Uuid
-  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz
-
-  request Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
-
-  @@map("request_extensions")
-}
-
-model RequestSearchIndex {
-  id           String   @id @default(uuid()) @db.Uuid
-  requestId    String   @unique @map("request_id") @db.Uuid
-  searchVector String?  @map("search_vector")
-  categoryPath String?  @map("category_path")
-  locationText String?  @map("location_text")
-  budgetRange  String?  @map("budget_range")
-  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
-
-  request Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
-
-  @@map("request_search_index")
 }
 
 model SavedSearch {
@@ -266,34 +214,46 @@ enum BidStatus {
   WITHDRAWN
 }
 
-enum AmountType {
-  FIXED
-  PERCENTAGE
-  RANGE
+enum FulfillmentStatus {
+  AWAITING
+  PREPARING
+  IN_DELIVERY
+  DELIVERED
+  CONFIRMED
+}
+
+enum ReviewType {
+  BUYER_TO_MERCHANT
+  MERCHANT_TO_BUYER
 }
 
 // ─── Bidding models ────────────────────────────────────────────────────────
 
 model Bid {
-  id            String    @id @default(uuid()) @db.Uuid
-  requestId     String    @map("request_id") @db.Uuid
-  merchantId    String    @map("merchant_id") @db.Uuid
-  amount        Decimal   @db.Decimal(12, 2)
-  deliveryDays  Int       @map("delivery_days")
-  deliveryNotes String?   @map("delivery_notes")
-  specialTerms  String?   @map("special_terms")
-  status        BidStatus @default(PENDING)
-  priorityScore Int       @default(0) @map("priority_score")
-  isTemplate    Boolean   @default(false) @map("is_template")
-  templateName  String?   @map("template_name") @db.VarChar(100)
-  bidFee        Decimal   @default(0.00) @map("bid_fee") @db.Decimal(10, 2)
-  feePaid       Boolean   @default(false) @map("fee_paid")
-  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz
-  expiresAt     DateTime? @map("expires_at") @db.Timestamptz
-  acceptedAt    DateTime? @map("accepted_at") @db.Timestamptz
-  rejectedAt    DateTime? @map("rejected_at") @db.Timestamptz
-  withdrawnAt   DateTime? @map("withdrawn_at") @db.Timestamptz
+  id                   String             @id @default(uuid()) @db.Uuid
+  requestId            String             @map("request_id") @db.Uuid
+  merchantId           String             @map("merchant_id") @db.Uuid
+  amount               Decimal            @db.Decimal(12, 2)
+  deliveryDays         Int                @map("delivery_days")
+  deliveryNotes        String?            @map("delivery_notes")
+  specialTerms         String?            @map("special_terms")
+  status               BidStatus          @default(PENDING)
+  priorityScore        Int                @default(0) @map("priority_score")
+  isTemplate           Boolean            @default(false) @map("is_template")
+  templateName         String?            @map("template_name") @db.VarChar(100)
+  bidFee               Decimal            @default(0.00) @map("bid_fee") @db.Decimal(10, 2)
+  feePaid              Boolean            @default(false) @map("fee_paid")
+  createdAt            DateTime           @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt            DateTime           @updatedAt @map("updated_at") @db.Timestamptz
+  expiresAt            DateTime?          @map("expires_at") @db.Timestamptz
+  acceptedAt           DateTime?          @map("accepted_at") @db.Timestamptz
+  rejectedAt           DateTime?          @map("rejected_at") @db.Timestamptz
+  withdrawnAt          DateTime?          @map("withdrawn_at") @db.Timestamptz
+  chatRoomId           String?            @map("chat_room_id") @db.Uuid
+  fulfillmentStatus    FulfillmentStatus? @map("fulfillment_status")
+  fulfillmentUpdatedAt DateTime?          @map("fulfillment_updated_at") @db.Timestamptz
+
+  reviews Review[]
 
   @@unique([requestId, merchantId])
   @@map("bids")
@@ -309,14 +269,7 @@ enum RoomType {
   SUPPORT
 }
 
-enum ParticipantRole {
-  OWNER
-  ADMIN
-  MODERATOR
-  MEMBER
-}
-
-// ─── Chat models (rooms + participants in PostgreSQL) ──────────────────────
+// ─── Chat models ──────────────────────────────────────────────────────────
 // Messages are stored in MongoDB — see src/models/ChatMessage.js
 
 model ChatRoom {
@@ -333,258 +286,57 @@ model ChatRoom {
   createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
-  participants ChatParticipant[]
-
   @@map("chat_rooms")
-}
-
-model ChatParticipant {
-  id           String          @id @default(uuid()) @db.Uuid
-  roomId       String          @map("room_id") @db.Uuid
-  userId       String          @map("user_id") @db.Uuid
-  role         ParticipantRole @default(MEMBER)
-  joinedAt     DateTime        @default(now()) @map("joined_at") @db.Timestamptz
-  lastReadAt   DateTime?       @map("last_read_at") @db.Timestamptz
-  isMuted      Boolean         @default(false) @map("is_muted")
-  isBanned     Boolean         @default(false) @map("is_banned")
-  bannedUntil  DateTime?       @map("banned_until") @db.Timestamptz
-  bannedBy     String?         @map("banned_by") @db.Uuid
-  bannedReason String?         @map("banned_reason")
-  leftAt       DateTime?       @map("left_at") @db.Timestamptz
-
-  room ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
-
-  @@unique([roomId, userId])
-  @@map("chat_participants")
 }
 
 // ─── Notification enums ────────────────────────────────────────────────────
 
 enum NotificationType {
-  SYSTEM
-  REQUEST
-  BID
-  PAYMENT
-  CHAT
-  SUBSCRIPTION
-  SECURITY
-  MARKETING
+  NEW_MESSAGE
+  BID_PLACED
+  STATUS_IN_DELIVERY
+  BID_ACCEPTED
+  BUYER_REVIEW
 
   @@map("notification_type")
 }
 
-enum NotifChannel {
-  IN_APP
-  PUSH
-  EMAIL
-  SMS
-  WEBHOOK
-
-  @@map("notification_channel")
-}
-
-enum NotificationPriority {
-  LOW
-  NORMAL
-  HIGH
-  URGENT
-
-  @@map("notification_priority")
-}
-
-enum NotificationStatus {
-  PENDING
-  PROCESSING
-  SENT
-  DELIVERED
-  FAILED
-  EXPIRED
-  READ
-
-  @@map("notification_status")
-}
-
-enum NotifDeliveryStatus {
-  PENDING
-  PROCESSING
-  SENT
-  DELIVERED
-  FAILED
-  BOUNCED
-
-  @@map("notif_delivery_status")
-}
-
-enum NotifAnalyticsEvent {
-  SENT
-  DELIVERED
-  READ
-  FAILED
-  BOUNCED
-  CLICKED
-  DISMISSED
-
-  @@map("notif_analytics_event")
-}
-
-// ─── Notification models ───────────────────────────────────────────────────
-
-model NotificationTemplate {
-  id              String           @id @default(uuid()) @db.Uuid
-  name            String           @db.VarChar(100)
-  type            NotificationType
-  channel         NotifChannel
-  subjectTemplate String?          @map("subject_template") @db.VarChar(500)
-  contentTemplate String           @map("content_template")
-  variables       Json             @default("{}")
-  defaultLocale   String           @default("en") @map("default_locale") @db.VarChar(10)
-  isActive        Boolean          @default(true) @map("is_active")
-  version         Int              @default(1)
-  createdBy       String?          @map("created_by") @db.Uuid
-  createdAt       DateTime         @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt       DateTime         @updatedAt @map("updated_at") @db.Timestamptz
-
-  notifications Notification[]
-
-  @@map("notification_templates")
-}
+// ─── Notification model ────────────────────────────────────────────────────
 
 model Notification {
-  id                String               @id @default(uuid()) @db.Uuid
-  userId            String               @map("user_id") @db.Uuid
-  type              NotificationType
-  title             String               @db.VarChar(255)
-  content           String
-  channel           NotifChannel         @default(IN_APP)
-  priority          NotificationPriority @default(NORMAL)
-  status            NotificationStatus   @default(PENDING)
-  templateId        String?              @map("template_id") @db.Uuid
-  templateVariables Json                 @default("{}") @map("template_variables")
-  metadata          Json                 @default("{}")
-  scheduledAt       DateTime?            @map("scheduled_at") @db.Timestamptz
-  sentAt            DateTime?            @map("sent_at") @db.Timestamptz
-  deliveredAt       DateTime?            @map("delivered_at") @db.Timestamptz
-  readAt            DateTime?            @map("read_at") @db.Timestamptz
-  expiresAt         DateTime?            @map("expires_at") @db.Timestamptz
-  createdAt         DateTime             @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt         DateTime             @updatedAt @map("updated_at") @db.Timestamptz
+  id        String           @id @default(uuid()) @db.Uuid
+  userId    String           @map("user_id") @db.Uuid
+  type      NotificationType
+  title     String           @db.VarChar(255)
+  body      String
+  data      Json             @default("{}")
+  isRead    Boolean          @default(false) @map("is_read")
+  createdAt DateTime         @default(now()) @map("created_at") @db.Timestamptz
 
-  template   NotificationTemplate?  @relation(fields: [templateId], references: [id])
-  deliveries NotificationDelivery[]
-  reads      NotificationRead[]
-  analytics  NotificationStat[]
-
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt(sort: Desc)])
   @@map("notifications")
-}
-
-model NotificationChannel {
-  id           String       @id @default(uuid()) @db.Uuid
-  userId       String       @map("user_id") @db.Uuid
-  channelType  NotifChannel @map("channel_type")
-  isEnabled    Boolean      @default(true) @map("is_enabled")
-  deviceToken  String?      @map("device_token") @db.VarChar(500)
-  emailAddress String?      @map("email_address") @db.VarChar(255)
-  phoneNumber  String?      @map("phone_number") @db.VarChar(20)
-  preferences  Json         @default("{}")
-  lastUsedAt   DateTime?    @map("last_used_at") @db.Timestamptz
-  verifiedAt   DateTime?    @map("verified_at") @db.Timestamptz
-  createdAt    DateTime     @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt    DateTime     @updatedAt @map("updated_at") @db.Timestamptz
-
-  @@unique([userId, channelType])
-  @@map("notification_channels")
-}
-
-model NotificationPreference {
-  id                  String                @id @default(uuid()) @db.Uuid
-  userId              String                @map("user_id") @db.Uuid
-  notificationType    NotificationType      @map("notification_type")
-  channelType         NotifChannel          @map("channel_type")
-  isEnabled           Boolean               @default(true) @map("is_enabled")
-  quietHoursStart     String?               @map("quiet_hours_start")
-  quietHoursEnd       String?               @map("quiet_hours_end")
-  minPriority         NotificationPriority? @map("min_priority")
-  maxFrequencyMinutes Int?                  @map("max_frequency_minutes")
-  preferences         Json                  @default("{}")
-  createdAt           DateTime              @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt           DateTime              @updatedAt @map("updated_at") @db.Timestamptz
-
-  @@unique([userId, notificationType, channelType])
-  @@map("notification_preferences")
-}
-
-model NotificationDelivery {
-  id             String              @id @default(uuid()) @db.Uuid
-  notificationId String              @map("notification_id") @db.Uuid
-  channelType    NotifChannel        @map("channel_type")
-  provider       String              @db.VarChar(100)
-  recipient      String              @db.VarChar(500)
-  status         NotifDeliveryStatus @default(PENDING)
-  attemptCount   Int                 @default(0) @map("attempt_count")
-  sentAt         DateTime?           @map("sent_at") @db.Timestamptz
-  deliveredAt    DateTime?           @map("delivered_at") @db.Timestamptz
-  errorMessage   String?             @map("error_message")
-  errorCode      String?             @map("error_code") @db.VarChar(100)
-  metadata       Json                @default("{}")
-  createdAt      DateTime            @default(now()) @map("created_at") @db.Timestamptz
-
-  notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
-
-  @@map("notification_deliveries")
-}
-
-model NotificationRead {
-  id                String   @id @default(uuid()) @db.Uuid
-  notificationId    String   @map("notification_id") @db.Uuid
-  userId            String   @map("user_id") @db.Uuid
-  readAt            DateTime @default(now()) @map("read_at") @db.Timestamptz
-  deviceFingerprint String?  @map("device_fingerprint") @db.VarChar(255)
-  ipAddress         String?  @map("ip_address")
-  userAgent         String?  @map("user_agent")
-  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz
-
-  notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
-
-  @@unique([notificationId, userId])
-  @@map("notification_reads")
-}
-
-model NotificationStat {
-  id             String              @id @default(uuid()) @db.Uuid
-  notificationId String?             @map("notification_id") @db.Uuid
-  userId         String?             @map("user_id") @db.Uuid
-  eventType      NotifAnalyticsEvent @map("event_type")
-  channelType    NotifChannel        @map("channel_type")
-  provider       String?             @db.VarChar(100)
-  deliveryTimeMs Int?                @map("delivery_time_ms")
-  success        Boolean
-  errorCode      String?             @map("error_code") @db.VarChar(100)
-  metadata       Json                @default("{}")
-  createdAt      DateTime            @default(now()) @map("created_at") @db.Timestamptz
-
-  notification Notification? @relation(fields: [notificationId], references: [id], onDelete: SetNull)
-
-  @@map("notification_analytics")
 }
 
 // ─── Bidding models ────────────────────────────────────────────────────────
 
-model BidTemplate {
-  id               String     @id @default(uuid()) @db.Uuid
-  merchantId       String     @map("merchant_id") @db.Uuid
-  name             String     @db.VarChar(100)
-  description      String?
-  amountType       AmountType @default(FIXED) @map("amount_type")
-  amountPercentage Decimal?   @map("amount_percentage") @db.Decimal(5, 2)
-  fixedAmount      Decimal?   @map("fixed_amount") @db.Decimal(12, 2)
-  deliveryDays     Int?       @map("delivery_days")
-  deliveryNotes    String?    @map("delivery_notes")
-  specialTerms     String?    @map("special_terms")
-  isActive         Boolean    @default(true) @map("is_active")
-  usageCount       Int        @default(0) @map("usage_count")
-  successCount     Int        @default(0) @map("success_count")
-  createdAt        DateTime   @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt        DateTime   @updatedAt @map("updated_at") @db.Timestamptz
+// ─── Review models ─────────────────────────────────────────────────────────
 
-  @@map("bid_templates")
+model Review {
+  id         String     @id @default(uuid()) @db.Uuid
+  bidId      String     @map("bid_id") @db.Uuid
+  requestId  String     @map("request_id") @db.Uuid
+  reviewerId String     @map("reviewer_id") @db.Uuid
+  revieweeId String     @map("reviewee_id") @db.Uuid
+  type       ReviewType
+  rating     Int
+  comment    String?
+  createdAt  DateTime   @default(now()) @map("created_at") @db.Timestamptz
+
+  bid Bid @relation(fields: [bidId], references: [id], onDelete: Cascade)
+
+  @@unique([bidId, reviewerId])
+  @@index([revieweeId])
+  @@map("reviews")
 }

@@ -23,66 +23,6 @@ const requestController = {
     }
   },
 
-  // ─── Drafts ─────────────────────────────────────────────────────
-
-  async createDraft(req, res) {
-    try {
-      const buyerId = req.user.id;
-      const draft = await requestService.createDraft(buyerId, req.body);
-      res.status(201).json({
-        success: true,
-        draftId: draft.id,
-        expiresAt: draft.expiresAt,
-        message: 'Draft created',
-      });
-    } catch (err) {
-      logger.error('createDraft error', { error: err.message });
-      res.status(500).json({ success: false, message: 'Internal server error', error: 'INTERNAL_ERROR' });
-    }
-  },
-
-  async updateDraft(req, res) {
-    try {
-      const { id } = req.params;
-      const buyerId = req.user.id;
-      const result = await requestService.updateDraft(id, buyerId, req.body);
-
-      if (result.error) {
-        return res.status(404).json({ success: false, message: result.message, error: result.error });
-      }
-
-      res.json({ success: true, draft: result.draft, message: 'Draft updated' });
-    } catch (err) {
-      logger.error('updateDraft error', { error: err.message });
-      res.status(500).json({ success: false, message: 'Internal server error', error: 'INTERNAL_ERROR' });
-    }
-  },
-
-  async getMyDrafts(req, res) {
-    try {
-      const buyerId = req.user.id;
-      const drafts = await requestService.getDraftsByBuyer(buyerId);
-      res.json({ success: true, drafts });
-    } catch (err) {
-      logger.error('getMyDrafts error', { error: err.message });
-      res.status(500).json({ success: false, message: 'Internal server error', error: 'INTERNAL_ERROR' });
-    }
-  },
-
-  async deleteDraft(req, res) {
-    try {
-      const { id } = req.params;
-      const buyerId = req.user.id;
-      const deleted = await requestService.deleteDraft(id, buyerId);
-
-      if (!deleted) return res.status(404).json({ success: false, message: 'Draft not found', error: 'NOT_FOUND' });
-      res.json({ success: true, message: 'Draft deleted' });
-    } catch (err) {
-      logger.error('deleteDraft error', { error: err.message });
-      res.status(500).json({ success: false, message: 'Internal server error', error: 'INTERNAL_ERROR' });
-    }
-  },
-
   // ─── Publish ────────────────────────────────────────────────────
 
   async publishRequest(req, res) {
@@ -218,25 +158,6 @@ const requestController = {
       res.json({ success: true, message: 'Request cancelled' });
     } catch (err) {
       logger.error('cancelRequest error', { error: err.message });
-      res.status(500).json({ success: false, message: 'Internal server error', error: 'INTERNAL_ERROR' });
-    }
-  },
-
-  async extendRequest(req, res) {
-    try {
-      const { id } = req.params;
-      const buyerId = req.user.id;
-      const { reason } = req.body;
-
-      const result = await requestService.extendRequest(id, buyerId, reason);
-      if (result.error) {
-        const status = result.error === 'NOT_FOUND' ? 404 : 400;
-        return res.status(status).json({ success: false, message: result.message, error: result.error });
-      }
-
-      res.json({ success: true, newExpiresAt: result.newExpiresAt, message: 'Request extended' });
-    } catch (err) {
-      logger.error('extendRequest error', { error: err.message });
       res.status(500).json({ success: false, message: 'Internal server error', error: 'INTERNAL_ERROR' });
     }
   },

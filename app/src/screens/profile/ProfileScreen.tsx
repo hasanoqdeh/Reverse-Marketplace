@@ -11,8 +11,8 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {useAuth} from '../../context/AuthContext';
+import AppHeader from '../../components/AppHeader';
 
 const PRIMARY = '#2563EB';
 
@@ -80,21 +80,12 @@ export default function ProfileScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <View style={styles.safe}>
+      <AppHeader />
       <KeyboardAvoidingView
         style={{flex: 1}}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView showsVerticalScrollIndicator={false}>
-          {/* Header */}
-          <View style={styles.header}>
-            <Text style={styles.headerTitle}>Profile</Text>
-            {!editing && (
-              <TouchableOpacity onPress={startEdit} style={styles.editBtn}>
-                <Text style={styles.editBtnText}>Edit</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-
           {/* Avatar section */}
           <View style={styles.avatarSection}>
             <View style={styles.avatarCircle}>
@@ -104,6 +95,11 @@ export default function ProfileScreen() {
             <View style={styles.roleBadge}>
               <Text style={styles.roleText}>{user?.role ?? 'BUYER'}</Text>
             </View>
+            {!editing && (
+              <TouchableOpacity onPress={startEdit} style={styles.editBtn}>
+                <Text style={styles.editBtnText}>Edit Profile</Text>
+              </TouchableOpacity>
+            )}
           </View>
 
           {/* Edit form */}
@@ -203,7 +199,7 @@ export default function ProfileScreen() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -266,24 +262,16 @@ const infoStyles = StyleSheet.create({
 
 const styles = StyleSheet.create({
   safe: {flex: 1, backgroundColor: '#F3F4F6'},
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#FFFFFF',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
-  },
-  headerTitle: {fontSize: 20, fontWeight: '700', color: '#111827'},
   editBtn: {
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    backgroundColor: '#EFF6FF',
-    borderRadius: 8,
+    marginTop: 14,
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.5)',
   },
-  editBtnText: {fontSize: 14, fontWeight: '700', color: PRIMARY},
+  editBtnText: {fontSize: 14, fontWeight: '700', color: '#FFFFFF'},
   avatarSection: {
     backgroundColor: PRIMARY,
     alignItems: 'center',

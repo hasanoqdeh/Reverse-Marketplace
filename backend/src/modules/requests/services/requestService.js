@@ -4,89 +4,32 @@ const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 const fs = require('fs');
 const RequestRepository = require('../repositories/RequestRepository');
-const RequestDraftRepository = require('../repositories/RequestDraftRepository');
 const RequestImageRepository = require('../repositories/RequestImageRepository');
 const CategoryRepository = require('../repositories/CategoryRepository');
 const redisClient = require('../../../cache/redis');
 const eventPublisher = require('../../../events/publisher');
-const prisma = require('../../../prisma/client');
 const config = require('../../../config');
 const logger = require('../../../utils/logger');
 
 const requestService = {
-  // ─── Drafts ────────────────────────────────────────────────────
-
-  async createDraft(buyerId, data) {
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + config.request.draftExpiryDays);
-
-    const draft = await RequestDraftRepository.create({
-      buyerId,
-      categoryId: data.categoryId || null,
-      title: data.title || null,
-      description: data.description || null,
-      budgetMin: data.budgetMin ? parseFloat(data.budgetMin) : null,
-      budgetMax: data.budgetMax ? parseFloat(data.budgetMax) : null,
-      locationLat: data.location?.lat ? parseFloat(data.location.lat) : null,
-      locationLng: data.location?.lng ? parseFloat(data.location.lng) : null,
-      locationAddress: data.location?.address || null,
-      autoSaveData: data.autoSaveData || {},
-      expiresAt,
-    });
-
-    logger.info('Draft created', { draftId: draft.id, buyerId });
-    return draft;
-  },
-
-  async updateDraft(draftId, buyerId, data) {
-    const draft = await RequestDraftRepository.findByIdAndBuyer(draftId, buyerId);
-    if (!draft) {
-      return { error: 'DRAFT_NOT_FOUND', message: 'Draft not found' };
-    }
-
-    const updated = await RequestDraftRepository.update(draftId, {
-      categoryId: data.categoryId !== undefined ? data.categoryId : draft.categoryId,
-      title: data.title !== undefined ? data.title : draft.title,
-      description: data.description !== undefined ? data.description : draft.description,
-      budgetMin: data.budgetMin !== undefined ? parseFloat(data.budgetMin) : draft.budgetMin,
-      budgetMax: data.budgetMax !== undefined ? parseFloat(data.budgetMax) : draft.budgetMax,
-      locationLat: data.location?.lat !== undefined ? parseFloat(data.location.lat) : draft.locationLat,
-      locationLng: data.location?.lng !== undefined ? parseFloat(data.location.lng) : draft.locationLng,
-      locationAddress: data.location?.address !== undefined ? data.location.address : draft.locationAddress,
-      autoSaveData: data.autoSaveData || draft.autoSaveData,
-    });
-
-    return { draft: updated };
-  },
-
-  async getDraftsByBuyer(buyerId) {
-    return RequestDraftRepository.findByBuyer(buyerId);
-  },
-
-  async deleteDraft(draftId, buyerId) {
-    const draft = await RequestDraftRepository.findByIdAndBuyer(draftId, buyerId);
-    if (!draft) return false;
-    await RequestDraftRepository.delete(draftId);
-    return true;
-  },
-
   // ─── Publish ───────────────────────────────────────────────────
 
   async publishRequest(draftIdOrBuyerId, buyerId, data) {
-    if (!data.title || !data.description || !data.categoryId) {
+    if (!data.title || !data.description) {
       return {
         error: 'VALIDATION_ERROR',
         validationErrors: [
           !data.title && { field: 'title', message: 'Title is required' },
           !data.description && { field: 'description', message: 'Description is required' },
-          !data.categoryId && { field: 'categoryId', message: 'Category is required' },
         ].filter(Boolean),
       };
     }
 
-    const category = await CategoryRepository.findById(data.categoryId);
-    if (!category || !category.isActive) {
-      return { error: 'INVALID_CATEGORY', message: 'Category not found or inactive' };
+    if (data.categoryId) {
+      const category = await CategoryRepository.findById(data.categoryId);
+      if (!category || !category.isActive) {
+        return { error: 'INVALID_CATEGORY', message: 'Category not found or inactive' };
+      }
     }
 
     const expiresAt = new Date();
@@ -96,7 +39,7 @@ const requestService = {
 
     const request = await RequestRepository.create({
       buyerId,
-      categoryId: data.categoryId,
+      categoryId: data.categoryId || null,
       title: data.title,
       description: data.description,
       budgetMin: data.budgetMin ? parseFloat(data.budgetMin) : null,
@@ -112,10 +55,8 @@ const requestService = {
       expiresAt,
     });
 
-    await this._upsertSearchIndex(request);
-
     await eventPublisher.requestCreated(
-      request.id, buyerId, data.categoryId, data.title,
+      request.id, buyerId, data.categoryId || null, data.title,
       publishedAt.toISOString(), expiresAt.toISOString()
     );
 
@@ -189,36 +130,6 @@ const requestService = {
     return { success: true };
   },
 
-  async extendRequest(requestId, buyerId, reason) {
-    const request = await RequestRepository.findByIdAndBuyer(requestId, buyerId);
-    if (!request) return { error: 'NOT_FOUND' };
-    if (!['ACTIVE', 'HAS_BIDS'].includes(request.status)) {
-      return { error: 'INVALID_STATUS', message: 'Only active requests can be extended' };
-    }
-
-    const originalExpiresAt = request.expiresAt;
-    const newExpiresAt = new Date(originalExpiresAt);
-    newExpiresAt.setHours(newExpiresAt.getHours() + config.request.maxExtensionHours);
-
-    await RequestRepository.update(requestId, { expiresAt: newExpiresAt });
-
-    await prisma.requestExtension.create({
-      data: {
-        requestId,
-        originalExpiresAt,
-        newExpiresAt,
-        extensionReason: reason || null,
-        extendedBy: buyerId,
-      },
-    });
-
-    await redisClient.invalidateRequest(requestId);
-    await eventPublisher.requestExtended(requestId, buyerId, originalExpiresAt, newExpiresAt, reason);
-
-    logger.info('Request extended', { requestId, newExpiresAt });
-    return { success: true, newExpiresAt };
-  },
-
   // ─── Expiry job ────────────────────────────────────────────────
 
   async processExpiredRequests() {
@@ -242,28 +153,6 @@ const requestService = {
     if (data.location) score += 10;
     if (data.description && data.description.length > 100) score += 5;
     return score;
-  },
-
-  async _upsertSearchIndex(request) {
-    const searchText = `${request.title} ${request.description} ${request.locationCity || ''} ${request.locationCountry || ''}`;
-    const budgetRange = request.budgetMax
-      ? `${request.budgetMin || 0}-${request.budgetMax}`
-      : null;
-
-    await prisma.requestSearchIndex.upsert({
-      where: { requestId: request.id },
-      update: {
-        categoryPath: request.categoryId,
-        locationText: [request.locationCity, request.locationCountry].filter(Boolean).join(', '),
-        budgetRange,
-      },
-      create: {
-        requestId: request.id,
-        categoryPath: request.categoryId,
-        locationText: [request.locationCity, request.locationCountry].filter(Boolean).join(', '),
-        budgetRange,
-      },
-    });
   },
 
 };

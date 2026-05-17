@@ -69,6 +69,34 @@ cd backend && npm run seed
 cd backend && npx prisma generate --schema=src/prisma/schema.prisma
 ```
 
+## Running the Mobile App on Emulators
+
+```bash
+# List available AVDs
+emulator -list-avds
+
+# Start an emulator (if none running)
+emulator -avd pixel_4_api_34 -no-snapshot-load &
+
+# Check connected devices
+adb devices
+
+# Run on a single emulator (from app/ directory)
+cd app && npx react-native start          # start Metro bundler
+cd app && npx react-native run-android    # installs on the only connected device
+
+# Run on 2 emulators simultaneously
+# 1. Start Metro bundler (shared by both)
+cd app && npx react-native start --reset-cache &
+
+# 2. In separate terminals, target each device by ID
+npx react-native run-android --deviceId emulator-5554
+npx react-native run-android --deviceId emulator-5556
+```
+
+> Available AVDs: `bayer`, `pixel_4_api_34`, `test_device`
+> Metro runs on port 8081 and is shared across all connected devices.
+
 ## Git Workflow
 - Main branch: `master`
 - Dev branch: `develop`

@@ -11,8 +11,8 @@ import {
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../../types/navigation';
-import {Bid} from '../../../types/api';
-import {getBid, withdrawBid} from '../../../api/bids';
+import {Bid, FulfillmentStatus} from '../../../types/api';
+import {getBid, withdrawBid, updateFulfillmentStatus} from '../../../api/bids';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BidDetail'>;
 
@@ -51,6 +51,31 @@ export default function BidDetailScreen({route, navigation}: Props) {
   }, [bidId, navigation]);
 
   useEffect(() => { load(); }, [load]);
+
+  function handleFulfillmentUpdate(next: FulfillmentStatus) {
+    const labels: Record<string, string> = {
+      PREPARING: 'Mark as Preparing',
+      IN_DELIVERY: 'Mark as Out for Delivery',
+      DELIVERED: 'Mark as Delivered',
+    };
+    Alert.alert(labels[next] ?? next, 'Update fulfillment status?', [
+      {text: 'Cancel'},
+      {
+        text: 'Confirm',
+        onPress: async () => {
+          setActionLoading(true);
+          try {
+            const updated = await updateFulfillmentStatus(bidId, next);
+            setBid(updated);
+          } catch (err: any) {
+            Alert.alert('Error', err?.response?.data?.message ?? 'Failed to update status.');
+          } finally {
+            setActionLoading(false);
+          }
+        },
+      },
+    ]);
+  }
 
   function handleWithdraw() {
     Alert.alert('Withdraw Bid', 'Are you sure you want to withdraw this bid?', [
@@ -149,6 +174,28 @@ export default function BidDetailScreen({route, navigation}: Props) {
             </Text>
           </View>
         )}
+
+        {/* Fulfillment timeline */}
+        {bid.status === 'ACCEPTED' && bid.fulfillmentStatus && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Fulfillment Progress</Text>
+            <FulfillmentTimeline
+              current={bid.fulfillmentStatus}
+              onUpdate={handleFulfillmentUpdate}
+              loading={actionLoading}
+            />
+          </View>
+        )}
+
+        {/* Chat button */}
+        {bid.status === 'ACCEPTED' && bid.chatRoomId && (
+          <TouchableOpacity
+            style={styles.chatBtn}
+            onPress={() => navigation.navigate('ChatRoom', {roomId: bid.chatRoomId!, roomName: 'Buyer Chat'})}
+            activeOpacity={0.8}>
+            <Text style={styles.chatBtnText}>💬  Open Buyer Chat</Text>
+          </TouchableOpacity>
+        )}
       </ScrollView>
 
       {canWithdraw && (
@@ -169,6 +216,71 @@ export default function BidDetailScreen({route, navigation}: Props) {
     </SafeAreaView>
   );
 }
+
+const FULFILLMENT_STEPS: {status: FulfillmentStatus; label: string; next?: FulfillmentStatus; actionLabel?: string}[] = [
+  {status: 'AWAITING',    label: 'Awaiting Start',    next: 'PREPARING',   actionLabel: 'Mark Preparing'},
+  {status: 'PREPARING',   label: 'Preparing',          next: 'IN_DELIVERY', actionLabel: 'Mark Delivering'},
+  {status: 'IN_DELIVERY', label: 'Out for Delivery',   next: 'DELIVERED',   actionLabel: 'Mark Delivered'},
+  {status: 'DELIVERED',   label: 'Delivered',          },
+  {status: 'CONFIRMED',   label: 'Confirmed by Buyer'},
+];
+
+function FulfillmentTimeline({
+  current,
+  onUpdate,
+  loading,
+}: {
+  current: FulfillmentStatus;
+  onUpdate: (next: FulfillmentStatus) => void;
+  loading: boolean;
+}) {
+  const currentIdx = FULFILLMENT_STEPS.findIndex(s => s.status === current);
+  const nextStep = FULFILLMENT_STEPS[currentIdx]?.next;
+
+  return (
+    <View>
+      {FULFILLMENT_STEPS.map((step, i) => {
+        const done = i < currentIdx;
+        const active = i === currentIdx;
+        return (
+          <View key={step.status} style={ft.row}>
+            <View style={[ft.dot, done && ft.dotDone, active && ft.dotActive]} />
+            <Text style={[ft.label, done && ft.labelDone, active && ft.labelActive]}>{step.label}</Text>
+          </View>
+        );
+      })}
+      {nextStep && (
+        <TouchableOpacity
+          style={[ft.actionBtn, loading && ft.disabledBtn]}
+          onPress={() => onUpdate(nextStep)}
+          disabled={loading}
+          activeOpacity={0.8}>
+          {loading ? (
+            <ActivityIndicator size="small" color="#FFFFFF" />
+          ) : (
+            <Text style={ft.actionText}>{FULFILLMENT_STEPS[currentIdx]?.actionLabel}</Text>
+          )}
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+}
+
+const ft = StyleSheet.create({
+  row: {flexDirection: 'row', alignItems: 'center', paddingVertical: 6, gap: 10},
+  dot: {width: 10, height: 10, borderRadius: 5, backgroundColor: '#D1D5DB'},
+  dotDone: {backgroundColor: '#16A34A'},
+  dotActive: {backgroundColor: '#D97706'},
+  label: {fontSize: 13, color: '#9CA3AF'},
+  labelDone: {color: '#16A34A'},
+  labelActive: {fontSize: 13, fontWeight: '700', color: '#D97706'},
+  actionBtn: {
+    marginTop: 12, borderRadius: 12, backgroundColor: '#16A34A',
+    paddingVertical: 13, alignItems: 'center',
+  },
+  actionText: {fontSize: 14, fontWeight: '700', color: '#FFFFFF'},
+  disabledBtn: {opacity: 0.6},
+});
 
 function TimelineRow({label, value, highlight}: {label: string; value: string; highlight?: string}) {
   return (
@@ -242,4 +354,9 @@ const styles = StyleSheet.create({
     borderRadius: 14, paddingVertical: 14, alignItems: 'center',
   },
   withdrawBtnText: {fontSize: 15, fontWeight: '700', color: '#B91C1C'},
+  chatBtn: {
+    marginTop: 4, borderRadius: 14, backgroundColor: '#EFF6FF',
+    borderWidth: 1, borderColor: '#BFDBFE', paddingVertical: 14, alignItems: 'center',
+  },
+  chatBtnText: {fontSize: 15, fontWeight: '700', color: '#2563EB'},
 });

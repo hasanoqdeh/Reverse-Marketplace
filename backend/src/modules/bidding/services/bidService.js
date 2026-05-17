@@ -1,8 +1,8 @@
 'use strict';
 
 const BidRepository = require('../repositories/BidRepository');
-const BidTemplateRepository = require('../repositories/BidTemplateRepository');
 const RequestRepository = require('../../requests/repositories/RequestRepository');
+const ChatRoomRepository = require('../../chat/repositories/ChatRoomRepository');
 const eventPublisher = require('../../../events/publisher');
 const logger = require('../../../utils/logger');
 
@@ -13,7 +13,7 @@ const bidService = {
   // ─── Bid Submission ────────────────────────────────────────────
 
   async submitBid(merchantId, data) {
-    const { requestId, amount, deliveryDays, deliveryNotes, specialTerms, templateId } = data;
+    const { requestId, amount, deliveryDays, deliveryNotes, specialTerms } = data;
 
     const request = await RequestRepository.findById(requestId);
     if (!request) return { error: 'NOT_FOUND', message: 'Request not found' };
@@ -60,8 +60,20 @@ const bidService = {
       bidCount: { increment: 1 },
     });
 
-    if (templateId) {
-      await BidTemplateRepository.incrementUsage(templateId).catch(() => {});
+    // Auto-create a BID-type chat room so buyer and merchant can negotiate
+    try {
+      const chatRoom = await ChatRoomRepository.create({
+        name: `Bid: ${request.title.slice(0, 40)}`,
+        type: 'BID',
+        relatedRequestId: requestId,
+        relatedBidId: bid.id,
+        createdBy: merchantId,
+        participantIds: [request.buyerId],
+      });
+      await BidRepository.update(bid.id, { chatRoomId: chatRoom.id });
+      bid.chatRoomId = chatRoom.id;
+    } catch (err) {
+      logger.warn('Could not auto-create bid chat room', { bidId: bid.id, error: err.message });
     }
 
     const competition = await BidRepository.getCompetitionData(requestId);
@@ -190,14 +202,19 @@ const bidService = {
 
     if (request.buyerId !== buyerId) return { error: 'FORBIDDEN', message: 'Access denied' };
 
-    await BidRepository.updateStatus(bidId, 'ACCEPTED', { acceptedAt: new Date() });
+    await BidRepository.updateStatus(bidId, 'ACCEPTED', {
+      acceptedAt: new Date(),
+      fulfillmentStatus: 'AWAITING',
+      fulfillmentUpdatedAt: new Date(),
+    });
     await BidRepository.rejectAllExcept(bid.requestId, bidId);
-    await RequestRepository.updateStatus(bid.requestId, 'COMPLETED');
+    // Keep request as HAS_BIDS during fulfillment; complete after delivery confirmed
+    await RequestRepository.updateStatus(bid.requestId, 'HAS_BIDS');
 
     await eventPublisher.bidAccepted(bidId, bid.requestId, bid.merchantId, buyerId, parseFloat(bid.amount));
 
     logger.info('Bid accepted', { bidId, requestId: bid.requestId, buyerId });
-    return { success: true, bidId, merchantId: bid.merchantId };
+    return { success: true, bidId, merchantId: bid.merchantId, chatRoomId: bid.chatRoomId };
   },
 
   // ─── Reject Bid ────────────────────────────────────────────────
@@ -234,40 +251,69 @@ const bidService = {
     });
   },
 
-  // ─── Templates ─────────────────────────────────────────────────
+  // ─── Fulfillment ───────────────────────────────────────────────
 
-  async createTemplate(merchantId, data) {
-    const { name, description, amountType = 'FIXED', amountPercentage, fixedAmount, deliveryDays, deliveryNotes, specialTerms } = data;
+  async updateFulfillmentStatus(bidId, merchantId, newStatus) {
+    const VALID_MERCHANT_TRANSITIONS = {
+      AWAITING: 'PREPARING',
+      PREPARING: 'IN_DELIVERY',
+      IN_DELIVERY: 'DELIVERED',
+    };
 
-    if (!name) return { error: 'VALIDATION_ERROR', message: 'Template name is required' };
+    const bid = await BidRepository.findByIdAndMerchant(bidId, merchantId);
+    if (!bid) return { error: 'NOT_FOUND', message: 'Bid not found' };
 
-    const template = await BidTemplateRepository.create({
-      merchantId,
-      name,
-      description: description || null,
-      amountType,
-      amountPercentage: amountPercentage ? parseFloat(amountPercentage) : null,
-      fixedAmount: fixedAmount ? parseFloat(fixedAmount) : null,
-      deliveryDays: deliveryDays ? parseInt(deliveryDays, 10) : null,
-      deliveryNotes: deliveryNotes || null,
-      specialTerms: specialTerms || null,
+    if (bid.status !== 'ACCEPTED') {
+      return { error: 'INVALID_STATUS', message: 'Bid must be accepted before updating fulfillment' };
+    }
+
+    const allowedNext = VALID_MERCHANT_TRANSITIONS[bid.fulfillmentStatus];
+    if (!allowedNext || allowedNext !== newStatus) {
+      return { error: 'INVALID_TRANSITION', message: `Cannot transition from ${bid.fulfillmentStatus} to ${newStatus}` };
+    }
+
+    const updated = await BidRepository.update(bidId, {
+      fulfillmentStatus: newStatus,
+      fulfillmentUpdatedAt: new Date(),
     });
 
-    logger.info('Bid template created', { templateId: template.id, merchantId });
-    return { template };
+    await eventPublisher.bidFulfillmentUpdated(bidId, merchantId, bid.fulfillmentStatus, newStatus);
+
+    logger.info('Fulfillment status updated', { bidId, merchantId, from: bid.fulfillmentStatus, to: newStatus });
+    return { bid: updated };
   },
 
-  async getTemplates(merchantId) {
-    const templates = await BidTemplateRepository.findByMerchant(merchantId);
-    return { templates };
-  },
+  async confirmDelivery(bidId, buyerId) {
+    const bid = await BidRepository.findById(bidId);
+    if (!bid) return { error: 'NOT_FOUND', message: 'Bid not found' };
 
-  async deleteTemplate(templateId, merchantId) {
-    const template = await BidTemplateRepository.findByIdAndMerchant(templateId, merchantId);
-    if (!template) return { error: 'NOT_FOUND', message: 'Template not found' };
+    if (bid.status !== 'ACCEPTED') {
+      return { error: 'INVALID_STATUS', message: 'Bid must be accepted' };
+    }
+    if (bid.fulfillmentStatus !== 'DELIVERED') {
+      return { error: 'INVALID_STATUS', message: 'Merchant must mark as delivered first' };
+    }
 
-    await BidTemplateRepository.softDelete(templateId);
-    return { success: true };
+    const request = await RequestRepository.findById(bid.requestId);
+    if (!request || request.buyerId !== buyerId) {
+      return { error: 'FORBIDDEN', message: 'Access denied' };
+    }
+
+    await BidRepository.update(bidId, {
+      fulfillmentStatus: 'CONFIRMED',
+      fulfillmentUpdatedAt: new Date(),
+    });
+
+    await RequestRepository.updateStatus(bid.requestId, 'COMPLETED');
+
+    if (bid.chatRoomId) {
+      await ChatRoomRepository.deactivate(bid.chatRoomId).catch(() => {});
+    }
+
+    await eventPublisher.bidDeliveryConfirmed(bidId, buyerId, bid.merchantId);
+
+    logger.info('Delivery confirmed', { bidId, buyerId, merchantId: bid.merchantId });
+    return { success: true, bidId, merchantId: bid.merchantId, requestId: bid.requestId };
   },
 
   // ─── Internals ─────────────────────────────────────────────────

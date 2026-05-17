@@ -14,7 +14,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../types/navigation';
 import {ChatMessage} from '../../types/api';
-import {getMessages, sendMessage, markRoomRead} from '../../api/chat';
+import {getMessages, getRoom, sendMessage, markRoomRead} from '../../api/chat';
 import {useAuth} from '../../context/AuthContext';
 import io, {Socket} from 'socket.io-client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -51,6 +51,7 @@ export default function ChatRoomScreen({route, navigation}: Props) {
   const userId = user?.id ?? '';
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [roomActive, setRoomActive] = useState(true);
   const [loading, setLoading] = useState(true);
   const [text, setText] = useState('');
   const [sending, setSending] = useState(false);
@@ -61,9 +62,13 @@ export default function ChatRoomScreen({route, navigation}: Props) {
 
   const load = useCallback(async () => {
     try {
-      const res = await getMessages(roomId, {limit: 50});
-      setMessages(res.messages);
-      await markRoomRead(roomId);
+      const [msgRes, room] = await Promise.all([
+        getMessages(roomId, {limit: 50}),
+        getRoom(roomId),
+      ]);
+      setMessages(msgRes.messages);
+      setRoomActive(room.isActive);
+      if (room.isActive) await markRoomRead(roomId);
     } catch {
       // ignore
     } finally {
@@ -208,8 +213,15 @@ export default function ChatRoomScreen({route, navigation}: Props) {
           />
         )}
 
-        {/* Compose bar */}
-        <View style={styles.compose}>
+        {/* Archived banner */}
+        {!roomActive && (
+          <View style={styles.archivedBanner}>
+            <Text style={styles.archivedText}>This conversation is archived — the transaction has been completed.</Text>
+          </View>
+        )}
+
+        {/* Compose bar — hidden when room is archived */}
+        {roomActive && <View style={styles.compose}>
           <TextInput
             style={styles.input}
             value={text}
@@ -231,7 +243,7 @@ export default function ChatRoomScreen({route, navigation}: Props) {
               <Text style={styles.sendIcon}>↑</Text>
             )}
           </TouchableOpacity>
-        </View>
+        </View>}
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -282,4 +294,9 @@ const styles = StyleSheet.create({
   },
   sendBtnDisabled: {backgroundColor: '#BFDBFE'},
   sendIcon: {fontSize: 18, color: '#FFFFFF', fontWeight: '700'},
+  archivedBanner: {
+    backgroundColor: '#F3F4F6', borderTopWidth: 1, borderTopColor: '#E5E7EB',
+    paddingHorizontal: 20, paddingVertical: 14, alignItems: 'center',
+  },
+  archivedText: {fontSize: 13, color: '#6B7280', textAlign: 'center', lineHeight: 18},
 });

@@ -8,12 +8,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../../types/navigation';
 import {MarketRequest, RequestStatus} from '../../../types/api';
 import {getMyRequests} from '../../../api/requests';
+import AppHeader from '../../../components/AppHeader';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -119,16 +119,8 @@ export default function RequestsScreen() {
   }, [loadingMore, hasMore, page, activeTab, fetchRequests]);
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>My Requests</Text>
-        <TouchableOpacity
-          style={styles.newBtn}
-          onPress={() => navigation.navigate('CreateRequest')}
-          activeOpacity={0.8}>
-          <Text style={styles.newBtnText}>+ New</Text>
-        </TouchableOpacity>
-      </View>
+    <View style={styles.safe}>
+      <AppHeader />
 
       {/* Tabs */}
       <View style={styles.tabBarWrap}>
@@ -189,7 +181,8 @@ export default function RequestsScreen() {
           }
         />
       )}
-    </SafeAreaView>
+
+    </View>
   );
 }
 
@@ -210,14 +203,6 @@ const card = StyleSheet.create({
 
 const styles = StyleSheet.create({
   safe: {flex: 1, backgroundColor: '#F3F4F6'},
-  header: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    backgroundColor: '#FFFFFF', paddingHorizontal: 20, paddingVertical: 14,
-    borderBottomWidth: 1, borderBottomColor: '#E5E7EB',
-  },
-  headerTitle: {fontSize: 20, fontWeight: '700', color: '#111827'},
-  newBtn: {backgroundColor: ACCENT, borderRadius: 20, paddingHorizontal: 14, paddingVertical: 6},
-  newBtnText: {fontSize: 13, fontWeight: '700', color: '#FFFFFF'},
   tabBarWrap: {backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#E5E7EB'},
   tabBar: {paddingHorizontal: 12, paddingVertical: 8, gap: 6},
   tab: {paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, backgroundColor: '#F3F4F6'},

@@ -2,9 +2,10 @@
 
 require('dotenv').config();
 
-const { Client }  = require('pg');
+const { Client }      = require('pg');
 const { v4: uuidv4 } = require('uuid');
-const mongoose    = require('mongoose');
+const mongoose        = require('mongoose');
+const { createClient } = require('redis');
 
 // ─── MongoDB models ───────────────────────────────────────────────────────────
 const ActivityLog     = require('../src/models/ActivityLog');
@@ -21,87 +22,92 @@ const DATABASE_URL =
 
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/reverse_marketplace';
 
-// ─── Static IDs ───────────────────────────────────────────────────────────────
-// Fixed UUIDs so re-seeding is idempotent (ON CONFLICT DO UPDATE / upsert)
+// ─── Fixed IDs (idempotent re-seed) ──────────────────────────────────────────
 
 const IDS = {
   // Users
   superAdmin: '00000000-0000-0000-0000-000000000001',
   admin1:     '00000000-0000-0000-0000-000000000002',
-  admin2:     '00000000-0000-0000-0000-000000000003',
-  buyer1:     '00000000-0000-0000-0000-000000000004',
-  buyer2:     '00000000-0000-0000-0000-000000000005',
-  merchant1:  '00000000-0000-0000-0000-000000000006',
-  merchant2:  '00000000-0000-0000-0000-000000000007',
+  buyer1:     '00000000-0000-0000-0000-000000000004',   // Khalid — posts iPhone, cleaning, MacBook
+  buyer2:     '00000000-0000-0000-0000-000000000005',   // Layla  — posts tutor, moving
+  merchant1:  '00000000-0000-0000-0000-000000000006',   // Tariq  — bids on iPhone, cleaning, MacBook, tutor
+  merchant2:  '00000000-0000-0000-0000-000000000007',   // Nour   — bids on iPhone, cleaning, tutor
 
   // Categories
   catElectronics:  '10000000-0000-0000-0000-000000000001',
   catHomeServices: '10000000-0000-0000-0000-000000000002',
   catFood:         '10000000-0000-0000-0000-000000000003',
   catTransport:    '10000000-0000-0000-0000-000000000004',
-  catHealth:       '10000000-0000-0000-0000-000000000005',
   catEducation:    '10000000-0000-0000-0000-000000000006',
   catRepairs:      '10000000-0000-0000-0000-000000000007',
-  catBeauty:       '10000000-0000-0000-0000-000000000008',
 
-  // Requests
-  req1: '20000000-0000-0000-0000-000000000001',
-  req2: '20000000-0000-0000-0000-000000000002',
-  req3: '20000000-0000-0000-0000-000000000003',
-  req4: '20000000-0000-0000-0000-000000000004',
-  req5: '20000000-0000-0000-0000-000000000005',
-  req6: '20000000-0000-0000-0000-000000000006',
-
-  // Drafts
-  draft1: '30000000-0000-0000-0000-000000000001',
-  draft2: '30000000-0000-0000-0000-000000000002',
+  // Requests  (chronological: req5 oldest → req1 newest)
+  req1: '20000000-0000-0000-0000-000000000001',  // iPhone 15     — buyer1 — HAS_BIDS
+  req2: '20000000-0000-0000-0000-000000000002',  // House cleaning — buyer1 — HAS_BIDS (bid accepted)
+  req3: '20000000-0000-0000-0000-000000000003',  // Moving         — buyer2 — ACTIVE
+  req4: '20000000-0000-0000-0000-000000000004',  // Math tutor     — buyer2 — HAS_BIDS
+  req5: '20000000-0000-0000-0000-000000000005',  // MacBook repair — buyer1 — COMPLETED (bid accepted)
 
   // Bids
-  bid1:  '40000000-0000-0000-0000-000000000001',
-  bid2:  '40000000-0000-0000-0000-000000000002',
-  bid3:  '40000000-0000-0000-0000-000000000003',
-  bid4:  '40000000-0000-0000-0000-000000000004',
-  bid5:  '40000000-0000-0000-0000-000000000005',
-  bid6:  '40000000-0000-0000-0000-000000000006',
-  bid7:  '40000000-0000-0000-0000-000000000007',
-  bid8:  '40000000-0000-0000-0000-000000000008',
-  bid9:  '40000000-0000-0000-0000-000000000009',
-  bid10: '40000000-0000-0000-0000-000000000010',
+  bid1: '40000000-0000-0000-0000-000000000001',  // req1 ← merchant1 $950   PENDING
+  bid2: '40000000-0000-0000-0000-000000000002',  // req1 ← merchant2 $1050  PENDING
+  bid3: '40000000-0000-0000-0000-000000000003',  // req2 ← merchant1 $180   REJECTED
+  bid4: '40000000-0000-0000-0000-000000000004',  // req2 ← merchant2 $250   ACCEPTED ✓
+  bid5: '40000000-0000-0000-0000-000000000005',  // req4 ← merchant1 $35    PENDING
+  bid6: '40000000-0000-0000-0000-000000000006',  // req4 ← merchant2 $42    PENDING
+  bid7: '40000000-0000-0000-0000-000000000007',  // req5 ← merchant1 $450   ACCEPTED ✓
+  bid8: '40000000-0000-0000-0000-000000000008',  // req5 ← merchant2 $520   REJECTED
 
   // Chat rooms
-  room1: '50000000-0000-0000-0000-000000000001',
-  room2: '50000000-0000-0000-0000-000000000002',
-  room3: '50000000-0000-0000-0000-000000000003',
-  room4: '50000000-0000-0000-0000-000000000004',
+  room1: '50000000-0000-0000-0000-000000000001',  // buyer1 ↔ merchant1 about iPhone (req1)
+  room2: '50000000-0000-0000-0000-000000000002',  // buyer2 ↔ merchant1 about Tutor bid (bid5)
+  room3: '50000000-0000-0000-0000-000000000003',  // buyer1 ↔ merchant1 MacBook post-repair follow-up
+  room4: '50000000-0000-0000-0000-000000000004',  // buyer1 ↔ admin1 support
+
+  // Notifications
+  notif1:  '61000000-0000-0000-0000-000000000001',
+  notif2:  '61000000-0000-0000-0000-000000000002',
+  notif3:  '61000000-0000-0000-0000-000000000003',
+  notif4:  '61000000-0000-0000-0000-000000000004',
+  notif5:  '61000000-0000-0000-0000-000000000005',
+  notif6:  '61000000-0000-0000-0000-000000000006',
+  notif7:  '61000000-0000-0000-0000-000000000007',
+  notif8:  '61000000-0000-0000-0000-000000000008',
+  notif9:  '61000000-0000-0000-0000-000000000009',
+  notif10: '61000000-0000-0000-0000-000000000010',
+  notif11: '61000000-0000-0000-0000-000000000011',
+  notif12: '61000000-0000-0000-0000-000000000012',
+  notif13: '61000000-0000-0000-0000-000000000013',
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Timeline helpers
+// ─────────────────────────────────────────────────────────────────────────────
+
+function daysAgo(n)   { return new Date(Date.now() - n * 86400000); }
+function daysAhead(n) { return new Date(Date.now() + n * 86400000); }
+function hoursAgo(n)  { return new Date(Date.now() - n * 3600000);  }
+function minsAfter(base, m) { return new Date(base.getTime() + m * 60000); }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PostgreSQL seed
 // ─────────────────────────────────────────────────────────────────────────────
 
-async function seedPostgres(client) {
-  const now       = new Date();
-  const past1Day  = new Date(now - 1 * 86400000);
-  const past3Days = new Date(now - 3 * 86400000);
-  const past7Days = new Date(now - 7 * 86400000);
-  const in3Days   = new Date(now.getTime() + 3 * 86400000);
-  const in7Days   = new Date(now.getTime() + 7 * 86400000);
-  const in14Days  = new Date(now.getTime() + 14 * 86400000);
+async function seedPostgres(pg) {
 
   // ── Users ──────────────────────────────────────────────────────────────────
 
   const users = [
     { id: IDS.superAdmin, phone: '+962780000001', role: 'ADMIN',    status: 'ACTIVE', verified: true,  subRole: 'SUPER_ADMIN' },
     { id: IDS.admin1,     phone: '+962780000002', role: 'ADMIN',    status: 'ACTIVE', verified: true,  subRole: 'ADMIN' },
-    { id: IDS.admin2,     phone: '+962780000003', role: 'ADMIN',    status: 'ACTIVE', verified: true,  subRole: 'SUPPORT' },
     { id: IDS.buyer1,     phone: '+962780000004', role: 'BUYER',    status: 'ACTIVE', verified: true,  subRole: null },
     { id: IDS.buyer2,     phone: '+962780000005', role: 'BUYER',    status: 'ACTIVE', verified: true,  subRole: null },
     { id: IDS.merchant1,  phone: '+962780000006', role: 'MERCHANT', status: 'ACTIVE', verified: true,  subRole: null },
-    { id: IDS.merchant2,  phone: '+962780000007', role: 'MERCHANT', status: 'ACTIVE', verified: false, subRole: null },
+    { id: IDS.merchant2,  phone: '+962780000007', role: 'MERCHANT', status: 'ACTIVE', verified: true,  subRole: null },
   ];
 
   for (const u of users) {
-    await client.query(`
+    await pg.query(`
       INSERT INTO users (id, phone, role, status, phone_verified, admin_sub_role, last_login_at)
       VALUES ($1,$2,$3,$4,$5,$6,NOW())
       ON CONFLICT (id) DO UPDATE SET
@@ -114,17 +120,16 @@ async function seedPostgres(client) {
   // ── User Profiles ──────────────────────────────────────────────────────────
 
   const profiles = [
-    { userId: IDS.superAdmin, first: 'Super',  last: 'Admin',    city: 'Amman',  country: 'JO' },
-    { userId: IDS.admin1,     first: 'Ahmad',  last: 'Al-Farsi', city: 'Jarash', country: 'JO' },
-    { userId: IDS.admin2,     first: 'Sara',   last: 'Support',  city: 'Amman',  country: 'JO' },
-    { userId: IDS.buyer1,     first: 'Khalid', last: 'Hassan',   city: 'Jarash', country: 'JO' },
-    { userId: IDS.buyer2,     first: 'Layla',  last: 'Omar',     city: 'Amman',  country: 'JO' },
-    { userId: IDS.merchant1,  first: 'Tariq',  last: 'Merchant', city: 'Irbid',  country: 'JO' },
-    { userId: IDS.merchant2,  first: 'Nour',   last: 'Seller',   city: 'Amman',  country: 'JO' },
+    { userId: IDS.superAdmin, first: 'Super',  last: 'Admin',   city: 'Amman',  country: 'JO' },
+    { userId: IDS.admin1,     first: 'Ahmad',  last: 'Farsi',   city: 'Jarash', country: 'JO' },
+    { userId: IDS.buyer1,     first: 'Khalid', last: 'Hassan',  city: 'Jarash', country: 'JO' },
+    { userId: IDS.buyer2,     first: 'Layla',  last: 'Omar',    city: 'Amman',  country: 'JO' },
+    { userId: IDS.merchant1,  first: 'Tariq',  last: 'Saleh',   city: 'Irbid',  country: 'JO' },
+    { userId: IDS.merchant2,  first: 'Nour',   last: 'Khaleel', city: 'Amman',  country: 'JO' },
   ];
 
   for (const p of profiles) {
-    await client.query(`
+    await pg.query(`
       INSERT INTO user_profiles (id, user_id, first_name, last_name, city, country)
       VALUES ($1,$2,$3,$4,$5,$6)
       ON CONFLICT (user_id) DO UPDATE SET
@@ -137,147 +142,128 @@ async function seedPostgres(client) {
   // ── Categories ─────────────────────────────────────────────────────────────
 
   const categories = [
-    { id: IDS.catElectronics,  name: 'Electronics',       slug: 'electronics',     desc: 'Phones, laptops, gadgets and accessories' },
-    { id: IDS.catHomeServices, name: 'Home Services',     slug: 'home-services',   desc: 'Cleaning, maintenance, repairs, and installations' },
-    { id: IDS.catFood,         name: 'Food & Beverages',  slug: 'food-beverages',  desc: 'Catering, groceries, and food delivery' },
-    { id: IDS.catTransport,    name: 'Transportation',    slug: 'transportation',  desc: 'Moving, delivery, and ride services' },
-    { id: IDS.catHealth,       name: 'Health & Wellness', slug: 'health-wellness', desc: 'Medical, fitness, and wellness services' },
-    { id: IDS.catEducation,    name: 'Education',         slug: 'education',       desc: 'Tutoring, courses, and training' },
-    { id: IDS.catRepairs,      name: 'Repairs & Fix',     slug: 'repairs-fix',     desc: 'Car repairs, appliance fix, and technical support' },
-    { id: IDS.catBeauty,       name: 'Beauty & Fashion',  slug: 'beauty-fashion',  desc: 'Hair, makeup, styling, and clothing' },
+    { id: IDS.catElectronics,  name: 'Electronics',       slug: 'electronics',     desc: 'Phones, laptops, gadgets and accessories',        sort: 0 },
+    { id: IDS.catHomeServices, name: 'Home Services',     slug: 'home-services',   desc: 'Cleaning, maintenance, repairs, and installations', sort: 1 },
+    { id: IDS.catFood,         name: 'Food & Beverages',  slug: 'food-beverages',  desc: 'Catering, groceries, and food delivery',           sort: 2 },
+    { id: IDS.catTransport,    name: 'Transportation',    slug: 'transportation',  desc: 'Moving, delivery, and ride services',              sort: 3 },
+    { id: IDS.catEducation,    name: 'Education',         slug: 'education',       desc: 'Tutoring, courses, and training',                  sort: 4 },
+    { id: IDS.catRepairs,      name: 'Repairs & Fix',     slug: 'repairs-fix',     desc: 'Car repairs, appliance fix, and technical support', sort: 5 },
   ];
 
   for (const c of categories) {
-    await client.query(`
+    await pg.query(`
       INSERT INTO request_categories (id, name, slug, description, is_active, sort_order)
       VALUES ($1,$2,$3,$4,true,$5)
       ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, description = EXCLUDED.description
-    `, [c.id, c.name, c.slug, c.desc, categories.indexOf(c)]);
+    `, [c.id, c.name, c.slug, c.desc, c.sort]);
   }
   console.log(`  ✅ Categories (${categories.length})`);
 
   // ── Requests ───────────────────────────────────────────────────────────────
+  //
+  // Sequence:
+  //   Day -14: Khalid posts MacBook repair (req5) — oldest
+  //   Day -10: Tariq bids $450 on req5 (bid7) → accepted → req5 = COMPLETED
+  //            Nour  bids $520 on req5 (bid8) → rejected
+  //   Day  -7: Layla posts math tutor (req4)
+  //            Tariq bids $35 on req4 (bid5)
+  //            Nour  bids $42 on req4 (bid6)
+  //   Day  -5: Khalid posts house cleaning (req2)
+  //            Tariq bids $180 on req2 (bid3) → rejected
+  //            Nour  bids $250 on req2 (bid4) → accepted
+  //   Day  -3: Khalid posts iPhone 15 (req1) — newest active
+  //            Tariq bids $950  on req1 (bid1)
+  //            Nour  bids $1050 on req1 (bid2)
+  //   Day  -2: Layla posts moving furniture (req3) — no bids yet
 
   const requests = [
     {
-      id: IDS.req1, buyerId: IDS.buyer1, catId: IDS.catElectronics,
-      title: 'Looking for iPhone 15 Pro Max 256GB',
-      desc: 'I need a brand new or like-new iPhone 15 Pro Max in black. Must come with original box and all accessories. Willing to pay fair market price.',
-      budMin: 800, budMax: 1200, city: 'Jarash', country: 'JO',
-      status: 'HAS_BIDS', bids: 2, views: 47, score: 20,
-      publishedAt: past3Days, expiresAt: in3Days,
-    },
-    {
-      id: IDS.req2, buyerId: IDS.buyer1, catId: IDS.catHomeServices,
-      title: 'Need a professional house cleaning service',
-      desc: '4-bedroom villa needs deep cleaning. 2 bathrooms, large kitchen. Looking for a team that can finish within one day. Prefer eco-friendly products.',
-      budMin: 100, budMax: 300, city: 'Jarash', country: 'JO',
-      status: 'HAS_BIDS', bids: 2, views: 62, score: 15,
-      publishedAt: past3Days, expiresAt: in7Days,
-    },
-    {
-      id: IDS.req3, buyerId: IDS.buyer2, catId: IDS.catTransport,
-      title: 'Moving furniture from one apartment to another',
-      desc: 'I have a 2-bedroom apartment worth of furniture to move. Need a truck and 2 helpers. Flexible on date within the next 2 weeks.',
-      budMin: 200, budMax: 500, city: 'Amman', country: 'JO',
-      status: 'ACTIVE', bids: 0, views: 28, score: 10,
-      publishedAt: past3Days, expiresAt: in7Days,
+      id: IDS.req5, buyerId: IDS.buyer1, catId: IDS.catRepairs,
+      title: 'MacBook Pro screen replacement needed',
+      desc:  'My MacBook Pro 14" (2023) has a cracked screen. Need a certified technician. Only original Apple parts.',
+      budMin: 300, budMax: 600, city: 'Jarash', country: 'JO',
+      status: 'COMPLETED', bids: 2, views: 52, score: 30,
+      publishedAt: daysAgo(14), expiresAt: daysAgo(7),
     },
     {
       id: IDS.req4, buyerId: IDS.buyer2, catId: IDS.catEducation,
       title: 'Looking for a math tutor for high school student',
-      desc: 'My daughter is in grade 11 and needs help with calculus and algebra. Prefer online sessions 3 times per week. English or Arabic is fine.',
+      desc:  'My daughter is in grade 11 and needs help with calculus and algebra. Prefer online sessions 3x/week.',
       budMin: 20, budMax: 50, city: 'Amman', country: 'JO',
       status: 'HAS_BIDS', bids: 2, views: 95, score: 25,
-      publishedAt: past7Days, expiresAt: in14Days,
+      publishedAt: daysAgo(7), expiresAt: daysAhead(7),
     },
     {
-      id: IDS.req5, buyerId: IDS.buyer1, catId: IDS.catRepairs,
-      title: 'MacBook Pro screen replacement needed',
-      desc: 'My MacBook Pro 14" (2023) has a cracked screen. Need a certified technician for replacement. Only original Apple parts.',
-      budMin: 300, budMax: 600, city: 'Jarash', country: 'JO',
-      status: 'COMPLETED', bids: 2, views: 38, score: 0,
-      publishedAt: past7Days, expiresAt: past3Days,
+      id: IDS.req2, buyerId: IDS.buyer1, catId: IDS.catHomeServices,
+      title: 'Need a professional house cleaning service',
+      desc:  '4-bedroom villa needs deep cleaning. 2 bathrooms, large kitchen. Prefer eco-friendly products.',
+      budMin: 100, budMax: 300, city: 'Jarash', country: 'JO',
+      status: 'HAS_BIDS', bids: 2, views: 62, score: 15,
+      publishedAt: daysAgo(5), expiresAt: daysAhead(9),
     },
     {
-      id: IDS.req6, buyerId: IDS.buyer2, catId: IDS.catFood,
-      title: 'Catering for 50-person corporate event',
-      desc: 'Need full catering service for a corporate lunch event. Arabic and international cuisine. Includes setup and cleanup.',
-      budMin: 1500, budMax: 3000, city: 'Amman', country: 'JO',
-      status: 'CANCELLED', bids: 1, views: 15, score: 0,
-      publishedAt: past7Days, expiresAt: past3Days,
+      id: IDS.req1, buyerId: IDS.buyer1, catId: IDS.catElectronics,
+      title: 'Looking for iPhone 15 Pro Max 256GB',
+      desc:  'Need a brand new or like-new iPhone 15 Pro Max in black. Original box and all accessories.',
+      budMin: 800, budMax: 1200, city: 'Jarash', country: 'JO',
+      status: 'HAS_BIDS', bids: 2, views: 47, score: 20,
+      publishedAt: daysAgo(3), expiresAt: daysAhead(4),
+    },
+    {
+      id: IDS.req3, buyerId: IDS.buyer2, catId: IDS.catTransport,
+      title: 'Moving furniture from one apartment to another',
+      desc:  '2-bedroom apartment furniture to move. Need a truck and 2 helpers. Flexible within 2 weeks.',
+      budMin: 200, budMax: 500, city: 'Amman', country: 'JO',
+      status: 'ACTIVE', bids: 0, views: 18, score: 5,
+      publishedAt: daysAgo(2), expiresAt: daysAhead(12),
     },
   ];
 
   for (const r of requests) {
-    await client.query(`
+    await pg.query(`
       INSERT INTO requests
         (id, buyer_id, category_id, title, description, budget_min, budget_max,
          location_city, location_country, status, priority_score, bid_count, view_count,
          published_at, expires_at)
       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
       ON CONFLICT (id) DO UPDATE SET
-        title = EXCLUDED.title, description = EXCLUDED.description,
-        status = EXCLUDED.status, bid_count = EXCLUDED.bid_count,
-        view_count = EXCLUDED.view_count, priority_score = EXCLUDED.priority_score
+        title = EXCLUDED.title, status = EXCLUDED.status,
+        bid_count = EXCLUDED.bid_count, view_count = EXCLUDED.view_count
     `, [r.id, r.buyerId, r.catId, r.title, r.desc, r.budMin, r.budMax,
-        r.city, r.country, r.status, r.score, r.bids, r.views, r.publishedAt, r.expiresAt]);
+        r.city, r.country, r.status, r.score, r.bids, r.views,
+        r.publishedAt, r.expiresAt]);
   }
   console.log(`  ✅ Requests (${requests.length})`);
 
   // ── Request Images ─────────────────────────────────────────────────────────
 
   const images = [
-    { requestId: IDS.req1, url: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=800', thumb: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=200', filename: 'iphone-15-pro.jpg',    size: 245000, isPrimary: true,  sort: 0 },
-    { requestId: IDS.req1, url: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800', thumb: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200', filename: 'iphone-box.jpg',       size: 198000, isPrimary: false, sort: 1 },
-    { requestId: IDS.req2, url: 'https://images.unsplash.com/photo-1527515637462-cff94edd56f3?w=800', thumb: 'https://images.unsplash.com/photo-1527515637462-cff94edd56f3?w=200', filename: 'villa-living.jpg',     size: 312000, isPrimary: true,  sort: 0 },
-    { requestId: IDS.req5, url: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800', thumb: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=200', filename: 'macbook-cracked.jpg',  size: 278000, isPrimary: true,  sort: 0 },
+    { reqId: IDS.req1, url: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=800', thumb: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=200', file: 'iphone-15-pro.jpg',   size: 245000, primary: true,  sort: 0 },
+    { reqId: IDS.req1, url: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800', thumb: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200', file: 'iphone-box.jpg',      size: 198000, primary: false, sort: 1 },
+    { reqId: IDS.req2, url: 'https://images.unsplash.com/photo-1527515637462-cff94edd56f3?w=800', thumb: 'https://images.unsplash.com/photo-1527515637462-cff94edd56f3?w=200', file: 'villa-living.jpg',    size: 312000, primary: true,  sort: 0 },
+    { reqId: IDS.req5, url: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800', thumb: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=200', file: 'macbook-crack.jpg',   size: 278000, primary: true,  sort: 0 },
   ];
 
   for (const img of images) {
-    await client.query(`
+    await pg.query(`
       INSERT INTO request_images
         (id, request_id, image_url, thumbnail_url, original_filename, file_size, mime_type, is_primary, sort_order)
       VALUES ($1,$2,$3,$4,$5,$6,'image/jpeg',$7,$8)
       ON CONFLICT (id) DO NOTHING
-    `, [uuidv4(), img.requestId, img.url, img.thumb, img.filename, img.size, img.isPrimary, img.sort]);
+    `, [uuidv4(), img.reqId, img.url, img.thumb, img.file, img.size, img.primary, img.sort]);
   }
   console.log(`  ✅ Request images (${images.length})`);
-
-  // ── Request Drafts ─────────────────────────────────────────────────────────
-
-  await client.query(`
-    INSERT INTO request_drafts (id, buyer_id, category_id, title, description, budget_min, budget_max, auto_save_data, expires_at)
-    VALUES
-      ($1,$2,$3,'Looking for physiotherapy sessions','Need physiotherapy for lower back pain. Prefer home visits.',30,80,$4,$5),
-      ($6,$7,$8,'Bridal makeup artist for wedding',NULL,NULL,NULL,$9,$10)
-    ON CONFLICT (id) DO NOTHING
-  `, [
-    IDS.draft1, IDS.buyer1, IDS.catHealth, JSON.stringify({step:2,completedSteps:[1,2]}), in7Days,
-    IDS.draft2, IDS.buyer2, IDS.catBeauty, JSON.stringify({step:1,completedSteps:[1]}), in14Days,
-  ]);
-  console.log('  ✅ Request drafts (2)');
-
-  // ── Request Extensions ─────────────────────────────────────────────────────
-
-  await client.query(`
-    INSERT INTO request_extensions (id, request_id, original_expires_at, new_expires_at, extension_reason, extended_by)
-    VALUES ($1,$2,$3,$4,$5,$6)
-    ON CONFLICT (id) DO NOTHING
-  `, [uuidv4(), IDS.req4, in7Days, in14Days, 'Still evaluating bids, need more time to choose the right tutor', IDS.buyer2]);
-  console.log('  ✅ Request extensions (1)');
 
   // ── Saved Searches ─────────────────────────────────────────────────────────
 
   const savedSearches = [
-    { userId: IDS.merchant1, name: 'Electronics in Jarash', criteria: {category: IDS.catElectronics, country: 'JO', city: 'Jarash', budgetMin: 500} },
-    { userId: IDS.merchant1, name: 'Home Services',         criteria: {category: IDS.catHomeServices, country: 'JO', budgetMin: 100} },
-    { userId: IDS.merchant2, name: 'Education requests',    criteria: {category: IDS.catEducation, budgetMin: 15, budgetMax: 100} },
-    { userId: IDS.buyer1,    name: 'Repair services',       criteria: {category: IDS.catRepairs, country: 'JO'} },
+    { userId: IDS.merchant1, name: 'Electronics in Jarash', criteria: { category: IDS.catElectronics, city: 'Jarash', budgetMin: 500 } },
+    { userId: IDS.merchant1, name: 'Home Services',         criteria: { category: IDS.catHomeServices, budgetMin: 100 } },
+    { userId: IDS.merchant2, name: 'Education requests',    criteria: { category: IDS.catEducation, budgetMin: 15, budgetMax: 100 } },
   ];
 
   for (const s of savedSearches) {
-    await client.query(`
+    await pg.query(`
       INSERT INTO saved_searches (id, user_id, name, search_criteria, is_active)
       VALUES ($1,$2,$3,$4,true)
       ON CONFLICT (id) DO NOTHING
@@ -285,93 +271,82 @@ async function seedPostgres(client) {
   }
   console.log(`  ✅ Saved searches (${savedSearches.length})`);
 
-  // ── Request Search Index ───────────────────────────────────────────────────
-
-  const searchEntries = [
-    { reqId: IDS.req1, vec: 'iphone 15 pro max 256gb black electronics apple',     cat: 'electronics',   loc: 'Jarash Jordan',  bud: '800-1200' },
-    { reqId: IDS.req2, vec: 'house cleaning villa deep bathroom kitchen eco',       cat: 'home-services', loc: 'Jarash Jordan',  bud: '100-300' },
-    { reqId: IDS.req3, vec: 'moving furniture truck helpers apartment transport',   cat: 'transportation',loc: 'Amman Jordan',   bud: '200-500' },
-    { reqId: IDS.req4, vec: 'math tutor grade 11 calculus algebra online sessions', cat: 'education',    loc: 'Amman Jordan',   bud: '20-50' },
-    { reqId: IDS.req5, vec: 'macbook pro screen replacement cracked repair apple',  cat: 'repairs-fix',  loc: 'Jarash Jordan',  bud: '300-600' },
-    { reqId: IDS.req6, vec: 'catering corporate event arabic international cuisine',cat: 'food-beverages',loc: 'Amman Jordan',  bud: '1500-3000' },
-  ];
-
-  for (const s of searchEntries) {
-    await client.query(`
-      INSERT INTO request_search_index (id, request_id, search_vector, category_path, location_text, budget_range)
-      VALUES ($1,$2,$3,$4,$5,$6)
-      ON CONFLICT (request_id) DO UPDATE SET
-        search_vector = EXCLUDED.search_vector, category_path = EXCLUDED.category_path,
-        location_text = EXCLUDED.location_text, budget_range = EXCLUDED.budget_range
-    `, [uuidv4(), s.reqId, s.vec, s.cat, s.loc, s.bud]);
-  }
-  console.log(`  ✅ Request search index (${searchEntries.length})`);
-
   // ── Bids ───────────────────────────────────────────────────────────────────
+  //
+  // req5 (MacBook, day -14): bid7 merchant1 $450 ACCEPTED day-10, bid8 merchant2 $520 REJECTED day-10
+  // req4 (Tutor,  day  -7): bid5 merchant1 $35  PENDING,          bid6 merchant2 $42  PENDING
+  // req2 (Clean,  day  -5): bid3 merchant1 $180 REJECTED day-4,   bid4 merchant2 $250 ACCEPTED day-4
+  // req1 (iPhone, day  -3): bid1 merchant1 $950 PENDING,          bid2 merchant2 $1050 PENDING
 
-  const bidsData = [
-    // req1 — iPhone (HAS_BIDS): 2 pending bids
-    { id: IDS.bid1,  reqId: IDS.req1, mId: IDS.merchant1, amount: 950.00,  days: 5,  notes: 'Brand new sealed box, warranty included.',           terms: null,                           status: 'PENDING',   score: 90, expiresAt: in7Days, acceptedAt: null, rejectedAt: null, withdrawnAt: null },
-    { id: IDS.bid2,  reqId: IDS.req1, mId: IDS.merchant2, amount: 1050.00, days: 7,  notes: 'Like-new, purchased 2 weeks ago, full accessories.',  terms: '7-day return policy',          status: 'PENDING',   score: 83, expiresAt: in7Days, acceptedAt: null, rejectedAt: null, withdrawnAt: null },
-    // req2 — Cleaning (HAS_BIDS): 1 accepted, 1 rejected
-    { id: IDS.bid3,  reqId: IDS.req2, mId: IDS.merchant1, amount: 180.00,  days: 1,  notes: 'Professional team of 4, eco-friendly products.',      terms: null,                           status: 'REJECTED',  score: 82, expiresAt: in7Days, acceptedAt: null, rejectedAt: past1Day, withdrawnAt: null },
-    { id: IDS.bid4,  reqId: IDS.req2, mId: IDS.merchant2, amount: 250.00,  days: 1,  notes: 'Specialized deep cleaning with steam equipment.',     terms: 'Includes all cleaning supplies', status: 'ACCEPTED', score: 75, expiresAt: in7Days, acceptedAt: past1Day, rejectedAt: null, withdrawnAt: null },
-    // req4 — Tutor (HAS_BIDS): 2 pending bids
-    { id: IDS.bid5,  reqId: IDS.req4, mId: IDS.merchant1, amount: 35.00,   days: 30, notes: '5 years tutoring experience, flexible schedule.',     terms: null,                           status: 'PENDING',   score: 65, expiresAt: in14Days, acceptedAt: null, rejectedAt: null, withdrawnAt: null },
-    { id: IDS.bid6,  reqId: IDS.req4, mId: IDS.merchant2, amount: 42.00,   days: 30, notes: 'Certified math teacher, online sessions via Zoom.',   terms: 'First session free',           status: 'PENDING',   score: 58, expiresAt: in14Days, acceptedAt: null, rejectedAt: null, withdrawnAt: null },
-    // req5 — MacBook (COMPLETED): 1 accepted, 1 rejected
-    { id: IDS.bid7,  reqId: IDS.req5, mId: IDS.merchant1, amount: 450.00,  days: 3,  notes: 'Apple Authorized Service Provider, original parts.',  terms: '90-day warranty on repair',    status: 'ACCEPTED',  score: 76, expiresAt: past1Day, acceptedAt: past3Days, rejectedAt: null, withdrawnAt: null },
-    { id: IDS.bid8,  reqId: IDS.req5, mId: IDS.merchant2, amount: 520.00,  days: 5,  notes: 'Certified technician, 3-year experience.',            terms: null,                           status: 'REJECTED',  score: 69, expiresAt: past1Day, acceptedAt: null, rejectedAt: past3Days, withdrawnAt: null },
-    // req6 — Catering (CANCELLED): 1 rejected
-    { id: IDS.bid9,  reqId: IDS.req6, mId: IDS.merchant1, amount: 2200.00, days: 1,  notes: 'Full catering team, 50 person setup & cleanup.',      terms: '50% deposit required',         status: 'REJECTED',  score: 60, expiresAt: past1Day, acceptedAt: null, rejectedAt: past7Days, withdrawnAt: null },
-    // req3 — Moving (ACTIVE): withdrawn bid
-    { id: IDS.bid10, reqId: IDS.req3, mId: IDS.merchant2, amount: 380.00,  days: 2,  notes: 'Large truck + 2 experienced movers.',                 terms: null,                           status: 'WITHDRAWN', score: 62, expiresAt: in7Days, acceptedAt: null, rejectedAt: null, withdrawnAt: past1Day },
+  const bids = [
+    // req5 — MacBook (COMPLETED)
+    { id: IDS.bid7, reqId: IDS.req5, mId: IDS.merchant1, amount: 450.00, days: 3,
+      notes: 'Apple Authorized Service Provider, original parts.', terms: '90-day warranty on repair',
+      status: 'ACCEPTED', score: 76, expiresAt: daysAgo(7),
+      acceptedAt: daysAgo(10), rejectedAt: null, withdrawnAt: null, createdAt: daysAgo(11) },
+    { id: IDS.bid8, reqId: IDS.req5, mId: IDS.merchant2, amount: 520.00, days: 5,
+      notes: 'Certified technician, 3 years experience.', terms: null,
+      status: 'REJECTED', score: 69, expiresAt: daysAgo(7),
+      acceptedAt: null, rejectedAt: daysAgo(10), withdrawnAt: null, createdAt: daysAgo(11) },
+    // req4 — Math tutor (HAS_BIDS)
+    { id: IDS.bid5, reqId: IDS.req4, mId: IDS.merchant1, amount: 35.00, days: 30,
+      notes: '5 years tutoring experience, flexible schedule.', terms: null,
+      status: 'PENDING', score: 65, expiresAt: daysAhead(7),
+      acceptedAt: null, rejectedAt: null, withdrawnAt: null, createdAt: daysAgo(7) },
+    { id: IDS.bid6, reqId: IDS.req4, mId: IDS.merchant2, amount: 42.00, days: 30,
+      notes: 'Certified math teacher, online sessions via Zoom.', terms: 'First session free',
+      status: 'PENDING', score: 58, expiresAt: daysAhead(7),
+      acceptedAt: null, rejectedAt: null, withdrawnAt: null, createdAt: daysAgo(7) },
+    // req2 — House cleaning (HAS_BIDS, bid4 accepted)
+    { id: IDS.bid3, reqId: IDS.req2, mId: IDS.merchant1, amount: 180.00, days: 1,
+      notes: 'Professional team of 4, eco-friendly products.', terms: null,
+      status: 'REJECTED', score: 82, expiresAt: daysAhead(9),
+      acceptedAt: null, rejectedAt: daysAgo(4), withdrawnAt: null, createdAt: daysAgo(5) },
+    { id: IDS.bid4, reqId: IDS.req2, mId: IDS.merchant2, amount: 250.00, days: 1,
+      notes: 'Specialized deep cleaning with steam equipment.', terms: 'Includes all cleaning supplies',
+      status: 'ACCEPTED', score: 75, expiresAt: daysAhead(9),
+      acceptedAt: daysAgo(4), rejectedAt: null, withdrawnAt: null, createdAt: daysAgo(5) },
+    // req1 — iPhone (HAS_BIDS, pending)
+    { id: IDS.bid1, reqId: IDS.req1, mId: IDS.merchant1, amount: 950.00, days: 5,
+      notes: 'Brand new sealed box, warranty included.', terms: null,
+      status: 'PENDING', score: 90, expiresAt: daysAhead(4),
+      acceptedAt: null, rejectedAt: null, withdrawnAt: null, createdAt: daysAgo(3) },
+    { id: IDS.bid2, reqId: IDS.req1, mId: IDS.merchant2, amount: 1050.00, days: 7,
+      notes: 'Like-new, purchased 2 weeks ago, full accessories.', terms: '7-day return policy',
+      status: 'PENDING', score: 83, expiresAt: daysAhead(4),
+      acceptedAt: null, rejectedAt: null, withdrawnAt: null, createdAt: daysAgo(3) },
   ];
 
-  for (const b of bidsData) {
-    await client.query(`
+  for (const b of bids) {
+    await pg.query(`
       INSERT INTO bids
         (id, request_id, merchant_id, amount, delivery_days, delivery_notes, special_terms,
-         status, priority_score, expires_at, accepted_at, rejected_at, withdrawn_at)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+         status, priority_score, expires_at, accepted_at, rejected_at, withdrawn_at, created_at)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
       ON CONFLICT (id) DO UPDATE SET
         status = EXCLUDED.status, priority_score = EXCLUDED.priority_score,
-        accepted_at = EXCLUDED.accepted_at, rejected_at = EXCLUDED.rejected_at,
-        withdrawn_at = EXCLUDED.withdrawn_at
+        accepted_at = EXCLUDED.accepted_at, rejected_at = EXCLUDED.rejected_at
     `, [b.id, b.reqId, b.mId, b.amount, b.days, b.notes, b.terms,
-        b.status, b.score, b.expiresAt, b.acceptedAt, b.rejectedAt, b.withdrawnAt]);
+        b.status, b.score, b.expiresAt, b.acceptedAt, b.rejectedAt, b.withdrawnAt, b.createdAt]);
   }
-  console.log(`  ✅ Bids (${bidsData.length})`);
-
-  // ── Bid Templates ──────────────────────────────────────────────────────────
-
-  const templates = [
-    { id: uuidv4(), mId: IDS.merchant1, name: 'Standard Electronics Offer', desc: 'My default bid for electronics requests', amtType: 'FIXED', fixedAmt: null, days: 5, notes: 'Original packaging, tested and verified. Includes warranty.', terms: null },
-    { id: uuidv4(), mId: IDS.merchant1, name: 'Premium Service Bid',        desc: 'Premium package with extended warranty',  amtType: 'FIXED', fixedAmt: null, days: 3, notes: 'Priority service with same-day response.',                     terms: '30-day satisfaction guarantee' },
-    { id: uuidv4(), mId: IDS.merchant2, name: 'Budget-Friendly Offer',      desc: 'Competitive pricing for all categories', amtType: 'FIXED', fixedAmt: null, days: 7, notes: 'Quality service at an affordable price.',                      terms: null },
-  ];
-
-  for (const t of templates) {
-    await client.query(`
-      INSERT INTO bid_templates
-        (id, merchant_id, name, description, amount_type, fixed_amount, delivery_days, delivery_notes, special_terms, is_active, usage_count)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,true,0)
-      ON CONFLICT (id) DO NOTHING
-    `, [t.id, t.mId, t.name, t.desc, t.amtType, t.fixedAmt, t.days, t.notes, t.terms]);
-  }
-  console.log(`  ✅ Bid templates (${templates.length})`);
+  console.log(`  ✅ Bids (${bids.length})`);
 
   // ── Chat Rooms ─────────────────────────────────────────────────────────────
+  //
+  // room1: buyer1 ↔ merchant1 about iPhone (req1) — both pending
+  // room2: buyer2 ↔ merchant1 about Tutor bid (bid5) — pending
+  // room3: buyer1 ↔ merchant1 MacBook post-repair follow-up — after bid7 accepted
+  // room4: buyer1 ↔ admin1 support chat
 
   const rooms = [
-    { id: IDS.room1, name: 'iPhone 15 — Buyer & Tariq',    desc: 'Discussion about iPhone request',     type: 'REQUEST', reqId: IDS.req1, bidId: null,     createdBy: IDS.buyer1,    lastMsgAt: past1Day },
-    { id: IDS.room2, name: 'Tutor Bid Negotiation',         desc: 'Bid discussion for math tutor req',   type: 'BID',     reqId: IDS.req4, bidId: IDS.bid5, createdBy: IDS.buyer2,    lastMsgAt: past1Day },
-    { id: IDS.room3, name: 'MacBook Repair — Support Chat', desc: 'Post-repair support follow-up',       type: 'DIRECT',  reqId: null,     bidId: null,     createdBy: IDS.buyer1,    lastMsgAt: past3Days },
-    { id: IDS.room4, name: 'Support — Khalid Hassan',       desc: 'Customer support conversation',       type: 'SUPPORT', reqId: null,     bidId: null,     createdBy: IDS.admin1,    lastMsgAt: past3Days },
+    { id: IDS.room1, name: 'iPhone 15 — Khalid & Tariq',   desc: 'Negotiation about the iPhone request',   type: 'BID',     reqId: IDS.req1, bidId: IDS.bid1, createdBy: IDS.buyer1,   lastMsgAt: hoursAgo(3)  },
+    { id: IDS.room2, name: 'Math Tutor — Layla & Tariq',   desc: 'Discussion about the tutor bid',         type: 'BID',     reqId: IDS.req4, bidId: IDS.bid5, createdBy: IDS.buyer2,   lastMsgAt: hoursAgo(1)  },
+    { id: IDS.room3, name: 'MacBook Repair — Follow-up',   desc: 'Post-repair warranty support',           type: 'DIRECT',  reqId: null,     bidId: null,     createdBy: IDS.buyer1,   lastMsgAt: daysAgo(5)   },
+    { id: IDS.room4, name: 'Support — Khalid Hassan',      desc: 'Customer support conversation',          type: 'SUPPORT', reqId: null,     bidId: null,     createdBy: IDS.admin1,   lastMsgAt: daysAgo(10)  },
   ];
 
   for (const r of rooms) {
-    await client.query(`
+    await pg.query(`
       INSERT INTO chat_rooms
         (id, name, description, type, related_request_id, related_bid_id, created_by, is_active, last_message_at)
       VALUES ($1,$2,$3,$4,$5,$6,$7,true,$8)
@@ -381,31 +356,136 @@ async function seedPostgres(client) {
   }
   console.log(`  ✅ Chat rooms (${rooms.length})`);
 
-  // ── Chat Participants ──────────────────────────────────────────────────────
+  // ── Notifications ──────────────────────────────────────────────────────────
+  //
+  // Sequence (driven by the bids/messages timeline):
+  //
+  //   Day -11: merchant1 bids on req5 → buyer1 gets BID_PLACED (bid7)      [READ]
+  //            merchant2 bids on req5 → buyer1 gets BID_PLACED (bid8)      [READ]
+  //   Day -10: bid7 accepted → merchant1 gets BID_ACCEPTED                  [READ]
+  //   Day  -7: merchant1 bids on req4 → buyer2 gets BID_PLACED (bid5)      [READ]
+  //            merchant2 bids on req4 → buyer2 gets BID_PLACED (bid6)      [READ]
+  //   Day  -5: merchant1 bids on req2 → buyer1 gets BID_PLACED (bid3)      [READ]
+  //            merchant2 bids on req2 → buyer1 gets BID_PLACED (bid4)      [READ]
+  //   Day  -4: bid4 accepted → merchant2 gets BID_ACCEPTED                  [READ]
+  //   Day  -3: merchant1 bids on req1 → buyer1 gets BID_PLACED (bid1)      [READ]
+  //            merchant2 bids on req1 → buyer1 gets BID_PLACED (bid2)      [READ]
+  //   3 h ago: merchant1 sent msg in room1 → buyer1 gets NEW_MESSAGE        [UNREAD]
+  //   1 h ago: buyer2 sent msg in room2   → merchant1 gets NEW_MESSAGE      [UNREAD]
+  //   1 h ago: merchant1 sent msg in room2 → buyer2 gets NEW_MESSAGE        [UNREAD]
 
-  const participants = [
-    // room1 — iPhone request chat
-    { roomId: IDS.room1, userId: IDS.buyer1,   role: 'OWNER',  lastReadAt: past1Day },
-    { roomId: IDS.room1, userId: IDS.merchant1, role: 'MEMBER', lastReadAt: past1Day },
-    // room2 — Tutor bid chat
-    { roomId: IDS.room2, userId: IDS.buyer2,   role: 'OWNER',  lastReadAt: past1Day },
-    { roomId: IDS.room2, userId: IDS.merchant1, role: 'MEMBER', lastReadAt: past1Day },
-    // room3 — MacBook direct chat
-    { roomId: IDS.room3, userId: IDS.buyer1,   role: 'OWNER',  lastReadAt: past3Days },
-    { roomId: IDS.room3, userId: IDS.merchant1, role: 'MEMBER', lastReadAt: past3Days },
-    // room4 — Support
-    { roomId: IDS.room4, userId: IDS.admin1,   role: 'OWNER',  lastReadAt: past3Days },
-    { roomId: IDS.room4, userId: IDS.buyer1,   role: 'MEMBER', lastReadAt: past3Days },
+  const notifications = [
+    // ── buyer1 (Khalid) ──────────────────────────────────────────────────────
+    {
+      id: IDS.notif1, userId: IDS.buyer1, type: 'BID_PLACED',
+      title: 'New bid on your request',
+      body:  'Tariq bid $450 on "MacBook Pro screen replacement needed".',
+      data:  { bidId: IDS.bid7, requestId: IDS.req5, requestTitle: 'MacBook Pro screen replacement needed' },
+      isRead: true, createdAt: daysAgo(11),
+    },
+    {
+      id: IDS.notif2, userId: IDS.buyer1, type: 'BID_PLACED',
+      title: 'New bid on your request',
+      body:  'Nour bid $520 on "MacBook Pro screen replacement needed".',
+      data:  { bidId: IDS.bid8, requestId: IDS.req5, requestTitle: 'MacBook Pro screen replacement needed' },
+      isRead: true, createdAt: daysAgo(11),
+    },
+    {
+      id: IDS.notif3, userId: IDS.buyer1, type: 'BID_PLACED',
+      title: 'New bid on your request',
+      body:  'Tariq bid $180 on "Need a professional house cleaning service".',
+      data:  { bidId: IDS.bid3, requestId: IDS.req2, requestTitle: 'Need a professional house cleaning service' },
+      isRead: true, createdAt: daysAgo(5),
+    },
+    {
+      id: IDS.notif4, userId: IDS.buyer1, type: 'BID_PLACED',
+      title: 'New bid on your request',
+      body:  'Nour bid $250 on "Need a professional house cleaning service".',
+      data:  { bidId: IDS.bid4, requestId: IDS.req2, requestTitle: 'Need a professional house cleaning service' },
+      isRead: true, createdAt: daysAgo(5),
+    },
+    {
+      id: IDS.notif5, userId: IDS.buyer1, type: 'BID_PLACED',
+      title: 'New bid on your request',
+      body:  'Tariq bid $950 on "Looking for iPhone 15 Pro Max 256GB".',
+      data:  { bidId: IDS.bid1, requestId: IDS.req1, requestTitle: 'Looking for iPhone 15 Pro Max 256GB' },
+      isRead: true, createdAt: daysAgo(3),
+    },
+    {
+      id: IDS.notif6, userId: IDS.buyer1, type: 'BID_PLACED',
+      title: 'New bid on your request',
+      body:  'Nour bid $1050 on "Looking for iPhone 15 Pro Max 256GB".',
+      data:  { bidId: IDS.bid2, requestId: IDS.req1, requestTitle: 'Looking for iPhone 15 Pro Max 256GB' },
+      isRead: true, createdAt: daysAgo(3),
+    },
+    {
+      id: IDS.notif7, userId: IDS.buyer1, type: 'NEW_MESSAGE',
+      title: 'New message',
+      body:  'Tariq sent you a message about "iPhone 15 — Khalid & Tariq".',
+      data:  { chatRoomId: IDS.room1, roomName: 'iPhone 15 — Khalid & Tariq' },
+      isRead: false, createdAt: hoursAgo(3),
+    },
+
+    // ── buyer2 (Layla) ───────────────────────────────────────────────────────
+    {
+      id: IDS.notif8, userId: IDS.buyer2, type: 'BID_PLACED',
+      title: 'New bid on your request',
+      body:  'Tariq bid $35 on "Looking for a math tutor for high school student".',
+      data:  { bidId: IDS.bid5, requestId: IDS.req4, requestTitle: 'Looking for a math tutor for high school student' },
+      isRead: true, createdAt: daysAgo(7),
+    },
+    {
+      id: IDS.notif9, userId: IDS.buyer2, type: 'BID_PLACED',
+      title: 'New bid on your request',
+      body:  'Nour bid $42 on "Looking for a math tutor for high school student".',
+      data:  { bidId: IDS.bid6, requestId: IDS.req4, requestTitle: 'Looking for a math tutor for high school student' },
+      isRead: true, createdAt: daysAgo(7),
+    },
+    {
+      id: IDS.notif10, userId: IDS.buyer2, type: 'NEW_MESSAGE',
+      title: 'New message',
+      body:  'Tariq sent you a message about "Math Tutor — Layla & Tariq".',
+      data:  { chatRoomId: IDS.room2, roomName: 'Math Tutor — Layla & Tariq' },
+      isRead: false, createdAt: hoursAgo(1),
+    },
+
+    // ── merchant1 (Tariq) ────────────────────────────────────────────────────
+    {
+      id: IDS.notif11, userId: IDS.merchant1, type: 'BID_ACCEPTED',
+      title: 'Your bid was accepted!',
+      body:  'Your bid of $450 on "MacBook Pro screen replacement needed" was accepted.',
+      data:  { bidId: IDS.bid7, requestId: IDS.req5 },
+      isRead: true, createdAt: daysAgo(10),
+    },
+    {
+      id: IDS.notif12, userId: IDS.merchant1, type: 'NEW_MESSAGE',
+      title: 'New message',
+      body:  'Layla sent you a message about "Math Tutor — Layla & Tariq".',
+      data:  { chatRoomId: IDS.room2, roomName: 'Math Tutor — Layla & Tariq' },
+      isRead: false, createdAt: hoursAgo(1),
+    },
+
+    // ── merchant2 (Nour) ─────────────────────────────────────────────────────
+    {
+      id: IDS.notif13, userId: IDS.merchant2, type: 'BID_ACCEPTED',
+      title: 'Your bid was accepted!',
+      body:  'Your bid of $250 on "Need a professional house cleaning service" was accepted.',
+      data:  { bidId: IDS.bid4, requestId: IDS.req2 },
+      isRead: true, createdAt: daysAgo(4),
+    },
   ];
 
-  for (const p of participants) {
-    await client.query(`
-      INSERT INTO chat_participants (id, room_id, user_id, role, last_read_at)
-      VALUES ($1,$2,$3,$4,$5)
-      ON CONFLICT (room_id, user_id) DO UPDATE SET role = EXCLUDED.role, last_read_at = EXCLUDED.last_read_at
-    `, [uuidv4(), p.roomId, p.userId, p.role, p.lastReadAt]);
+  for (const n of notifications) {
+    await pg.query(`
+      INSERT INTO notifications (id, user_id, type, title, body, data, is_read, created_at)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+      ON CONFLICT (id) DO UPDATE SET
+        title = EXCLUDED.title, body = EXCLUDED.body,
+        is_read = EXCLUDED.is_read
+    `, [n.id, n.userId, n.type, n.title, n.body,
+        JSON.stringify(n.data), n.isRead, n.createdAt]);
   }
-  console.log(`  ✅ Chat participants (${participants.length})`);
+  console.log(`  ✅ Notifications (${notifications.length})`);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -413,226 +493,171 @@ async function seedPostgres(client) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 async function seedMongo() {
-  const now       = new Date();
-  const past1h    = new Date(now - 1 * 3600000);
-  const past2h    = new Date(now - 2 * 3600000);
-  const past3h    = new Date(now - 3 * 3600000);
-  const past4h    = new Date(now - 4 * 3600000);
-  const past6h    = new Date(now - 6 * 3600000);
-  const past12h   = new Date(now - 12 * 3600000);
-  const past1Day  = new Date(now - 1 * 86400000);
-  const past2Days = new Date(now - 2 * 86400000);
-  const past3Days = new Date(now - 3 * 86400000);
-  const past5Days = new Date(now - 5 * 86400000);
-  const past7Days = new Date(now - 7 * 86400000);
 
-  // ── Chat Messages (MongoDB) ────────────────────────────────────────────────
-  // Delete existing seed messages for these rooms, then reinsert
+  // ── Chat Messages ──────────────────────────────────────────────────────────
+  //
+  // room1 (buyer1 ↔ merchant1, iPhone):    8 messages, last 3h ago
+  // room2 (buyer2 ↔ merchant1, Tutor):     8 messages, last 1h ago
+  // room3 (buyer1 ↔ merchant1, MacBook):   6 messages, 5 days ago
+  // room4 (buyer1 ↔ admin1, Support):      7 messages, 10 days ago
 
-  await ChatMessage.deleteMany({ roomId: { $in: [IDS.room1, IDS.room2, IDS.room3, IDS.room4] } });
+  await ChatMessage.deleteMany({
+    roomId: { $in: [IDS.room1, IDS.room2, IDS.room3, IDS.room4] },
+  });
+
+  const t1base = daysAgo(3);   // room1 starts 3 days ago
+  const t2base = daysAgo(7);   // room2 starts 7 days ago
+  const t3base = daysAgo(14);  // room3 starts 14 days ago (after MacBook repair accepted)
+  const t4base = daysAgo(12);  // room4 — support chat
 
   const chatMessages = [
-    // ── room1: iPhone request chat (buyer1 ↔ merchant1) ──
-    { roomId: IDS.room1, senderId: IDS.buyer1,    type: 'TEXT', content: 'Hi Tariq! I saw your bid on my iPhone request. Is the phone still available?', createdAt: new Date(past1Day.getTime() + 1000), readBy: [{userId: IDS.merchant1, readAt: past12h}] },
-    { roomId: IDS.room1, senderId: IDS.merchant1, type: 'TEXT', content: 'Hello Khalid! Yes, it is 100% available. Sealed box, never opened.', createdAt: new Date(past1Day.getTime() + 120000), readBy: [{userId: IDS.buyer1, readAt: past12h}] },
-    { roomId: IDS.room1, senderId: IDS.buyer1,    type: 'TEXT', content: 'Great! Does it come with a receipt? I want to verify the purchase date.', createdAt: new Date(past1Day.getTime() + 240000), readBy: [{userId: IDS.merchant1, readAt: past12h}] },
-    { roomId: IDS.room1, senderId: IDS.merchant1, type: 'TEXT', content: 'Yes, original receipt included. Purchased 3 weeks ago from the Apple Store in Amman.', createdAt: new Date(past12h.getTime() + 1000), readBy: [{userId: IDS.buyer1, readAt: past6h}] },
-    { roomId: IDS.room1, senderId: IDS.merchant1, type: 'TEXT', content: 'I can also provide the IMEI check result if you need it.', createdAt: new Date(past12h.getTime() + 60000), readBy: [{userId: IDS.buyer1, readAt: past6h}], reactions: [{userId: IDS.buyer1, reactionType: '👍', createdAt: past6h}] },
-    { roomId: IDS.room1, senderId: IDS.buyer1,    type: 'TEXT', content: 'That would be perfect! Can we meet in Jarash this Saturday?', createdAt: new Date(past6h.getTime() + 1000), readBy: [{userId: IDS.merchant1, readAt: past4h}] },
-    { roomId: IDS.room1, senderId: IDS.merchant1, type: 'TEXT', content: 'Saturday works for me! How about 11 AM at the city centre?', createdAt: new Date(past4h.getTime() + 1000), readBy: [{userId: IDS.buyer1, readAt: past3h}] },
-    { roomId: IDS.room1, senderId: IDS.buyer1,    type: 'TEXT', content: 'Perfect. See you then! 🤝', createdAt: new Date(past3h.getTime() + 1000), readBy: [{userId: IDS.merchant1, readAt: past2h}] },
+    // ── room1: iPhone negotiation (buyer1 Khalid ↔ merchant1 Tariq) ──────────
+    { roomId: IDS.room1, senderId: IDS.buyer1,    type: 'TEXT', content: 'Hi Tariq! I saw your bid on my iPhone request. Is the phone still available?',            createdAt: minsAfter(t1base, 0),   readBy: [{ userId: IDS.merchant1, readAt: minsAfter(t1base, 5)   }] },
+    { roomId: IDS.room1, senderId: IDS.merchant1, type: 'TEXT', content: 'Hello Khalid! Yes, 100% available. Sealed box, never opened.',                             createdAt: minsAfter(t1base, 8),   readBy: [{ userId: IDS.buyer1,    readAt: minsAfter(t1base, 10)  }] },
+    { roomId: IDS.room1, senderId: IDS.buyer1,    type: 'TEXT', content: 'Great! Does it come with a receipt so I can verify the purchase date?',                    createdAt: minsAfter(t1base, 15),  readBy: [{ userId: IDS.merchant1, readAt: minsAfter(t1base, 20)  }] },
+    { roomId: IDS.room1, senderId: IDS.merchant1, type: 'TEXT', content: 'Yes, original receipt. Purchased 3 weeks ago from the Apple Store in Amman.',               createdAt: minsAfter(t1base, 25),  readBy: [{ userId: IDS.buyer1,    readAt: minsAfter(t1base, 30)  }] },
+    { roomId: IDS.room1, senderId: IDS.merchant1, type: 'TEXT', content: 'I can also send you the IMEI check result if needed.',                                      createdAt: minsAfter(t1base, 27),  readBy: [{ userId: IDS.buyer1,    readAt: minsAfter(t1base, 30)  }], reactions: [{ userId: IDS.buyer1, reactionType: '👍', createdAt: minsAfter(t1base, 31) }] },
+    { roomId: IDS.room1, senderId: IDS.buyer1,    type: 'TEXT', content: 'Perfect! Can we meet in Jarash this Saturday at 11 AM?',                                    createdAt: hoursAgo(6),            readBy: [{ userId: IDS.merchant1, readAt: hoursAgo(5)            }] },
+    { roomId: IDS.room1, senderId: IDS.merchant1, type: 'TEXT', content: 'Saturday works. City centre at 11 AM sounds good!',                                         createdAt: hoursAgo(4),            readBy: [{ userId: IDS.buyer1,    readAt: hoursAgo(3.5)          }] },
+    { roomId: IDS.room1, senderId: IDS.merchant1, type: 'TEXT', content: 'See you then! 🤝',                                                                          createdAt: hoursAgo(3),            readBy: [] },
 
-    // ── room2: Tutor bid negotiation (buyer2 ↔ merchant1) ──
-    { roomId: IDS.room2, senderId: IDS.buyer2,    type: 'TEXT', content: 'Hi! I am interested in your bid for the math tutoring. My daughter is in grade 11.', createdAt: new Date(past2Days.getTime() + 1000), readBy: [{userId: IDS.merchant1, readAt: past2Days}] },
-    { roomId: IDS.room2, senderId: IDS.merchant1, type: 'TEXT', content: 'Hello Layla! I have 5 years of experience tutoring calculus and algebra. I can share my method.', createdAt: new Date(past2Days.getTime() + 180000), readBy: [{userId: IDS.buyer2, readAt: past2Days}] },
-    { roomId: IDS.room2, senderId: IDS.buyer2,    type: 'TEXT', content: 'She is struggling mainly with integration and limits. Would you be able to help with those topics?', createdAt: new Date(past2Days.getTime() + 360000), readBy: [{userId: IDS.merchant1, readAt: past2Days}] },
-    { roomId: IDS.room2, senderId: IDS.merchant1, type: 'TEXT', content: 'Absolutely. Those are core topics in Grade 11. We can cover them in the first 3 sessions.', createdAt: new Date(past1Day.getTime() + 1000), readBy: [{userId: IDS.buyer2, readAt: past1Day}] },
-    { roomId: IDS.room2, senderId: IDS.buyer2,    type: 'TEXT', content: 'That sounds great. Is $35 per session your final price?', createdAt: new Date(past1Day.getTime() + 120000), readBy: [{userId: IDS.merchant1, readAt: past12h}] },
-    { roomId: IDS.room2, senderId: IDS.merchant1, type: 'TEXT', content: 'Yes, and the first session is a free trial so she can see if it works for her.', createdAt: new Date(past12h.getTime() + 1000), readBy: [{userId: IDS.buyer2, readAt: past6h}], reactions: [{userId: IDS.buyer2, reactionType: '❤️', createdAt: past6h}] },
-    { roomId: IDS.room2, senderId: IDS.buyer2,    type: 'TEXT', content: 'That is very kind! We will accept your bid. When can we start?', createdAt: new Date(past6h.getTime() + 1000), readBy: [{userId: IDS.merchant1, readAt: past3h}] },
-    { roomId: IDS.room2, senderId: IDS.merchant1, type: 'TEXT', content: 'I can start this Sunday. I will send a Zoom link before the session. 📚', createdAt: new Date(past3h.getTime() + 1000), readBy: [{userId: IDS.buyer2, readAt: past2h}] },
+    // ── room2: Math tutor bid (buyer2 Layla ↔ merchant1 Tariq) ───────────────
+    { roomId: IDS.room2, senderId: IDS.buyer2,    type: 'TEXT', content: 'Hi! I am interested in your bid for math tutoring. My daughter is in grade 11.',            createdAt: minsAfter(t2base, 0),   readBy: [{ userId: IDS.merchant1, readAt: minsAfter(t2base, 10)  }] },
+    { roomId: IDS.room2, senderId: IDS.merchant1, type: 'TEXT', content: 'Hello Layla! I have 5 years of experience with calculus and algebra. Happy to share my approach.', createdAt: minsAfter(t2base, 15), readBy: [{ userId: IDS.buyer2, readAt: minsAfter(t2base, 20) }] },
+    { roomId: IDS.room2, senderId: IDS.buyer2,    type: 'TEXT', content: 'She struggles mainly with integration and limits. Can you cover those?',                    createdAt: minsAfter(t2base, 25),  readBy: [{ userId: IDS.merchant1, readAt: minsAfter(t2base, 30)  }] },
+    { roomId: IDS.room2, senderId: IDS.merchant1, type: 'TEXT', content: 'Absolutely. Those are core Grade 11 topics. We can cover them in the first 3 sessions.',   createdAt: minsAfter(t2base, 35),  readBy: [{ userId: IDS.buyer2,    readAt: minsAfter(t2base, 40)  }] },
+    { roomId: IDS.room2, senderId: IDS.buyer2,    type: 'TEXT', content: 'That sounds great. Is $35 per session your final price?',                                   createdAt: daysAgo(3),             readBy: [{ userId: IDS.merchant1, readAt: daysAgo(2)             }] },
+    { roomId: IDS.room2, senderId: IDS.merchant1, type: 'TEXT', content: 'Yes. And the first session is a free trial so she can decide if it works for her.',         createdAt: daysAgo(2),             readBy: [{ userId: IDS.buyer2,    readAt: daysAgo(1)             }], reactions: [{ userId: IDS.buyer2, reactionType: '❤️', createdAt: daysAgo(1) }] },
+    { roomId: IDS.room2, senderId: IDS.buyer2,    type: 'TEXT', content: 'That is very kind! When can we start?',                                                     createdAt: hoursAgo(2),            readBy: [{ userId: IDS.merchant1, readAt: hoursAgo(1.5)          }] },
+    { roomId: IDS.room2, senderId: IDS.merchant1, type: 'TEXT', content: 'I can start this Sunday. I will send a Zoom link before the session. 📚',                   createdAt: hoursAgo(1),            readBy: [] },
 
-    // ── room3: MacBook post-repair chat (buyer1 ↔ merchant1) ──
-    { roomId: IDS.room3, senderId: IDS.buyer1,    type: 'TEXT', content: 'Hey Tariq, wanted to check if the screen replacement is still under your 90-day warranty?', createdAt: new Date(past3Days.getTime() + 1000), readBy: [{userId: IDS.merchant1, readAt: past3Days}] },
-    { roomId: IDS.room3, senderId: IDS.merchant1, type: 'TEXT', content: 'Of course! The warranty covers any defect in the replaced screen for 90 days. How can I help?', createdAt: new Date(past3Days.getTime() + 300000), readBy: [{userId: IDS.buyer1, readAt: past3Days}] },
-    { roomId: IDS.room3, senderId: IDS.buyer1,    type: 'TEXT', content: 'There is a small backlight bleed on the bottom left corner. Is that normal?', createdAt: new Date(past3Days.getTime() + 600000), readBy: [{userId: IDS.merchant1, readAt: past3Days}] },
-    { roomId: IDS.room3, senderId: IDS.merchant1, type: 'TEXT', content: 'Minor backlight bleed is within Apple spec for that display. But bring it in and I will check it for free.', createdAt: new Date(past3Days.getTime() + 900000), readBy: [{userId: IDS.buyer1, readAt: past3Days}] },
-    { roomId: IDS.room3, senderId: IDS.buyer1,    type: 'TEXT', content: 'Thank you! I appreciate the quick response. Will come tomorrow.', createdAt: new Date(past3Days.getTime() + 1200000), readBy: [{userId: IDS.merchant1, readAt: past3Days}] },
-    { roomId: IDS.room3, senderId: IDS.merchant1, type: 'TEXT', content: 'No problem at all. See you tomorrow! 🔧', createdAt: new Date(past3Days.getTime() + 1500000), readBy: [{userId: IDS.buyer1, readAt: past3Days}] },
+    // ── room3: MacBook post-repair (buyer1 Khalid ↔ merchant1 Tariq) ─────────
+    { roomId: IDS.room3, senderId: IDS.buyer1,    type: 'TEXT', content: 'Hey Tariq, quick question — is the screen still under your 90-day warranty?',              createdAt: minsAfter(t3base, 0),   readBy: [{ userId: IDS.merchant1, readAt: minsAfter(t3base, 15)  }] },
+    { roomId: IDS.room3, senderId: IDS.merchant1, type: 'TEXT', content: 'Of course! Any defect in the replaced screen is covered for 90 days. What happened?',      createdAt: minsAfter(t3base, 20),  readBy: [{ userId: IDS.buyer1,    readAt: minsAfter(t3base, 25)  }] },
+    { roomId: IDS.room3, senderId: IDS.buyer1,    type: 'TEXT', content: 'There is a small backlight bleed on the bottom left corner.',                              createdAt: minsAfter(t3base, 30),  readBy: [{ userId: IDS.merchant1, readAt: minsAfter(t3base, 35)  }] },
+    { roomId: IDS.room3, senderId: IDS.merchant1, type: 'TEXT', content: 'Minor backlight bleed is within Apple spec. But bring it in and I will check it for free.', createdAt: minsAfter(t3base, 40), readBy: [{ userId: IDS.buyer1,   readAt: minsAfter(t3base, 45)  }] },
+    { roomId: IDS.room3, senderId: IDS.buyer1,    type: 'TEXT', content: 'Thank you! Really appreciate the quick response. Will come tomorrow.',                      createdAt: minsAfter(t3base, 50),  readBy: [{ userId: IDS.merchant1, readAt: minsAfter(t3base, 55)  }] },
+    { roomId: IDS.room3, senderId: IDS.merchant1, type: 'TEXT', content: 'No problem at all. See you tomorrow! 🔧',                                                   createdAt: minsAfter(t3base, 60),  readBy: [{ userId: IDS.buyer1,    readAt: minsAfter(t3base, 65)  }] },
 
-    // ── room4: Support chat (admin1 ↔ buyer1) ──
-    { roomId: IDS.room4, senderId: IDS.buyer1,    type: 'TEXT', content: 'Hello support team, I have a question about the bidding process.', createdAt: new Date(past5Days.getTime() + 1000), readBy: [{userId: IDS.admin1, readAt: past5Days}] },
-    { roomId: IDS.room4, senderId: IDS.admin1,    type: 'TEXT', content: 'Hello Khalid! Of course, I am happy to help. What is your question?', createdAt: new Date(past5Days.getTime() + 180000), readBy: [{userId: IDS.buyer1, readAt: past5Days}] },
-    { roomId: IDS.room4, senderId: IDS.buyer1,    type: 'TEXT', content: 'Can I accept a bid after the request expires?', createdAt: new Date(past5Days.getTime() + 360000), readBy: [{userId: IDS.admin1, readAt: past5Days}] },
-    { roomId: IDS.room4, senderId: IDS.admin1,    type: 'TEXT', content: 'No, once a request expires you cannot accept bids. You would need to extend the request first, then accept.', createdAt: new Date(past5Days.getTime() + 540000), readBy: [{userId: IDS.buyer1, readAt: past5Days}] },
-    { roomId: IDS.room4, senderId: IDS.buyer1,    type: 'TEXT', content: 'Got it, thank you! And is there a fee for extending?', createdAt: new Date(past5Days.getTime() + 720000), readBy: [{userId: IDS.admin1, readAt: past5Days}] },
-    { roomId: IDS.room4, senderId: IDS.admin1,    type: 'SYSTEM', content: 'Extensions are currently free. You can extend up to 3 times per request for 7 days each time.', createdAt: new Date(past5Days.getTime() + 900000), readBy: [{userId: IDS.buyer1, readAt: past5Days}], reactions: [{userId: IDS.buyer1, reactionType: '🙏', createdAt: past5Days}] },
-    { roomId: IDS.room4, senderId: IDS.buyer1,    type: 'TEXT', content: 'That is very helpful. Thank you so much!', createdAt: new Date(past5Days.getTime() + 1080000), readBy: [{userId: IDS.admin1, readAt: past5Days}] },
+    // ── room4: Support chat (buyer1 Khalid ↔ admin1 Ahmad) ───────────────────
+    { roomId: IDS.room4, senderId: IDS.buyer1,    type: 'TEXT',   content: 'Hello support team, I have a question about the bidding process.',                       createdAt: minsAfter(t4base, 0),   readBy: [{ userId: IDS.admin1,  readAt: minsAfter(t4base, 5)   }] },
+    { roomId: IDS.room4, senderId: IDS.admin1,    type: 'TEXT',   content: 'Hello Khalid! Happy to help. What is your question?',                                    createdAt: minsAfter(t4base, 10),  readBy: [{ userId: IDS.buyer1,  readAt: minsAfter(t4base, 15)  }] },
+    { roomId: IDS.room4, senderId: IDS.buyer1,    type: 'TEXT',   content: 'Can I accept a bid after my request expires?',                                            createdAt: minsAfter(t4base, 20),  readBy: [{ userId: IDS.admin1,  readAt: minsAfter(t4base, 25)  }] },
+    { roomId: IDS.room4, senderId: IDS.admin1,    type: 'TEXT',   content: 'No — you need to extend the request first, then accept. Extensions are free, up to 3 times.', createdAt: minsAfter(t4base, 30), readBy: [{ userId: IDS.buyer1, readAt: minsAfter(t4base, 35) }] },
+    { roomId: IDS.room4, senderId: IDS.buyer1,    type: 'TEXT',   content: 'Got it. Is there a fee for extending?',                                                   createdAt: minsAfter(t4base, 40),  readBy: [{ userId: IDS.admin1,  readAt: minsAfter(t4base, 45)  }] },
+    { roomId: IDS.room4, senderId: IDS.admin1,    type: 'SYSTEM', content: 'Extensions are free. You can extend up to 3 times, 7 days each.',                        createdAt: minsAfter(t4base, 50),  readBy: [{ userId: IDS.buyer1,  readAt: minsAfter(t4base, 55)  }], reactions: [{ userId: IDS.buyer1, reactionType: '🙏', createdAt: minsAfter(t4base, 56) }] },
+    { roomId: IDS.room4, senderId: IDS.buyer1,    type: 'TEXT',   content: 'That is very helpful, thank you!',                                                        createdAt: minsAfter(t4base, 60),  readBy: [{ userId: IDS.admin1,  readAt: minsAfter(t4base, 65)  }] },
   ];
 
   await ChatMessage.insertMany(chatMessages);
   console.log(`  ✅ Chat messages (${chatMessages.length}) [MongoDB]`);
 
-  // ── Activity Logs (MongoDB) ────────────────────────────────────────────────
+  // ── Activity Logs ──────────────────────────────────────────────────────────
 
   await ActivityLog.deleteMany({ 'metadata.seeded': true });
 
   const activityLogs = [
     // Registrations
-    { actorId: IDS.buyer1,    actorRole: 'BUYER',    eventType: 'user.registered',  category: 'identity', action: 'User registered',           targetType: 'user', targetId: IDS.buyer1,    metadata: { userId: IDS.buyer1,    phone: '+962780000004', role: 'BUYER',    seeded: true }, createdAt: past7Days },
-    { actorId: IDS.buyer2,    actorRole: 'BUYER',    eventType: 'user.registered',  category: 'identity', action: 'User registered',           targetType: 'user', targetId: IDS.buyer2,    metadata: { userId: IDS.buyer2,    phone: '+962780000005', role: 'BUYER',    seeded: true }, createdAt: past7Days },
-    { actorId: IDS.merchant1, actorRole: 'MERCHANT', eventType: 'user.registered',  category: 'identity', action: 'User registered',           targetType: 'user', targetId: IDS.merchant1, metadata: { userId: IDS.merchant1, phone: '+962780000006', role: 'MERCHANT', seeded: true }, createdAt: past7Days },
-    { actorId: IDS.merchant2, actorRole: 'MERCHANT', eventType: 'user.registered',  category: 'identity', action: 'User registered',           targetType: 'user', targetId: IDS.merchant2, metadata: { userId: IDS.merchant2, phone: '+962780000007', role: 'MERCHANT', seeded: true }, createdAt: past7Days },
+    { actorId: IDS.buyer1,    actorRole: 'BUYER',    eventType: 'user.registered', category: 'identity', action: 'User registered', targetType: 'user',    targetId: IDS.buyer1,    metadata: { seeded: true }, createdAt: daysAgo(30) },
+    { actorId: IDS.buyer2,    actorRole: 'BUYER',    eventType: 'user.registered', category: 'identity', action: 'User registered', targetType: 'user',    targetId: IDS.buyer2,    metadata: { seeded: true }, createdAt: daysAgo(28) },
+    { actorId: IDS.merchant1, actorRole: 'MERCHANT', eventType: 'user.registered', category: 'identity', action: 'User registered', targetType: 'user',    targetId: IDS.merchant1, metadata: { seeded: true }, createdAt: daysAgo(30) },
+    { actorId: IDS.merchant2, actorRole: 'MERCHANT', eventType: 'user.registered', category: 'identity', action: 'User registered', targetType: 'user',    targetId: IDS.merchant2, metadata: { seeded: true }, createdAt: daysAgo(25) },
     // Logins
-    { actorId: IDS.buyer1,    actorRole: 'BUYER',    eventType: 'user.logined',     category: 'identity', action: 'User logged in',             targetType: 'user', targetId: IDS.buyer1,    metadata: { userId: IDS.buyer1,    seeded: true }, createdAt: past3Days },
-    { actorId: IDS.buyer2,    actorRole: 'BUYER',    eventType: 'user.logined',     category: 'identity', action: 'User logged in',             targetType: 'user', targetId: IDS.buyer2,    metadata: { userId: IDS.buyer2,    seeded: true }, createdAt: past3Days },
-    { actorId: IDS.merchant1, actorRole: 'MERCHANT', eventType: 'user.logined',     category: 'identity', action: 'User logged in',             targetType: 'user', targetId: IDS.merchant1, metadata: { userId: IDS.merchant1, seeded: true }, createdAt: past1Day },
-    { actorId: IDS.superAdmin,actorRole: 'ADMIN',    eventType: 'user.logined',     category: 'identity', action: 'User logged in',             targetType: 'user', targetId: IDS.superAdmin,metadata: { userId: IDS.superAdmin,seeded: true }, createdAt: past1Day },
-    // Request created
-    { actorId: IDS.buyer1,    actorRole: 'BUYER',    eventType: 'request.created',  category: 'requests', action: 'Request created',            targetType: 'request', targetId: IDS.req1, metadata: { requestId: IDS.req1, title: 'iPhone 15 Pro Max', seeded: true }, createdAt: past3Days },
-    { actorId: IDS.buyer1,    actorRole: 'BUYER',    eventType: 'request.created',  category: 'requests', action: 'Request created',            targetType: 'request', targetId: IDS.req2, metadata: { requestId: IDS.req2, title: 'House Cleaning',     seeded: true }, createdAt: past3Days },
-    { actorId: IDS.buyer2,    actorRole: 'BUYER',    eventType: 'request.created',  category: 'requests', action: 'Request created',            targetType: 'request', targetId: IDS.req4, metadata: { requestId: IDS.req4, title: 'Math Tutor',         seeded: true }, createdAt: past7Days },
-    // Bid submitted
-    { actorId: IDS.merchant1, actorRole: 'MERCHANT', eventType: 'bid.submitted',    category: 'requests', action: 'Bid submitted',              targetType: 'request', targetId: IDS.req1, metadata: { bidId: IDS.bid1, requestId: IDS.req1, amount: 950,  seeded: true }, createdAt: past3Days },
-    { actorId: IDS.merchant2, actorRole: 'MERCHANT', eventType: 'bid.submitted',    category: 'requests', action: 'Bid submitted',              targetType: 'request', targetId: IDS.req1, metadata: { bidId: IDS.bid2, requestId: IDS.req1, amount: 1050, seeded: true }, createdAt: past3Days },
-    { actorId: IDS.merchant2, actorRole: 'MERCHANT', eventType: 'bid.accepted',     category: 'requests', action: 'Bid accepted',               targetType: 'request', targetId: IDS.req2, metadata: { bidId: IDS.bid4, requestId: IDS.req2, amount: 250,  seeded: true }, createdAt: past1Day },
-    { actorId: IDS.merchant1, actorRole: 'MERCHANT', eventType: 'bid.accepted',     category: 'requests', action: 'Bid accepted',               targetType: 'request', targetId: IDS.req5, metadata: { bidId: IDS.bid7, requestId: IDS.req5, amount: 450,  seeded: true }, createdAt: past3Days },
-    // Admin actions
-    { actorId: IDS.superAdmin, actorRole: 'ADMIN',   eventType: 'admin.action',     category: 'admin',    action: 'USER_VIEW',                  targetType: 'user', targetId: IDS.buyer1,    metadata: { adminId: IDS.superAdmin, seeded: true }, createdAt: past3Days },
-    { actorId: IDS.admin1,     actorRole: 'ADMIN',   eventType: 'admin.action',     category: 'admin',    action: 'USER_VIEW',                  targetType: 'user', targetId: IDS.merchant1, metadata: { adminId: IDS.admin1,     seeded: true }, createdAt: past1Day },
-    { actorId: IDS.superAdmin, actorRole: 'ADMIN',   eventType: 'request.updated',  category: 'requests', action: 'Request updated',            targetType: 'request', targetId: IDS.req6, metadata: { requestId: IDS.req6, action: 'cancel', seeded: true }, createdAt: past7Days },
+    { actorId: IDS.buyer1,    actorRole: 'BUYER',    eventType: 'user.logined',    category: 'identity', action: 'User logged in',  targetType: 'user',    targetId: IDS.buyer1,    metadata: { seeded: true }, createdAt: daysAgo(1)  },
+    { actorId: IDS.buyer2,    actorRole: 'BUYER',    eventType: 'user.logined',    category: 'identity', action: 'User logged in',  targetType: 'user',    targetId: IDS.buyer2,    metadata: { seeded: true }, createdAt: daysAgo(2)  },
+    { actorId: IDS.merchant1, actorRole: 'MERCHANT', eventType: 'user.logined',    category: 'identity', action: 'User logged in',  targetType: 'user',    targetId: IDS.merchant1, metadata: { seeded: true }, createdAt: daysAgo(1)  },
+    { actorId: IDS.superAdmin,actorRole: 'ADMIN',    eventType: 'user.logined',    category: 'identity', action: 'User logged in',  targetType: 'user',    targetId: IDS.superAdmin, metadata: { seeded: true }, createdAt: daysAgo(1) },
+    // Requests
+    { actorId: IDS.buyer1,    actorRole: 'BUYER',    eventType: 'request.created', category: 'requests', action: 'Request created', targetType: 'request', targetId: IDS.req5, metadata: { requestId: IDS.req5, title: 'MacBook repair',  seeded: true }, createdAt: daysAgo(14) },
+    { actorId: IDS.buyer2,    actorRole: 'BUYER',    eventType: 'request.created', category: 'requests', action: 'Request created', targetType: 'request', targetId: IDS.req4, metadata: { requestId: IDS.req4, title: 'Math tutor',       seeded: true }, createdAt: daysAgo(7)  },
+    { actorId: IDS.buyer1,    actorRole: 'BUYER',    eventType: 'request.created', category: 'requests', action: 'Request created', targetType: 'request', targetId: IDS.req2, metadata: { requestId: IDS.req2, title: 'House cleaning',    seeded: true }, createdAt: daysAgo(5)  },
+    { actorId: IDS.buyer1,    actorRole: 'BUYER',    eventType: 'request.created', category: 'requests', action: 'Request created', targetType: 'request', targetId: IDS.req1, metadata: { requestId: IDS.req1, title: 'iPhone 15 Pro Max', seeded: true }, createdAt: daysAgo(3)  },
+    { actorId: IDS.buyer2,    actorRole: 'BUYER',    eventType: 'request.created', category: 'requests', action: 'Request created', targetType: 'request', targetId: IDS.req3, metadata: { requestId: IDS.req3, title: 'Moving furniture',  seeded: true }, createdAt: daysAgo(2)  },
+    // Bids
+    { actorId: IDS.merchant1, actorRole: 'MERCHANT', eventType: 'bid.submitted',   category: 'requests', action: 'Bid submitted',   targetType: 'request', targetId: IDS.req5, metadata: { bidId: IDS.bid7, amount: 450,  seeded: true }, createdAt: daysAgo(11) },
+    { actorId: IDS.merchant2, actorRole: 'MERCHANT', eventType: 'bid.submitted',   category: 'requests', action: 'Bid submitted',   targetType: 'request', targetId: IDS.req5, metadata: { bidId: IDS.bid8, amount: 520,  seeded: true }, createdAt: daysAgo(11) },
+    { actorId: IDS.merchant1, actorRole: 'MERCHANT', eventType: 'bid.accepted',    category: 'requests', action: 'Bid accepted',    targetType: 'request', targetId: IDS.req5, metadata: { bidId: IDS.bid7, amount: 450,  seeded: true }, createdAt: daysAgo(10) },
+    { actorId: IDS.merchant2, actorRole: 'MERCHANT', eventType: 'bid.submitted',   category: 'requests', action: 'Bid submitted',   targetType: 'request', targetId: IDS.req4, metadata: { bidId: IDS.bid5, amount: 35,   seeded: true }, createdAt: daysAgo(7)  },
+    { actorId: IDS.merchant1, actorRole: 'MERCHANT', eventType: 'bid.submitted',   category: 'requests', action: 'Bid submitted',   targetType: 'request', targetId: IDS.req2, metadata: { bidId: IDS.bid3, amount: 180,  seeded: true }, createdAt: daysAgo(5)  },
+    { actorId: IDS.merchant2, actorRole: 'MERCHANT', eventType: 'bid.submitted',   category: 'requests', action: 'Bid submitted',   targetType: 'request', targetId: IDS.req2, metadata: { bidId: IDS.bid4, amount: 250,  seeded: true }, createdAt: daysAgo(5)  },
+    { actorId: IDS.merchant2, actorRole: 'MERCHANT', eventType: 'bid.accepted',    category: 'requests', action: 'Bid accepted',    targetType: 'request', targetId: IDS.req2, metadata: { bidId: IDS.bid4, amount: 250,  seeded: true }, createdAt: daysAgo(4)  },
+    { actorId: IDS.merchant1, actorRole: 'MERCHANT', eventType: 'bid.submitted',   category: 'requests', action: 'Bid submitted',   targetType: 'request', targetId: IDS.req1, metadata: { bidId: IDS.bid1, amount: 950,  seeded: true }, createdAt: daysAgo(3)  },
+    { actorId: IDS.merchant2, actorRole: 'MERCHANT', eventType: 'bid.submitted',   category: 'requests', action: 'Bid submitted',   targetType: 'request', targetId: IDS.req1, metadata: { bidId: IDS.bid2, amount: 1050, seeded: true }, createdAt: daysAgo(3)  },
   ];
 
   await ActivityLog.insertMany(activityLogs);
   console.log(`  ✅ Activity logs (${activityLogs.length}) [MongoDB]`);
 
-  // ── Request Analytics (MongoDB) ────────────────────────────────────────────
+  // ── Request Analytics ──────────────────────────────────────────────────────
 
   await RequestAnalytic.deleteMany({ 'metadata.seeded': true });
 
   const reqAnalytics = [
-    { requestId: IDS.req1, eventType: 'STATUS_CHANGE', userId: IDS.buyer1,    metadata: { status: 'ACTIVE',    seeded: true }, createdAt: past3Days },
-    { requestId: IDS.req1, eventType: 'STATUS_CHANGE', userId: IDS.buyer1,    metadata: { status: 'HAS_BIDS',  seeded: true }, createdAt: past3Days },
-    { requestId: IDS.req2, eventType: 'STATUS_CHANGE', userId: IDS.buyer1,    metadata: { status: 'ACTIVE',    seeded: true }, createdAt: past3Days },
-    { requestId: IDS.req2, eventType: 'STATUS_CHANGE', userId: IDS.buyer1,    metadata: { status: 'HAS_BIDS',  seeded: true }, createdAt: past1Day },
-    { requestId: IDS.req3, eventType: 'STATUS_CHANGE', userId: IDS.buyer2,    metadata: { status: 'ACTIVE',    seeded: true }, createdAt: past3Days },
-    { requestId: IDS.req4, eventType: 'STATUS_CHANGE', userId: IDS.buyer2,    metadata: { status: 'ACTIVE',    seeded: true }, createdAt: past7Days },
-    { requestId: IDS.req4, eventType: 'STATUS_CHANGE', userId: IDS.buyer2,    metadata: { status: 'HAS_BIDS',  seeded: true }, createdAt: past7Days },
-    { requestId: IDS.req4, eventType: 'EXTENSION_REQUESTED', userId: IDS.buyer2, metadata: { seeded: true },                  createdAt: past3Days },
-    { requestId: IDS.req5, eventType: 'STATUS_CHANGE', userId: IDS.buyer1,    metadata: { status: 'ACTIVE',    seeded: true }, createdAt: past7Days },
-    { requestId: IDS.req5, eventType: 'COMPLETED',     userId: IDS.buyer1,    metadata: { acceptedBidId: IDS.bid7, seeded: true }, createdAt: past3Days },
-    { requestId: IDS.req6, eventType: 'STATUS_CHANGE', userId: IDS.buyer2,    metadata: { status: 'ACTIVE',    seeded: true }, createdAt: past7Days },
-    { requestId: IDS.req6, eventType: 'CANCELLED',     userId: IDS.buyer2,    metadata: { reason: 'Changed plans', seeded: true }, createdAt: past7Days },
+    { requestId: IDS.req5, eventType: 'STATUS_CHANGE', userId: IDS.buyer1, metadata: { status: 'ACTIVE',    seeded: true }, createdAt: daysAgo(14) },
+    { requestId: IDS.req5, eventType: 'STATUS_CHANGE', userId: IDS.buyer1, metadata: { status: 'HAS_BIDS',  seeded: true }, createdAt: daysAgo(11) },
+    { requestId: IDS.req5, eventType: 'COMPLETED',     userId: IDS.buyer1, metadata: { acceptedBidId: IDS.bid7, seeded: true }, createdAt: daysAgo(10) },
+    { requestId: IDS.req4, eventType: 'STATUS_CHANGE', userId: IDS.buyer2, metadata: { status: 'ACTIVE',    seeded: true }, createdAt: daysAgo(7)  },
+    { requestId: IDS.req4, eventType: 'STATUS_CHANGE', userId: IDS.buyer2, metadata: { status: 'HAS_BIDS',  seeded: true }, createdAt: daysAgo(7)  },
+    { requestId: IDS.req2, eventType: 'STATUS_CHANGE', userId: IDS.buyer1, metadata: { status: 'ACTIVE',    seeded: true }, createdAt: daysAgo(5)  },
+    { requestId: IDS.req2, eventType: 'STATUS_CHANGE', userId: IDS.buyer1, metadata: { status: 'HAS_BIDS',  seeded: true }, createdAt: daysAgo(5)  },
+    { requestId: IDS.req1, eventType: 'STATUS_CHANGE', userId: IDS.buyer1, metadata: { status: 'ACTIVE',    seeded: true }, createdAt: daysAgo(3)  },
+    { requestId: IDS.req1, eventType: 'STATUS_CHANGE', userId: IDS.buyer1, metadata: { status: 'HAS_BIDS',  seeded: true }, createdAt: daysAgo(3)  },
+    { requestId: IDS.req3, eventType: 'STATUS_CHANGE', userId: IDS.buyer2, metadata: { status: 'ACTIVE',    seeded: true }, createdAt: daysAgo(2)  },
   ];
 
   await RequestAnalytic.insertMany(reqAnalytics);
   console.log(`  ✅ Request analytics (${reqAnalytics.length}) [MongoDB]`);
 
-  // ── Request Views (MongoDB) ────────────────────────────────────────────────
+  // ── Request Views ──────────────────────────────────────────────────────────
 
-  await RequestView.deleteMany({ 'metadata.seeded': true });
+  await RequestView.deleteMany({ requestId: { $in: Object.values(IDS).filter(id => id.startsWith('200')) } });
 
   const views = [
-    { requestId: IDS.req1, userId: IDS.merchant1, ipAddress: '192.168.1.10', viewedAt: past3Days },
-    { requestId: IDS.req1, userId: IDS.merchant2, ipAddress: '192.168.1.11', viewedAt: past3Days },
-    { requestId: IDS.req1, userId: null,           ipAddress: '10.0.0.1',     viewedAt: past1Day  },
-    { requestId: IDS.req2, userId: IDS.merchant1, ipAddress: '192.168.1.10', viewedAt: past3Days },
-    { requestId: IDS.req2, userId: IDS.merchant2, ipAddress: '192.168.1.11', viewedAt: past1Day  },
-    { requestId: IDS.req3, userId: IDS.merchant1, ipAddress: '192.168.1.10', viewedAt: past1Day  },
-    { requestId: IDS.req4, userId: IDS.merchant1, ipAddress: '192.168.1.10', viewedAt: past7Days },
-    { requestId: IDS.req4, userId: IDS.merchant2, ipAddress: '192.168.1.11', viewedAt: past7Days },
-    { requestId: IDS.req4, userId: null,           ipAddress: '10.0.0.2',     viewedAt: past3Days },
-    { requestId: IDS.req5, userId: IDS.merchant1, ipAddress: '192.168.1.10', viewedAt: past7Days },
-    { requestId: IDS.req5, userId: IDS.merchant2, ipAddress: '192.168.1.11', viewedAt: past7Days },
+    { requestId: IDS.req5, userId: IDS.merchant1, ipAddress: '192.168.1.10', viewedAt: daysAgo(13) },
+    { requestId: IDS.req5, userId: IDS.merchant2, ipAddress: '192.168.1.11', viewedAt: daysAgo(13) },
+    { requestId: IDS.req4, userId: IDS.merchant1, ipAddress: '192.168.1.10', viewedAt: daysAgo(7)  },
+    { requestId: IDS.req4, userId: IDS.merchant2, ipAddress: '192.168.1.11', viewedAt: daysAgo(7)  },
+    { requestId: IDS.req4, userId: null,           ipAddress: '10.0.0.1',     viewedAt: daysAgo(5)  },
+    { requestId: IDS.req2, userId: IDS.merchant1, ipAddress: '192.168.1.10', viewedAt: daysAgo(5)  },
+    { requestId: IDS.req2, userId: IDS.merchant2, ipAddress: '192.168.1.11', viewedAt: daysAgo(4)  },
+    { requestId: IDS.req1, userId: IDS.merchant1, ipAddress: '192.168.1.10', viewedAt: daysAgo(3)  },
+    { requestId: IDS.req1, userId: IDS.merchant2, ipAddress: '192.168.1.11', viewedAt: daysAgo(3)  },
+    { requestId: IDS.req1, userId: null,           ipAddress: '10.0.0.2',     viewedAt: daysAgo(2)  },
+    { requestId: IDS.req3, userId: IDS.merchant1, ipAddress: '192.168.1.10', viewedAt: daysAgo(1)  },
   ];
 
-  // RequestView schema might not have metadata — use a plain createdAt flag
-  const viewDocs = views.map(v => ({ ...v }));
-  await RequestView.insertMany(viewDocs);
+  await RequestView.insertMany(views);
   console.log(`  ✅ Request views (${views.length}) [MongoDB]`);
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Notification seed (PostgreSQL)
-// ─────────────────────────────────────────────────────────────────────────────
-
-async function seedNotifications(client) {
-  const past7Days = new Date(Date.now() - 7 * 86400000);
-  const past3Days = new Date(Date.now() - 3 * 86400000);
-  const past1Day  = new Date(Date.now() - 86400000);
-  const past1Hour = new Date(Date.now() - 3600000);
-
-  // Templates
-  const templateId1 = '60000000-0000-0000-0000-000000000001';
-  const templateId2 = '60000000-0000-0000-0000-000000000002';
-  const templateId3 = '60000000-0000-0000-0000-000000000003';
-
-  const templates = [
-    { id: templateId1, name: 'bid_received',    type: 'BID',     channel: 'IN_APP', subject: null,                    content: 'You received a new bid of {{amount}} on your request "{{requestTitle}}".',    by: IDS.superAdmin },
-    { id: templateId2, name: 'bid_accepted',    type: 'BID',     channel: 'IN_APP', subject: null,                    content: 'Your bid on "{{requestTitle}}" has been accepted! Contact the buyer to proceed.', by: IDS.superAdmin },
-    { id: templateId3, name: 'request_created', type: 'REQUEST', channel: 'IN_APP', subject: 'New Request Available', content: 'A new request "{{requestTitle}}" matching your profile is available.',           by: IDS.superAdmin },
-  ];
-
-  for (const t of templates) {
-    await client.query(`
-      INSERT INTO notification_templates (id, name, type, channel, subject_template, content_template, created_by)
-      VALUES ($1,$2,$3,$4,$5,$6,$7)
-      ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, content_template = EXCLUDED.content_template
-    `, [t.id, t.name, t.type, t.channel, t.subject, t.content, t.by]);
-  }
-  console.log('  ✅ Notification templates (3)');
-
-  // Notifications
-  const notifId1  = '61000000-0000-0000-0000-000000000001';
-  const notifId2  = '61000000-0000-0000-0000-000000000002';
-  const notifId3  = '61000000-0000-0000-0000-000000000003';
-  const notifId4  = '61000000-0000-0000-0000-000000000004';
-  const notifId5  = '61000000-0000-0000-0000-000000000005';
-  const notifId6  = '61000000-0000-0000-0000-000000000006';
-  const notifId7  = '61000000-0000-0000-0000-000000000007';
-  const notifId8  = '61000000-0000-0000-0000-000000000008';
-  const notifId9  = '61000000-0000-0000-0000-000000000009';
-  const notifId10 = '61000000-0000-0000-0000-000000000010';
-
-  const notifications = [
-    // Buyer1: received bids on their requests
-    { id: notifId1,  userId: IDS.buyer1,    type: 'BID',     title: 'New bid received',          content: 'You received a new bid of $950 on "iPhone 15 Pro Max".',           channel: 'IN_APP', priority: 'HIGH',   status: 'READ',      readAt: past3Days, sentAt: past3Days, createdAt: past3Days },
-    { id: notifId2,  userId: IDS.buyer1,    type: 'BID',     title: 'New bid received',          content: 'You received a new bid of $1050 on "iPhone 15 Pro Max".',          channel: 'IN_APP', priority: 'HIGH',   status: 'READ',      readAt: past3Days, sentAt: past3Days, createdAt: past3Days },
-    { id: notifId3,  userId: IDS.buyer1,    type: 'REQUEST', title: 'Request expiring soon',     content: 'Your request "House Cleaning Service" expires in 24 hours.',        channel: 'IN_APP', priority: 'URGENT', status: 'DELIVERED', readAt: null,      sentAt: past1Day,  createdAt: past1Day  },
-    { id: notifId4,  userId: IDS.buyer1,    type: 'SYSTEM',  title: 'Welcome to Marketplace!',   content: 'Start posting requests to receive competitive bids from merchants.', channel: 'IN_APP', priority: 'LOW',    status: 'READ',      readAt: past7Days, sentAt: past7Days, createdAt: past7Days },
-    // Buyer2: notifications
-    { id: notifId5,  userId: IDS.buyer2,    type: 'BID',     title: 'Bid accepted',              content: 'Your bid acceptance was processed for "Math Tutor".',              channel: 'IN_APP', priority: 'HIGH',   status: 'READ',      readAt: past1Day,  sentAt: past1Day,  createdAt: past1Day  },
-    { id: notifId6,  userId: IDS.buyer2,    type: 'CHAT',    title: 'New message',               content: 'You have a new message in "Math Tutoring Session".',               channel: 'IN_APP', priority: 'NORMAL', status: 'DELIVERED', readAt: null,      sentAt: past1Hour, createdAt: past1Hour },
-    // Merchant1: bid notifications
-    { id: notifId7,  userId: IDS.merchant1, type: 'BID',     title: 'Bid accepted!',             content: 'Congratulations! Your bid on "Photography Session" was accepted.', channel: 'IN_APP', priority: 'URGENT', status: 'READ',      readAt: past3Days, sentAt: past3Days, createdAt: past3Days },
-    { id: notifId8,  userId: IDS.merchant1, type: 'REQUEST', title: 'New request available',     content: 'A new request "House Cleaning" matching your profile is live.',     channel: 'IN_APP', priority: 'NORMAL', status: 'DELIVERED', readAt: null,      sentAt: past1Day,  createdAt: past1Day  },
-    // Merchant2
-    { id: notifId9,  userId: IDS.merchant2, type: 'BID',     title: 'Bid rejected',              content: 'Your bid on "iPhone 15 Pro Max" was not selected this time.',      channel: 'IN_APP', priority: 'NORMAL', status: 'READ',      readAt: past1Day,  sentAt: past1Day,  createdAt: past1Day  },
-    { id: notifId10, userId: IDS.merchant2, type: 'SYSTEM',  title: 'Profile verification',      content: 'Complete your profile to receive more visibility on requests.',     channel: 'IN_APP', priority: 'LOW',    status: 'DELIVERED', readAt: null,      sentAt: past7Days, createdAt: past7Days },
-  ];
-
-  for (const n of notifications) {
-    await client.query(`
-      INSERT INTO notifications (id, user_id, type, title, content, channel, priority, status, read_at, sent_at, delivered_at, created_at, updated_at)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$10,$11,$11)
-      ON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, status = EXCLUDED.status, read_at = EXCLUDED.read_at
-    `, [n.id, n.userId, n.type, n.title, n.content, n.channel, n.priority, n.status, n.readAt, n.sentAt, n.createdAt]);
-  }
-  console.log(`  ✅ Notifications (${notifications.length})`);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Entry point
 // ─────────────────────────────────────────────────────────────────────────────
 
+async function flushRedis() {
+  const url = process.env.REDIS_URL || `redis://${process.env.REDIS_HOST || 'localhost'}:${process.env.REDIS_PORT || 6379}`;
+  const redis = createClient({ url });
+  try {
+    await redis.connect();
+    await redis.flushAll();
+    console.log('  ✅ Redis cache flushed\n');
+  } catch (err) {
+    console.warn('  ⚠️  Redis flush skipped:', err.message, '\n');
+  } finally {
+    await redis.quit().catch(() => {});
+  }
+}
+
 async function seed() {
-  // ── PostgreSQL ─────────────────────────────────────────────────────────────
+  console.log('\n🗑️  Flushing Redis cache...\n');
+  await flushRedis();
+
   const pg = new Client({ connectionString: DATABASE_URL });
   await pg.connect();
+
   console.log('\n🌱 Seeding PostgreSQL...\n');
   try {
     await seedPostgres(pg);
-    await seedNotifications(pg);
   } catch (err) {
     console.error('\n❌ PostgreSQL seed failed:', err.message);
     throw err;
@@ -640,7 +665,6 @@ async function seed() {
     await pg.end();
   }
 
-  // ── MongoDB ────────────────────────────────────────────────────────────────
   console.log('\n🌱 Seeding MongoDB...\n');
   await mongoose.connect(MONGO_URI, { serverSelectionTimeoutMS: 5000 });
   try {
@@ -652,29 +676,26 @@ async function seed() {
     await mongoose.disconnect();
   }
 
-  // ── Summary ────────────────────────────────────────────────────────────────
   console.log('\n🎉 Seed complete!\n');
-  console.log('  PostgreSQL tables seeded:');
-  console.log('  • users (7) • user_profiles (7) • request_categories (8)');
-  console.log('  • requests (6) • request_images (4) • request_drafts (2)');
-  console.log('  • request_extensions (1) • saved_searches (4) • request_search_index (6)');
-  console.log('  • bids (10) • bid_templates (3)');
-  console.log('  • chat_rooms (4) • chat_participants (8)');
-  console.log('  • notification_templates (3) • notifications (10)');
-  console.log('\n  MongoDB collections seeded:');
-  console.log('  • chat_messages (26) • activity_logs (18) • request_analytics (12) • request_views (11)');
-  console.log('\n  Test accounts (use any OTP — dev mode):');
-  console.log('  ┌─────────────────────┬────────────┬──────────────┐');
-  console.log('  │ Phone               │ Role       │ Sub-role     │');
-  console.log('  ├─────────────────────┼────────────┼──────────────┤');
-  console.log('  │ +962780000001       │ ADMIN      │ SUPER_ADMIN  │');
-  console.log('  │ +962780000002       │ ADMIN      │ ADMIN        │');
-  console.log('  │ +962780000003       │ ADMIN      │ SUPPORT      │');
-  console.log('  │ +962780000004       │ BUYER      │ —            │');
-  console.log('  │ +962780000005       │ BUYER      │ —            │');
-  console.log('  │ +962780000006       │ MERCHANT   │ —            │');
-  console.log('  │ +962780000007       │ MERCHANT   │ —            │');
-  console.log('  └─────────────────────┴────────────┴──────────────┘');
+  console.log('  Story:');
+  console.log('    Day-14  Khalid posts MacBook repair → Tariq bids $450 (accepted), Nour bids $520 (rejected)');
+  console.log('    Day -7  Layla posts Math tutor      → Tariq bids $35, Nour bids $42 (both pending)');
+  console.log('    Day -5  Khalid posts House cleaning → Tariq bids $180 (rejected), Nour bids $250 (accepted)');
+  console.log('    Day -3  Khalid posts iPhone 15      → Tariq bids $950, Nour bids $1050 (both pending)');
+  console.log('    Day -2  Layla posts Moving          → no bids yet');
+  console.log('    Now     3 active chat rooms with full conversation histories');
+  console.log();
+  console.log('  Test accounts (any OTP — dev mode):');
+  console.log('  ┌─────────────────────┬────────────┬─────────────────────────────┐');
+  console.log('  │ Phone               │ Role       │ Name                        │');
+  console.log('  ├─────────────────────┼────────────┼─────────────────────────────┤');
+  console.log('  │ +962780000001       │ ADMIN      │ Super Admin                 │');
+  console.log('  │ +962780000002       │ ADMIN      │ Ahmad Farsi                 │');
+  console.log('  │ +962780000004       │ BUYER      │ Khalid Hassan (3 requests)  │');
+  console.log('  │ +962780000005       │ BUYER      │ Layla Omar   (2 requests)   │');
+  console.log('  │ +962780000006       │ MERCHANT   │ Tariq Saleh  (bids on all)  │');
+  console.log('  │ +962780000007       │ MERCHANT   │ Nour Khaleel (bids on all)  │');
+  console.log('  └─────────────────────┴────────────┴─────────────────────────────┘');
   console.log();
 }
 

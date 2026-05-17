@@ -175,8 +175,8 @@ const analyticsController = {
       ChatMessage.countDocuments({ isDeleted: false }),
       // Notifications
       prisma.notification.count({ where: pgWhere }),
-      prisma.notification.count({ where: { ...pgWhere, readAt: null, status: { not: 'EXPIRED' } } }),
-      prisma.notification.groupBy({ by: ['channel'], _count: { _all: true } }),
+      prisma.notification.count({ where: { ...pgWhere, isRead: false } }),
+      Promise.resolve([]),
       // Trends
       trend7sql('users'),
       trend7sql('requests'),
@@ -211,8 +211,7 @@ const analyticsController = {
         },
         notifications: {
           total: totalNotifs, unread: unreadNotifs, readRate: notifReadRate,
-          byChannel: notifsByChannel.map(r => ({ channel: r.channel, count: r._count._all })),
-          trend:     notifTrend,
+          trend: notifTrend,
         },
       },
     });
@@ -401,14 +400,11 @@ const analyticsController = {
     const pgWhere  = pgDateWhere(value.from, value.to);
     const today    = todayStart();
 
-    const [total, todayTotal, unreadTotal, byType, byChannel, byStatus, byPriority, trend] = await Promise.all([
+    const [total, todayTotal, unreadTotal, byType, trend] = await Promise.all([
       prisma.notification.count({ where: pgWhere }),
       prisma.notification.count({ where: { createdAt: { gte: today } } }),
-      prisma.notification.count({ where: { ...pgWhere, readAt: null, status: { not: 'EXPIRED' } } }),
-      prisma.notification.groupBy({ by: ['type'],     where: pgWhere, _count: { _all: true }, orderBy: { _count: { type: 'desc' } } }),
-      prisma.notification.groupBy({ by: ['channel'],  where: pgWhere, _count: { _all: true }, orderBy: { _count: { channel: 'desc' } } }),
-      prisma.notification.groupBy({ by: ['status'],   where: pgWhere, _count: { _all: true } }),
-      prisma.notification.groupBy({ by: ['priority'], where: pgWhere, _count: { _all: true } }),
+      prisma.notification.count({ where: { ...pgWhere, isRead: false } }),
+      prisma.notification.groupBy({ by: ['type'], where: pgWhere, _count: { _all: true }, orderBy: { _count: { type: 'desc' } } }),
       trend7sql('notifications'),
     ]);
 
@@ -418,10 +414,7 @@ const analyticsController = {
       success: true,
       stats: {
         total, todayTotal, unreadTotal, readRate,
-        byType:     byType.map(r     => ({ type: r.type,         count: r._count._all })),
-        byChannel:  byChannel.map(r  => ({ channel: r.channel,   count: r._count._all })),
-        byStatus:   byStatus.map(r   => ({ status: r.status,     count: r._count._all })),
-        byPriority: byPriority.map(r => ({ priority: r.priority, count: r._count._all })),
+        byType: byType.map(r => ({ type: r.type, count: r._count._all })),
         trend,
       },
     });

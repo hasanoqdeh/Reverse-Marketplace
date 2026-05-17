@@ -217,43 +217,6 @@ exports.Prisma.RequestImageScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
-exports.Prisma.RequestDraftScalarFieldEnum = {
-  id: 'id',
-  buyerId: 'buyerId',
-  categoryId: 'categoryId',
-  title: 'title',
-  description: 'description',
-  budgetMin: 'budgetMin',
-  budgetMax: 'budgetMax',
-  locationLat: 'locationLat',
-  locationLng: 'locationLng',
-  locationAddress: 'locationAddress',
-  autoSaveData: 'autoSaveData',
-  expiresAt: 'expiresAt',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.RequestExtensionScalarFieldEnum = {
-  id: 'id',
-  requestId: 'requestId',
-  originalExpiresAt: 'originalExpiresAt',
-  newExpiresAt: 'newExpiresAt',
-  extensionReason: 'extensionReason',
-  extendedBy: 'extendedBy',
-  createdAt: 'createdAt'
-};
-
-exports.Prisma.RequestSearchIndexScalarFieldEnum = {
-  id: 'id',
-  requestId: 'requestId',
-  searchVector: 'searchVector',
-  categoryPath: 'categoryPath',
-  locationText: 'locationText',
-  budgetRange: 'budgetRange',
-  createdAt: 'createdAt'
-};
-
 exports.Prisma.SavedSearchScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -283,7 +246,10 @@ exports.Prisma.BidScalarFieldEnum = {
   expiresAt: 'expiresAt',
   acceptedAt: 'acceptedAt',
   rejectedAt: 'rejectedAt',
-  withdrawnAt: 'withdrawnAt'
+  withdrawnAt: 'withdrawnAt',
+  chatRoomId: 'chatRoomId',
+  fulfillmentStatus: 'fulfillmentStatus',
+  fulfillmentUpdatedAt: 'fulfillmentUpdatedAt'
 };
 
 exports.Prisma.ChatRoomScalarFieldEnum = {
@@ -301,145 +267,27 @@ exports.Prisma.ChatRoomScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
-exports.Prisma.ChatParticipantScalarFieldEnum = {
-  id: 'id',
-  roomId: 'roomId',
-  userId: 'userId',
-  role: 'role',
-  joinedAt: 'joinedAt',
-  lastReadAt: 'lastReadAt',
-  isMuted: 'isMuted',
-  isBanned: 'isBanned',
-  bannedUntil: 'bannedUntil',
-  bannedBy: 'bannedBy',
-  bannedReason: 'bannedReason',
-  leftAt: 'leftAt'
-};
-
-exports.Prisma.NotificationTemplateScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  type: 'type',
-  channel: 'channel',
-  subjectTemplate: 'subjectTemplate',
-  contentTemplate: 'contentTemplate',
-  variables: 'variables',
-  defaultLocale: 'defaultLocale',
-  isActive: 'isActive',
-  version: 'version',
-  createdBy: 'createdBy',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
 exports.Prisma.NotificationScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   type: 'type',
   title: 'title',
-  content: 'content',
-  channel: 'channel',
-  priority: 'priority',
-  status: 'status',
-  templateId: 'templateId',
-  templateVariables: 'templateVariables',
-  metadata: 'metadata',
-  scheduledAt: 'scheduledAt',
-  sentAt: 'sentAt',
-  deliveredAt: 'deliveredAt',
-  readAt: 'readAt',
-  expiresAt: 'expiresAt',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.NotificationChannelScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  channelType: 'channelType',
-  isEnabled: 'isEnabled',
-  deviceToken: 'deviceToken',
-  emailAddress: 'emailAddress',
-  phoneNumber: 'phoneNumber',
-  preferences: 'preferences',
-  lastUsedAt: 'lastUsedAt',
-  verifiedAt: 'verifiedAt',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.NotificationPreferenceScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  notificationType: 'notificationType',
-  channelType: 'channelType',
-  isEnabled: 'isEnabled',
-  quietHoursStart: 'quietHoursStart',
-  quietHoursEnd: 'quietHoursEnd',
-  minPriority: 'minPriority',
-  maxFrequencyMinutes: 'maxFrequencyMinutes',
-  preferences: 'preferences',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.NotificationDeliveryScalarFieldEnum = {
-  id: 'id',
-  notificationId: 'notificationId',
-  channelType: 'channelType',
-  provider: 'provider',
-  recipient: 'recipient',
-  status: 'status',
-  attemptCount: 'attemptCount',
-  sentAt: 'sentAt',
-  deliveredAt: 'deliveredAt',
-  errorMessage: 'errorMessage',
-  errorCode: 'errorCode',
-  metadata: 'metadata',
+  body: 'body',
+  data: 'data',
+  isRead: 'isRead',
   createdAt: 'createdAt'
 };
 
-exports.Prisma.NotificationReadScalarFieldEnum = {
+exports.Prisma.ReviewScalarFieldEnum = {
   id: 'id',
-  notificationId: 'notificationId',
-  userId: 'userId',
-  readAt: 'readAt',
-  deviceFingerprint: 'deviceFingerprint',
-  ipAddress: 'ipAddress',
-  userAgent: 'userAgent',
+  bidId: 'bidId',
+  requestId: 'requestId',
+  reviewerId: 'reviewerId',
+  revieweeId: 'revieweeId',
+  type: 'type',
+  rating: 'rating',
+  comment: 'comment',
   createdAt: 'createdAt'
-};
-
-exports.Prisma.NotificationStatScalarFieldEnum = {
-  id: 'id',
-  notificationId: 'notificationId',
-  userId: 'userId',
-  eventType: 'eventType',
-  channelType: 'channelType',
-  provider: 'provider',
-  deliveryTimeMs: 'deliveryTimeMs',
-  success: 'success',
-  errorCode: 'errorCode',
-  metadata: 'metadata',
-  createdAt: 'createdAt'
-};
-
-exports.Prisma.BidTemplateScalarFieldEnum = {
-  id: 'id',
-  merchantId: 'merchantId',
-  name: 'name',
-  description: 'description',
-  amountType: 'amountType',
-  amountPercentage: 'amountPercentage',
-  fixedAmount: 'fixedAmount',
-  deliveryDays: 'deliveryDays',
-  deliveryNotes: 'deliveryNotes',
-  specialTerms: 'specialTerms',
-  isActive: 'isActive',
-  usageCount: 'usageCount',
-  successCount: 'successCount',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -507,6 +355,14 @@ exports.BidStatus = exports.$Enums.BidStatus = {
   WITHDRAWN: 'WITHDRAWN'
 };
 
+exports.FulfillmentStatus = exports.$Enums.FulfillmentStatus = {
+  AWAITING: 'AWAITING',
+  PREPARING: 'PREPARING',
+  IN_DELIVERY: 'IN_DELIVERY',
+  DELIVERED: 'DELIVERED',
+  CONFIRMED: 'CONFIRMED'
+};
+
 exports.RoomType = exports.$Enums.RoomType = {
   DIRECT: 'DIRECT',
   GROUP: 'GROUP',
@@ -515,72 +371,17 @@ exports.RoomType = exports.$Enums.RoomType = {
   SUPPORT: 'SUPPORT'
 };
 
-exports.ParticipantRole = exports.$Enums.ParticipantRole = {
-  OWNER: 'OWNER',
-  ADMIN: 'ADMIN',
-  MODERATOR: 'MODERATOR',
-  MEMBER: 'MEMBER'
-};
-
 exports.NotificationType = exports.$Enums.NotificationType = {
-  SYSTEM: 'SYSTEM',
-  REQUEST: 'REQUEST',
-  BID: 'BID',
-  PAYMENT: 'PAYMENT',
-  CHAT: 'CHAT',
-  SUBSCRIPTION: 'SUBSCRIPTION',
-  SECURITY: 'SECURITY',
-  MARKETING: 'MARKETING'
+  NEW_MESSAGE: 'NEW_MESSAGE',
+  BID_PLACED: 'BID_PLACED',
+  STATUS_IN_DELIVERY: 'STATUS_IN_DELIVERY',
+  BID_ACCEPTED: 'BID_ACCEPTED',
+  BUYER_REVIEW: 'BUYER_REVIEW'
 };
 
-exports.NotifChannel = exports.$Enums.NotifChannel = {
-  IN_APP: 'IN_APP',
-  PUSH: 'PUSH',
-  EMAIL: 'EMAIL',
-  SMS: 'SMS',
-  WEBHOOK: 'WEBHOOK'
-};
-
-exports.NotificationPriority = exports.$Enums.NotificationPriority = {
-  LOW: 'LOW',
-  NORMAL: 'NORMAL',
-  HIGH: 'HIGH',
-  URGENT: 'URGENT'
-};
-
-exports.NotificationStatus = exports.$Enums.NotificationStatus = {
-  PENDING: 'PENDING',
-  PROCESSING: 'PROCESSING',
-  SENT: 'SENT',
-  DELIVERED: 'DELIVERED',
-  FAILED: 'FAILED',
-  EXPIRED: 'EXPIRED',
-  READ: 'READ'
-};
-
-exports.NotifDeliveryStatus = exports.$Enums.NotifDeliveryStatus = {
-  PENDING: 'PENDING',
-  PROCESSING: 'PROCESSING',
-  SENT: 'SENT',
-  DELIVERED: 'DELIVERED',
-  FAILED: 'FAILED',
-  BOUNCED: 'BOUNCED'
-};
-
-exports.NotifAnalyticsEvent = exports.$Enums.NotifAnalyticsEvent = {
-  SENT: 'SENT',
-  DELIVERED: 'DELIVERED',
-  READ: 'READ',
-  FAILED: 'FAILED',
-  BOUNCED: 'BOUNCED',
-  CLICKED: 'CLICKED',
-  DISMISSED: 'DISMISSED'
-};
-
-exports.AmountType = exports.$Enums.AmountType = {
-  FIXED: 'FIXED',
-  PERCENTAGE: 'PERCENTAGE',
-  RANGE: 'RANGE'
+exports.ReviewType = exports.$Enums.ReviewType = {
+  BUYER_TO_MERCHANT: 'BUYER_TO_MERCHANT',
+  MERCHANT_TO_BUYER: 'MERCHANT_TO_BUYER'
 };
 
 exports.Prisma.ModelName = {
@@ -590,21 +391,11 @@ exports.Prisma.ModelName = {
   RequestCategory: 'RequestCategory',
   Request: 'Request',
   RequestImage: 'RequestImage',
-  RequestDraft: 'RequestDraft',
-  RequestExtension: 'RequestExtension',
-  RequestSearchIndex: 'RequestSearchIndex',
   SavedSearch: 'SavedSearch',
   Bid: 'Bid',
   ChatRoom: 'ChatRoom',
-  ChatParticipant: 'ChatParticipant',
-  NotificationTemplate: 'NotificationTemplate',
   Notification: 'Notification',
-  NotificationChannel: 'NotificationChannel',
-  NotificationPreference: 'NotificationPreference',
-  NotificationDelivery: 'NotificationDelivery',
-  NotificationRead: 'NotificationRead',
-  NotificationStat: 'NotificationStat',
-  BidTemplate: 'BidTemplate'
+  Review: 'Review'
 };
 
 /**

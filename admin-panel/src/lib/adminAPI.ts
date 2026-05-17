@@ -504,18 +504,12 @@ function getChatClient() {
 export type RoomType = 'DIRECT' | 'GROUP' | 'REQUEST' | 'BID' | 'SUPPORT'
 export type MessageType = 'TEXT' | 'IMAGE' | 'FILE' | 'VOICE' | 'VIDEO' | 'LOCATION' | 'SYSTEM'
 
-export interface ChatParticipant {
-  userId: string; role: string; joinedAt: string
-  lastReadAt: string | null; isMuted: boolean
-}
-
 export interface ChatRoom {
   id: string; name: string; description: string | null; type: RoomType
   relatedRequestId: string | null; relatedBidId: string | null
   createdBy: string; isActive: boolean; maxParticipants: number
   createdAt: string; updatedAt: string
-  participants?: ChatParticipant[]
-  _count?: { participants: number; messages: number }
+  _count?: { messages: number }
 }
 
 export interface ChatMessage {

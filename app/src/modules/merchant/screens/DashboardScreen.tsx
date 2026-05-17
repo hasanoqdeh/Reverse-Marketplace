@@ -8,16 +8,15 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {BottomTabNavigationProp} from '@react-navigation/bottom-tabs';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {MerchantTabParamList} from '../../../types/navigation';
 import {RootStackParamList} from '../../../types/navigation';
-import {useAuth} from '../../../context/AuthContext';
 import {MarketRequest} from '../../../types/api';
 import {searchRequests} from '../../../api/requests';
 import {getMyBids} from '../../../api/bids';
+import AppHeader from '../../../components/AppHeader';
 
 type TabNav = BottomTabNavigationProp<MerchantTabParamList, 'Dashboard'>;
 type RootNav = NativeStackNavigationProp<RootStackParamList>;
@@ -42,8 +41,6 @@ function formatBudget(min?: number | null, max?: number | null): string {
 export default function DashboardScreen() {
   const tabNavigation = useNavigation<TabNav>();
   const rootNavigation = useNavigation<RootNav>();
-  const {user} = useAuth();
-  const firstName = user?.profile?.firstName ?? 'Merchant';
 
   const [recentRequests, setRecentRequests] = useState<MarketRequest[]>([]);
   const [totalActive, setTotalActive] = useState<number | null>(null);
@@ -82,23 +79,14 @@ export default function DashboardScreen() {
   }, [loadDashboard]);
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <View style={styles.safe}>
+      <AppHeader accentColor={ACCENT} />
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={ACCENT} colors={[ACCENT]} />
         }>
-        {/* Header card */}
-        <View style={styles.headerCard}>
-          <View>
-            <Text style={styles.greeting}>Hello, {firstName}</Text>
-            <Text style={styles.phone}>{user?.phone}</Text>
-          </View>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{firstName[0].toUpperCase()}</Text>
-          </View>
-        </View>
 
         {/* Stats */}
         <Text style={styles.section}>Marketplace Overview</Text>
@@ -170,22 +158,13 @@ export default function DashboardScreen() {
           </>
         )}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   safe: {flex: 1, backgroundColor: '#F9FAFB'},
   content: {padding: 20, paddingBottom: 32},
-  headerCard: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    backgroundColor: '#FFFFFF', borderRadius: 16, padding: 16, marginBottom: 24,
-    shadowColor: '#000', shadowOffset: {width: 0, height: 1}, shadowOpacity: 0.05, shadowRadius: 6, elevation: 2,
-  },
-  greeting: {fontSize: 20, fontWeight: '700', color: '#111827'},
-  phone: {fontSize: 13, color: '#6B7280', marginTop: 2},
-  avatar: {width: 44, height: 44, borderRadius: 22, backgroundColor: ACCENT, alignItems: 'center', justifyContent: 'center'},
-  avatarText: {fontSize: 20, fontWeight: '700', color: '#FFFFFF'},
   section: {fontSize: 16, fontWeight: '700', color: '#111827', marginBottom: 12, marginTop: 4},
   statsRow: {flexDirection: 'row', gap: 10, marginBottom: 24},
   statCard: {

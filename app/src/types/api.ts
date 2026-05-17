@@ -109,6 +109,7 @@ export interface PaginationMeta {
 // ─── Bids ─────────────────────────────────────────────────────────
 
 export type BidStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'EXPIRED' | 'WITHDRAWN';
+export type FulfillmentStatus = 'AWAITING' | 'PREPARING' | 'IN_DELIVERY' | 'DELIVERED' | 'CONFIRMED';
 
 export interface Bid {
   id: string;
@@ -126,6 +127,35 @@ export interface Bid {
   acceptedAt?: string | null;
   rejectedAt?: string | null;
   withdrawnAt?: string | null;
+  chatRoomId?: string | null;
+  fulfillmentStatus?: FulfillmentStatus | null;
+  fulfillmentUpdatedAt?: string | null;
+}
+
+// ─── Reviews ──────────────────────────────────────────────────────
+
+export type ReviewType = 'BUYER_TO_MERCHANT' | 'MERCHANT_TO_BUYER';
+
+export interface Review {
+  id: string;
+  bidId: string;
+  requestId: string;
+  reviewerId: string;
+  revieweeId: string;
+  type: ReviewType;
+  rating: number;
+  comment?: string | null;
+  createdAt: string;
+}
+
+export interface MerchantProfile {
+  id: string;
+  phone: string;
+  profile: UserProfile | null;
+  memberSince: string;
+  avgRating: number | null;
+  reviewCount: number;
+  completedBids: number;
 }
 
 export interface BidCompetition {
@@ -139,15 +169,6 @@ export interface BidCompetition {
 
 export type RoomType = 'DIRECT' | 'GROUP' | 'REQUEST' | 'BID' | 'SUPPORT';
 export type MessageType = 'TEXT' | 'IMAGE' | 'FILE' | 'VOICE' | 'VIDEO' | 'LOCATION' | 'SYSTEM';
-export type ParticipantRole = 'OWNER' | 'ADMIN' | 'MODERATOR' | 'MEMBER';
-
-export interface ChatParticipant {
-  userId: string;
-  role: ParticipantRole;
-  joinedAt: string;
-  lastReadAt?: string | null;
-  isMuted: boolean;
-}
 
 export interface ChatRoom {
   id: string;
@@ -160,7 +181,6 @@ export interface ChatRoom {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
-  participants: ChatParticipant[];
   unreadCount?: number;
   lastMessage?: {
     id: string;
@@ -186,16 +206,3 @@ export interface ChatMessage {
   reactions?: { userId: string; reactionType: string }[];
 }
 
-export interface BidTemplate {
-  id: string;
-  merchantId: string;
-  name: string;
-  description?: string | null;
-  amountType: 'FIXED' | 'PERCENTAGE' | 'RANGE';
-  fixedAmount?: string | null;
-  deliveryDays?: number | null;
-  deliveryNotes?: string | null;
-  specialTerms?: string | null;
-  usageCount: number;
-  successCount: number;
-}

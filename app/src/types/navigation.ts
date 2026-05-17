@@ -7,10 +7,8 @@ export type AuthStackParamList = {
 
 export type BuyerTabParamList = {
   Home: undefined;
+  NewRequest: undefined;
   Requests: undefined;
-  Chat: undefined;
-  Notifications: undefined;
-  Profile: undefined;
 };
 
 export type MerchantTabParamList = {
@@ -34,4 +32,9 @@ export type RootStackParamList = {
   BidDetail: { bidId: string };
   RequestBids: { requestId: string; requestTitle: string };
   ChatRoom: { roomId: string; roomName: string };
+  MerchantStore: { merchantId: string };
+  RateTransaction: { bidId: string; revieweeId: string; revieweeType: 'MERCHANT' | 'BUYER'; revieweeName: string };
+  MerchantSetup: undefined;
+  Notifications: undefined;
+  Profile: undefined;
 };

@@ -1,5 +1,5 @@
 import apiClient from './client';
-import {Bid, BidCompetition, PaginationMeta} from '../types/api';
+import {Bid, BidCompetition, FulfillmentStatus, PaginationMeta} from '../types/api';
 
 export async function submitBid(data: {
   requestId: string;
@@ -57,4 +57,19 @@ export async function acceptBid(bidId: string): Promise<{bidId: string; merchant
 
 export async function rejectBid(bidId: string): Promise<void> {
   await apiClient.post(`/bidding/bids/${bidId}/reject`);
+}
+
+export async function updateFulfillmentStatus(
+  bidId: string,
+  status: FulfillmentStatus,
+): Promise<Bid> {
+  const res = await apiClient.patch(`/bidding/bids/${bidId}/fulfillment`, {status});
+  return res.data.bid;
+}
+
+export async function confirmDelivery(
+  bidId: string,
+): Promise<{bidId: string; merchantId: string}> {
+  const res = await apiClient.post(`/bidding/bids/${bidId}/confirm`);
+  return res.data;
 }

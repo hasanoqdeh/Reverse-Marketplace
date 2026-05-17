@@ -8,13 +8,13 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../types/navigation';
 import {ChatRoom} from '../../types/api';
 import {getMyRooms} from '../../api/chat';
 import {useAuth} from '../../context/AuthContext';
+import AppHeader from '../../components/AppHeader';
 
 type RootNav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -101,15 +101,8 @@ export default function ChatListScreen() {
   }, [load]);
 
   return (
-    <SafeAreaView style={[styles.safe, {backgroundColor: '#F9FAFB'}]}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Messages</Text>
-        {total > 0 && (
-          <View style={[styles.countBadge, {backgroundColor: ACCENT}]}>
-            <Text style={styles.countText}>{total}</Text>
-          </View>
-        )}
-      </View>
+    <View style={[styles.safe, {backgroundColor: '#F9FAFB'}]}>
+      <AppHeader accentColor={ACCENT} />
 
       {loading ? (
         <View style={styles.center}>
@@ -144,7 +137,7 @@ export default function ChatListScreen() {
           }
         />
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -173,14 +166,6 @@ const row = StyleSheet.create({
 
 const styles = StyleSheet.create({
   safe: {flex: 1},
-  header: {
-    backgroundColor: '#FFFFFF', paddingHorizontal: 20, paddingTop: 16, paddingBottom: 16,
-    borderBottomWidth: 1, borderBottomColor: '#E5E7EB',
-    flexDirection: 'row', alignItems: 'center', gap: 8,
-  },
-  title: {fontSize: 22, fontWeight: '700', color: '#111827'},
-  countBadge: {borderRadius: 12, paddingHorizontal: 8, paddingVertical: 2},
-  countText: {fontSize: 13, fontWeight: '700', color: '#FFFFFF'},
   center: {flex: 1, alignItems: 'center', justifyContent: 'center'},
   separator: {height: 1, backgroundColor: '#F3F4F6', marginLeft: 80},
   empty: {flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 80, paddingHorizontal: 32},

@@ -78,53 +78,6 @@ CREATE TABLE IF NOT EXISTS request_images (
 CREATE INDEX IF NOT EXISTS idx_request_images_request_id ON request_images(request_id);
 CREATE INDEX IF NOT EXISTS idx_request_images_is_primary ON request_images(request_id, is_primary);
 
--- request_drafts
-CREATE TABLE IF NOT EXISTS request_drafts (
-    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    buyer_id         UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    category_id      UUID NULL REFERENCES request_categories(id) ON DELETE SET NULL,
-    title            VARCHAR(255) NULL,
-    description      TEXT NULL,
-    budget_min       DECIMAL(12, 2) NULL,
-    budget_max       DECIMAL(12, 2) NULL,
-    location_lat     DECIMAL(10, 8) NULL,
-    location_lng     DECIMAL(11, 8) NULL,
-    location_address TEXT NULL,
-    auto_save_data   JSONB DEFAULT '{}',
-    expires_at       TIMESTAMPTZ NOT NULL,
-    created_at       TIMESTAMPTZ DEFAULT NOW(),
-    updated_at       TIMESTAMPTZ DEFAULT NOW()
-);
-CREATE INDEX IF NOT EXISTS idx_request_drafts_buyer_id   ON request_drafts(buyer_id);
-CREATE INDEX IF NOT EXISTS idx_request_drafts_expires_at ON request_drafts(expires_at);
-DO $$ BEGIN
-  CREATE TRIGGER trigger_request_drafts_updated_at BEFORE UPDATE ON request_drafts FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-
--- request_extensions
-CREATE TABLE IF NOT EXISTS request_extensions (
-    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    request_id          UUID NOT NULL REFERENCES requests(id) ON DELETE CASCADE,
-    original_expires_at TIMESTAMPTZ NOT NULL,
-    new_expires_at      TIMESTAMPTZ NOT NULL,
-    extension_reason    TEXT NULL,
-    extended_by         UUID NULL REFERENCES users(id) ON DELETE SET NULL,
-    created_at          TIMESTAMPTZ DEFAULT NOW()
-);
-CREATE INDEX IF NOT EXISTS idx_request_extensions_request_id ON request_extensions(request_id);
-
--- request_search_index
-CREATE TABLE IF NOT EXISTS request_search_index (
-    id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    request_id    UUID UNIQUE NOT NULL REFERENCES requests(id) ON DELETE CASCADE,
-    search_vector TEXT NULL,
-    category_path TEXT NULL,
-    location_text TEXT NULL,
-    budget_range  TEXT NULL,
-    created_at    TIMESTAMPTZ DEFAULT NOW()
-);
-CREATE INDEX IF NOT EXISTS idx_request_search_index_request_id ON request_search_index(request_id);
-
 -- saved_searches
 CREATE TABLE IF NOT EXISTS saved_searches (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),

@@ -261,6 +261,31 @@ const publisher = {
     }, { userId });
   },
 
+  // ─── Fulfillment convenience publishers ──────────────────────
+
+  async bidFulfillmentUpdated(bidId, merchantId, oldStatus, newStatus) {
+    return this.publish('bid.fulfillment.updated', {
+      bidId, merchantId, oldStatus, newStatus,
+      updatedAt: new Date().toISOString(),
+    }, { userId: merchantId });
+  },
+
+  async bidDeliveryConfirmed(bidId, buyerId, merchantId) {
+    return this.publish('bid.delivery.confirmed', {
+      bidId, buyerId, merchantId,
+      confirmedAt: new Date().toISOString(),
+    }, { userId: buyerId });
+  },
+
+  // ─── Review convenience publishers ───────────────────────────
+
+  async reviewCreated(reviewId, bidId, reviewerId, revieweeId, rating, type) {
+    return this.publish('review.created', {
+      reviewId, bidId, reviewerId, revieweeId, rating, type,
+      createdAt: new Date().toISOString(),
+    }, { userId: reviewerId });
+  },
+
   // ─── Admin convenience publishers ────────────────────────────
 
   async adminActionPerformed(adminId, actionType, targetId, targetType, details = {}) {
