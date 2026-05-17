@@ -2,21 +2,31 @@
 
 import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { apiGetDashboardMetrics, DashboardMetrics } from '@/lib/adminAPI'
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
-import { Users, ShieldCheck, Clock, AlertTriangle, CheckCircle, Phone } from 'lucide-react'
+import { apiGetDashboardMetrics, DashboardMetrics, apiAdminGetNotificationAnalytics, NotifStats } from '@/lib/adminAPI'
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
+import { Users, ShieldCheck, Clock, AlertTriangle, CheckCircle, Phone, Bell } from 'lucide-react'
 import { format } from 'date-fns'
 
 export default function DashboardPage() {
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null)
   const [trend, setTrend] = useState<{ date: string; count: number }[]>([])
+  const [notifStats, setNotifStats] = useState<NotifStats | null>(null)
+  const [notifTrend, setNotifTrend] = useState<{ date: string; count: number }[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    apiGetDashboardMetrics()
-      .then(res => { setMetrics(res.metrics); setTrend(res.trends.userRegistrations) })
-      .catch(() => setError('Failed to load dashboard metrics'))
+    Promise.all([
+      apiGetDashboardMetrics(),
+      apiAdminGetNotificationAnalytics().catch(() => null),
+    ]).then(([res, notifRes]) => {
+      setMetrics(res.metrics)
+      setTrend(res.trends.userRegistrations)
+      if (notifRes) {
+        setNotifStats(notifRes.stats)
+        setNotifTrend(notifRes.stats.trend ?? [])
+      }
+    }).catch(() => setError('Failed to load dashboard metrics'))
       .finally(() => setLoading(false))
   }, [])
 
@@ -93,6 +103,53 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
         </section>
+      )}
+
+      {/* Notifications section */}
+      {notifStats && (
+        <>
+          <section>
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Notifications</h2>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <StatCard label="Total Sent"  value={notifStats.total}       icon={Bell}          color="text-blue-600" />
+              <StatCard label="Today"       value={notifStats.todayTotal}  icon={Clock}         color="text-purple-600" />
+              <StatCard label="Unread"      value={notifStats.unreadTotal} icon={AlertTriangle} color="text-yellow-500" />
+              <StatCard label="Read Rate"   value={notifStats.readRate as unknown as number}   icon={CheckCircle}   color="text-green-600" />
+            </div>
+          </section>
+
+          <section className="grid gap-4 sm:grid-cols-2">
+            <Card>
+              <CardHeader><CardTitle className="text-sm font-semibold text-gray-700">Notifications by Channel</CardTitle></CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={180}>
+                  <BarChart data={notifStats.byChannel}>
+                    <XAxis dataKey="channel" tick={{ fontSize: 11 }} />
+                    <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
+                    <Tooltip />
+                    <Bar dataKey="count" fill="#7C3AED" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            {notifTrend.length > 0 && (
+              <Card>
+                <CardHeader><CardTitle className="text-sm font-semibold text-gray-700">Notifications — Last 7 Days</CardTitle></CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={180}>
+                    <LineChart data={notifTrend.map(d => ({ ...d, date: format(new Date(d.date), 'MMM d') }))}>
+                      <XAxis dataKey="date" tick={{ fontSize: 11 }} />
+                      <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
+                      <Tooltip />
+                      <Line type="monotone" dataKey="count" stroke="#7C3AED" strokeWidth={2} dot={{ r: 3 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            )}
+          </section>
+        </>
       )}
     </div>
   )

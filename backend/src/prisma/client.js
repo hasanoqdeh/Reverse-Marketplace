@@ -1,6 +1,6 @@
 'use strict';
 
-const { PrismaClient } = require('./generated');
+const { PrismaClient } = require('./generated2');
 
 let _prisma = null;
 

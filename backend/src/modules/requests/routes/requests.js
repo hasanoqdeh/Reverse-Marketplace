@@ -45,9 +45,8 @@ router.get('/categories', requestController.getCategories);
 
 // Request discovery (public — merchants and buyers, optional auth for view tracking)
 router.get('/', optionalAuthenticate, requestController.searchRequests);
-router.get('/:id', optionalAuthenticate, requestController.getRequest);
 
-// Authenticated buyer routes
+// Authenticated buyer routes (must be before /:id to avoid param conflict)
 router.post('/draft', authenticate, requestController.createDraft);
 router.put('/draft/:id', authenticate, requestController.updateDraft);
 router.get('/me/drafts', authenticate, requestController.getMyDrafts);
@@ -55,6 +54,9 @@ router.delete('/draft/:id', authenticate, requestController.deleteDraft);
 
 router.post('/publish', authenticate, requestController.publishRequest);
 router.get('/me/requests', authenticate, requestController.getMyRequests);
+
+// Parameterized route last to avoid shadowing specific paths
+router.get('/:id', optionalAuthenticate, requestController.getRequest);
 
 router.post('/:id/cancel', authenticate, requestController.cancelRequest);
 router.post('/:id/extend', authenticate, requestController.extendRequest);

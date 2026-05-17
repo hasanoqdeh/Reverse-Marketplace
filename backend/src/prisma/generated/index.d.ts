@@ -63,6 +63,16 @@ export type RequestSearchIndex = $Result.DefaultSelection<Prisma.$RequestSearchI
  * 
  */
 export type SavedSearch = $Result.DefaultSelection<Prisma.$SavedSearchPayload>
+/**
+ * Model Bid
+ * 
+ */
+export type Bid = $Result.DefaultSelection<Prisma.$BidPayload>
+/**
+ * Model BidTemplate
+ * 
+ */
+export type BidTemplate = $Result.DefaultSelection<Prisma.$BidTemplatePayload>
 
 /**
  * Enums
@@ -115,6 +125,26 @@ export const RequestStatus: {
 
 export type RequestStatus = (typeof RequestStatus)[keyof typeof RequestStatus]
 
+
+export const BidStatus: {
+  PENDING: 'PENDING',
+  ACCEPTED: 'ACCEPTED',
+  REJECTED: 'REJECTED',
+  EXPIRED: 'EXPIRED',
+  WITHDRAWN: 'WITHDRAWN'
+};
+
+export type BidStatus = (typeof BidStatus)[keyof typeof BidStatus]
+
+
+export const AmountType: {
+  FIXED: 'FIXED',
+  PERCENTAGE: 'PERCENTAGE',
+  RANGE: 'RANGE'
+};
+
+export type AmountType = (typeof AmountType)[keyof typeof AmountType]
+
 }
 
 export type UserRole = $Enums.UserRole
@@ -136,6 +166,14 @@ export const TokenType: typeof $Enums.TokenType
 export type RequestStatus = $Enums.RequestStatus
 
 export const RequestStatus: typeof $Enums.RequestStatus
+
+export type BidStatus = $Enums.BidStatus
+
+export const BidStatus: typeof $Enums.BidStatus
+
+export type AmountType = $Enums.AmountType
+
+export const AmountType: typeof $Enums.AmountType
 
 /**
  * ##  Prisma Client ʲˢ
@@ -359,6 +397,26 @@ export class PrismaClient<
     * ```
     */
   get savedSearch(): Prisma.SavedSearchDelegate<ExtArgs>;
+
+  /**
+   * `prisma.bid`: Exposes CRUD operations for the **Bid** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Bids
+    * const bids = await prisma.bid.findMany()
+    * ```
+    */
+  get bid(): Prisma.BidDelegate<ExtArgs>;
+
+  /**
+   * `prisma.bidTemplate`: Exposes CRUD operations for the **BidTemplate** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more BidTemplates
+    * const bidTemplates = await prisma.bidTemplate.findMany()
+    * ```
+    */
+  get bidTemplate(): Prisma.BidTemplateDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -809,7 +867,9 @@ export namespace Prisma {
     RequestDraft: 'RequestDraft',
     RequestExtension: 'RequestExtension',
     RequestSearchIndex: 'RequestSearchIndex',
-    SavedSearch: 'SavedSearch'
+    SavedSearch: 'SavedSearch',
+    Bid: 'Bid',
+    BidTemplate: 'BidTemplate'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -825,7 +885,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "user" | "userProfile" | "authToken" | "requestCategory" | "request" | "requestImage" | "requestDraft" | "requestExtension" | "requestSearchIndex" | "savedSearch"
+      modelProps: "user" | "userProfile" | "authToken" | "requestCategory" | "request" | "requestImage" | "requestDraft" | "requestExtension" | "requestSearchIndex" | "savedSearch" | "bid" | "bidTemplate"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1526,6 +1586,146 @@ export namespace Prisma {
           count: {
             args: Prisma.SavedSearchCountArgs<ExtArgs>
             result: $Utils.Optional<SavedSearchCountAggregateOutputType> | number
+          }
+        }
+      }
+      Bid: {
+        payload: Prisma.$BidPayload<ExtArgs>
+        fields: Prisma.BidFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BidFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BidPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BidFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BidPayload>
+          }
+          findFirst: {
+            args: Prisma.BidFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BidPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BidFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BidPayload>
+          }
+          findMany: {
+            args: Prisma.BidFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BidPayload>[]
+          }
+          create: {
+            args: Prisma.BidCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BidPayload>
+          }
+          createMany: {
+            args: Prisma.BidCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.BidCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BidPayload>[]
+          }
+          delete: {
+            args: Prisma.BidDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BidPayload>
+          }
+          update: {
+            args: Prisma.BidUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BidPayload>
+          }
+          deleteMany: {
+            args: Prisma.BidDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BidUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.BidUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BidPayload>
+          }
+          aggregate: {
+            args: Prisma.BidAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBid>
+          }
+          groupBy: {
+            args: Prisma.BidGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BidGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BidCountArgs<ExtArgs>
+            result: $Utils.Optional<BidCountAggregateOutputType> | number
+          }
+        }
+      }
+      BidTemplate: {
+        payload: Prisma.$BidTemplatePayload<ExtArgs>
+        fields: Prisma.BidTemplateFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BidTemplateFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BidTemplatePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BidTemplateFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BidTemplatePayload>
+          }
+          findFirst: {
+            args: Prisma.BidTemplateFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BidTemplatePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BidTemplateFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BidTemplatePayload>
+          }
+          findMany: {
+            args: Prisma.BidTemplateFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BidTemplatePayload>[]
+          }
+          create: {
+            args: Prisma.BidTemplateCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BidTemplatePayload>
+          }
+          createMany: {
+            args: Prisma.BidTemplateCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.BidTemplateCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BidTemplatePayload>[]
+          }
+          delete: {
+            args: Prisma.BidTemplateDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BidTemplatePayload>
+          }
+          update: {
+            args: Prisma.BidTemplateUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BidTemplatePayload>
+          }
+          deleteMany: {
+            args: Prisma.BidTemplateDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BidTemplateUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.BidTemplateUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BidTemplatePayload>
+          }
+          aggregate: {
+            args: Prisma.BidTemplateAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBidTemplate>
+          }
+          groupBy: {
+            args: Prisma.BidTemplateGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BidTemplateGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BidTemplateCountArgs<ExtArgs>
+            result: $Utils.Optional<BidTemplateCountAggregateOutputType> | number
           }
         }
       }
@@ -12280,6 +12480,2146 @@ export namespace Prisma {
 
 
   /**
+   * Model Bid
+   */
+
+  export type AggregateBid = {
+    _count: BidCountAggregateOutputType | null
+    _avg: BidAvgAggregateOutputType | null
+    _sum: BidSumAggregateOutputType | null
+    _min: BidMinAggregateOutputType | null
+    _max: BidMaxAggregateOutputType | null
+  }
+
+  export type BidAvgAggregateOutputType = {
+    amount: Decimal | null
+    deliveryDays: number | null
+    priorityScore: number | null
+    bidFee: Decimal | null
+  }
+
+  export type BidSumAggregateOutputType = {
+    amount: Decimal | null
+    deliveryDays: number | null
+    priorityScore: number | null
+    bidFee: Decimal | null
+  }
+
+  export type BidMinAggregateOutputType = {
+    id: string | null
+    requestId: string | null
+    merchantId: string | null
+    amount: Decimal | null
+    deliveryDays: number | null
+    deliveryNotes: string | null
+    specialTerms: string | null
+    status: $Enums.BidStatus | null
+    priorityScore: number | null
+    isTemplate: boolean | null
+    templateName: string | null
+    bidFee: Decimal | null
+    feePaid: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    expiresAt: Date | null
+    acceptedAt: Date | null
+    rejectedAt: Date | null
+    withdrawnAt: Date | null
+  }
+
+  export type BidMaxAggregateOutputType = {
+    id: string | null
+    requestId: string | null
+    merchantId: string | null
+    amount: Decimal | null
+    deliveryDays: number | null
+    deliveryNotes: string | null
+    specialTerms: string | null
+    status: $Enums.BidStatus | null
+    priorityScore: number | null
+    isTemplate: boolean | null
+    templateName: string | null
+    bidFee: Decimal | null
+    feePaid: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    expiresAt: Date | null
+    acceptedAt: Date | null
+    rejectedAt: Date | null
+    withdrawnAt: Date | null
+  }
+
+  export type BidCountAggregateOutputType = {
+    id: number
+    requestId: number
+    merchantId: number
+    amount: number
+    deliveryDays: number
+    deliveryNotes: number
+    specialTerms: number
+    status: number
+    priorityScore: number
+    isTemplate: number
+    templateName: number
+    bidFee: number
+    feePaid: number
+    createdAt: number
+    updatedAt: number
+    expiresAt: number
+    acceptedAt: number
+    rejectedAt: number
+    withdrawnAt: number
+    _all: number
+  }
+
+
+  export type BidAvgAggregateInputType = {
+    amount?: true
+    deliveryDays?: true
+    priorityScore?: true
+    bidFee?: true
+  }
+
+  export type BidSumAggregateInputType = {
+    amount?: true
+    deliveryDays?: true
+    priorityScore?: true
+    bidFee?: true
+  }
+
+  export type BidMinAggregateInputType = {
+    id?: true
+    requestId?: true
+    merchantId?: true
+    amount?: true
+    deliveryDays?: true
+    deliveryNotes?: true
+    specialTerms?: true
+    status?: true
+    priorityScore?: true
+    isTemplate?: true
+    templateName?: true
+    bidFee?: true
+    feePaid?: true
+    createdAt?: true
+    updatedAt?: true
+    expiresAt?: true
+    acceptedAt?: true
+    rejectedAt?: true
+    withdrawnAt?: true
+  }
+
+  export type BidMaxAggregateInputType = {
+    id?: true
+    requestId?: true
+    merchantId?: true
+    amount?: true
+    deliveryDays?: true
+    deliveryNotes?: true
+    specialTerms?: true
+    status?: true
+    priorityScore?: true
+    isTemplate?: true
+    templateName?: true
+    bidFee?: true
+    feePaid?: true
+    createdAt?: true
+    updatedAt?: true
+    expiresAt?: true
+    acceptedAt?: true
+    rejectedAt?: true
+    withdrawnAt?: true
+  }
+
+  export type BidCountAggregateInputType = {
+    id?: true
+    requestId?: true
+    merchantId?: true
+    amount?: true
+    deliveryDays?: true
+    deliveryNotes?: true
+    specialTerms?: true
+    status?: true
+    priorityScore?: true
+    isTemplate?: true
+    templateName?: true
+    bidFee?: true
+    feePaid?: true
+    createdAt?: true
+    updatedAt?: true
+    expiresAt?: true
+    acceptedAt?: true
+    rejectedAt?: true
+    withdrawnAt?: true
+    _all?: true
+  }
+
+  export type BidAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Bid to aggregate.
+     */
+    where?: BidWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Bids to fetch.
+     */
+    orderBy?: BidOrderByWithRelationInput | BidOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: BidWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Bids from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Bids.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Bids
+    **/
+    _count?: true | BidCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: BidAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: BidSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: BidMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: BidMaxAggregateInputType
+  }
+
+  export type GetBidAggregateType<T extends BidAggregateArgs> = {
+        [P in keyof T & keyof AggregateBid]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBid[P]>
+      : GetScalarType<T[P], AggregateBid[P]>
+  }
+
+
+
+
+  export type BidGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BidWhereInput
+    orderBy?: BidOrderByWithAggregationInput | BidOrderByWithAggregationInput[]
+    by: BidScalarFieldEnum[] | BidScalarFieldEnum
+    having?: BidScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BidCountAggregateInputType | true
+    _avg?: BidAvgAggregateInputType
+    _sum?: BidSumAggregateInputType
+    _min?: BidMinAggregateInputType
+    _max?: BidMaxAggregateInputType
+  }
+
+  export type BidGroupByOutputType = {
+    id: string
+    requestId: string
+    merchantId: string
+    amount: Decimal
+    deliveryDays: number
+    deliveryNotes: string | null
+    specialTerms: string | null
+    status: $Enums.BidStatus
+    priorityScore: number
+    isTemplate: boolean
+    templateName: string | null
+    bidFee: Decimal
+    feePaid: boolean
+    createdAt: Date
+    updatedAt: Date
+    expiresAt: Date | null
+    acceptedAt: Date | null
+    rejectedAt: Date | null
+    withdrawnAt: Date | null
+    _count: BidCountAggregateOutputType | null
+    _avg: BidAvgAggregateOutputType | null
+    _sum: BidSumAggregateOutputType | null
+    _min: BidMinAggregateOutputType | null
+    _max: BidMaxAggregateOutputType | null
+  }
+
+  type GetBidGroupByPayload<T extends BidGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BidGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BidGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BidGroupByOutputType[P]>
+            : GetScalarType<T[P], BidGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BidSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    requestId?: boolean
+    merchantId?: boolean
+    amount?: boolean
+    deliveryDays?: boolean
+    deliveryNotes?: boolean
+    specialTerms?: boolean
+    status?: boolean
+    priorityScore?: boolean
+    isTemplate?: boolean
+    templateName?: boolean
+    bidFee?: boolean
+    feePaid?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    expiresAt?: boolean
+    acceptedAt?: boolean
+    rejectedAt?: boolean
+    withdrawnAt?: boolean
+  }, ExtArgs["result"]["bid"]>
+
+  export type BidSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    requestId?: boolean
+    merchantId?: boolean
+    amount?: boolean
+    deliveryDays?: boolean
+    deliveryNotes?: boolean
+    specialTerms?: boolean
+    status?: boolean
+    priorityScore?: boolean
+    isTemplate?: boolean
+    templateName?: boolean
+    bidFee?: boolean
+    feePaid?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    expiresAt?: boolean
+    acceptedAt?: boolean
+    rejectedAt?: boolean
+    withdrawnAt?: boolean
+  }, ExtArgs["result"]["bid"]>
+
+  export type BidSelectScalar = {
+    id?: boolean
+    requestId?: boolean
+    merchantId?: boolean
+    amount?: boolean
+    deliveryDays?: boolean
+    deliveryNotes?: boolean
+    specialTerms?: boolean
+    status?: boolean
+    priorityScore?: boolean
+    isTemplate?: boolean
+    templateName?: boolean
+    bidFee?: boolean
+    feePaid?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    expiresAt?: boolean
+    acceptedAt?: boolean
+    rejectedAt?: boolean
+    withdrawnAt?: boolean
+  }
+
+
+  export type $BidPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Bid"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      requestId: string
+      merchantId: string
+      amount: Prisma.Decimal
+      deliveryDays: number
+      deliveryNotes: string | null
+      specialTerms: string | null
+      status: $Enums.BidStatus
+      priorityScore: number
+      isTemplate: boolean
+      templateName: string | null
+      bidFee: Prisma.Decimal
+      feePaid: boolean
+      createdAt: Date
+      updatedAt: Date
+      expiresAt: Date | null
+      acceptedAt: Date | null
+      rejectedAt: Date | null
+      withdrawnAt: Date | null
+    }, ExtArgs["result"]["bid"]>
+    composites: {}
+  }
+
+  type BidGetPayload<S extends boolean | null | undefined | BidDefaultArgs> = $Result.GetResult<Prisma.$BidPayload, S>
+
+  type BidCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<BidFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: BidCountAggregateInputType | true
+    }
+
+  export interface BidDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Bid'], meta: { name: 'Bid' } }
+    /**
+     * Find zero or one Bid that matches the filter.
+     * @param {BidFindUniqueArgs} args - Arguments to find a Bid
+     * @example
+     * // Get one Bid
+     * const bid = await prisma.bid.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BidFindUniqueArgs>(args: SelectSubset<T, BidFindUniqueArgs<ExtArgs>>): Prisma__BidClient<$Result.GetResult<Prisma.$BidPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one Bid that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {BidFindUniqueOrThrowArgs} args - Arguments to find a Bid
+     * @example
+     * // Get one Bid
+     * const bid = await prisma.bid.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BidFindUniqueOrThrowArgs>(args: SelectSubset<T, BidFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BidClient<$Result.GetResult<Prisma.$BidPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first Bid that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BidFindFirstArgs} args - Arguments to find a Bid
+     * @example
+     * // Get one Bid
+     * const bid = await prisma.bid.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BidFindFirstArgs>(args?: SelectSubset<T, BidFindFirstArgs<ExtArgs>>): Prisma__BidClient<$Result.GetResult<Prisma.$BidPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first Bid that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BidFindFirstOrThrowArgs} args - Arguments to find a Bid
+     * @example
+     * // Get one Bid
+     * const bid = await prisma.bid.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BidFindFirstOrThrowArgs>(args?: SelectSubset<T, BidFindFirstOrThrowArgs<ExtArgs>>): Prisma__BidClient<$Result.GetResult<Prisma.$BidPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more Bids that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BidFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Bids
+     * const bids = await prisma.bid.findMany()
+     * 
+     * // Get first 10 Bids
+     * const bids = await prisma.bid.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const bidWithIdOnly = await prisma.bid.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends BidFindManyArgs>(args?: SelectSubset<T, BidFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BidPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a Bid.
+     * @param {BidCreateArgs} args - Arguments to create a Bid.
+     * @example
+     * // Create one Bid
+     * const Bid = await prisma.bid.create({
+     *   data: {
+     *     // ... data to create a Bid
+     *   }
+     * })
+     * 
+     */
+    create<T extends BidCreateArgs>(args: SelectSubset<T, BidCreateArgs<ExtArgs>>): Prisma__BidClient<$Result.GetResult<Prisma.$BidPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many Bids.
+     * @param {BidCreateManyArgs} args - Arguments to create many Bids.
+     * @example
+     * // Create many Bids
+     * const bid = await prisma.bid.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends BidCreateManyArgs>(args?: SelectSubset<T, BidCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Bids and returns the data saved in the database.
+     * @param {BidCreateManyAndReturnArgs} args - Arguments to create many Bids.
+     * @example
+     * // Create many Bids
+     * const bid = await prisma.bid.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Bids and only return the `id`
+     * const bidWithIdOnly = await prisma.bid.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends BidCreateManyAndReturnArgs>(args?: SelectSubset<T, BidCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BidPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a Bid.
+     * @param {BidDeleteArgs} args - Arguments to delete one Bid.
+     * @example
+     * // Delete one Bid
+     * const Bid = await prisma.bid.delete({
+     *   where: {
+     *     // ... filter to delete one Bid
+     *   }
+     * })
+     * 
+     */
+    delete<T extends BidDeleteArgs>(args: SelectSubset<T, BidDeleteArgs<ExtArgs>>): Prisma__BidClient<$Result.GetResult<Prisma.$BidPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one Bid.
+     * @param {BidUpdateArgs} args - Arguments to update one Bid.
+     * @example
+     * // Update one Bid
+     * const bid = await prisma.bid.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends BidUpdateArgs>(args: SelectSubset<T, BidUpdateArgs<ExtArgs>>): Prisma__BidClient<$Result.GetResult<Prisma.$BidPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more Bids.
+     * @param {BidDeleteManyArgs} args - Arguments to filter Bids to delete.
+     * @example
+     * // Delete a few Bids
+     * const { count } = await prisma.bid.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends BidDeleteManyArgs>(args?: SelectSubset<T, BidDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Bids.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BidUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Bids
+     * const bid = await prisma.bid.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends BidUpdateManyArgs>(args: SelectSubset<T, BidUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Bid.
+     * @param {BidUpsertArgs} args - Arguments to update or create a Bid.
+     * @example
+     * // Update or create a Bid
+     * const bid = await prisma.bid.upsert({
+     *   create: {
+     *     // ... data to create a Bid
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Bid we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BidUpsertArgs>(args: SelectSubset<T, BidUpsertArgs<ExtArgs>>): Prisma__BidClient<$Result.GetResult<Prisma.$BidPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of Bids.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BidCountArgs} args - Arguments to filter Bids to count.
+     * @example
+     * // Count the number of Bids
+     * const count = await prisma.bid.count({
+     *   where: {
+     *     // ... the filter for the Bids we want to count
+     *   }
+     * })
+    **/
+    count<T extends BidCountArgs>(
+      args?: Subset<T, BidCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BidCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Bid.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BidAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BidAggregateArgs>(args: Subset<T, BidAggregateArgs>): Prisma.PrismaPromise<GetBidAggregateType<T>>
+
+    /**
+     * Group by Bid.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BidGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends BidGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BidGroupByArgs['orderBy'] }
+        : { orderBy?: BidGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BidGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBidGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Bid model
+   */
+  readonly fields: BidFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Bid.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BidClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Bid model
+   */ 
+  interface BidFieldRefs {
+    readonly id: FieldRef<"Bid", 'String'>
+    readonly requestId: FieldRef<"Bid", 'String'>
+    readonly merchantId: FieldRef<"Bid", 'String'>
+    readonly amount: FieldRef<"Bid", 'Decimal'>
+    readonly deliveryDays: FieldRef<"Bid", 'Int'>
+    readonly deliveryNotes: FieldRef<"Bid", 'String'>
+    readonly specialTerms: FieldRef<"Bid", 'String'>
+    readonly status: FieldRef<"Bid", 'BidStatus'>
+    readonly priorityScore: FieldRef<"Bid", 'Int'>
+    readonly isTemplate: FieldRef<"Bid", 'Boolean'>
+    readonly templateName: FieldRef<"Bid", 'String'>
+    readonly bidFee: FieldRef<"Bid", 'Decimal'>
+    readonly feePaid: FieldRef<"Bid", 'Boolean'>
+    readonly createdAt: FieldRef<"Bid", 'DateTime'>
+    readonly updatedAt: FieldRef<"Bid", 'DateTime'>
+    readonly expiresAt: FieldRef<"Bid", 'DateTime'>
+    readonly acceptedAt: FieldRef<"Bid", 'DateTime'>
+    readonly rejectedAt: FieldRef<"Bid", 'DateTime'>
+    readonly withdrawnAt: FieldRef<"Bid", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Bid findUnique
+   */
+  export type BidFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bid
+     */
+    select?: BidSelect<ExtArgs> | null
+    /**
+     * Filter, which Bid to fetch.
+     */
+    where: BidWhereUniqueInput
+  }
+
+  /**
+   * Bid findUniqueOrThrow
+   */
+  export type BidFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bid
+     */
+    select?: BidSelect<ExtArgs> | null
+    /**
+     * Filter, which Bid to fetch.
+     */
+    where: BidWhereUniqueInput
+  }
+
+  /**
+   * Bid findFirst
+   */
+  export type BidFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bid
+     */
+    select?: BidSelect<ExtArgs> | null
+    /**
+     * Filter, which Bid to fetch.
+     */
+    where?: BidWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Bids to fetch.
+     */
+    orderBy?: BidOrderByWithRelationInput | BidOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Bids.
+     */
+    cursor?: BidWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Bids from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Bids.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Bids.
+     */
+    distinct?: BidScalarFieldEnum | BidScalarFieldEnum[]
+  }
+
+  /**
+   * Bid findFirstOrThrow
+   */
+  export type BidFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bid
+     */
+    select?: BidSelect<ExtArgs> | null
+    /**
+     * Filter, which Bid to fetch.
+     */
+    where?: BidWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Bids to fetch.
+     */
+    orderBy?: BidOrderByWithRelationInput | BidOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Bids.
+     */
+    cursor?: BidWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Bids from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Bids.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Bids.
+     */
+    distinct?: BidScalarFieldEnum | BidScalarFieldEnum[]
+  }
+
+  /**
+   * Bid findMany
+   */
+  export type BidFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bid
+     */
+    select?: BidSelect<ExtArgs> | null
+    /**
+     * Filter, which Bids to fetch.
+     */
+    where?: BidWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Bids to fetch.
+     */
+    orderBy?: BidOrderByWithRelationInput | BidOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Bids.
+     */
+    cursor?: BidWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Bids from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Bids.
+     */
+    skip?: number
+    distinct?: BidScalarFieldEnum | BidScalarFieldEnum[]
+  }
+
+  /**
+   * Bid create
+   */
+  export type BidCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bid
+     */
+    select?: BidSelect<ExtArgs> | null
+    /**
+     * The data needed to create a Bid.
+     */
+    data: XOR<BidCreateInput, BidUncheckedCreateInput>
+  }
+
+  /**
+   * Bid createMany
+   */
+  export type BidCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Bids.
+     */
+    data: BidCreateManyInput | BidCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Bid createManyAndReturn
+   */
+  export type BidCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bid
+     */
+    select?: BidSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many Bids.
+     */
+    data: BidCreateManyInput | BidCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Bid update
+   */
+  export type BidUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bid
+     */
+    select?: BidSelect<ExtArgs> | null
+    /**
+     * The data needed to update a Bid.
+     */
+    data: XOR<BidUpdateInput, BidUncheckedUpdateInput>
+    /**
+     * Choose, which Bid to update.
+     */
+    where: BidWhereUniqueInput
+  }
+
+  /**
+   * Bid updateMany
+   */
+  export type BidUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Bids.
+     */
+    data: XOR<BidUpdateManyMutationInput, BidUncheckedUpdateManyInput>
+    /**
+     * Filter which Bids to update
+     */
+    where?: BidWhereInput
+  }
+
+  /**
+   * Bid upsert
+   */
+  export type BidUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bid
+     */
+    select?: BidSelect<ExtArgs> | null
+    /**
+     * The filter to search for the Bid to update in case it exists.
+     */
+    where: BidWhereUniqueInput
+    /**
+     * In case the Bid found by the `where` argument doesn't exist, create a new Bid with this data.
+     */
+    create: XOR<BidCreateInput, BidUncheckedCreateInput>
+    /**
+     * In case the Bid was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BidUpdateInput, BidUncheckedUpdateInput>
+  }
+
+  /**
+   * Bid delete
+   */
+  export type BidDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bid
+     */
+    select?: BidSelect<ExtArgs> | null
+    /**
+     * Filter which Bid to delete.
+     */
+    where: BidWhereUniqueInput
+  }
+
+  /**
+   * Bid deleteMany
+   */
+  export type BidDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Bids to delete
+     */
+    where?: BidWhereInput
+  }
+
+  /**
+   * Bid without action
+   */
+  export type BidDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bid
+     */
+    select?: BidSelect<ExtArgs> | null
+  }
+
+
+  /**
+   * Model BidTemplate
+   */
+
+  export type AggregateBidTemplate = {
+    _count: BidTemplateCountAggregateOutputType | null
+    _avg: BidTemplateAvgAggregateOutputType | null
+    _sum: BidTemplateSumAggregateOutputType | null
+    _min: BidTemplateMinAggregateOutputType | null
+    _max: BidTemplateMaxAggregateOutputType | null
+  }
+
+  export type BidTemplateAvgAggregateOutputType = {
+    amountPercentage: Decimal | null
+    fixedAmount: Decimal | null
+    deliveryDays: number | null
+    usageCount: number | null
+    successCount: number | null
+  }
+
+  export type BidTemplateSumAggregateOutputType = {
+    amountPercentage: Decimal | null
+    fixedAmount: Decimal | null
+    deliveryDays: number | null
+    usageCount: number | null
+    successCount: number | null
+  }
+
+  export type BidTemplateMinAggregateOutputType = {
+    id: string | null
+    merchantId: string | null
+    name: string | null
+    description: string | null
+    amountType: $Enums.AmountType | null
+    amountPercentage: Decimal | null
+    fixedAmount: Decimal | null
+    deliveryDays: number | null
+    deliveryNotes: string | null
+    specialTerms: string | null
+    isActive: boolean | null
+    usageCount: number | null
+    successCount: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type BidTemplateMaxAggregateOutputType = {
+    id: string | null
+    merchantId: string | null
+    name: string | null
+    description: string | null
+    amountType: $Enums.AmountType | null
+    amountPercentage: Decimal | null
+    fixedAmount: Decimal | null
+    deliveryDays: number | null
+    deliveryNotes: string | null
+    specialTerms: string | null
+    isActive: boolean | null
+    usageCount: number | null
+    successCount: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type BidTemplateCountAggregateOutputType = {
+    id: number
+    merchantId: number
+    name: number
+    description: number
+    amountType: number
+    amountPercentage: number
+    fixedAmount: number
+    deliveryDays: number
+    deliveryNotes: number
+    specialTerms: number
+    isActive: number
+    usageCount: number
+    successCount: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type BidTemplateAvgAggregateInputType = {
+    amountPercentage?: true
+    fixedAmount?: true
+    deliveryDays?: true
+    usageCount?: true
+    successCount?: true
+  }
+
+  export type BidTemplateSumAggregateInputType = {
+    amountPercentage?: true
+    fixedAmount?: true
+    deliveryDays?: true
+    usageCount?: true
+    successCount?: true
+  }
+
+  export type BidTemplateMinAggregateInputType = {
+    id?: true
+    merchantId?: true
+    name?: true
+    description?: true
+    amountType?: true
+    amountPercentage?: true
+    fixedAmount?: true
+    deliveryDays?: true
+    deliveryNotes?: true
+    specialTerms?: true
+    isActive?: true
+    usageCount?: true
+    successCount?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type BidTemplateMaxAggregateInputType = {
+    id?: true
+    merchantId?: true
+    name?: true
+    description?: true
+    amountType?: true
+    amountPercentage?: true
+    fixedAmount?: true
+    deliveryDays?: true
+    deliveryNotes?: true
+    specialTerms?: true
+    isActive?: true
+    usageCount?: true
+    successCount?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type BidTemplateCountAggregateInputType = {
+    id?: true
+    merchantId?: true
+    name?: true
+    description?: true
+    amountType?: true
+    amountPercentage?: true
+    fixedAmount?: true
+    deliveryDays?: true
+    deliveryNotes?: true
+    specialTerms?: true
+    isActive?: true
+    usageCount?: true
+    successCount?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type BidTemplateAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BidTemplate to aggregate.
+     */
+    where?: BidTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BidTemplates to fetch.
+     */
+    orderBy?: BidTemplateOrderByWithRelationInput | BidTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: BidTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BidTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BidTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned BidTemplates
+    **/
+    _count?: true | BidTemplateCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: BidTemplateAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: BidTemplateSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: BidTemplateMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: BidTemplateMaxAggregateInputType
+  }
+
+  export type GetBidTemplateAggregateType<T extends BidTemplateAggregateArgs> = {
+        [P in keyof T & keyof AggregateBidTemplate]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBidTemplate[P]>
+      : GetScalarType<T[P], AggregateBidTemplate[P]>
+  }
+
+
+
+
+  export type BidTemplateGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BidTemplateWhereInput
+    orderBy?: BidTemplateOrderByWithAggregationInput | BidTemplateOrderByWithAggregationInput[]
+    by: BidTemplateScalarFieldEnum[] | BidTemplateScalarFieldEnum
+    having?: BidTemplateScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BidTemplateCountAggregateInputType | true
+    _avg?: BidTemplateAvgAggregateInputType
+    _sum?: BidTemplateSumAggregateInputType
+    _min?: BidTemplateMinAggregateInputType
+    _max?: BidTemplateMaxAggregateInputType
+  }
+
+  export type BidTemplateGroupByOutputType = {
+    id: string
+    merchantId: string
+    name: string
+    description: string | null
+    amountType: $Enums.AmountType
+    amountPercentage: Decimal | null
+    fixedAmount: Decimal | null
+    deliveryDays: number | null
+    deliveryNotes: string | null
+    specialTerms: string | null
+    isActive: boolean
+    usageCount: number
+    successCount: number
+    createdAt: Date
+    updatedAt: Date
+    _count: BidTemplateCountAggregateOutputType | null
+    _avg: BidTemplateAvgAggregateOutputType | null
+    _sum: BidTemplateSumAggregateOutputType | null
+    _min: BidTemplateMinAggregateOutputType | null
+    _max: BidTemplateMaxAggregateOutputType | null
+  }
+
+  type GetBidTemplateGroupByPayload<T extends BidTemplateGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BidTemplateGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BidTemplateGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BidTemplateGroupByOutputType[P]>
+            : GetScalarType<T[P], BidTemplateGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BidTemplateSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    merchantId?: boolean
+    name?: boolean
+    description?: boolean
+    amountType?: boolean
+    amountPercentage?: boolean
+    fixedAmount?: boolean
+    deliveryDays?: boolean
+    deliveryNotes?: boolean
+    specialTerms?: boolean
+    isActive?: boolean
+    usageCount?: boolean
+    successCount?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["bidTemplate"]>
+
+  export type BidTemplateSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    merchantId?: boolean
+    name?: boolean
+    description?: boolean
+    amountType?: boolean
+    amountPercentage?: boolean
+    fixedAmount?: boolean
+    deliveryDays?: boolean
+    deliveryNotes?: boolean
+    specialTerms?: boolean
+    isActive?: boolean
+    usageCount?: boolean
+    successCount?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["bidTemplate"]>
+
+  export type BidTemplateSelectScalar = {
+    id?: boolean
+    merchantId?: boolean
+    name?: boolean
+    description?: boolean
+    amountType?: boolean
+    amountPercentage?: boolean
+    fixedAmount?: boolean
+    deliveryDays?: boolean
+    deliveryNotes?: boolean
+    specialTerms?: boolean
+    isActive?: boolean
+    usageCount?: boolean
+    successCount?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+
+  export type $BidTemplatePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "BidTemplate"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      merchantId: string
+      name: string
+      description: string | null
+      amountType: $Enums.AmountType
+      amountPercentage: Prisma.Decimal | null
+      fixedAmount: Prisma.Decimal | null
+      deliveryDays: number | null
+      deliveryNotes: string | null
+      specialTerms: string | null
+      isActive: boolean
+      usageCount: number
+      successCount: number
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["bidTemplate"]>
+    composites: {}
+  }
+
+  type BidTemplateGetPayload<S extends boolean | null | undefined | BidTemplateDefaultArgs> = $Result.GetResult<Prisma.$BidTemplatePayload, S>
+
+  type BidTemplateCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<BidTemplateFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: BidTemplateCountAggregateInputType | true
+    }
+
+  export interface BidTemplateDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['BidTemplate'], meta: { name: 'BidTemplate' } }
+    /**
+     * Find zero or one BidTemplate that matches the filter.
+     * @param {BidTemplateFindUniqueArgs} args - Arguments to find a BidTemplate
+     * @example
+     * // Get one BidTemplate
+     * const bidTemplate = await prisma.bidTemplate.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BidTemplateFindUniqueArgs>(args: SelectSubset<T, BidTemplateFindUniqueArgs<ExtArgs>>): Prisma__BidTemplateClient<$Result.GetResult<Prisma.$BidTemplatePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one BidTemplate that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {BidTemplateFindUniqueOrThrowArgs} args - Arguments to find a BidTemplate
+     * @example
+     * // Get one BidTemplate
+     * const bidTemplate = await prisma.bidTemplate.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BidTemplateFindUniqueOrThrowArgs>(args: SelectSubset<T, BidTemplateFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BidTemplateClient<$Result.GetResult<Prisma.$BidTemplatePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first BidTemplate that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BidTemplateFindFirstArgs} args - Arguments to find a BidTemplate
+     * @example
+     * // Get one BidTemplate
+     * const bidTemplate = await prisma.bidTemplate.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BidTemplateFindFirstArgs>(args?: SelectSubset<T, BidTemplateFindFirstArgs<ExtArgs>>): Prisma__BidTemplateClient<$Result.GetResult<Prisma.$BidTemplatePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first BidTemplate that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BidTemplateFindFirstOrThrowArgs} args - Arguments to find a BidTemplate
+     * @example
+     * // Get one BidTemplate
+     * const bidTemplate = await prisma.bidTemplate.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BidTemplateFindFirstOrThrowArgs>(args?: SelectSubset<T, BidTemplateFindFirstOrThrowArgs<ExtArgs>>): Prisma__BidTemplateClient<$Result.GetResult<Prisma.$BidTemplatePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more BidTemplates that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BidTemplateFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all BidTemplates
+     * const bidTemplates = await prisma.bidTemplate.findMany()
+     * 
+     * // Get first 10 BidTemplates
+     * const bidTemplates = await prisma.bidTemplate.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const bidTemplateWithIdOnly = await prisma.bidTemplate.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends BidTemplateFindManyArgs>(args?: SelectSubset<T, BidTemplateFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BidTemplatePayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a BidTemplate.
+     * @param {BidTemplateCreateArgs} args - Arguments to create a BidTemplate.
+     * @example
+     * // Create one BidTemplate
+     * const BidTemplate = await prisma.bidTemplate.create({
+     *   data: {
+     *     // ... data to create a BidTemplate
+     *   }
+     * })
+     * 
+     */
+    create<T extends BidTemplateCreateArgs>(args: SelectSubset<T, BidTemplateCreateArgs<ExtArgs>>): Prisma__BidTemplateClient<$Result.GetResult<Prisma.$BidTemplatePayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many BidTemplates.
+     * @param {BidTemplateCreateManyArgs} args - Arguments to create many BidTemplates.
+     * @example
+     * // Create many BidTemplates
+     * const bidTemplate = await prisma.bidTemplate.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends BidTemplateCreateManyArgs>(args?: SelectSubset<T, BidTemplateCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many BidTemplates and returns the data saved in the database.
+     * @param {BidTemplateCreateManyAndReturnArgs} args - Arguments to create many BidTemplates.
+     * @example
+     * // Create many BidTemplates
+     * const bidTemplate = await prisma.bidTemplate.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many BidTemplates and only return the `id`
+     * const bidTemplateWithIdOnly = await prisma.bidTemplate.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends BidTemplateCreateManyAndReturnArgs>(args?: SelectSubset<T, BidTemplateCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BidTemplatePayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a BidTemplate.
+     * @param {BidTemplateDeleteArgs} args - Arguments to delete one BidTemplate.
+     * @example
+     * // Delete one BidTemplate
+     * const BidTemplate = await prisma.bidTemplate.delete({
+     *   where: {
+     *     // ... filter to delete one BidTemplate
+     *   }
+     * })
+     * 
+     */
+    delete<T extends BidTemplateDeleteArgs>(args: SelectSubset<T, BidTemplateDeleteArgs<ExtArgs>>): Prisma__BidTemplateClient<$Result.GetResult<Prisma.$BidTemplatePayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one BidTemplate.
+     * @param {BidTemplateUpdateArgs} args - Arguments to update one BidTemplate.
+     * @example
+     * // Update one BidTemplate
+     * const bidTemplate = await prisma.bidTemplate.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends BidTemplateUpdateArgs>(args: SelectSubset<T, BidTemplateUpdateArgs<ExtArgs>>): Prisma__BidTemplateClient<$Result.GetResult<Prisma.$BidTemplatePayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more BidTemplates.
+     * @param {BidTemplateDeleteManyArgs} args - Arguments to filter BidTemplates to delete.
+     * @example
+     * // Delete a few BidTemplates
+     * const { count } = await prisma.bidTemplate.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends BidTemplateDeleteManyArgs>(args?: SelectSubset<T, BidTemplateDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BidTemplates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BidTemplateUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many BidTemplates
+     * const bidTemplate = await prisma.bidTemplate.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends BidTemplateUpdateManyArgs>(args: SelectSubset<T, BidTemplateUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one BidTemplate.
+     * @param {BidTemplateUpsertArgs} args - Arguments to update or create a BidTemplate.
+     * @example
+     * // Update or create a BidTemplate
+     * const bidTemplate = await prisma.bidTemplate.upsert({
+     *   create: {
+     *     // ... data to create a BidTemplate
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the BidTemplate we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BidTemplateUpsertArgs>(args: SelectSubset<T, BidTemplateUpsertArgs<ExtArgs>>): Prisma__BidTemplateClient<$Result.GetResult<Prisma.$BidTemplatePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of BidTemplates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BidTemplateCountArgs} args - Arguments to filter BidTemplates to count.
+     * @example
+     * // Count the number of BidTemplates
+     * const count = await prisma.bidTemplate.count({
+     *   where: {
+     *     // ... the filter for the BidTemplates we want to count
+     *   }
+     * })
+    **/
+    count<T extends BidTemplateCountArgs>(
+      args?: Subset<T, BidTemplateCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BidTemplateCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a BidTemplate.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BidTemplateAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BidTemplateAggregateArgs>(args: Subset<T, BidTemplateAggregateArgs>): Prisma.PrismaPromise<GetBidTemplateAggregateType<T>>
+
+    /**
+     * Group by BidTemplate.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BidTemplateGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends BidTemplateGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BidTemplateGroupByArgs['orderBy'] }
+        : { orderBy?: BidTemplateGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BidTemplateGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBidTemplateGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the BidTemplate model
+   */
+  readonly fields: BidTemplateFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for BidTemplate.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BidTemplateClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the BidTemplate model
+   */ 
+  interface BidTemplateFieldRefs {
+    readonly id: FieldRef<"BidTemplate", 'String'>
+    readonly merchantId: FieldRef<"BidTemplate", 'String'>
+    readonly name: FieldRef<"BidTemplate", 'String'>
+    readonly description: FieldRef<"BidTemplate", 'String'>
+    readonly amountType: FieldRef<"BidTemplate", 'AmountType'>
+    readonly amountPercentage: FieldRef<"BidTemplate", 'Decimal'>
+    readonly fixedAmount: FieldRef<"BidTemplate", 'Decimal'>
+    readonly deliveryDays: FieldRef<"BidTemplate", 'Int'>
+    readonly deliveryNotes: FieldRef<"BidTemplate", 'String'>
+    readonly specialTerms: FieldRef<"BidTemplate", 'String'>
+    readonly isActive: FieldRef<"BidTemplate", 'Boolean'>
+    readonly usageCount: FieldRef<"BidTemplate", 'Int'>
+    readonly successCount: FieldRef<"BidTemplate", 'Int'>
+    readonly createdAt: FieldRef<"BidTemplate", 'DateTime'>
+    readonly updatedAt: FieldRef<"BidTemplate", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * BidTemplate findUnique
+   */
+  export type BidTemplateFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BidTemplate
+     */
+    select?: BidTemplateSelect<ExtArgs> | null
+    /**
+     * Filter, which BidTemplate to fetch.
+     */
+    where: BidTemplateWhereUniqueInput
+  }
+
+  /**
+   * BidTemplate findUniqueOrThrow
+   */
+  export type BidTemplateFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BidTemplate
+     */
+    select?: BidTemplateSelect<ExtArgs> | null
+    /**
+     * Filter, which BidTemplate to fetch.
+     */
+    where: BidTemplateWhereUniqueInput
+  }
+
+  /**
+   * BidTemplate findFirst
+   */
+  export type BidTemplateFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BidTemplate
+     */
+    select?: BidTemplateSelect<ExtArgs> | null
+    /**
+     * Filter, which BidTemplate to fetch.
+     */
+    where?: BidTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BidTemplates to fetch.
+     */
+    orderBy?: BidTemplateOrderByWithRelationInput | BidTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BidTemplates.
+     */
+    cursor?: BidTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BidTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BidTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BidTemplates.
+     */
+    distinct?: BidTemplateScalarFieldEnum | BidTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * BidTemplate findFirstOrThrow
+   */
+  export type BidTemplateFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BidTemplate
+     */
+    select?: BidTemplateSelect<ExtArgs> | null
+    /**
+     * Filter, which BidTemplate to fetch.
+     */
+    where?: BidTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BidTemplates to fetch.
+     */
+    orderBy?: BidTemplateOrderByWithRelationInput | BidTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BidTemplates.
+     */
+    cursor?: BidTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BidTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BidTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BidTemplates.
+     */
+    distinct?: BidTemplateScalarFieldEnum | BidTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * BidTemplate findMany
+   */
+  export type BidTemplateFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BidTemplate
+     */
+    select?: BidTemplateSelect<ExtArgs> | null
+    /**
+     * Filter, which BidTemplates to fetch.
+     */
+    where?: BidTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BidTemplates to fetch.
+     */
+    orderBy?: BidTemplateOrderByWithRelationInput | BidTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing BidTemplates.
+     */
+    cursor?: BidTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BidTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BidTemplates.
+     */
+    skip?: number
+    distinct?: BidTemplateScalarFieldEnum | BidTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * BidTemplate create
+   */
+  export type BidTemplateCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BidTemplate
+     */
+    select?: BidTemplateSelect<ExtArgs> | null
+    /**
+     * The data needed to create a BidTemplate.
+     */
+    data: XOR<BidTemplateCreateInput, BidTemplateUncheckedCreateInput>
+  }
+
+  /**
+   * BidTemplate createMany
+   */
+  export type BidTemplateCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many BidTemplates.
+     */
+    data: BidTemplateCreateManyInput | BidTemplateCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BidTemplate createManyAndReturn
+   */
+  export type BidTemplateCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BidTemplate
+     */
+    select?: BidTemplateSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many BidTemplates.
+     */
+    data: BidTemplateCreateManyInput | BidTemplateCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BidTemplate update
+   */
+  export type BidTemplateUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BidTemplate
+     */
+    select?: BidTemplateSelect<ExtArgs> | null
+    /**
+     * The data needed to update a BidTemplate.
+     */
+    data: XOR<BidTemplateUpdateInput, BidTemplateUncheckedUpdateInput>
+    /**
+     * Choose, which BidTemplate to update.
+     */
+    where: BidTemplateWhereUniqueInput
+  }
+
+  /**
+   * BidTemplate updateMany
+   */
+  export type BidTemplateUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update BidTemplates.
+     */
+    data: XOR<BidTemplateUpdateManyMutationInput, BidTemplateUncheckedUpdateManyInput>
+    /**
+     * Filter which BidTemplates to update
+     */
+    where?: BidTemplateWhereInput
+  }
+
+  /**
+   * BidTemplate upsert
+   */
+  export type BidTemplateUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BidTemplate
+     */
+    select?: BidTemplateSelect<ExtArgs> | null
+    /**
+     * The filter to search for the BidTemplate to update in case it exists.
+     */
+    where: BidTemplateWhereUniqueInput
+    /**
+     * In case the BidTemplate found by the `where` argument doesn't exist, create a new BidTemplate with this data.
+     */
+    create: XOR<BidTemplateCreateInput, BidTemplateUncheckedCreateInput>
+    /**
+     * In case the BidTemplate was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BidTemplateUpdateInput, BidTemplateUncheckedUpdateInput>
+  }
+
+  /**
+   * BidTemplate delete
+   */
+  export type BidTemplateDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BidTemplate
+     */
+    select?: BidTemplateSelect<ExtArgs> | null
+    /**
+     * Filter which BidTemplate to delete.
+     */
+    where: BidTemplateWhereUniqueInput
+  }
+
+  /**
+   * BidTemplate deleteMany
+   */
+  export type BidTemplateDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BidTemplates to delete
+     */
+    where?: BidTemplateWhereInput
+  }
+
+  /**
+   * BidTemplate without action
+   */
+  export type BidTemplateDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BidTemplate
+     */
+    select?: BidTemplateSelect<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -12463,6 +14803,52 @@ export namespace Prisma {
   };
 
   export type SavedSearchScalarFieldEnum = (typeof SavedSearchScalarFieldEnum)[keyof typeof SavedSearchScalarFieldEnum]
+
+
+  export const BidScalarFieldEnum: {
+    id: 'id',
+    requestId: 'requestId',
+    merchantId: 'merchantId',
+    amount: 'amount',
+    deliveryDays: 'deliveryDays',
+    deliveryNotes: 'deliveryNotes',
+    specialTerms: 'specialTerms',
+    status: 'status',
+    priorityScore: 'priorityScore',
+    isTemplate: 'isTemplate',
+    templateName: 'templateName',
+    bidFee: 'bidFee',
+    feePaid: 'feePaid',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    expiresAt: 'expiresAt',
+    acceptedAt: 'acceptedAt',
+    rejectedAt: 'rejectedAt',
+    withdrawnAt: 'withdrawnAt'
+  };
+
+  export type BidScalarFieldEnum = (typeof BidScalarFieldEnum)[keyof typeof BidScalarFieldEnum]
+
+
+  export const BidTemplateScalarFieldEnum: {
+    id: 'id',
+    merchantId: 'merchantId',
+    name: 'name',
+    description: 'description',
+    amountType: 'amountType',
+    amountPercentage: 'amountPercentage',
+    fixedAmount: 'fixedAmount',
+    deliveryDays: 'deliveryDays',
+    deliveryNotes: 'deliveryNotes',
+    specialTerms: 'specialTerms',
+    isActive: 'isActive',
+    usageCount: 'usageCount',
+    successCount: 'successCount',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type BidTemplateScalarFieldEnum = (typeof BidTemplateScalarFieldEnum)[keyof typeof BidTemplateScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -12661,6 +15047,34 @@ export namespace Prisma {
    * Reference to a field of type 'BigInt[]'
    */
   export type ListBigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'BidStatus'
+   */
+  export type EnumBidStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BidStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'BidStatus[]'
+   */
+  export type ListEnumBidStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BidStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'AmountType'
+   */
+  export type EnumAmountTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AmountType'>
+    
+
+
+  /**
+   * Reference to a field of type 'AmountType[]'
+   */
+  export type ListEnumAmountTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AmountType[]'>
     
 
 
@@ -13569,6 +15983,235 @@ export namespace Prisma {
     isActive?: BoolWithAggregatesFilter<"SavedSearch"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"SavedSearch"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"SavedSearch"> | Date | string
+  }
+
+  export type BidWhereInput = {
+    AND?: BidWhereInput | BidWhereInput[]
+    OR?: BidWhereInput[]
+    NOT?: BidWhereInput | BidWhereInput[]
+    id?: UuidFilter<"Bid"> | string
+    requestId?: UuidFilter<"Bid"> | string
+    merchantId?: UuidFilter<"Bid"> | string
+    amount?: DecimalFilter<"Bid"> | Decimal | DecimalJsLike | number | string
+    deliveryDays?: IntFilter<"Bid"> | number
+    deliveryNotes?: StringNullableFilter<"Bid"> | string | null
+    specialTerms?: StringNullableFilter<"Bid"> | string | null
+    status?: EnumBidStatusFilter<"Bid"> | $Enums.BidStatus
+    priorityScore?: IntFilter<"Bid"> | number
+    isTemplate?: BoolFilter<"Bid"> | boolean
+    templateName?: StringNullableFilter<"Bid"> | string | null
+    bidFee?: DecimalFilter<"Bid"> | Decimal | DecimalJsLike | number | string
+    feePaid?: BoolFilter<"Bid"> | boolean
+    createdAt?: DateTimeFilter<"Bid"> | Date | string
+    updatedAt?: DateTimeFilter<"Bid"> | Date | string
+    expiresAt?: DateTimeNullableFilter<"Bid"> | Date | string | null
+    acceptedAt?: DateTimeNullableFilter<"Bid"> | Date | string | null
+    rejectedAt?: DateTimeNullableFilter<"Bid"> | Date | string | null
+    withdrawnAt?: DateTimeNullableFilter<"Bid"> | Date | string | null
+  }
+
+  export type BidOrderByWithRelationInput = {
+    id?: SortOrder
+    requestId?: SortOrder
+    merchantId?: SortOrder
+    amount?: SortOrder
+    deliveryDays?: SortOrder
+    deliveryNotes?: SortOrderInput | SortOrder
+    specialTerms?: SortOrderInput | SortOrder
+    status?: SortOrder
+    priorityScore?: SortOrder
+    isTemplate?: SortOrder
+    templateName?: SortOrderInput | SortOrder
+    bidFee?: SortOrder
+    feePaid?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    expiresAt?: SortOrderInput | SortOrder
+    acceptedAt?: SortOrderInput | SortOrder
+    rejectedAt?: SortOrderInput | SortOrder
+    withdrawnAt?: SortOrderInput | SortOrder
+  }
+
+  export type BidWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    requestId_merchantId?: BidRequestIdMerchantIdCompoundUniqueInput
+    AND?: BidWhereInput | BidWhereInput[]
+    OR?: BidWhereInput[]
+    NOT?: BidWhereInput | BidWhereInput[]
+    requestId?: UuidFilter<"Bid"> | string
+    merchantId?: UuidFilter<"Bid"> | string
+    amount?: DecimalFilter<"Bid"> | Decimal | DecimalJsLike | number | string
+    deliveryDays?: IntFilter<"Bid"> | number
+    deliveryNotes?: StringNullableFilter<"Bid"> | string | null
+    specialTerms?: StringNullableFilter<"Bid"> | string | null
+    status?: EnumBidStatusFilter<"Bid"> | $Enums.BidStatus
+    priorityScore?: IntFilter<"Bid"> | number
+    isTemplate?: BoolFilter<"Bid"> | boolean
+    templateName?: StringNullableFilter<"Bid"> | string | null
+    bidFee?: DecimalFilter<"Bid"> | Decimal | DecimalJsLike | number | string
+    feePaid?: BoolFilter<"Bid"> | boolean
+    createdAt?: DateTimeFilter<"Bid"> | Date | string
+    updatedAt?: DateTimeFilter<"Bid"> | Date | string
+    expiresAt?: DateTimeNullableFilter<"Bid"> | Date | string | null
+    acceptedAt?: DateTimeNullableFilter<"Bid"> | Date | string | null
+    rejectedAt?: DateTimeNullableFilter<"Bid"> | Date | string | null
+    withdrawnAt?: DateTimeNullableFilter<"Bid"> | Date | string | null
+  }, "id" | "requestId_merchantId">
+
+  export type BidOrderByWithAggregationInput = {
+    id?: SortOrder
+    requestId?: SortOrder
+    merchantId?: SortOrder
+    amount?: SortOrder
+    deliveryDays?: SortOrder
+    deliveryNotes?: SortOrderInput | SortOrder
+    specialTerms?: SortOrderInput | SortOrder
+    status?: SortOrder
+    priorityScore?: SortOrder
+    isTemplate?: SortOrder
+    templateName?: SortOrderInput | SortOrder
+    bidFee?: SortOrder
+    feePaid?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    expiresAt?: SortOrderInput | SortOrder
+    acceptedAt?: SortOrderInput | SortOrder
+    rejectedAt?: SortOrderInput | SortOrder
+    withdrawnAt?: SortOrderInput | SortOrder
+    _count?: BidCountOrderByAggregateInput
+    _avg?: BidAvgOrderByAggregateInput
+    _max?: BidMaxOrderByAggregateInput
+    _min?: BidMinOrderByAggregateInput
+    _sum?: BidSumOrderByAggregateInput
+  }
+
+  export type BidScalarWhereWithAggregatesInput = {
+    AND?: BidScalarWhereWithAggregatesInput | BidScalarWhereWithAggregatesInput[]
+    OR?: BidScalarWhereWithAggregatesInput[]
+    NOT?: BidScalarWhereWithAggregatesInput | BidScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"Bid"> | string
+    requestId?: UuidWithAggregatesFilter<"Bid"> | string
+    merchantId?: UuidWithAggregatesFilter<"Bid"> | string
+    amount?: DecimalWithAggregatesFilter<"Bid"> | Decimal | DecimalJsLike | number | string
+    deliveryDays?: IntWithAggregatesFilter<"Bid"> | number
+    deliveryNotes?: StringNullableWithAggregatesFilter<"Bid"> | string | null
+    specialTerms?: StringNullableWithAggregatesFilter<"Bid"> | string | null
+    status?: EnumBidStatusWithAggregatesFilter<"Bid"> | $Enums.BidStatus
+    priorityScore?: IntWithAggregatesFilter<"Bid"> | number
+    isTemplate?: BoolWithAggregatesFilter<"Bid"> | boolean
+    templateName?: StringNullableWithAggregatesFilter<"Bid"> | string | null
+    bidFee?: DecimalWithAggregatesFilter<"Bid"> | Decimal | DecimalJsLike | number | string
+    feePaid?: BoolWithAggregatesFilter<"Bid"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"Bid"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Bid"> | Date | string
+    expiresAt?: DateTimeNullableWithAggregatesFilter<"Bid"> | Date | string | null
+    acceptedAt?: DateTimeNullableWithAggregatesFilter<"Bid"> | Date | string | null
+    rejectedAt?: DateTimeNullableWithAggregatesFilter<"Bid"> | Date | string | null
+    withdrawnAt?: DateTimeNullableWithAggregatesFilter<"Bid"> | Date | string | null
+  }
+
+  export type BidTemplateWhereInput = {
+    AND?: BidTemplateWhereInput | BidTemplateWhereInput[]
+    OR?: BidTemplateWhereInput[]
+    NOT?: BidTemplateWhereInput | BidTemplateWhereInput[]
+    id?: UuidFilter<"BidTemplate"> | string
+    merchantId?: UuidFilter<"BidTemplate"> | string
+    name?: StringFilter<"BidTemplate"> | string
+    description?: StringNullableFilter<"BidTemplate"> | string | null
+    amountType?: EnumAmountTypeFilter<"BidTemplate"> | $Enums.AmountType
+    amountPercentage?: DecimalNullableFilter<"BidTemplate"> | Decimal | DecimalJsLike | number | string | null
+    fixedAmount?: DecimalNullableFilter<"BidTemplate"> | Decimal | DecimalJsLike | number | string | null
+    deliveryDays?: IntNullableFilter<"BidTemplate"> | number | null
+    deliveryNotes?: StringNullableFilter<"BidTemplate"> | string | null
+    specialTerms?: StringNullableFilter<"BidTemplate"> | string | null
+    isActive?: BoolFilter<"BidTemplate"> | boolean
+    usageCount?: IntFilter<"BidTemplate"> | number
+    successCount?: IntFilter<"BidTemplate"> | number
+    createdAt?: DateTimeFilter<"BidTemplate"> | Date | string
+    updatedAt?: DateTimeFilter<"BidTemplate"> | Date | string
+  }
+
+  export type BidTemplateOrderByWithRelationInput = {
+    id?: SortOrder
+    merchantId?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    amountType?: SortOrder
+    amountPercentage?: SortOrderInput | SortOrder
+    fixedAmount?: SortOrderInput | SortOrder
+    deliveryDays?: SortOrderInput | SortOrder
+    deliveryNotes?: SortOrderInput | SortOrder
+    specialTerms?: SortOrderInput | SortOrder
+    isActive?: SortOrder
+    usageCount?: SortOrder
+    successCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BidTemplateWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: BidTemplateWhereInput | BidTemplateWhereInput[]
+    OR?: BidTemplateWhereInput[]
+    NOT?: BidTemplateWhereInput | BidTemplateWhereInput[]
+    merchantId?: UuidFilter<"BidTemplate"> | string
+    name?: StringFilter<"BidTemplate"> | string
+    description?: StringNullableFilter<"BidTemplate"> | string | null
+    amountType?: EnumAmountTypeFilter<"BidTemplate"> | $Enums.AmountType
+    amountPercentage?: DecimalNullableFilter<"BidTemplate"> | Decimal | DecimalJsLike | number | string | null
+    fixedAmount?: DecimalNullableFilter<"BidTemplate"> | Decimal | DecimalJsLike | number | string | null
+    deliveryDays?: IntNullableFilter<"BidTemplate"> | number | null
+    deliveryNotes?: StringNullableFilter<"BidTemplate"> | string | null
+    specialTerms?: StringNullableFilter<"BidTemplate"> | string | null
+    isActive?: BoolFilter<"BidTemplate"> | boolean
+    usageCount?: IntFilter<"BidTemplate"> | number
+    successCount?: IntFilter<"BidTemplate"> | number
+    createdAt?: DateTimeFilter<"BidTemplate"> | Date | string
+    updatedAt?: DateTimeFilter<"BidTemplate"> | Date | string
+  }, "id">
+
+  export type BidTemplateOrderByWithAggregationInput = {
+    id?: SortOrder
+    merchantId?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    amountType?: SortOrder
+    amountPercentage?: SortOrderInput | SortOrder
+    fixedAmount?: SortOrderInput | SortOrder
+    deliveryDays?: SortOrderInput | SortOrder
+    deliveryNotes?: SortOrderInput | SortOrder
+    specialTerms?: SortOrderInput | SortOrder
+    isActive?: SortOrder
+    usageCount?: SortOrder
+    successCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: BidTemplateCountOrderByAggregateInput
+    _avg?: BidTemplateAvgOrderByAggregateInput
+    _max?: BidTemplateMaxOrderByAggregateInput
+    _min?: BidTemplateMinOrderByAggregateInput
+    _sum?: BidTemplateSumOrderByAggregateInput
+  }
+
+  export type BidTemplateScalarWhereWithAggregatesInput = {
+    AND?: BidTemplateScalarWhereWithAggregatesInput | BidTemplateScalarWhereWithAggregatesInput[]
+    OR?: BidTemplateScalarWhereWithAggregatesInput[]
+    NOT?: BidTemplateScalarWhereWithAggregatesInput | BidTemplateScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"BidTemplate"> | string
+    merchantId?: UuidWithAggregatesFilter<"BidTemplate"> | string
+    name?: StringWithAggregatesFilter<"BidTemplate"> | string
+    description?: StringNullableWithAggregatesFilter<"BidTemplate"> | string | null
+    amountType?: EnumAmountTypeWithAggregatesFilter<"BidTemplate"> | $Enums.AmountType
+    amountPercentage?: DecimalNullableWithAggregatesFilter<"BidTemplate"> | Decimal | DecimalJsLike | number | string | null
+    fixedAmount?: DecimalNullableWithAggregatesFilter<"BidTemplate"> | Decimal | DecimalJsLike | number | string | null
+    deliveryDays?: IntNullableWithAggregatesFilter<"BidTemplate"> | number | null
+    deliveryNotes?: StringNullableWithAggregatesFilter<"BidTemplate"> | string | null
+    specialTerms?: StringNullableWithAggregatesFilter<"BidTemplate"> | string | null
+    isActive?: BoolWithAggregatesFilter<"BidTemplate"> | boolean
+    usageCount?: IntWithAggregatesFilter<"BidTemplate"> | number
+    successCount?: IntWithAggregatesFilter<"BidTemplate"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"BidTemplate"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"BidTemplate"> | Date | string
   }
 
   export type UserCreateInput = {
@@ -14589,6 +17232,286 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type BidCreateInput = {
+    id?: string
+    requestId: string
+    merchantId: string
+    amount: Decimal | DecimalJsLike | number | string
+    deliveryDays: number
+    deliveryNotes?: string | null
+    specialTerms?: string | null
+    status?: $Enums.BidStatus
+    priorityScore?: number
+    isTemplate?: boolean
+    templateName?: string | null
+    bidFee?: Decimal | DecimalJsLike | number | string
+    feePaid?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    expiresAt?: Date | string | null
+    acceptedAt?: Date | string | null
+    rejectedAt?: Date | string | null
+    withdrawnAt?: Date | string | null
+  }
+
+  export type BidUncheckedCreateInput = {
+    id?: string
+    requestId: string
+    merchantId: string
+    amount: Decimal | DecimalJsLike | number | string
+    deliveryDays: number
+    deliveryNotes?: string | null
+    specialTerms?: string | null
+    status?: $Enums.BidStatus
+    priorityScore?: number
+    isTemplate?: boolean
+    templateName?: string | null
+    bidFee?: Decimal | DecimalJsLike | number | string
+    feePaid?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    expiresAt?: Date | string | null
+    acceptedAt?: Date | string | null
+    rejectedAt?: Date | string | null
+    withdrawnAt?: Date | string | null
+  }
+
+  export type BidUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    requestId?: StringFieldUpdateOperationsInput | string
+    merchantId?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    deliveryDays?: IntFieldUpdateOperationsInput | number
+    deliveryNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    specialTerms?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumBidStatusFieldUpdateOperationsInput | $Enums.BidStatus
+    priorityScore?: IntFieldUpdateOperationsInput | number
+    isTemplate?: BoolFieldUpdateOperationsInput | boolean
+    templateName?: NullableStringFieldUpdateOperationsInput | string | null
+    bidFee?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    feePaid?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    withdrawnAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type BidUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    requestId?: StringFieldUpdateOperationsInput | string
+    merchantId?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    deliveryDays?: IntFieldUpdateOperationsInput | number
+    deliveryNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    specialTerms?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumBidStatusFieldUpdateOperationsInput | $Enums.BidStatus
+    priorityScore?: IntFieldUpdateOperationsInput | number
+    isTemplate?: BoolFieldUpdateOperationsInput | boolean
+    templateName?: NullableStringFieldUpdateOperationsInput | string | null
+    bidFee?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    feePaid?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    withdrawnAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type BidCreateManyInput = {
+    id?: string
+    requestId: string
+    merchantId: string
+    amount: Decimal | DecimalJsLike | number | string
+    deliveryDays: number
+    deliveryNotes?: string | null
+    specialTerms?: string | null
+    status?: $Enums.BidStatus
+    priorityScore?: number
+    isTemplate?: boolean
+    templateName?: string | null
+    bidFee?: Decimal | DecimalJsLike | number | string
+    feePaid?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    expiresAt?: Date | string | null
+    acceptedAt?: Date | string | null
+    rejectedAt?: Date | string | null
+    withdrawnAt?: Date | string | null
+  }
+
+  export type BidUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    requestId?: StringFieldUpdateOperationsInput | string
+    merchantId?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    deliveryDays?: IntFieldUpdateOperationsInput | number
+    deliveryNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    specialTerms?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumBidStatusFieldUpdateOperationsInput | $Enums.BidStatus
+    priorityScore?: IntFieldUpdateOperationsInput | number
+    isTemplate?: BoolFieldUpdateOperationsInput | boolean
+    templateName?: NullableStringFieldUpdateOperationsInput | string | null
+    bidFee?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    feePaid?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    withdrawnAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type BidUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    requestId?: StringFieldUpdateOperationsInput | string
+    merchantId?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    deliveryDays?: IntFieldUpdateOperationsInput | number
+    deliveryNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    specialTerms?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumBidStatusFieldUpdateOperationsInput | $Enums.BidStatus
+    priorityScore?: IntFieldUpdateOperationsInput | number
+    isTemplate?: BoolFieldUpdateOperationsInput | boolean
+    templateName?: NullableStringFieldUpdateOperationsInput | string | null
+    bidFee?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    feePaid?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    withdrawnAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type BidTemplateCreateInput = {
+    id?: string
+    merchantId: string
+    name: string
+    description?: string | null
+    amountType?: $Enums.AmountType
+    amountPercentage?: Decimal | DecimalJsLike | number | string | null
+    fixedAmount?: Decimal | DecimalJsLike | number | string | null
+    deliveryDays?: number | null
+    deliveryNotes?: string | null
+    specialTerms?: string | null
+    isActive?: boolean
+    usageCount?: number
+    successCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BidTemplateUncheckedCreateInput = {
+    id?: string
+    merchantId: string
+    name: string
+    description?: string | null
+    amountType?: $Enums.AmountType
+    amountPercentage?: Decimal | DecimalJsLike | number | string | null
+    fixedAmount?: Decimal | DecimalJsLike | number | string | null
+    deliveryDays?: number | null
+    deliveryNotes?: string | null
+    specialTerms?: string | null
+    isActive?: boolean
+    usageCount?: number
+    successCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BidTemplateUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    merchantId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    amountType?: EnumAmountTypeFieldUpdateOperationsInput | $Enums.AmountType
+    amountPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    fixedAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    deliveryDays?: NullableIntFieldUpdateOperationsInput | number | null
+    deliveryNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    specialTerms?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    usageCount?: IntFieldUpdateOperationsInput | number
+    successCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BidTemplateUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    merchantId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    amountType?: EnumAmountTypeFieldUpdateOperationsInput | $Enums.AmountType
+    amountPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    fixedAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    deliveryDays?: NullableIntFieldUpdateOperationsInput | number | null
+    deliveryNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    specialTerms?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    usageCount?: IntFieldUpdateOperationsInput | number
+    successCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BidTemplateCreateManyInput = {
+    id?: string
+    merchantId: string
+    name: string
+    description?: string | null
+    amountType?: $Enums.AmountType
+    amountPercentage?: Decimal | DecimalJsLike | number | string | null
+    fixedAmount?: Decimal | DecimalJsLike | number | string | null
+    deliveryDays?: number | null
+    deliveryNotes?: string | null
+    specialTerms?: string | null
+    isActive?: boolean
+    usageCount?: number
+    successCount?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BidTemplateUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    merchantId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    amountType?: EnumAmountTypeFieldUpdateOperationsInput | $Enums.AmountType
+    amountPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    fixedAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    deliveryDays?: NullableIntFieldUpdateOperationsInput | number | null
+    deliveryNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    specialTerms?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    usageCount?: IntFieldUpdateOperationsInput | number
+    successCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BidTemplateUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    merchantId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    amountType?: EnumAmountTypeFieldUpdateOperationsInput | $Enums.AmountType
+    amountPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    fixedAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    deliveryDays?: NullableIntFieldUpdateOperationsInput | number | null
+    deliveryNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    specialTerms?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    usageCount?: IntFieldUpdateOperationsInput | number
+    successCount?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type UuidFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -15601,6 +18524,222 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type DecimalFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+  }
+
+  export type EnumBidStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.BidStatus | EnumBidStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BidStatus[] | ListEnumBidStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BidStatus[] | ListEnumBidStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBidStatusFilter<$PrismaModel> | $Enums.BidStatus
+  }
+
+  export type BidRequestIdMerchantIdCompoundUniqueInput = {
+    requestId: string
+    merchantId: string
+  }
+
+  export type BidCountOrderByAggregateInput = {
+    id?: SortOrder
+    requestId?: SortOrder
+    merchantId?: SortOrder
+    amount?: SortOrder
+    deliveryDays?: SortOrder
+    deliveryNotes?: SortOrder
+    specialTerms?: SortOrder
+    status?: SortOrder
+    priorityScore?: SortOrder
+    isTemplate?: SortOrder
+    templateName?: SortOrder
+    bidFee?: SortOrder
+    feePaid?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    expiresAt?: SortOrder
+    acceptedAt?: SortOrder
+    rejectedAt?: SortOrder
+    withdrawnAt?: SortOrder
+  }
+
+  export type BidAvgOrderByAggregateInput = {
+    amount?: SortOrder
+    deliveryDays?: SortOrder
+    priorityScore?: SortOrder
+    bidFee?: SortOrder
+  }
+
+  export type BidMaxOrderByAggregateInput = {
+    id?: SortOrder
+    requestId?: SortOrder
+    merchantId?: SortOrder
+    amount?: SortOrder
+    deliveryDays?: SortOrder
+    deliveryNotes?: SortOrder
+    specialTerms?: SortOrder
+    status?: SortOrder
+    priorityScore?: SortOrder
+    isTemplate?: SortOrder
+    templateName?: SortOrder
+    bidFee?: SortOrder
+    feePaid?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    expiresAt?: SortOrder
+    acceptedAt?: SortOrder
+    rejectedAt?: SortOrder
+    withdrawnAt?: SortOrder
+  }
+
+  export type BidMinOrderByAggregateInput = {
+    id?: SortOrder
+    requestId?: SortOrder
+    merchantId?: SortOrder
+    amount?: SortOrder
+    deliveryDays?: SortOrder
+    deliveryNotes?: SortOrder
+    specialTerms?: SortOrder
+    status?: SortOrder
+    priorityScore?: SortOrder
+    isTemplate?: SortOrder
+    templateName?: SortOrder
+    bidFee?: SortOrder
+    feePaid?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    expiresAt?: SortOrder
+    acceptedAt?: SortOrder
+    rejectedAt?: SortOrder
+    withdrawnAt?: SortOrder
+  }
+
+  export type BidSumOrderByAggregateInput = {
+    amount?: SortOrder
+    deliveryDays?: SortOrder
+    priorityScore?: SortOrder
+    bidFee?: SortOrder
+  }
+
+  export type DecimalWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedDecimalFilter<$PrismaModel>
+    _sum?: NestedDecimalFilter<$PrismaModel>
+    _min?: NestedDecimalFilter<$PrismaModel>
+    _max?: NestedDecimalFilter<$PrismaModel>
+  }
+
+  export type EnumBidStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BidStatus | EnumBidStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BidStatus[] | ListEnumBidStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BidStatus[] | ListEnumBidStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBidStatusWithAggregatesFilter<$PrismaModel> | $Enums.BidStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBidStatusFilter<$PrismaModel>
+    _max?: NestedEnumBidStatusFilter<$PrismaModel>
+  }
+
+  export type EnumAmountTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.AmountType | EnumAmountTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.AmountType[] | ListEnumAmountTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AmountType[] | ListEnumAmountTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumAmountTypeFilter<$PrismaModel> | $Enums.AmountType
+  }
+
+  export type BidTemplateCountOrderByAggregateInput = {
+    id?: SortOrder
+    merchantId?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    amountType?: SortOrder
+    amountPercentage?: SortOrder
+    fixedAmount?: SortOrder
+    deliveryDays?: SortOrder
+    deliveryNotes?: SortOrder
+    specialTerms?: SortOrder
+    isActive?: SortOrder
+    usageCount?: SortOrder
+    successCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BidTemplateAvgOrderByAggregateInput = {
+    amountPercentage?: SortOrder
+    fixedAmount?: SortOrder
+    deliveryDays?: SortOrder
+    usageCount?: SortOrder
+    successCount?: SortOrder
+  }
+
+  export type BidTemplateMaxOrderByAggregateInput = {
+    id?: SortOrder
+    merchantId?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    amountType?: SortOrder
+    amountPercentage?: SortOrder
+    fixedAmount?: SortOrder
+    deliveryDays?: SortOrder
+    deliveryNotes?: SortOrder
+    specialTerms?: SortOrder
+    isActive?: SortOrder
+    usageCount?: SortOrder
+    successCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BidTemplateMinOrderByAggregateInput = {
+    id?: SortOrder
+    merchantId?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    amountType?: SortOrder
+    amountPercentage?: SortOrder
+    fixedAmount?: SortOrder
+    deliveryDays?: SortOrder
+    deliveryNotes?: SortOrder
+    specialTerms?: SortOrder
+    isActive?: SortOrder
+    usageCount?: SortOrder
+    successCount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BidTemplateSumOrderByAggregateInput = {
+    amountPercentage?: SortOrder
+    fixedAmount?: SortOrder
+    deliveryDays?: SortOrder
+    usageCount?: SortOrder
+    successCount?: SortOrder
+  }
+
+  export type EnumAmountTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AmountType | EnumAmountTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.AmountType[] | ListEnumAmountTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AmountType[] | ListEnumAmountTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumAmountTypeWithAggregatesFilter<$PrismaModel> | $Enums.AmountType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAmountTypeFilter<$PrismaModel>
+    _max?: NestedEnumAmountTypeFilter<$PrismaModel>
+  }
+
   export type UserProfileCreateNestedOneWithoutUserInput = {
     create?: XOR<UserProfileCreateWithoutUserInput, UserProfileUncheckedCreateWithoutUserInput>
     connectOrCreate?: UserProfileCreateOrConnectWithoutUserInput
@@ -16105,6 +19244,22 @@ export namespace Prisma {
     update?: XOR<XOR<RequestUpdateToOneWithWhereWithoutSearchIndexInput, RequestUpdateWithoutSearchIndexInput>, RequestUncheckedUpdateWithoutSearchIndexInput>
   }
 
+  export type DecimalFieldUpdateOperationsInput = {
+    set?: Decimal | DecimalJsLike | number | string
+    increment?: Decimal | DecimalJsLike | number | string
+    decrement?: Decimal | DecimalJsLike | number | string
+    multiply?: Decimal | DecimalJsLike | number | string
+    divide?: Decimal | DecimalJsLike | number | string
+  }
+
+  export type EnumBidStatusFieldUpdateOperationsInput = {
+    set?: $Enums.BidStatus
+  }
+
+  export type EnumAmountTypeFieldUpdateOperationsInput = {
+    set?: $Enums.AmountType
+  }
+
   export type NestedUuidFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -16515,6 +19670,67 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedDecimalFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+  }
+
+  export type NestedEnumBidStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.BidStatus | EnumBidStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BidStatus[] | ListEnumBidStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BidStatus[] | ListEnumBidStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBidStatusFilter<$PrismaModel> | $Enums.BidStatus
+  }
+
+  export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedDecimalFilter<$PrismaModel>
+    _sum?: NestedDecimalFilter<$PrismaModel>
+    _min?: NestedDecimalFilter<$PrismaModel>
+    _max?: NestedDecimalFilter<$PrismaModel>
+  }
+
+  export type NestedEnumBidStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BidStatus | EnumBidStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BidStatus[] | ListEnumBidStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BidStatus[] | ListEnumBidStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBidStatusWithAggregatesFilter<$PrismaModel> | $Enums.BidStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBidStatusFilter<$PrismaModel>
+    _max?: NestedEnumBidStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumAmountTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.AmountType | EnumAmountTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.AmountType[] | ListEnumAmountTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AmountType[] | ListEnumAmountTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumAmountTypeFilter<$PrismaModel> | $Enums.AmountType
+  }
+
+  export type NestedEnumAmountTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AmountType | EnumAmountTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.AmountType[] | ListEnumAmountTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AmountType[] | ListEnumAmountTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumAmountTypeWithAggregatesFilter<$PrismaModel> | $Enums.AmountType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAmountTypeFilter<$PrismaModel>
+    _max?: NestedEnumAmountTypeFilter<$PrismaModel>
   }
 
   export type UserProfileCreateWithoutUserInput = {
@@ -18236,6 +21452,14 @@ export namespace Prisma {
      * @deprecated Use SavedSearchDefaultArgs instead
      */
     export type SavedSearchArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = SavedSearchDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use BidDefaultArgs instead
+     */
+    export type BidArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = BidDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use BidTemplateDefaultArgs instead
+     */
+    export type BidTemplateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = BidTemplateDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

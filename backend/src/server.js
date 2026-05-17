@@ -1,5 +1,7 @@
 'use strict';
 
+const http = require('http');
+const { Server: SocketIOServer } = require('socket.io');
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -75,6 +77,13 @@ const adminRoutes = require('./modules/identity/routes/admin');
 const requestRoutes = require('./modules/requests/routes/requests');
 const requestAdminRoutes = require('./modules/requests/routes/admin');
 const analyticsRoutes = require('./modules/analytics/routes/analytics');
+const biddingRoutes = require('./modules/bidding/routes/bids');
+const biddingAdminRoutes = require('./modules/bidding/routes/admin');
+const chatRoutes = require('./modules/chat/routes/chat');
+const chatAdminRoutes = require('./modules/chat/routes/admin');
+const { initChatSocket } = require('./modules/chat/socket/chatSocket');
+const notificationRoutes = require('./modules/notifications/routes/notifications');
+const notificationAdminRoutes = require('./modules/notifications/routes/admin');
 
 // Import shared infrastructure
 const database = require('./database/connection');
@@ -94,6 +103,18 @@ app.use('/api/v1/requests', requestRoutes);
 
 // Mount analytics routes
 app.use('/api/v1/analytics', analyticsRoutes);
+
+// Mount bidding routes
+app.use('/api/v1/bidding/admin', biddingAdminRoutes);
+app.use('/api/v1/bidding', biddingRoutes);
+
+// Mount chat routes (admin before public)
+app.use('/api/v1/chat/admin', chatAdminRoutes);
+app.use('/api/v1/chat', chatRoutes);
+
+// Mount notification routes (admin before public)
+app.use('/api/v1/notifications/admin', notificationAdminRoutes);
+app.use('/api/v1/notifications', notificationRoutes);
 
 // API Routes
 app.get('/api/v1', (req, res) => {
@@ -121,7 +142,12 @@ app.get('/api/v1', (req, res) => {
       payments: '/api/v1/payments',
       notifications: '/api/v1/notifications',
       chat: '/api/v1/chat',
-      bidding: '/api/v1/bidding',
+      bidding: {
+        bids: '/api/v1/bidding/bids',
+        myBids: '/api/v1/bidding/me/bids',
+        requestBids: '/api/v1/bidding/requests/:requestId/bids',
+        templates: '/api/v1/bidding/templates',
+      },
       subscriptions: '/api/v1/subscriptions',
     },
   });
@@ -147,6 +173,15 @@ app.use('*', (req, res) => {
     }
   });
 });
+
+// Create HTTP server and attach Socket.io
+const httpServer = http.createServer(app);
+const io = new SocketIOServer(httpServer, {
+  cors: { origin: '*', methods: ['GET', 'POST'] },
+  transports: ['websocket', 'polling'],
+});
+app.set('io', io);
+initChatSocket(io);
 
 const startServer = async () => {
   try {
@@ -189,7 +224,7 @@ const startServer = async () => {
     console.error('WARNING: Failed to start analytics subscriber:', err.message);
   }
 
-  app.listen(PORT, () => {
+  httpServer.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
 };

@@ -4,13 +4,15 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import HomeScreen from './screens/HomeScreen';
 import RequestsScreen from './screens/RequestsScreen';
 import ProfileScreen from '../../screens/profile/ProfileScreen';
+import ChatListScreen from '../../screens/chat/ChatListScreen';
+import NotificationsScreen from '../../screens/notifications/NotificationsScreen';
 import {BuyerTabParamList} from '../../types/navigation';
 
 const Tab = createBottomTabNavigator<BuyerTabParamList>();
 
 const ACCENT = '#2563EB';
 const INACTIVE = '#6B7280';
-const ICONS: Record<string, string> = {Home: '⌂', Requests: '☰', Profile: '◉'};
+const ICONS: Record<string, string> = {Home: '⌂', Requests: '☰', Chat: '💬', Notifications: '🔔', Profile: '◉'};
 
 function TabIcon({label, focused}: {label: string; focused: boolean}) {
   return <Text style={{fontSize: 20, color: focused ? ACCENT : INACTIVE}}>{ICONS[label] ?? '•'}</Text>;
@@ -36,6 +38,8 @@ export default function BuyerNavigator() {
       })}>
       <Tab.Screen name="Home" component={HomeScreen} options={{tabBarLabel: 'Home'}} />
       <Tab.Screen name="Requests" component={RequestsScreen} options={{tabBarLabel: 'Requests'}} />
+      <Tab.Screen name="Chat" component={ChatListScreen} options={{tabBarLabel: 'Messages'}} />
+      <Tab.Screen name="Notifications" component={NotificationsScreen} options={{tabBarLabel: 'Alerts'}} />
       <Tab.Screen name="Profile" component={ProfileScreen} options={{tabBarLabel: 'Profile'}} />
     </Tab.Navigator>
   );

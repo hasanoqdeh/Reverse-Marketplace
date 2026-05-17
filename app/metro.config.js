@@ -15,6 +15,8 @@ const config = {
       /android\/build\/.*/,
       /android\/.cxx\/.*/,
       /ios\/build\/.*/,
+      // Exclude gradle-plugin Kotlin/Java build output (directory may not exist yet)
+      /node_modules\/@react-native\/gradle-plugin\/build\/.*/,
     ],
   },
   watchFolders: [path.resolve(__dirname, 'src')],

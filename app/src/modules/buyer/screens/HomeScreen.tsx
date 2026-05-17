@@ -1,14 +1,20 @@
-import React from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
-  View,
+  ScrollView,
+  StyleSheet,
   Text,
   TouchableOpacity,
-  StyleSheet,
-  Alert,
-  ScrollView,
+  View,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useAuth} from '../../../context/AuthContext';
+import {RootStackParamList} from '../../../types/navigation';
+import {MarketRequest} from '../../../types/api';
+import {getMyRequests} from '../../../api/requests';
+
+type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 const ACCENT = '#2563EB';
 
@@ -19,17 +25,40 @@ function getGreeting(): string {
   return 'Good evening';
 }
 
+const STATUS_COLOR: Record<string, string> = {
+  ACTIVE: '#16A34A',
+  HAS_BIDS: '#2563EB',
+  DRAFT: '#6B7280',
+  COMPLETED: '#15803D',
+  CANCELLED: '#DC2626',
+  EXPIRED: '#D97706',
+};
+
+const STATUS_LABEL: Record<string, string> = {
+  ACTIVE: 'Active',
+  HAS_BIDS: 'Has Bids',
+  DRAFT: 'Draft',
+  COMPLETED: 'Completed',
+  CANCELLED: 'Cancelled',
+  EXPIRED: 'Expired',
+};
+
 export default function HomeScreen() {
+  const navigation = useNavigation<Nav>();
   const {user} = useAuth();
   const displayName = user?.profile?.firstName ?? user?.phone ?? 'there';
 
-  const handlePostRequest = () => {
-    Alert.alert(
-      'Post a Request',
-      'This feature is coming soon! You will be able to post purchase requests for merchants to bid on.',
-      [{text: 'OK'}],
-    );
-  };
+  const [recentRequests, setRecentRequests] = useState<MarketRequest[]>([]);
+
+  useEffect(() => {
+    getMyRequests({page: 1, limit: 3})
+      .then(res => setRecentRequests(res.requests))
+      .catch(() => {});
+  }, []);
+
+  const handlePostRequest = useCallback(() => {
+    navigation.navigate('CreateRequest');
+  }, [navigation]);
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -69,12 +98,31 @@ export default function HomeScreen() {
         </View>
 
         {/* Recent activity */}
-        <Text style={styles.sectionTitle}>Recent Activity</Text>
-        <View style={styles.emptyCard}>
-          <Text style={styles.emptyIcon}>📋</Text>
-          <Text style={styles.emptyTitle}>No recent activity</Text>
-          <Text style={styles.emptySubtitle}>Post your first request to get started</Text>
-        </View>
+        <Text style={styles.sectionTitle}>Recent Requests</Text>
+        {recentRequests.length === 0 ? (
+          <View style={styles.emptyCard}>
+            <Text style={styles.emptyIcon}>📋</Text>
+            <Text style={styles.emptyTitle}>No requests yet</Text>
+            <Text style={styles.emptySubtitle}>Post your first request to get started</Text>
+          </View>
+        ) : (
+          recentRequests.map(req => (
+            <TouchableOpacity
+              key={req.id}
+              style={styles.recentCard}
+              onPress={() => navigation.navigate('RequestDetail', {requestId: req.id})}
+              activeOpacity={0.7}>
+              <View style={styles.recentTop}>
+                <Text style={[styles.recentStatus, {color: STATUS_COLOR[req.status] ?? '#6B7280'}]}>
+                  {STATUS_LABEL[req.status] ?? req.status}
+                </Text>
+                <Text style={styles.recentBids}>{req.bidCount} bids</Text>
+              </View>
+              <Text style={styles.recentTitle} numberOfLines={1}>{req.title}</Text>
+              {req.category && <Text style={styles.recentCategory}>{req.category.name}</Text>}
+            </TouchableOpacity>
+          ))
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -149,4 +197,13 @@ const styles = StyleSheet.create({
   emptyIcon: {fontSize: 40, marginBottom: 12},
   emptyTitle: {fontSize: 16, fontWeight: '600', color: '#374151', marginBottom: 6},
   emptySubtitle: {fontSize: 13, color: '#9CA3AF', textAlign: 'center', lineHeight: 18},
+  recentCard: {
+    backgroundColor: '#FFFFFF', marginHorizontal: 16, marginBottom: 10, borderRadius: 14, padding: 14,
+    shadowColor: '#000', shadowOffset: {width: 0, height: 1}, shadowOpacity: 0.05, shadowRadius: 4, elevation: 2,
+  },
+  recentTop: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4},
+  recentStatus: {fontSize: 12, fontWeight: '700'},
+  recentBids: {fontSize: 12, color: '#9CA3AF'},
+  recentTitle: {fontSize: 15, fontWeight: '600', color: '#111827', marginBottom: 2},
+  recentCategory: {fontSize: 12, color: '#6B7280'},
 });

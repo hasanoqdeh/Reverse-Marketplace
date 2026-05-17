@@ -264,6 +264,46 @@ exports.Prisma.SavedSearchScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.BidScalarFieldEnum = {
+  id: 'id',
+  requestId: 'requestId',
+  merchantId: 'merchantId',
+  amount: 'amount',
+  deliveryDays: 'deliveryDays',
+  deliveryNotes: 'deliveryNotes',
+  specialTerms: 'specialTerms',
+  status: 'status',
+  priorityScore: 'priorityScore',
+  isTemplate: 'isTemplate',
+  templateName: 'templateName',
+  bidFee: 'bidFee',
+  feePaid: 'feePaid',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  expiresAt: 'expiresAt',
+  acceptedAt: 'acceptedAt',
+  rejectedAt: 'rejectedAt',
+  withdrawnAt: 'withdrawnAt'
+};
+
+exports.Prisma.BidTemplateScalarFieldEnum = {
+  id: 'id',
+  merchantId: 'merchantId',
+  name: 'name',
+  description: 'description',
+  amountType: 'amountType',
+  amountPercentage: 'amountPercentage',
+  fixedAmount: 'fixedAmount',
+  deliveryDays: 'deliveryDays',
+  deliveryNotes: 'deliveryNotes',
+  specialTerms: 'specialTerms',
+  isActive: 'isActive',
+  usageCount: 'usageCount',
+  successCount: 'successCount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -321,6 +361,20 @@ exports.RequestStatus = exports.$Enums.RequestStatus = {
   EXPIRED: 'EXPIRED'
 };
 
+exports.BidStatus = exports.$Enums.BidStatus = {
+  PENDING: 'PENDING',
+  ACCEPTED: 'ACCEPTED',
+  REJECTED: 'REJECTED',
+  EXPIRED: 'EXPIRED',
+  WITHDRAWN: 'WITHDRAWN'
+};
+
+exports.AmountType = exports.$Enums.AmountType = {
+  FIXED: 'FIXED',
+  PERCENTAGE: 'PERCENTAGE',
+  RANGE: 'RANGE'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   UserProfile: 'UserProfile',
@@ -331,7 +385,9 @@ exports.Prisma.ModelName = {
   RequestDraft: 'RequestDraft',
   RequestExtension: 'RequestExtension',
   RequestSearchIndex: 'RequestSearchIndex',
-  SavedSearch: 'SavedSearch'
+  SavedSearch: 'SavedSearch',
+  Bid: 'Bid',
+  BidTemplate: 'BidTemplate'
 };
 
 /**

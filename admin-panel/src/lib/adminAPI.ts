@@ -39,6 +39,7 @@ function makeAuthInterceptors(client: AxiosInstance) {
 
 let _client: AxiosInstance | null = null
 let _requestClient: AxiosInstance | null = null
+let _biddingClient: AxiosInstance | null = null
 
 function getClient(): AxiosInstance {
   if (_client) return _client
@@ -52,6 +53,13 @@ function getRequestClient(): AxiosInstance {
   _requestClient = axios.create({ baseURL: `${BASE_URL}/requests` })
   makeAuthInterceptors(_requestClient)
   return _requestClient
+}
+
+function getBiddingClient(): AxiosInstance {
+  if (_biddingClient) return _biddingClient
+  _biddingClient = axios.create({ baseURL: `${BASE_URL}/bidding` })
+  makeAuthInterceptors(_biddingClient)
+  return _biddingClient
 }
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -197,6 +205,130 @@ export async function apiGetLogs(params: { page?: number; limit?: number; adminI
   return data as { success: boolean; logs: ActivityLog[] }
 }
 
+// ─── Analytics API ────────────────────────────────────────────────────────────
+
+let _analyticsClient: import('axios').AxiosInstance | null = null
+function getAnalyticsClient(): import('axios').AxiosInstance {
+  if (_analyticsClient) return _analyticsClient
+  _analyticsClient = axios.create({ baseURL: `${BASE_URL}/analytics` })
+  makeAuthInterceptors(_analyticsClient)
+  return _analyticsClient
+}
+
+export interface Trend { date: string; count: number }
+
+export interface OverviewStats {
+  users: {
+    total: number; active: number; newToday: number
+    byRole: { role: string; count: number }[]
+    trend: Trend[]
+  }
+  requests: {
+    total: number; active: number; completed: number
+    byStatus: { status: string; count: number }[]
+    trend: Trend[]
+  }
+  bids: {
+    total: number; pending: number; accepted: number; conversionRate: number
+    byStatus: { status: string; count: number }[]
+    trend: Trend[]
+  }
+  chat: { totalRooms: number; totalMessages: number }
+  notifications: {
+    total: number; unread: number; readRate: number
+    byChannel: { channel: string; count: number }[]
+    trend: Trend[]
+  }
+}
+
+export interface UserAnalyticsStats {
+  total: number; active: number; banned: number; suspended: number
+  newToday: number; newThisWeek: number
+  byRole: { role: string; count: number }[]
+  byStatus: { status: string; count: number }[]
+  trend: Trend[]
+}
+
+export interface RequestAnalyticsStats {
+  total: number; totalViews: number; totalBids: number; avgBidsPerRequest: number
+  byStatus: { status: string; count: number }[]
+  topCategories: { categoryId: string; count: number }[]
+  trend: Trend[]
+  viewTrend: Trend[]
+}
+
+export interface BidAnalyticsStats {
+  total: number; conversionRate: number
+  byStatus: { status: string; count: number }[]
+  amount: { avg: string; min: string; max: string; total: string }
+  avgDeliveryDays: string
+  topMerchants: { merchantId: string; count: number }[]
+  trend: Trend[]
+}
+
+export interface ChatAnalyticsStats {
+  rooms: { total: number; active: number; byType: { type: string; count: number }[] }
+  messages: { total: number; deleted: number; byType: { type: string; count: number }[]; trend: Trend[] }
+}
+
+export interface NotifAnalyticsStats {
+  total: number; todayTotal: number; unreadTotal: number; readRate: number
+  byType: { type: string; count: number }[]
+  byChannel: { channel: string; count: number }[]
+  byStatus: { status: string; count: number }[]
+  byPriority: { priority: string; count: number }[]
+  trend: Trend[]
+}
+
+export interface ActivityStats {
+  total: number
+  byCategory: { category: string; count: number }[]
+  byEventType: { eventType: string; count: number }[]
+  byRole: { role: string; count: number }[]
+}
+
+export async function apiGetAnalyticsOverview(params: { from?: string; to?: string } = {}) {
+  const { data } = await getAnalyticsClient().get('/overview', { params })
+  return data as { success: boolean; overview: OverviewStats }
+}
+
+export async function apiGetUserAnalytics(params: { from?: string; to?: string } = {}) {
+  const { data } = await getAnalyticsClient().get('/users', { params })
+  return data as { success: boolean; stats: UserAnalyticsStats }
+}
+
+export async function apiGetRequestAnalytics(params: { from?: string; to?: string } = {}) {
+  const { data } = await getAnalyticsClient().get('/requests', { params })
+  return data as { success: boolean; stats: RequestAnalyticsStats }
+}
+
+export async function apiGetBidAnalytics(params: { from?: string; to?: string } = {}) {
+  const { data } = await getAnalyticsClient().get('/bids', { params })
+  return data as { success: boolean; stats: BidAnalyticsStats }
+}
+
+export async function apiGetChatAnalytics(params: { from?: string; to?: string } = {}) {
+  const { data } = await getAnalyticsClient().get('/chat', { params })
+  return data as { success: boolean; stats: ChatAnalyticsStats }
+}
+
+export async function apiGetNotifAnalytics(params: { from?: string; to?: string } = {}) {
+  const { data } = await getAnalyticsClient().get('/notifications', { params })
+  return data as { success: boolean; stats: NotifAnalyticsStats }
+}
+
+export async function apiGetActivityStats(params: { from?: string; to?: string } = {}) {
+  const { data } = await getAnalyticsClient().get('/stats', { params })
+  return data as { success: boolean; stats: ActivityStats }
+}
+
+export async function apiGetActivityLogs(params: {
+  page?: number; limit?: number; actorRole?: string; category?: string; eventType?: string; from?: string; to?: string
+} = {}) {
+  const { data } = await getAnalyticsClient().get('/activity', { params })
+  return data as { success: boolean; logs: Record<string, unknown>[]; pagination: Pagination }
+}
+
 // ─── Request Service Types ────────────────────────────────────────────────────
 
 export interface RequestCategory {
@@ -265,7 +397,7 @@ export async function apiTriggerExpiry() {
   return data as { success: boolean; message: string }
 }
 
-export async function apiGetRequestAnalytics() {
+export async function apiGetRequestAdminAnalytics() {
   const { data } = await getRequestClient().get('/admin/analytics')
   return data as { success: boolean; analytics: RequestAnalytics }
 }
@@ -295,4 +427,192 @@ export async function apiUpdateCategory(id: string, payload: Partial<CategoryPay
 export async function apiDeleteCategory(id: string) {
   const { data } = await getRequestClient().delete(`/admin/categories/${id}`)
   return data as { success: boolean; message: string }
+}
+
+// ─── Bidding Admin Types ──────────────────────────────────────────────────────
+
+export type BidStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'EXPIRED' | 'WITHDRAWN'
+
+export interface BidItem {
+  id: string
+  requestId: string
+  merchantId: string
+  amount: string
+  deliveryDays: number
+  deliveryNotes: string | null
+  specialTerms: string | null
+  status: BidStatus
+  priorityScore: number
+  createdAt: string
+  updatedAt: string
+  expiresAt: string | null
+  acceptedAt: string | null
+  rejectedAt: string | null
+  withdrawnAt: string | null
+}
+
+// ─── Bidding Admin API ────────────────────────────────────────────────────────
+
+export interface GetAdminBidsParams {
+  page?: number
+  limit?: number
+  status?: string
+  merchantId?: string
+  requestId?: string
+  startDate?: string
+  endDate?: string
+}
+
+export interface BidAnalytics {
+  totalBids: number
+  totalValue: number
+  statusBreakdown: { status: string; count: number }[]
+}
+
+export async function apiGetAdminBids(params: GetAdminBidsParams = {}) {
+  const clean = { ...params }
+  if (clean.status === 'ALL') delete clean.status
+  const { data } = await getBiddingClient().get('/admin/bids', { params: clean })
+  return data as { success: boolean; bids: BidItem[]; pagination: Pagination; analytics: BidAnalytics }
+}
+
+export async function apiGetAdminBid(id: string) {
+  const { data } = await getBiddingClient().get(`/admin/bids/${id}`)
+  return data as { success: boolean; bid: BidItem }
+}
+
+export async function apiGetRequestBids(requestId: string) {
+  const { data } = await getBiddingClient().get('/admin/bids', { params: { requestId } })
+  return data as { success: boolean; bids: BidItem[]; pagination: Pagination; analytics: BidAnalytics }
+}
+
+export async function apiAdminForceRejectBid(bidId: string, reason?: string) {
+  const { data } = await getBiddingClient().post(`/admin/bids/${bidId}/force-reject`, { reason })
+  return data as { success: boolean; message: string }
+}
+
+// ─── Chat Admin Types ─────────────────────────────────────────────────────────
+
+let _chatClient: import('axios').AxiosInstance | null = null
+function getChatClient() {
+  if (_chatClient) return _chatClient
+  _chatClient = axios.create({ baseURL: `${BASE_URL}/chat` })
+  makeAuthInterceptors(_chatClient)
+  return _chatClient
+}
+
+export type RoomType = 'DIRECT' | 'GROUP' | 'REQUEST' | 'BID' | 'SUPPORT'
+export type MessageType = 'TEXT' | 'IMAGE' | 'FILE' | 'VOICE' | 'VIDEO' | 'LOCATION' | 'SYSTEM'
+
+export interface ChatParticipant {
+  userId: string; role: string; joinedAt: string
+  lastReadAt: string | null; isMuted: boolean
+}
+
+export interface ChatRoom {
+  id: string; name: string; description: string | null; type: RoomType
+  relatedRequestId: string | null; relatedBidId: string | null
+  createdBy: string; isActive: boolean; maxParticipants: number
+  createdAt: string; updatedAt: string
+  participants?: ChatParticipant[]
+  _count?: { participants: number; messages: number }
+}
+
+export interface ChatMessage {
+  id: string; roomId: string; senderId: string; type: MessageType
+  content: string; replyToId: string | null; mediaUrls: string[]
+  isEdited: boolean; isDeleted: boolean; createdAt: string
+  editedAt: string | null; deletedAt: string | null
+  reactions?: { userId: string; reactionType: string }[]
+}
+
+export async function apiAdminGetChatRooms(params: { page?: number; limit?: number; type?: string; isActive?: boolean; search?: string } = {}) {
+  const { data } = await getChatClient().get('/admin/rooms', { params })
+  return data as { success: boolean; rooms: ChatRoom[]; pagination: Pagination }
+}
+
+export async function apiAdminGetChatRoom(roomId: string) {
+  const { data } = await getChatClient().get(`/admin/rooms/${roomId}`)
+  return data as { success: boolean; room: ChatRoom }
+}
+
+export async function apiAdminGetChatMessages(roomId: string, params: { page?: number; limit?: number } = {}) {
+  const { data } = await getChatClient().get(`/admin/rooms/${roomId}/messages`, { params })
+  return data as { success: boolean; messages: ChatMessage[]; pagination: Pagination }
+}
+
+export async function apiAdminDeleteChatMessage(messageId: string) {
+  const { data } = await getChatClient().delete(`/admin/messages/${messageId}`)
+  return data as { success: boolean }
+}
+
+// ─── Notification Admin Types ─────────────────────────────────────────────────
+
+let _notifClient: import('axios').AxiosInstance | null = null
+function getNotifClient() {
+  if (_notifClient) return _notifClient
+  _notifClient = axios.create({ baseURL: `${BASE_URL}/notifications` })
+  makeAuthInterceptors(_notifClient)
+  return _notifClient
+}
+
+export type NotifType = 'SYSTEM' | 'REQUEST' | 'BID' | 'PAYMENT' | 'CHAT' | 'SUBSCRIPTION' | 'SECURITY' | 'MARKETING'
+export type NotifChannel = 'IN_APP' | 'PUSH' | 'EMAIL' | 'SMS' | 'WEBHOOK'
+export type NotifPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'URGENT'
+export type NotifStatus = 'PENDING' | 'PROCESSING' | 'SENT' | 'DELIVERED' | 'FAILED' | 'EXPIRED' | 'READ'
+
+export interface NotificationItem {
+  id: string; userId: string; type: NotifType; title: string; content: string
+  channel: NotifChannel; priority: NotifPriority; status: NotifStatus
+  metadata: Record<string, unknown>; readAt: string | null
+  sentAt: string | null; deliveredAt: string | null
+  createdAt: string; updatedAt: string
+}
+
+export interface NotifStats {
+  total: number; todayTotal: number; unreadTotal: number; readRate: number
+  byType: { type: string; count: number }[]
+  byChannel: { channel: string; count: number }[]
+  byStatus: { status: string; count: number }[]
+}
+
+export interface GetAdminNotificationsParams {
+  page?: number; limit?: number; userId?: string
+  type?: string; channel?: string; status?: string; priority?: string
+  from?: string; to?: string
+}
+
+export async function apiAdminGetNotifications(params: GetAdminNotificationsParams = {}) {
+  const clean = Object.fromEntries(Object.entries(params).filter(([, v]) => v !== undefined && v !== ''))
+  const { data } = await getNotifClient().get('/admin', { params: clean })
+  return data as { success: boolean; notifications: NotificationItem[]; pagination: Pagination }
+}
+
+export async function apiAdminGetNotificationStats() {
+  const { data } = await getNotifClient().get('/admin/stats')
+  return data as { success: boolean; stats: NotifStats }
+}
+
+export async function apiAdminSendNotification(payload: {
+  userId: string; type: string; title: string; content: string
+  channel: string; priority: string; scheduledAt?: string; metadata?: Record<string, unknown>
+}) {
+  const { data } = await getNotifClient().post('/admin/send', payload)
+  return data as { success: boolean; notification: NotificationItem }
+}
+
+export async function apiAdminDeleteNotification(id: string) {
+  const { data } = await getNotifClient().delete(`/admin/${id}`)
+  return data as { success: boolean }
+}
+
+export async function apiAdminGetNotificationAnalytics(params: { from?: string; to?: string } = {}) {
+  const { data } = await axios.create({ baseURL: `${BASE_URL}/analytics` }).get('/notifications', {
+    params,
+    headers: { Authorization: `Bearer ${SessionManager.getAccessToken()}` },
+  })
+  return data as {
+    success: boolean
+    stats: NotifStats & { trend: { date: string; count: number }[] }
+  }
 }

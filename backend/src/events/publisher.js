@@ -192,6 +192,75 @@ const publisher = {
     }, { requestId });
   },
 
+  // ─── Bidding convenience publishers ──────────────────────────
+
+  async bidSubmitted(bidId, requestId, merchantId, amount, deliveryDays, expiresAt) {
+    return this.publish('bid.submitted', {
+      bidId, requestId, merchantId, amount, deliveryDays,
+      submittedAt: new Date().toISOString(),
+      expiresAt: expiresAt instanceof Date ? expiresAt.toISOString() : expiresAt,
+    }, { userId: merchantId, requestId, bidId });
+  },
+
+  async bidAccepted(bidId, requestId, merchantId, buyerId, amount) {
+    return this.publish('bid.accepted', {
+      bidId, requestId, merchantId, buyerId, amount,
+      acceptedAt: new Date().toISOString(),
+    }, { userId: buyerId, requestId, bidId });
+  },
+
+  async bidRejected(bidId, requestId, merchantId, buyerId) {
+    return this.publish('bid.rejected', {
+      bidId, requestId, merchantId, buyerId,
+      rejectedAt: new Date().toISOString(),
+    }, { userId: buyerId, requestId, bidId });
+  },
+
+  async bidWithdrawn(bidId, requestId, merchantId) {
+    return this.publish('bid.withdrawn', {
+      bidId, requestId, merchantId,
+      withdrawnAt: new Date().toISOString(),
+    }, { userId: merchantId, requestId, bidId });
+  },
+
+  async bidExpired(bidId, requestId, merchantId) {
+    return this.publish('bid.expired', {
+      bidId, requestId, merchantId,
+      expiredAt: new Date().toISOString(),
+    }, { userId: merchantId, requestId, bidId });
+  },
+
+  // ─── Chat convenience publishers ─────────────────────────────
+
+  async messageSent(messageId, roomId, senderId, messageType, sentAt) {
+    return this.publish('message.sent', {
+      messageId, roomId, senderId, messageType,
+      sentAt: sentAt instanceof Date ? sentAt.toISOString() : sentAt,
+    }, { userId: senderId });
+  },
+
+  async messageRead(messageId, roomId, readerId) {
+    return this.publish('message.read', {
+      messageId, roomId, readerId, readAt: new Date().toISOString(),
+    }, { userId: readerId });
+  },
+
+  // ─── Notification convenience publishers ─────────────────────
+
+  async notificationSent(notificationId, userId, type, channel, title, sentAt) {
+    return this.publish('notification.sent', {
+      notificationId, userId, type, channel, title,
+      sentAt: sentAt instanceof Date ? sentAt.toISOString() : sentAt,
+    }, { userId });
+  },
+
+  async notificationDelivered(notificationId, userId, channel, provider, deliveredAt) {
+    return this.publish('notification.delivered', {
+      notificationId, userId, channel, provider,
+      deliveredAt: deliveredAt instanceof Date ? deliveredAt.toISOString() : deliveredAt,
+    }, { userId });
+  },
+
   // ─── Admin convenience publishers ────────────────────────────
 
   async adminActionPerformed(adminId, actionType, targetId, targetType, details = {}) {

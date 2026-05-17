@@ -16,30 +16,42 @@ const MENU_BY_ROLE: Record<string, MenuItem[]> = {
     { id: 'dashboard',  label: 'Dashboard',   href: '/admin/dashboard',  icon: 'dashboard' },
     { id: 'users',      label: 'Users',        href: '/admin/users',      icon: 'users' },
     { id: 'requests',   label: 'Requests',     href: '/admin/requests',   icon: 'document' },
-    { id: 'categories', label: 'Categories',   href: '/admin/categories', icon: 'tag' },
-    { id: 'logs',       label: 'Audit Logs',   href: '/admin/logs',       icon: 'clipboard' },
-    { id: 'settings',   label: 'Settings',     href: '/admin/settings',   icon: 'settings' },
+    { id: 'bids',       label: 'Bids',         href: '/admin/bids',       icon: 'bids' },
+    { id: 'chat',          label: 'Chat',          href: '/admin/chat',          icon: 'chat' },
+    { id: 'notifications', label: 'Notifications', href: '/admin/notifications', icon: 'bell' },
+    { id: 'analytics',     label: 'Analytics',     href: '/admin/analytics',     icon: 'chart' },
+    { id: 'categories',    label: 'Categories',    href: '/admin/categories',    icon: 'tag' },
+    { id: 'logs',          label: 'Audit Logs',    href: '/admin/logs',          icon: 'clipboard' },
+    { id: 'settings',      label: 'Settings',      href: '/admin/settings',      icon: 'settings' },
   ],
   ADMIN: [
-    { id: 'dashboard',  label: 'Dashboard',   href: '/admin/dashboard',  icon: 'dashboard' },
-    { id: 'users',      label: 'Users',        href: '/admin/users',      icon: 'users' },
-    { id: 'requests',   label: 'Requests',     href: '/admin/requests',   icon: 'document' },
-    { id: 'categories', label: 'Categories',   href: '/admin/categories', icon: 'tag' },
-    { id: 'logs',       label: 'Audit Logs',   href: '/admin/logs',       icon: 'clipboard' },
+    { id: 'dashboard',     label: 'Dashboard',     href: '/admin/dashboard',     icon: 'dashboard' },
+    { id: 'users',         label: 'Users',          href: '/admin/users',         icon: 'users' },
+    { id: 'requests',      label: 'Requests',       href: '/admin/requests',      icon: 'document' },
+    { id: 'bids',          label: 'Bids',           href: '/admin/bids',          icon: 'bids' },
+    { id: 'chat',          label: 'Chat',           href: '/admin/chat',          icon: 'chat' },
+    { id: 'notifications', label: 'Notifications',  href: '/admin/notifications', icon: 'bell' },
+    { id: 'analytics',     label: 'Analytics',      href: '/admin/analytics',     icon: 'chart' },
+    { id: 'categories',    label: 'Categories',     href: '/admin/categories',    icon: 'tag' },
+    { id: 'logs',          label: 'Audit Logs',     href: '/admin/logs',          icon: 'clipboard' },
   ],
   SUPPORT: [
-    { id: 'dashboard', label: 'Dashboard', href: '/admin/dashboard', icon: 'dashboard' },
-    { id: 'users',     label: 'Users',     href: '/admin/users',     icon: 'users' },
-    { id: 'requests',  label: 'Requests',  href: '/admin/requests',  icon: 'document' },
+    { id: 'dashboard',     label: 'Dashboard',     href: '/admin/dashboard',     icon: 'dashboard' },
+    { id: 'users',         label: 'Users',          href: '/admin/users',         icon: 'users' },
+    { id: 'requests',      label: 'Requests',       href: '/admin/requests',      icon: 'document' },
+    { id: 'bids',          label: 'Bids',           href: '/admin/bids',          icon: 'bids' },
+    { id: 'chat',          label: 'Chat',           href: '/admin/chat',          icon: 'chat' },
+    { id: 'notifications', label: 'Notifications',  href: '/admin/notifications', icon: 'bell' },
+    { id: 'analytics',     label: 'Analytics',      href: '/admin/analytics',     icon: 'chart' },
   ],
 }
 
 // Routes each role can access
 // /admin/profile and /admin/settings are accessible to all roles (linked from top-nav user menu)
 const ALLOWED_ROUTES: Record<string, string[]> = {
-  SUPER_ADMIN: ['/admin/dashboard', '/admin/users', '/admin/requests', '/admin/categories', '/admin/logs', '/admin/settings', '/admin/profile'],
-  ADMIN:       ['/admin/dashboard', '/admin/users', '/admin/requests', '/admin/categories', '/admin/logs', '/admin/settings', '/admin/profile'],
-  SUPPORT:     ['/admin/dashboard', '/admin/users', '/admin/requests', '/admin/settings', '/admin/profile'],
+  SUPER_ADMIN: ['/admin/dashboard', '/admin/users', '/admin/requests', '/admin/bids', '/admin/chat', '/admin/notifications', '/admin/analytics', '/admin/categories', '/admin/logs', '/admin/settings', '/admin/profile'],
+  ADMIN:       ['/admin/dashboard', '/admin/users', '/admin/requests', '/admin/bids', '/admin/chat', '/admin/notifications', '/admin/analytics', '/admin/categories', '/admin/logs', '/admin/settings', '/admin/profile'],
+  SUPPORT:     ['/admin/dashboard', '/admin/users', '/admin/requests', '/admin/bids', '/admin/chat', '/admin/notifications', '/admin/analytics', '/admin/settings', '/admin/profile'],
 }
 
 export function usePermissions() {

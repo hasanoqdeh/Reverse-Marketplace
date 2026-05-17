@@ -1,30 +1,94 @@
-import React from 'react';
-import {View, Text, ScrollView, TouchableOpacity, StyleSheet} from 'react-native';
+import React, {useCallback, useEffect, useState} from 'react';
+import {
+  ActivityIndicator,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {BottomTabNavigationProp} from '@react-navigation/bottom-tabs';
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {MerchantTabParamList} from '../../../types/navigation';
+import {RootStackParamList} from '../../../types/navigation';
 import {useAuth} from '../../../context/AuthContext';
+import {MarketRequest} from '../../../types/api';
+import {searchRequests} from '../../../api/requests';
+import {getMyBids} from '../../../api/bids';
 
-type Props = {navigation: BottomTabNavigationProp<MerchantTabParamList, 'Dashboard'>};
+type TabNav = BottomTabNavigationProp<MerchantTabParamList, 'Dashboard'>;
+type RootNav = NativeStackNavigationProp<RootStackParamList>;
 
 const ACCENT = '#16A34A';
 
-function StatCard({label, value, accent = '#111827'}: {label: string; value: string; accent?: string}) {
+function StatCard({label, value, color = '#111827'}: {label: string; value: string; color?: string}) {
   return (
     <View style={styles.statCard}>
-      <Text style={[styles.statValue, {color: accent}]}>{value}</Text>
+      <Text style={[styles.statValue, {color}]}>{value}</Text>
       <Text style={styles.statLabel}>{label}</Text>
     </View>
   );
 }
 
-export default function DashboardScreen({navigation}: Props) {
+function formatBudget(min?: number | null, max?: number | null): string {
+  if (!min && !max) return 'Open';
+  if (max) return `$${max.toLocaleString()}`;
+  return `$${min!.toLocaleString()}+`;
+}
+
+export default function DashboardScreen() {
+  const tabNavigation = useNavigation<TabNav>();
+  const rootNavigation = useNavigation<RootNav>();
   const {user} = useAuth();
   const firstName = user?.profile?.firstName ?? 'Merchant';
 
+  const [recentRequests, setRecentRequests] = useState<MarketRequest[]>([]);
+  const [totalActive, setTotalActive] = useState<number | null>(null);
+  const [activeBidCount, setActiveBidCount] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const loadDashboard = useCallback(async () => {
+    try {
+      const [reqRes, bidsRes] = await Promise.allSettled([
+        searchRequests({status: 'ACTIVE,HAS_BIDS', page: 1, limit: 5, sortBy: 'created_at', sortOrder: 'desc'}),
+        getMyBids({status: 'PENDING', limit: 1}),
+      ]);
+      if (reqRes.status === 'fulfilled') {
+        setRecentRequests(reqRes.value.requests);
+        setTotalActive(reqRes.value.pagination.total);
+      }
+      if (bidsRes.status === 'fulfilled') {
+        setActiveBidCount(bidsRes.value.pagination.total);
+      }
+    } catch {
+      // silently ignore
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadDashboard();
+  }, [loadDashboard]);
+
+  const handleRefresh = useCallback(() => {
+    setRefreshing(true);
+    loadDashboard();
+  }, [loadDashboard]);
+
   return (
     <SafeAreaView style={styles.safe}>
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={ACCENT} colors={[ACCENT]} />
+        }>
         {/* Header card */}
         <View style={styles.headerCard}>
           <View>
@@ -37,16 +101,23 @@ export default function DashboardScreen({navigation}: Props) {
         </View>
 
         {/* Stats */}
-        <Text style={styles.section}>Overview</Text>
+        <Text style={styles.section}>Marketplace Overview</Text>
         <View style={styles.statsRow}>
-          <StatCard label="Active Bids" value="0" accent={ACCENT} />
-          <StatCard label="Won This Month" value="0" accent="#2563EB" />
-          <StatCard label="Rating" value="N/A" accent="#D97706" />
+          <StatCard
+            label="Open Requests"
+            value={totalActive === null ? '…' : String(totalActive)}
+            color={ACCENT}
+          />
+          <StatCard label="My Active Bids" value={activeBidCount === null ? '…' : String(activeBidCount)} color="#2563EB" />
+          <StatCard label="Won This Month" value="0" color="#D97706" />
         </View>
 
         {/* Quick action */}
         <Text style={styles.section}>Quick Actions</Text>
-        <TouchableOpacity style={styles.actionCard} activeOpacity={0.8} onPress={() => navigation.navigate('Requests')}>
+        <TouchableOpacity
+          style={styles.actionCard}
+          activeOpacity={0.8}
+          onPress={() => tabNavigation.navigate('Requests')}>
           <View style={styles.actionIcon}>
             <Text style={styles.actionIconText}>☰</Text>
           </View>
@@ -57,16 +128,47 @@ export default function DashboardScreen({navigation}: Props) {
           <Text style={styles.chevron}>›</Text>
         </TouchableOpacity>
 
-        {/* Recent bids */}
-        <Text style={styles.section}>My Recent Bids</Text>
-        <View style={styles.emptyCard}>
-          <Text style={styles.emptyIcon}>⊙</Text>
-          <Text style={styles.emptyTitle}>No bids yet</Text>
-          <Text style={styles.emptySubtitle}>Browse available requests and submit your first bid.</Text>
-          <TouchableOpacity style={styles.emptyBtn} activeOpacity={0.8} onPress={() => navigation.navigate('Requests')}>
-            <Text style={styles.emptyBtnText}>Browse Requests</Text>
-          </TouchableOpacity>
-        </View>
+        {/* Recent requests */}
+        <Text style={styles.section}>Latest Requests</Text>
+        {loading ? (
+          <ActivityIndicator color={ACCENT} style={{marginVertical: 24}} />
+        ) : recentRequests.length === 0 ? (
+          <View style={styles.emptyCard}>
+            <Text style={styles.emptyIcon}>⊙</Text>
+            <Text style={styles.emptyTitle}>No open requests</Text>
+            <Text style={styles.emptySubtitle}>Check back soon or pull to refresh.</Text>
+          </View>
+        ) : (
+          <>
+            {recentRequests.map(req => (
+              <TouchableOpacity
+                key={req.id}
+                style={styles.requestCard}
+                onPress={() => rootNavigation.navigate('RequestDetail', {requestId: req.id})}
+                activeOpacity={0.75}>
+                <View style={styles.requestTop}>
+                  {req.category && <Text style={styles.reqCategory}>{req.category.name}</Text>}
+                  <Text style={styles.reqBudget}>{formatBudget(req.budgetMin, req.budgetMax)}</Text>
+                </View>
+                <Text style={styles.reqTitle} numberOfLines={1}>{req.title}</Text>
+                <View style={styles.requestBottom}>
+                  <Text style={styles.reqBids}>
+                    {req.bidCount > 0 ? `${req.bidCount} bids` : 'No bids yet'}
+                  </Text>
+                  <Text style={styles.reqStatus}>
+                    {req.status === 'HAS_BIDS' ? 'Has Bids' : 'Active'}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+            <TouchableOpacity
+              style={styles.viewAllBtn}
+              onPress={() => tabNavigation.navigate('Requests')}
+              activeOpacity={0.8}>
+              <Text style={styles.viewAllText}>View All Requests</Text>
+            </TouchableOpacity>
+          </>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -107,9 +209,23 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF', borderRadius: 14, padding: 28, alignItems: 'center',
     shadowColor: '#000', shadowOffset: {width: 0, height: 1}, shadowOpacity: 0.05, shadowRadius: 6, elevation: 2,
   },
-  emptyIcon: {fontSize: 40, marginBottom: 12},
+  emptyIcon: {fontSize: 40, marginBottom: 12, color: '#9CA3AF'},
   emptyTitle: {fontSize: 17, fontWeight: '700', color: '#374151', marginBottom: 8},
-  emptySubtitle: {fontSize: 13, color: '#6B7280', textAlign: 'center', lineHeight: 19, marginBottom: 20},
-  emptyBtn: {backgroundColor: ACCENT, borderRadius: 8, paddingVertical: 10, paddingHorizontal: 24},
-  emptyBtnText: {fontSize: 14, fontWeight: '700', color: '#FFFFFF'},
+  emptySubtitle: {fontSize: 13, color: '#6B7280', textAlign: 'center', lineHeight: 19},
+  requestCard: {
+    backgroundColor: '#FFFFFF', borderRadius: 14, padding: 14, marginBottom: 10,
+    shadowColor: '#000', shadowOffset: {width: 0, height: 1}, shadowOpacity: 0.05, shadowRadius: 4, elevation: 2,
+  },
+  requestTop: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4},
+  reqCategory: {fontSize: 12, color: ACCENT, fontWeight: '600'},
+  reqBudget: {fontSize: 14, fontWeight: '700', color: '#111827'},
+  reqTitle: {fontSize: 15, fontWeight: '600', color: '#111827', marginBottom: 8},
+  requestBottom: {flexDirection: 'row', justifyContent: 'space-between'},
+  reqBids: {fontSize: 12, color: '#6B7280'},
+  reqStatus: {fontSize: 12, color: ACCENT, fontWeight: '600'},
+  viewAllBtn: {
+    marginTop: 4, borderRadius: 12, borderWidth: 1.5, borderColor: ACCENT,
+    paddingVertical: 12, alignItems: 'center',
+  },
+  viewAllText: {fontSize: 14, fontWeight: '700', color: ACCENT},
 });

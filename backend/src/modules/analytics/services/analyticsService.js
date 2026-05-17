@@ -7,9 +7,10 @@ const RequestRepository = require('../../requests/repositories/RequestRepository
 const logger = require('../../../utils/logger');
 
 // ─── ActivityLog mapping ───────────────────────────────────────────────────
-// Maps each routing key to how it becomes an ActivityLog entry.
+// Maps each routing key → ActivityLog entry shape.
 
 const EVENT_MAP = {
+  // Identity
   'user.registered': {
     category:   'identity',
     action:     'User registered',
@@ -50,6 +51,8 @@ const EVENT_MAP = {
     targetType: 'user',
     targetId:   (d) => d.userId,
   },
+
+  // Requests
   'request.created': {
     category:   'requests',
     action:     'Request created',
@@ -106,6 +109,102 @@ const EVENT_MAP = {
     targetType: 'request',
     targetId:   (d) => d.requestId,
   },
+
+  // Bidding
+  'bid.submitted': {
+    category:   'bidding',
+    action:     'Bid submitted',
+    actorRole:  'MERCHANT',
+    actorId:    (d) => d.merchantId,
+    targetType: 'bid',
+    targetId:   (d) => d.bidId,
+  },
+  'bid.accepted': {
+    category:   'bidding',
+    action:     'Bid accepted',
+    actorRole:  'BUYER',
+    actorId:    (d) => d.buyerId,
+    targetType: 'bid',
+    targetId:   (d) => d.bidId,
+  },
+  'bid.rejected': {
+    category:   'bidding',
+    action:     'Bid rejected',
+    actorRole:  'BUYER',
+    actorId:    (d) => d.buyerId,
+    targetType: 'bid',
+    targetId:   (d) => d.bidId,
+  },
+  'bid.withdrawn': {
+    category:   'bidding',
+    action:     'Bid withdrawn',
+    actorRole:  'MERCHANT',
+    actorId:    (d) => d.merchantId,
+    targetType: 'bid',
+    targetId:   (d) => d.bidId,
+  },
+  'bid.expired': {
+    category:   'bidding',
+    action:     'Bid expired',
+    actorRole:  'SYSTEM',
+    actorId:    () => null,
+    targetType: 'bid',
+    targetId:   (d) => d.bidId,
+  },
+
+  // Chat
+  'message.sent': {
+    category:   'chat',
+    action:     'Message sent',
+    actorRole:  (d) => d.role || 'BUYER',
+    actorId:    (d) => d.senderId,
+    targetType: 'chat_room',
+    targetId:   (d) => d.roomId,
+  },
+  'message.read': {
+    category:   'chat',
+    action:     'Messages read',
+    actorRole:  (d) => d.role || 'BUYER',
+    actorId:    (d) => d.readerId,
+    targetType: 'chat_room',
+    targetId:   (d) => d.roomId,
+  },
+  'chat.room.created': {
+    category:   'chat',
+    action:     'Chat room created',
+    actorRole:  (d) => d.role || 'BUYER',
+    actorId:    (d) => d.createdBy,
+    targetType: 'chat_room',
+    targetId:   (d) => d.roomId,
+  },
+  'chat.messages.read': {
+    category:   'chat',
+    action:     'Chat messages marked read',
+    actorRole:  (d) => d.role || 'BUYER',
+    actorId:    (d) => d.userId,
+    targetType: 'chat_room',
+    targetId:   (d) => d.roomId,
+  },
+
+  // Notifications
+  'notification.sent': {
+    category:   'notifications',
+    action:     (d) => `Notification sent [${d.channel || 'IN_APP'}]`,
+    actorRole:  'SYSTEM',
+    actorId:    () => null,
+    targetType: 'user',
+    targetId:   (d) => d.userId,
+  },
+  'notification.delivered': {
+    category:   'notifications',
+    action:     (d) => `Notification delivered via ${d.provider || d.channel}`,
+    actorRole:  'SYSTEM',
+    actorId:    () => null,
+    targetType: 'user',
+    targetId:   (d) => d.userId,
+  },
+
+  // Admin
   'admin.action': {
     category:   'admin',
     action:     (d) => d.actionType || 'Admin action',
@@ -117,8 +216,6 @@ const EVENT_MAP = {
 };
 
 // ─── RequestAnalytic mapping ───────────────────────────────────────────────
-// Maps routing key → RequestAnalytic eventType.
-// Views are excluded from ActivityLog (too noisy) but still written to RequestAnalytic.
 
 const REQUEST_ANALYTIC_MAP = {
   'request.created':   'STATUS_CHANGE',
@@ -131,6 +228,9 @@ const REQUEST_ANALYTIC_MAP = {
   'request.viewed':    'VIEW',
 };
 
+// High-volume events excluded from ActivityLog to avoid noise
+const SKIP_ACTIVITY_LOG = new Set(['request.viewed', 'message.read', 'chat.messages.read', 'notification.delivered']);
+
 function resolve(val, data) {
   return typeof val === 'function' ? val(data) : val;
 }
@@ -139,9 +239,9 @@ const analyticsService = {
   async logFromEvent(event) {
     const { eventType, data = {}, metadata = {} } = event;
 
-    // 1. Write to ActivityLog for all mapped events (skip request.viewed — too high volume)
+    // 1. ActivityLog — skip high-volume events
     const activityMapping = EVENT_MAP[eventType];
-    if (activityMapping) {
+    if (activityMapping && !SKIP_ACTIVITY_LOG.has(eventType)) {
       try {
         await ActivityLog.create({
           actorId:    resolve(activityMapping.actorId, data) || null,
@@ -158,7 +258,7 @@ const analyticsService = {
       }
     }
 
-    // 2. Write to RequestAnalytic for all request.* events
+    // 2. RequestAnalytic for all request.* events
     const analyticEventType = REQUEST_ANALYTIC_MAP[eventType];
     if (analyticEventType && data.requestId) {
       try {
@@ -173,7 +273,7 @@ const analyticsService = {
       }
     }
 
-    // 3. For views: also write RequestView + increment PostgreSQL counter
+    // 3. RequestView + PG counter for viewed events
     if (eventType === 'request.viewed' && data.requestId) {
       try {
         await RequestView.create({
