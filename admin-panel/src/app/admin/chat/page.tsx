@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { AdminLayout } from '../../../components/layout/AdminLayout'
 import { apiAdminGetChatRooms, ChatRoom, RoomType, Pagination } from '../../../lib/adminAPI'
 
 const ROOM_TYPE_COLORS: Record<RoomType, { bg: string; text: string }> = {
@@ -56,8 +55,7 @@ export default function AdminChatPage() {
   const activeRooms = rooms.filter(r => r.isActive).length
 
   return (
-    <AdminLayout>
-      <div className="space-y-6">
+    <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -200,8 +198,7 @@ export default function AdminChatPage() {
             </div>
           )}
         </div>
-      </div>
-    </AdminLayout>
+    </div>
   )
 }
 

@@ -142,7 +142,7 @@ export default function RequestDetailPage() {
     : null
 
   return (
-    <div className="p-6 space-y-4 max-w-5xl">
+    <div className="p-6 space-y-4">
       <div className="flex items-center gap-3">
         <Link href="/admin/requests">
           <Button variant="outline" size="sm"><ArrowLeft className="h-4 w-4 mr-1" />Back</Button>

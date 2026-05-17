@@ -369,6 +369,8 @@ enum NotificationType {
   SUBSCRIPTION
   SECURITY
   MARKETING
+
+  @@map("notification_type")
 }
 
 enum NotifChannel {
@@ -386,6 +388,8 @@ enum NotificationPriority {
   NORMAL
   HIGH
   URGENT
+
+  @@map("notification_priority")
 }
 
 enum NotificationStatus {
@@ -396,6 +400,8 @@ enum NotificationStatus {
   FAILED
   EXPIRED
   READ
+
+  @@map("notification_status")
 }
 
 enum NotifDeliveryStatus {

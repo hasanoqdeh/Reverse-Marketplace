@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { AdminLayout } from '../../../../components/layout/AdminLayout'
 import {
   apiAdminGetChatRoom, apiAdminGetChatMessages, apiAdminDeleteChatMessage,
   ChatRoom, ChatMessage, Pagination,
@@ -79,11 +78,9 @@ export default function AdminChatRoomPage({ params }: { params: { id: string } }
 
   if (loading) {
     return (
-      <AdminLayout>
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
-        </div>
-      </AdminLayout>
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+      </div>
     )
   }
 
@@ -92,8 +89,7 @@ export default function AdminChatRoomPage({ params }: { params: { id: string } }
   const tc = ROOM_TYPE_COLORS[room.type] ?? ROOM_TYPE_COLORS.DIRECT
 
   return (
-    <AdminLayout>
-      <div className="space-y-6">
+    <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">
           <button
@@ -262,7 +258,6 @@ export default function AdminChatRoomPage({ params }: { params: { id: string } }
               </div>
             )}
           </div>
-        </div>
       </div>
 
       {/* Delete confirm modal */}
@@ -289,6 +284,6 @@ export default function AdminChatRoomPage({ params }: { params: { id: string } }
           </div>
         </div>
       )}
-    </AdminLayout>
+    </div>
   )
 }

@@ -1,6 +1,7 @@
 'use strict';
 
 const prisma = require('../../../prisma/client');
+const ChatMessageRepository = require('./ChatMessageRepository');
 
 const ChatRoomRepository = {
   async create({ name, description, type, relatedRequestId, relatedBidId, createdBy, participantIds = [] }) {
@@ -26,16 +27,18 @@ const ChatRoomRepository = {
   },
 
   async findById(id) {
-    return prisma.chatRoom.findUnique({
+    const room = await prisma.chatRoom.findUnique({
       where: { id },
       include: {
         participants: {
           where: { leftAt: null, isBanned: false },
           select: { userId: true, role: true, joinedAt: true, lastReadAt: true, isMuted: true },
         },
-        _count: { select: { messages: { where: { isDeleted: false } } } },
       },
     });
+    if (!room) return null;
+    const messageCount = await ChatMessageRepository.countByRoom(id).catch(() => 0);
+    return { ...room, _count: { messages: messageCount } };
   },
 
   async findByUser(userId, { page = 1, limit = 20, type } = {}) {
