@@ -56,3 +56,17 @@ export async function deleteMessage(roomId: string, messageId: string): Promise<
 export async function leaveRoom(roomId: string): Promise<void> {
   await apiClient.delete(`/chat/rooms/${roomId}/participants/me`);
 }
+
+export async function uploadChatMedia(
+  uri: string,
+  mimeType: string,
+  filename: string,
+): Promise<{url: string; type: 'IMAGE' | 'VOICE'}> {
+  const form = new FormData();
+  form.append('file', {uri, type: mimeType, name: filename} as any);
+  const res = await apiClient.post('/chat/upload', form, {
+    headers: {'Content-Type': 'multipart/form-data'},
+    timeout: 30000,
+  });
+  return res.data;
+}

@@ -4,23 +4,30 @@ import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card, CardContent } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import {
   apiGetAdminRequests, apiUpdateRequestStatus, apiDeleteRequest, apiTriggerExpiry,
   RequestItem, RequestAnalytics, GetAdminRequestsParams,
 } from '@/lib/adminAPI'
 import { format } from 'date-fns'
-import { Search, ChevronLeft, ChevronRight, AlertCircle, RefreshCw } from 'lucide-react'
+import { Search, ChevronLeft, ChevronRight, AlertCircle, RefreshCw, FileText, CheckCircle } from 'lucide-react'
 
 const STATUS_COLORS: Record<string, string> = {
-  DRAFT:     'bg-gray-100 text-gray-700',
-  ACTIVE:    'bg-green-100 text-green-800',
-  HAS_BIDS:  'bg-blue-100 text-blue-800',
-  COMPLETED: 'bg-purple-100 text-purple-800',
-  CANCELLED: 'bg-red-100 text-red-800',
-  EXPIRED:   'bg-orange-100 text-orange-800',
+  DRAFT:     'bg-slate-100 text-slate-700 ring-slate-200',
+  ACTIVE:    'bg-green-100 text-green-700 ring-green-200',
+  HAS_BIDS:  'bg-blue-100 text-blue-700 ring-blue-200',
+  COMPLETED: 'bg-violet-100 text-violet-700 ring-violet-200',
+  CANCELLED: 'bg-red-100 text-red-700 ring-red-200',
+  EXPIRED:   'bg-orange-100 text-orange-700 ring-orange-200',
 }
+
+const ANALYTICS_CARDS = [
+  { key: 'totalRequests',    label: 'Total',       format: (v: number) => v.toLocaleString(),         bg: 'bg-slate-50',   color: 'text-slate-600' },
+  { key: 'activeRequests',   label: 'Active',      format: (v: number) => v.toLocaleString(),         bg: 'bg-green-50',   color: 'text-green-600' },
+  { key: 'completedRequests',label: 'Completed',   format: (v: number) => v.toLocaleString(),         bg: 'bg-violet-50',  color: 'text-violet-600' },
+  { key: 'totalValue',       label: 'Total Value', format: (v: number) => `$${v.toLocaleString()}`,   bg: 'bg-amber-50',   color: 'text-amber-600' },
+  { key: 'conversionRate',   label: 'Conversion',  format: (v: number) => `${v}%`,                    bg: 'bg-blue-50',    color: 'text-blue-600' },
+]
 
 const VALID_STATUSES = ['ACTIVE', 'CANCELLED', 'COMPLETED', 'EXPIRED']
 
@@ -73,11 +80,11 @@ export default function RequestsPage() {
     setActionLoading(true)
     try {
       await apiUpdateRequestStatus(modal.requestId, modal.newStatus)
-      showFeedback(`Request status updated to ${modal.newStatus}`)
+      showFeedback(`Status updated to ${modal.newStatus}`)
       setModal(null)
       load(params)
     } catch {
-      setError('Failed to update request status')
+      setError('Failed to update status')
     } finally {
       setActionLoading(false)
     }
@@ -109,135 +116,142 @@ export default function RequestsPage() {
   }
 
   const filteredRequests = search
-    ? requests.filter(r =>
-        r.title.toLowerCase().includes(search.toLowerCase()) ||
-        r.buyerId.includes(search)
-      )
+    ? requests.filter(r => r.title.toLowerCase().includes(search.toLowerCase()) || r.buyerId.includes(search))
     : requests
 
+  const rangeStart = pagination.total === 0 ? 0 : (pagination.page - 1) * pagination.limit + 1
+  const rangeEnd = Math.min(pagination.page * pagination.limit, pagination.total)
+
   return (
-    <div className="p-6 space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Requests</h1>
-        <Button size="sm" variant="outline" onClick={handleTriggerExpiry}>
-          <RefreshCw className="h-4 w-4 mr-1" /> Process Expired
+    <div className="p-5 sm:p-6 space-y-5 max-w-7xl">
+      {/* Header */}
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-xl font-semibold text-slate-900">Requests</h1>
+          <p className="text-sm text-slate-500 mt-0.5">Moderate and manage buyer requests.</p>
+        </div>
+        <Button size="sm" variant="outline" onClick={handleTriggerExpiry} className="shrink-0 h-9 rounded-lg border-slate-200 text-slate-600">
+          <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Process Expired
         </Button>
       </div>
 
       {feedback && (
-        <Alert className="border-green-200 bg-green-50">
-          <AlertDescription className="text-green-800">{feedback}</AlertDescription>
-        </Alert>
+        <div className="flex items-center gap-2 rounded-xl bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-800">
+          <CheckCircle className="h-4 w-4 shrink-0" />
+          {feedback}
+        </div>
       )}
       {error && (
-        <Alert variant="destructive">
+        <Alert variant="destructive" className="rounded-xl">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 
-      {/* Analytics summary */}
+      {/* Analytics strip */}
       {analytics && (
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-          {[
-            { label: 'Total', value: analytics.totalRequests },
-            { label: 'Active', value: analytics.activeRequests },
-            { label: 'Completed', value: analytics.completedRequests },
-            { label: 'Total Value', value: `$${analytics.totalValue.toLocaleString()}` },
-            { label: 'Conversion', value: `${analytics.conversionRate}%` },
-          ].map(({ label, value }) => (
-            <Card key={label}>
-              <CardContent className="pt-3 pb-3">
-                <p className="text-xs text-gray-500 uppercase">{label}</p>
-                <p className="text-xl font-bold mt-1">{value}</p>
-              </CardContent>
-            </Card>
+          {ANALYTICS_CARDS.map(({ key, label, format: fmt, bg, color }) => (
+            <div key={key} className={`${bg} rounded-xl px-4 py-3`}>
+              <p className="text-xs font-medium text-slate-500">{label}</p>
+              <p className={`text-xl font-bold mt-0.5 ${color}`}>
+                {fmt((analytics as unknown as Record<string, number>)[key] ?? 0)}
+              </p>
+            </div>
           ))}
         </div>
       )}
 
       {/* Filters */}
-      <Card>
-        <CardContent className="pt-4">
-          <div className="flex flex-wrap gap-3">
-            <div className="relative flex-1 min-w-48">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                placeholder="Search title or buyer ID…"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="pl-9"
-              />
-            </div>
-            <select
-              value={params.status ?? 'ALL'}
-              onChange={e => updateParam('status', e.target.value)}
-              className="border border-gray-300 rounded-md px-3 py-2 text-sm"
-            >
-              {['ALL', 'ACTIVE', 'HAS_BIDS', 'DRAFT', 'COMPLETED', 'CANCELLED', 'EXPIRED'].map(s => (
-                <option key={s}>{s}</option>
-              ))}
-            </select>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex flex-wrap gap-2.5 items-center">
+        <div className="relative flex-1 min-w-52">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Input
+            placeholder="Search title or buyer ID…"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="pl-9 h-9 text-sm border-slate-200 bg-white"
+          />
+        </div>
+        <select
+          value={params.status ?? 'ALL'}
+          onChange={e => updateParam('status', e.target.value)}
+          className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          {['ALL', 'ACTIVE', 'HAS_BIDS', 'DRAFT', 'COMPLETED', 'CANCELLED', 'EXPIRED'].map(s => (
+            <option key={s} value={s}>{s === 'ALL' ? 'All statuses' : s.replace('_', ' ')}</option>
+          ))}
+        </select>
+      </div>
 
       {/* Table */}
-      <Card>
-        <CardContent className="p-0 overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="min-w-full">
+            <thead>
+              <tr className="border-b border-slate-100 bg-slate-50/60">
                 {['Title', 'Category', 'Status', 'Budget', 'Views', 'Expires', 'Created', 'Actions'].map(h => (
-                  <th key={h} className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>
+                  <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">{h}</th>
                 ))}
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="divide-y divide-slate-100">
               {loading ? (
-                <tr><td colSpan={8} className="px-4 py-8 text-center text-gray-500">Loading…</td></tr>
+                [...Array(6)].map((_, i) => (
+                  <tr key={i} className="animate-pulse">
+                    {[...Array(8)].map((__, j) => (
+                      <td key={j} className="px-4 py-3"><div className="h-4 bg-slate-200 rounded w-16" /></td>
+                    ))}
+                  </tr>
+                ))
               ) : filteredRequests.length === 0 ? (
-                <tr><td colSpan={8} className="px-4 py-8 text-center text-gray-500">No requests found</td></tr>
+                <tr>
+                  <td colSpan={8} className="px-4 py-16 text-center">
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center">
+                        <FileText className="h-5 w-5 text-slate-400" />
+                      </div>
+                      <p className="text-sm font-medium text-slate-600">No requests found</p>
+                      <p className="text-xs text-slate-400">Try adjusting your search or filter</p>
+                    </div>
+                  </td>
+                </tr>
               ) : filteredRequests.map(r => (
-                <tr key={r.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 text-sm font-medium text-gray-900 max-w-xs">
-                    <Link href={`/admin/requests/${r.id}`} className="hover:text-blue-600 line-clamp-2">
-                      {r.title}
+                <tr key={r.id} className="hover:bg-slate-50/60 transition-colors">
+                  <td className="px-4 py-3 max-w-[200px]">
+                    <Link href={`/admin/requests/${r.id}`} className="group">
+                      <p className="text-sm font-medium text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-1">{r.title}</p>
+                      <p className="text-xs text-slate-400 mt-0.5 truncate font-mono">{r.buyerId.slice(0, 8)}…</p>
                     </Link>
-                    <div className="text-xs text-gray-400 truncate">{r.buyerId}</div>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-600">
-                    {r.category?.name ?? '—'}
-                  </td>
+                  <td className="px-4 py-3 text-sm text-slate-600 whitespace-nowrap">{r.category?.name ?? '—'}</td>
                   <td className="px-4 py-3">
-                    <Badge label={r.status} colorClass={STATUS_COLORS[r.status] ?? 'bg-gray-100 text-gray-800'} />
+                    <StatusBadge label={r.status} colorClass={STATUS_COLORS[r.status] ?? 'bg-slate-100 text-slate-700 ring-slate-200'} />
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">
+                  <td className="px-4 py-3 text-sm text-slate-600 whitespace-nowrap">
                     {r.budgetMin != null && r.budgetMax != null
                       ? `$${r.budgetMin}–$${r.budgetMax}`
-                      : r.budgetMax != null
-                        ? `up to $${r.budgetMax}`
-                        : '—'}
+                      : r.budgetMax != null ? `≤ $${r.budgetMax}` : '—'}
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-600 text-center">{r.viewCount}</td>
-                  <td className="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">
-                    {r.expiresAt ? format(new Date(r.expiresAt), 'MMM d, yyyy') : '—'}
+                  <td className="px-4 py-3 text-sm text-slate-500 text-center">{r.viewCount}</td>
+                  <td className="px-4 py-3 text-sm text-slate-500 whitespace-nowrap">
+                    {r.expiresAt ? format(new Date(r.expiresAt), 'MMM d, yyyy') : <span className="text-slate-300">—</span>}
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">
+                  <td className="px-4 py-3 text-sm text-slate-500 whitespace-nowrap">
                     {format(new Date(r.createdAt), 'MMM d, yyyy')}
                   </td>
                   <td className="px-4 py-3">
-                    <div className="flex gap-1 flex-wrap">
+                    <div className="flex gap-1 flex-wrap min-w-[120px]">
                       {VALID_STATUSES.filter(s => s !== r.status).map(s => (
                         <button
                           key={s}
                           onClick={() => setModal({ type: 'status', requestId: r.id, title: r.title, newStatus: s })}
-                          className="text-xs px-2 py-1 rounded text-blue-700 bg-blue-50 hover:bg-blue-100"
+                          className="text-xs font-medium px-2 py-1 rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors"
                         >{s}</button>
                       ))}
                       <button
                         onClick={() => setModal({ type: 'delete', requestId: r.id, title: r.title })}
-                        className="text-xs px-2 py-1 rounded text-red-700 bg-red-50 hover:bg-red-100"
+                        className="text-xs font-medium px-2 py-1 rounded-md text-red-700 bg-red-50 hover:bg-red-100 transition-colors"
                       >Delete</button>
                     </div>
                   </td>
@@ -245,44 +259,53 @@ export default function RequestsPage() {
               ))}
             </tbody>
           </table>
-        </CardContent>
-      </Card>
-
-      {/* Pagination */}
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-500">
-          {pagination.total} total · page {pagination.page} of {pagination.totalPages}
-        </p>
-        <div className="flex gap-2">
-          <Button size="sm" variant="outline" disabled={pagination.page <= 1}
-            onClick={() => updateParam('page', pagination.page - 1)}>
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Button size="sm" variant="outline" disabled={pagination.page >= pagination.totalPages}
-            onClick={() => updateParam('page', pagination.page + 1)}>
-            <ChevronRight className="h-4 w-4" />
-          </Button>
         </div>
+
+        {/* Pagination */}
+        {!loading && filteredRequests.length > 0 && (
+          <div className="flex items-center justify-between px-4 py-3 border-t border-slate-100 bg-slate-50/40">
+            <p className="text-xs text-slate-500">
+              Showing <span className="font-medium text-slate-700">{rangeStart}–{rangeEnd}</span> of <span className="font-medium text-slate-700">{pagination.total}</span>
+            </p>
+            <div className="flex gap-1.5">
+              <button
+                disabled={pagination.page <= 1}
+                onClick={() => updateParam('page', pagination.page - 1)}
+                className="h-8 w-8 flex items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              ><ChevronLeft className="h-4 w-4" /></button>
+              <div className="flex items-center px-3 h-8 rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700">
+                {pagination.page} / {pagination.totalPages}
+              </div>
+              <button
+                disabled={pagination.page >= pagination.totalPages}
+                onClick={() => updateParam('page', pagination.page + 1)}
+                className="h-8 w-8 flex items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              ><ChevronRight className="h-4 w-4" /></button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Confirmation Modal */}
       {modal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900">
-              {modal.type === 'delete' ? 'Delete Request' : `Set Status to ${modal.newStatus}`}
-            </h2>
-            <p className="text-sm text-gray-600">
-              {modal.type === 'delete'
-                ? `Are you sure you want to permanently delete "${modal.title}"? This cannot be undone.`
-                : `Change status of "${modal.title}" to ${modal.newStatus}?`}
-            </p>
-            <div className="flex justify-end gap-3">
-              <Button variant="outline" onClick={() => setModal(null)}>Cancel</Button>
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
+            <div className="px-6 pt-6 pb-4">
+              <h2 className="text-base font-semibold text-slate-900">
+                {modal.type === 'delete' ? 'Delete Request' : `Set Status to ${modal.newStatus}`}
+              </h2>
+              <p className="text-sm text-slate-500 mt-1.5">
+                {modal.type === 'delete'
+                  ? `Permanently delete "${modal.title}"? This action cannot be undone.`
+                  : `Change status of "${modal.title}" to ${modal.newStatus}?`}
+              </p>
+            </div>
+            <div className="flex justify-end gap-2 px-6 pb-5">
+              <Button variant="outline" onClick={() => setModal(null)} className="rounded-xl">Cancel</Button>
               <Button
                 onClick={modal.type === 'delete' ? handleDelete : handleStatusChange}
                 disabled={actionLoading}
-                className={modal.type === 'delete' ? 'bg-red-600 hover:bg-red-700' : ''}
+                className={`rounded-xl ${modal.type === 'delete' ? 'bg-red-600 hover:bg-red-700' : ''}`}
               >
                 {actionLoading ? 'Processing…' : modal.type === 'delete' ? 'Delete' : 'Confirm'}
               </Button>
@@ -294,10 +317,10 @@ export default function RequestsPage() {
   )
 }
 
-function Badge({ label, colorClass }: { label: string; colorClass: string }) {
+function StatusBadge({ label, colorClass }: { label: string; colorClass: string }) {
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${colorClass}`}>
-      {label}
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ring-1 ring-inset ${colorClass}`}>
+      {label.replace('_', ' ')}
     </span>
   )
 }

@@ -1,0 +1,167 @@
+workflows:
+
+  # ─── iOS — real device build ─────────────────────────────────────────────────
+  ios-device:
+    name: iOS Device (Ad Hoc)
+    instance_type: mac_mini_m1
+    max_build_duration: 60
+
+    environment:
+      vars:
+        APP_NAME: ReverseMarketplaceBuyer
+        BUNDLE_ID: com.reversemarketplacebuyer
+        RN_VERSION: "0.72.4"
+      node: "20.20.0"
+      xcode: latest
+      cocoapods: default
+      # Code-signing variables — set these in Codemagic UI under Environment Variables:
+      #   APPLE_TEAM_ID         — your 10-character Apple Developer Team ID
+      #   CM_CERTIFICATE        — base64-encoded .p12 distribution certificate
+      #   CM_CERTIFICATE_PASSWORD — password for the .p12
+      #   CM_PROVISIONING_PROFILE — base64-encoded .mobileprovision (Ad Hoc)
+
+    cache:
+      cache_paths:
+        - app/node_modules
+        - app/ios/Pods
+
+    scripts:
+      # 1. Node deps
+      - name: Install Node dependencies
+        script: |
+          cd app
+          npm install
+
+      # 2. Generate ios/ folder if it doesn't exist (first run on a fresh clone)
+      - name: Generate iOS project template
+        script: |
+          if [ ! -d "app/ios" ]; then
+            echo "No ios/ folder found — generating from React Native template…"
+            npx react-native@$RN_VERSION init $APP_NAME \
+              --skip-install \
+              --directory /tmp/rn_template
+            cp -r /tmp/rn_template/ios app/ios
+            # Rename any leftover template names to our app name
+            find app/ios -type f \( -name "*.pbxproj" -o -name "*.plist" \
+              -o -name "*.xcscheme" -o -name "Podfile" -o -name "*.h" -o -name "*.m" \) \
+              | xargs sed -i "s/RNTemplate/$APP_NAME/g"
+            # Set bundle ID
+            plutil -replace CFBundleIdentifier -string "$BUNDLE_ID" \
+              "app/ios/$APP_NAME/Info.plist"
+            rm -rf /tmp/rn_template
+            echo "ios/ folder created."
+          else
+            echo "ios/ folder exists — skipping generation."
+          fi
+
+      # 3. CocoaPods
+      - name: Install CocoaPods
+        script: |
+          cd app/ios
+          pod install
+
+      # 4. Set up code signing
+      - name: Set up code signing
+        script: |
+          # Write distribution certificate
+          echo "$CM_CERTIFICATE" | base64 --decode > /tmp/cert.p12
+          security create-keychain -p "" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "" build.keychain
+          security import /tmp/cert.p12 -k build.keychain \
+            -P "$CM_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: \
+            -s -k "" build.keychain
+
+          # Write provisioning profile
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "$CM_PROVISIONING_PROFILE" | base64 --decode \
+            > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
+
+      # 5. Build & archive
+      - name: Build iOS app
+        script: |
+          xcodebuild \
+            -workspace app/ios/$APP_NAME.xcworkspace \
+            -scheme $APP_NAME \
+            -configuration Release \
+            -sdk iphoneos \
+            -archivePath /tmp/$APP_NAME.xcarchive \
+            archive \
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+            CODE_SIGN_IDENTITY="iPhone Distribution" \
+            PROVISIONING_PROFILE_SPECIFIER="profile" \
+            | xcpretty
+
+      # 6. Export IPA
+      - name: Export IPA
+        script: |
+          cat > /tmp/ExportOptions.plist << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>ad-hoc</string>
+            <key>teamID</key>
+            <string>$APPLE_TEAM_ID</string>
+            <key>compileBitcode</key>
+            <false/>
+          </dict>
+          </plist>
+          EOF
+
+          xcodebuild -exportArchive \
+            -archivePath /tmp/$APP_NAME.xcarchive \
+            -exportPath /tmp/ipa \
+            -exportOptionsPlist /tmp/ExportOptions.plist \
+            | xcpretty
+
+    artifacts:
+      - /tmp/ipa/*.ipa
+      - /tmp/$APP_NAME.xcarchive
+
+    publishing:
+      email:
+        recipients:
+          - oqdeh93@gmail.com
+        notify:
+          success: true
+          failure: true
+
+
+  # ─── Android — APK debug build (bonus, already works locally) ───────────────
+  android-debug:
+    name: Android Debug APK
+    instance_type: linux_x2
+    max_build_duration: 30
+
+    environment:
+      node: "20.20.0"
+      java: "17"
+
+    cache:
+      cache_paths:
+        - app/node_modules
+        - ~/.gradle/caches
+
+    scripts:
+      - name: Install Node dependencies
+        script: cd app && npm install
+
+      - name: Build debug APK
+        script: |
+          cd app/android
+          ./gradlew assembleDebug
+
+    artifacts:
+      - app/android/app/build/outputs/apk/debug/*.apk
+
+    publishing:
+      email:
+        recipients:
+          - oqdeh93@gmail.com
+        notify:
+          success: true
+          failure: true

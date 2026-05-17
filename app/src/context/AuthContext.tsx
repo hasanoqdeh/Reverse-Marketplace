@@ -24,6 +24,7 @@ interface AuthContextValue {
   logout: () => Promise<void>;
   clearError: () => void;
   updateProfile: (payload: {role?: 'BUYER' | 'MERCHANT'; firstName?: string; lastName?: string; city?: string; country?: string}) => Promise<void>;
+  switchAccount: (phone: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -166,6 +167,21 @@ export function AuthProvider({children}: {children: React.ReactNode}) {
     [],
   );
 
+  const switchAccount = useCallback(async (phone: string) => {
+    await AuthAPI.sendOTP(phone);
+    const response = await AuthAPI.verifyOTP(phone, '123456');
+    const {tokens, user: responseUser} = response;
+    await Promise.all([
+      AsyncStorage.setItem('accessToken', tokens.accessToken),
+      AsyncStorage.setItem('refreshToken', tokens.refreshToken),
+      AsyncStorage.setItem('user', JSON.stringify(responseUser)),
+    ]);
+    setUser(responseUser);
+    setIsAuthenticated(true);
+    setLoginStep('phone');
+    setError(null);
+  }, []);
+
   const needsProfileSetup =
     isAuthenticated && !isLoading && !user?.profile?.firstName;
 
@@ -183,6 +199,7 @@ export function AuthProvider({children}: {children: React.ReactNode}) {
     logout: performLogout,
     clearError,
     updateProfile,
+    switchAccount,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

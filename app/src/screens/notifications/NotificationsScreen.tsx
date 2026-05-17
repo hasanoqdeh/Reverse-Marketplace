@@ -1,9 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  ActivityIndicator, FlatList, StyleSheet, Text,
-  TouchableOpacity, View, RefreshControl, Alert,
+  ActivityIndicator, Alert, FlatList, RefreshControl,
+  StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { io, Socket } from 'socket.io-client';
 import {
   NotificationItem,
@@ -12,22 +14,19 @@ import {
   markAllNotificationsRead,
   deleteNotification,
 } from '../../api/notifications';
+import { RootStackParamList } from '../../types/navigation';
+import AppHeader from '../../components/AppHeader';
+
+type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 const API_BASE = 'http://10.0.2.2:3000';
 
-const TYPE_COLORS: Record<string, string> = {
-  SYSTEM: '#6B7280', REQUEST: '#2563EB', BID: '#059669',
-  PAYMENT: '#D97706', CHAT: '#7C3AED', SECURITY: '#DC2626',
-  SUBSCRIPTION: '#0891B2', MARKETING: '#DB2777',
-};
-
-const TYPE_ICONS: Record<string, string> = {
-  SYSTEM: '⚙️', REQUEST: '📋', BID: '💰', PAYMENT: '💳',
-  CHAT: '💬', SECURITY: '🔒', SUBSCRIPTION: '⭐', MARKETING: '📣',
-};
-
-const PRIORITY_DOT: Record<string, string> = {
-  LOW: '#9CA3AF', NORMAL: '#6B7280', HIGH: '#F59E0B', URGENT: '#DC2626',
+const TYPE_META: Record<string, { color: string; icon: string; label: string }> = {
+  NEW_MESSAGE:        { color: '#7C3AED', icon: '💬', label: 'Message' },
+  BID_PLACED:         { color: '#059669', icon: '💰', label: 'Bid' },
+  STATUS_IN_DELIVERY: { color: '#D97706', icon: '🚚', label: 'Delivery' },
+  BID_ACCEPTED:       { color: '#2563EB', icon: '✅', label: 'Accepted' },
+  BUYER_REVIEW:       { color: '#DB2777', icon: '⭐', label: 'Review' },
 };
 
 function timeAgo(date: string) {
@@ -40,34 +39,51 @@ function timeAgo(date: string) {
   return `${Math.floor(h / 24)}d ago`;
 }
 
+function useNavigateToNotification() {
+  const nav = useNavigation<Nav>();
+
+  return useCallback((item: NotificationItem) => {
+    const { type, data } = item;
+
+    if (type === 'NEW_MESSAGE' && data.chatRoomId) {
+      nav.navigate('ChatRoom', { roomId: data.chatRoomId, roomName: data.roomName ?? 'Chat' });
+      return;
+    }
+
+    if (data.requestId) {
+      nav.navigate('RequestDetail', { requestId: data.requestId });
+      return;
+    }
+  }, [nav]);
+}
+
 function NotifRow({
   item,
-  onRead,
+  onPress,
   onDelete,
 }: {
   item: NotificationItem;
-  onRead: (id: string) => void;
+  onPress: (item: NotificationItem) => void;
   onDelete: (id: string) => void;
 }) {
-  const isUnread = !item.readAt;
-  const color = TYPE_COLORS[item.type] ?? '#6B7280';
+  const meta = TYPE_META[item.type] ?? { color: '#6B7280', icon: '🔔', label: item.type };
+  const isUnread = !item.isRead;
 
-  const confirmDelete = () => {
+  const confirmDelete = () =>
     Alert.alert('Delete notification?', undefined, [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Delete', style: 'destructive', onPress: () => onDelete(item.id) },
     ]);
-  };
 
   return (
     <TouchableOpacity
       style={[styles.row, isUnread && styles.rowUnread]}
-      onPress={() => isUnread && onRead(item.id)}
+      onPress={() => onPress(item)}
       onLongPress={confirmDelete}
       activeOpacity={0.7}
     >
-      <View style={[styles.iconBadge, { backgroundColor: color + '20' }]}>
-        <Text style={styles.iconText}>{TYPE_ICONS[item.type] ?? '🔔'}</Text>
+      <View style={[styles.iconBadge, { backgroundColor: meta.color + '20' }]}>
+        <Text style={styles.iconText}>{meta.icon}</Text>
       </View>
       <View style={styles.rowBody}>
         <View style={styles.rowTop}>
@@ -76,12 +92,9 @@ function NotifRow({
           </Text>
           <Text style={styles.time}>{timeAgo(item.createdAt)}</Text>
         </View>
-        <Text style={styles.content} numberOfLines={2}>{item.content}</Text>
-        <View style={styles.rowMeta}>
-          <View style={[styles.typePill, { backgroundColor: color + '18' }]}>
-            <Text style={[styles.typeText, { color }]}>{item.type}</Text>
-          </View>
-          <View style={[styles.priorityDot, { backgroundColor: PRIORITY_DOT[item.priority] }]} />
+        <Text style={styles.body} numberOfLines={2}>{item.body}</Text>
+        <View style={[styles.typePill, { backgroundColor: meta.color + '18' }]}>
+          <Text style={[styles.typeText, { color: meta.color }]}>{meta.label}</Text>
         </View>
       </View>
       {isUnread && <View style={styles.unreadDot} />}
@@ -89,7 +102,7 @@ function NotifRow({
   );
 }
 
-const FILTERS = ['All', 'Unread', 'BID', 'REQUEST', 'CHAT', 'SYSTEM'];
+const FILTERS = ['All', 'Unread'];
 
 export default function NotificationsScreen() {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
@@ -101,11 +114,11 @@ export default function NotificationsScreen() {
   const [totalPages, setTotalPages] = useState(1);
   const [loadingMore, setLoadingMore] = useState(false);
   const socketRef = useRef<Socket | null>(null);
+  const navigateTo = useNavigateToNotification();
 
   const buildParams = useCallback((pg = 1, filter = activeFilter) => {
     const p: Record<string, unknown> = { page: pg, limit: 20 };
     if (filter === 'Unread') p.unreadOnly = true;
-    else if (filter !== 'All') p.type = filter;
     return p;
   }, [activeFilter]);
 
@@ -116,9 +129,7 @@ export default function NotificationsScreen() {
       setUnreadCount(res.unreadCount);
       setPage(pg);
       setTotalPages(res.pagination.totalPages);
-    } catch {
-      // silent
-    }
+    } catch {}
   }, [buildParams]);
 
   useEffect(() => {
@@ -137,11 +148,11 @@ export default function NotificationsScreen() {
       });
       socket.on('notification:read', ({ notificationId }: { notificationId: string }) => {
         setNotifications(prev =>
-          prev.map(n => n.id === notificationId ? { ...n, readAt: new Date().toISOString(), status: 'READ' } : n)
+          prev.map(n => n.id === notificationId ? { ...n, isRead: true } : n)
         );
       });
       socket.on('notification:all_read', () => {
-        setNotifications(prev => prev.map(n => ({ ...n, readAt: n.readAt ?? new Date().toISOString(), status: 'READ' as const })));
+        setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
         setUnreadCount(0);
       });
       socketRef.current = socket;
@@ -162,12 +173,13 @@ export default function NotificationsScreen() {
     setLoadingMore(false);
   };
 
-  const handleRead = async (id: string) => {
-    await markNotificationRead(id).catch(() => null);
-    setNotifications(prev =>
-      prev.map(n => n.id === id ? { ...n, readAt: new Date().toISOString(), status: 'READ' } : n)
-    );
-    setUnreadCount(c => Math.max(0, c - 1));
+  const handlePress = async (item: NotificationItem) => {
+    if (!item.isRead) {
+      await markNotificationRead(item.id).catch(() => null);
+      setNotifications(prev => prev.map(n => n.id === item.id ? { ...n, isRead: true } : n));
+      setUnreadCount(c => Math.max(0, c - 1));
+    }
+    navigateTo(item);
   };
 
   const handleDelete = async (id: string) => {
@@ -177,7 +189,7 @@ export default function NotificationsScreen() {
 
   const handleMarkAllRead = async () => {
     await markAllNotificationsRead().catch(() => null);
-    setNotifications(prev => prev.map(n => ({ ...n, readAt: n.readAt ?? new Date().toISOString(), status: 'READ' as const })));
+    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
     setUnreadCount(0);
   };
 
@@ -187,20 +199,17 @@ export default function NotificationsScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.headerTitle}>Notifications</Text>
-          {unreadCount > 0 && <Text style={styles.unreadLabel}>{unreadCount} unread</Text>}
-        </View>
-        {unreadCount > 0 && (
+      <AppHeader />
+
+      {unreadCount > 0 && (
+        <View style={styles.actionBar}>
+          <Text style={styles.unreadLabel}>{unreadCount} unread</Text>
           <TouchableOpacity onPress={handleMarkAllRead} style={styles.markAllBtn}>
             <Text style={styles.markAllText}>Mark all read</Text>
           </TouchableOpacity>
-        )}
-      </View>
+        </View>
+      )}
 
-      {/* Filter tabs */}
       <FlatList
         data={FILTERS}
         horizontal
@@ -218,11 +227,12 @@ export default function NotificationsScreen() {
         )}
       />
 
-      {/* List */}
       <FlatList
         data={notifications}
         keyExtractor={n => n.id}
-        renderItem={({ item }) => <NotifRow item={item} onRead={handleRead} onDelete={handleDelete} />}
+        renderItem={({ item }) => (
+          <NotifRow item={item} onPress={handlePress} onDelete={handleDelete} />
+        )}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         onEndReached={onLoadMore}
         onEndReachedThreshold={0.3}
@@ -232,11 +242,11 @@ export default function NotificationsScreen() {
             <Text style={styles.emptyIcon}>🔔</Text>
             <Text style={styles.emptyTitle}>No notifications</Text>
             <Text style={styles.emptyDesc}>
-              {activeFilter === 'Unread' ? 'You\'re all caught up!' : 'Nothing here yet.'}
+              {activeFilter === 'Unread' ? "You're all caught up!" : 'Nothing here yet.'}
             </Text>
           </View>
         }
-        contentContainerStyle={notifications.length === 0 && styles.emptyContainer}
+        contentContainerStyle={notifications.length === 0 ? styles.emptyContainer : undefined}
       />
     </View>
   );
@@ -245,9 +255,8 @@ export default function NotificationsScreen() {
 const styles = StyleSheet.create({
   container:        { flex: 1, backgroundColor: '#F9FAFB' },
   center:           { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  header:           { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingTop: 16, paddingBottom: 8, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#E5E7EB' },
-  headerTitle:      { fontSize: 22, fontWeight: '700', color: '#111827' },
-  unreadLabel:      { fontSize: 12, color: '#6B7280', marginTop: 2 },
+  actionBar:        { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 8, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#E5E7EB' },
+  unreadLabel:      { fontSize: 12, color: '#6B7280' },
   markAllBtn:       { paddingHorizontal: 12, paddingVertical: 6, backgroundColor: '#EFF6FF', borderRadius: 8 },
   markAllText:      { fontSize: 13, color: '#2563EB', fontWeight: '600' },
   filterBar:        { maxHeight: 48, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#E5E7EB' },
@@ -264,11 +273,9 @@ const styles = StyleSheet.create({
   title:            { fontSize: 14, color: '#374151', fontWeight: '500', flex: 1, marginRight: 8 },
   titleUnread:      { fontWeight: '700', color: '#111827' },
   time:             { fontSize: 11, color: '#9CA3AF' },
-  content:          { fontSize: 13, color: '#6B7280', lineHeight: 18, marginBottom: 6 },
-  rowMeta:          { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  typePill:         { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4 },
+  body:             { fontSize: 13, color: '#6B7280', lineHeight: 18, marginBottom: 6 },
+  typePill:         { alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4 },
   typeText:         { fontSize: 10, fontWeight: '700' },
-  priorityDot:      { width: 8, height: 8, borderRadius: 4 },
   unreadDot:        { width: 10, height: 10, borderRadius: 5, backgroundColor: '#2563EB', alignSelf: 'center', marginLeft: 8 },
   emptyContainer:   { flex: 1 },
   emptyState:       { flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 80 },

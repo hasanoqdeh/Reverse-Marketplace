@@ -3,6 +3,17 @@
 const chatService = require('../services/chatService');
 
 const chatController = {
+  // POST /chat/upload
+  async uploadMedia(req, res) {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+    const baseUrl = process.env.BASE_URL || 'http://10.0.2.2:3000';
+    const url = `${baseUrl}/uploads/chat/${req.file.filename}`;
+    const type = req.file.mimetype.startsWith('image/') ? 'IMAGE' : 'VOICE';
+    return res.json({ success: true, url, type });
+  },
+
   // POST /chat/rooms
   async createRoom(req, res) {
     const result = await chatService.createRoom(req.user.id, req.body);

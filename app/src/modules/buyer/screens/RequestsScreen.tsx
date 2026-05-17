@@ -8,12 +8,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../../types/navigation';
 import {MarketRequest, RequestStatus} from '../../../types/api';
 import {getMyRequests} from '../../../api/requests';
+import AppHeader from '../../../components/AppHeader';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -45,9 +45,6 @@ function formatBudget(min?: number | null, max?: number | null): string {
 
 function RequestCard({item, onPress}: {item: MarketRequest; onPress: () => void}) {
   const meta = STATUS_META[item.status] ?? STATUS_META.ACTIVE;
-  const daysLeft = item.expiresAt
-    ? Math.max(0, Math.ceil((new Date(item.expiresAt).getTime() - Date.now()) / 86400000))
-    : null;
 
   return (
     <TouchableOpacity style={card.wrap} onPress={onPress} activeOpacity={0.7}>
@@ -58,14 +55,7 @@ function RequestCard({item, onPress}: {item: MarketRequest; onPress: () => void}
       <Text style={card.title} numberOfLines={2}>{item.title}</Text>
       <View style={card.footer}>
         <Text style={card.budget}>{formatBudget(item.budgetMin, item.budgetMax)}</Text>
-        <View style={card.metaRow}>
-          <Text style={card.metaText}>{item.bidCount} bids</Text>
-          {daysLeft !== null && item.status === 'ACTIVE' && (
-            <Text style={[card.metaText, daysLeft <= 1 && {color: '#DC2626'}]}>
-              {daysLeft === 0 ? 'Expires today' : `${daysLeft}d left`}
-            </Text>
-          )}
-        </View>
+        <Text style={card.metaText}>{item.bidCount} bids</Text>
       </View>
     </TouchableOpacity>
   );
@@ -119,16 +109,8 @@ export default function RequestsScreen() {
   }, [loadingMore, hasMore, page, activeTab, fetchRequests]);
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>My Requests</Text>
-        <TouchableOpacity
-          style={styles.newBtn}
-          onPress={() => navigation.navigate('CreateRequest')}
-          activeOpacity={0.8}>
-          <Text style={styles.newBtnText}>+ New</Text>
-        </TouchableOpacity>
-      </View>
+    <View style={styles.safe}>
+      <AppHeader />
 
       {/* Tabs */}
       <View style={styles.tabBarWrap}>
@@ -189,7 +171,8 @@ export default function RequestsScreen() {
           }
         />
       )}
-    </SafeAreaView>
+
+    </View>
   );
 }
 
@@ -204,20 +187,11 @@ const card = StyleSheet.create({
   title: {fontSize: 16, fontWeight: '700', color: '#111827', marginBottom: 10, lineHeight: 22},
   footer: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
   budget: {fontSize: 14, fontWeight: '600', color: ACCENT},
-  metaRow: {flexDirection: 'row', gap: 10},
   metaText: {fontSize: 12, color: '#9CA3AF'},
 });
 
 const styles = StyleSheet.create({
   safe: {flex: 1, backgroundColor: '#F3F4F6'},
-  header: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    backgroundColor: '#FFFFFF', paddingHorizontal: 20, paddingVertical: 14,
-    borderBottomWidth: 1, borderBottomColor: '#E5E7EB',
-  },
-  headerTitle: {fontSize: 20, fontWeight: '700', color: '#111827'},
-  newBtn: {backgroundColor: ACCENT, borderRadius: 20, paddingHorizontal: 14, paddingVertical: 6},
-  newBtnText: {fontSize: 13, fontWeight: '700', color: '#FFFFFF'},
   tabBarWrap: {backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#E5E7EB'},
   tabBar: {paddingHorizontal: 12, paddingVertical: 8, gap: 6},
   tab: {paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, backgroundColor: '#F3F4F6'},

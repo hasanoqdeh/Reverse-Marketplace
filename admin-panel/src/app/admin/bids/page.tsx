@@ -2,9 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import {
   apiGetAdminBids, apiAdminForceRejectBid,
@@ -13,15 +11,15 @@ import {
 import { format } from 'date-fns'
 import {
   Search, ChevronLeft, ChevronRight, AlertCircle,
-  DollarSign, Clock, CheckCircle, XCircle,
+  DollarSign, Clock, CheckCircle, XCircle, Gavel,
 } from 'lucide-react'
 
 const BID_STATUS_COLORS: Record<string, string> = {
-  PENDING:   'bg-yellow-100 text-yellow-800',
-  ACCEPTED:  'bg-green-100 text-green-800',
-  REJECTED:  'bg-red-100 text-red-800',
-  EXPIRED:   'bg-orange-100 text-orange-800',
-  WITHDRAWN: 'bg-gray-100 text-gray-600',
+  PENDING:   'bg-yellow-100 text-yellow-700 ring-yellow-200',
+  ACCEPTED:  'bg-green-100 text-green-700 ring-green-200',
+  REJECTED:  'bg-red-100 text-red-700 ring-red-200',
+  EXPIRED:   'bg-orange-100 text-orange-700 ring-orange-200',
+  WITHDRAWN: 'bg-slate-100 text-slate-600 ring-slate-200',
 }
 
 const ALL_STATUSES = ['ALL', 'PENDING', 'ACCEPTED', 'REJECTED', 'EXPIRED', 'WITHDRAWN']
@@ -80,29 +78,33 @@ export default function BidsPage() {
     }
   }
 
-  const pending   = analytics?.statusBreakdown.find(s => s.status === 'PENDING')?.count   ?? 0
-  const accepted  = analytics?.statusBreakdown.find(s => s.status === 'ACCEPTED')?.count  ?? 0
-  const rejected  = analytics?.statusBreakdown.find(s => s.status === 'REJECTED')?.count  ?? 0
+  const pending  = analytics?.statusBreakdown.find(s => s.status === 'PENDING')?.count  ?? 0
+  const accepted = analytics?.statusBreakdown.find(s => s.status === 'ACCEPTED')?.count ?? 0
+  const rejected = analytics?.statusBreakdown.find(s => s.status === 'REJECTED')?.count ?? 0
 
   const displayed = search
-    ? bids.filter(b =>
-        b.merchantId.includes(search) ||
-        b.requestId.includes(search) ||
-        b.id.includes(search)
-      )
+    ? bids.filter(b => b.merchantId.includes(search) || b.requestId.includes(search) || b.id.includes(search))
     : bids
 
+  const rangeStart = pagination.total === 0 ? 0 : (pagination.page - 1) * pagination.limit + 1
+  const rangeEnd = Math.min(pagination.page * pagination.limit, pagination.total)
+
   return (
-    <div className="p-6 space-y-4">
-      <h1 className="text-2xl font-bold text-gray-900">Bids</h1>
+    <div className="p-5 sm:p-6 space-y-5 max-w-7xl">
+      {/* Header */}
+      <div>
+        <h1 className="text-xl font-semibold text-slate-900">Bids</h1>
+        <p className="text-sm text-slate-500 mt-0.5">Monitor and moderate all platform bids.</p>
+      </div>
 
       {feedback && (
-        <Alert className="border-green-200 bg-green-50">
-          <AlertDescription className="text-green-800">{feedback}</AlertDescription>
-        </Alert>
+        <div className="flex items-center gap-2 rounded-xl bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-800">
+          <CheckCircle className="h-4 w-4 shrink-0" />
+          {feedback}
+        </div>
       )}
       {error && (
-        <Alert variant="destructive">
+        <Alert variant="destructive" className="rounded-xl">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>{error}</AlertDescription>
         </Alert>
@@ -111,157 +113,144 @@ export default function BidsPage() {
       {/* Stats */}
       {analytics && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <StatCard
-            label="Total Bids"
-            value={analytics.totalBids.toLocaleString()}
-            icon={DollarSign}
-            color="text-blue-600"
-          />
-          <StatCard
-            label="Pending"
-            value={String(pending)}
-            icon={Clock}
-            color="text-yellow-600"
-          />
-          <StatCard
-            label="Accepted"
-            value={String(accepted)}
-            icon={CheckCircle}
-            color="text-green-600"
-          />
-          <StatCard
-            label="Rejected / Other"
-            value={String(rejected)}
-            icon={XCircle}
-            color="text-red-600"
-          />
+          {[
+            { label: 'Total Bids', value: analytics.totalBids.toLocaleString(), icon: DollarSign, bg: 'bg-blue-50',   iconColor: 'text-blue-600' },
+            { label: 'Pending',    value: String(pending),                       icon: Clock,       bg: 'bg-amber-50',  iconColor: 'text-amber-600' },
+            { label: 'Accepted',   value: String(accepted),                      icon: CheckCircle, bg: 'bg-green-50',  iconColor: 'text-green-600' },
+            { label: 'Rejected',   value: String(rejected),                      icon: XCircle,     bg: 'bg-red-50',    iconColor: 'text-red-600' },
+          ].map(({ label, value, icon: Icon, bg, iconColor }) => (
+            <div key={label} className="bg-white rounded-xl border border-slate-200 px-5 py-4">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs font-medium text-slate-500">{label}</p>
+                  <p className="text-2xl font-bold text-slate-900 mt-1">{value}</p>
+                </div>
+                <div className={`h-9 w-9 rounded-lg ${bg} flex items-center justify-center shrink-0`}>
+                  <Icon className={`h-4 w-4 ${iconColor}`} />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
       {/* Total value banner */}
       {analytics && analytics.totalValue > 0 && (
-        <Card className="border-blue-100 bg-blue-50">
-          <CardContent className="py-3 flex items-center justify-between">
-            <span className="text-sm font-medium text-blue-700">Total bid value across all bids</span>
-            <span className="text-xl font-bold text-blue-800">
-              ${analytics.totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </span>
-          </CardContent>
-        </Card>
+        <div className="bg-blue-50 border border-blue-200 rounded-xl px-5 py-3.5 flex items-center justify-between">
+          <span className="text-sm font-medium text-blue-700">Total value across all bids</span>
+          <span className="text-lg font-bold text-blue-800">
+            ${analytics.totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </span>
+        </div>
       )}
 
       {/* Filters */}
-      <Card>
-        <CardContent className="pt-4">
-          <div className="flex flex-wrap gap-3">
-            <div className="relative flex-1 min-w-48">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                placeholder="Search by bid, request, or merchant ID…"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="pl-9"
-              />
-            </div>
-            <select
-              value={params.status ?? 'ALL'}
-              onChange={e => updateParam('status', e.target.value)}
-              className="border border-gray-300 rounded-md px-3 py-2 text-sm"
-            >
-              {ALL_STATUSES.map(s => <option key={s}>{s}</option>)}
-            </select>
-            <input
-              type="date"
-              value={params.startDate ?? ''}
-              onChange={e => updateParam('startDate', e.target.value)}
-              className="border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-600"
-              title="From date"
-            />
-            <input
-              type="date"
-              value={params.endDate ?? ''}
-              onChange={e => updateParam('endDate', e.target.value)}
-              className="border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-600"
-              title="To date"
-            />
-            {(params.startDate || params.endDate) && (
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setParams(prev => ({ ...prev, startDate: undefined, endDate: undefined, page: 1 }))}
-              >
-                Clear dates
-              </Button>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex flex-wrap gap-2.5 items-center">
+        <div className="relative flex-1 min-w-52">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Input
+            placeholder="Search by bid, request, or merchant ID…"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="pl-9 h-9 text-sm border-slate-200 bg-white"
+          />
+        </div>
+        <select
+          value={params.status ?? 'ALL'}
+          onChange={e => updateParam('status', e.target.value)}
+          className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          {ALL_STATUSES.map(s => <option key={s} value={s}>{s === 'ALL' ? 'All statuses' : s}</option>)}
+        </select>
+        <input
+          type="date"
+          value={params.startDate ?? ''}
+          onChange={e => updateParam('startDate', e.target.value)}
+          className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          title="From date"
+        />
+        <input
+          type="date"
+          value={params.endDate ?? ''}
+          onChange={e => updateParam('endDate', e.target.value)}
+          className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          title="To date"
+        />
+        {(params.startDate || params.endDate) && (
+          <button
+            onClick={() => setParams(prev => ({ ...prev, startDate: undefined, endDate: undefined, page: 1 }))}
+            className="h-9 px-3 text-sm text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+          >Clear dates</button>
+        )}
+      </div>
 
       {/* Table */}
-      <Card>
-        <CardContent className="p-0 overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="min-w-full">
+            <thead>
+              <tr className="border-b border-slate-100 bg-slate-50/60">
                 {['Request', 'Merchant', 'Amount', 'Delivery', 'Status', 'Submitted', 'Actions'].map(h => (
-                  <th key={h} className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {h}
-                  </th>
+                  <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">{h}</th>
                 ))}
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="divide-y divide-slate-100">
               {loading ? (
+                [...Array(6)].map((_, i) => (
+                  <tr key={i} className="animate-pulse">
+                    {[...Array(7)].map((__, j) => (
+                      <td key={j} className="px-4 py-3"><div className="h-4 bg-slate-200 rounded w-16" /></td>
+                    ))}
+                  </tr>
+                ))
+              ) : displayed.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-4 py-10 text-center">
-                    <div className="flex justify-center">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600" />
+                  <td colSpan={7} className="px-4 py-16 text-center">
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center">
+                        <Gavel className="h-5 w-5 text-slate-400" />
+                      </div>
+                      <p className="text-sm font-medium text-slate-600">No bids found</p>
+                      <p className="text-xs text-slate-400">Try adjusting your search or filters</p>
                     </div>
                   </td>
                 </tr>
-              ) : displayed.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="px-4 py-10 text-center text-sm text-gray-500">
-                    No bids found
-                  </td>
-                </tr>
               ) : displayed.map(bid => (
-                <tr key={bid.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 text-xs font-mono text-blue-600 max-w-[140px]">
-                    <Link href={`/admin/requests/${bid.requestId}`} className="hover:underline truncate block">
+                <tr key={bid.id} className="hover:bg-slate-50/60 transition-colors">
+                  <td className="px-4 py-3">
+                    <Link href={`/admin/requests/${bid.requestId}`} className="text-xs font-mono text-blue-600 hover:text-blue-700 hover:underline">
                       {bid.requestId.slice(0, 8)}…
                     </Link>
                   </td>
-                  <td className="px-4 py-3 text-xs font-mono text-gray-600 max-w-[140px] truncate">
+                  <td className="px-4 py-3 text-xs font-mono text-slate-600">
                     {bid.merchantId.slice(0, 8)}…
                   </td>
-                  <td className="px-4 py-3 text-sm font-semibold text-gray-900 whitespace-nowrap">
+                  <td className="px-4 py-3 text-sm font-semibold text-slate-900 whitespace-nowrap">
                     ${parseFloat(bid.amount).toFixed(2)}
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">
+                  <td className="px-4 py-3 text-sm text-slate-600 whitespace-nowrap">
                     {bid.deliveryDays}d
                   </td>
                   <td className="px-4 py-3">
-                    <Badge label={bid.status} colorClass={BID_STATUS_COLORS[bid.status] ?? 'bg-gray-100 text-gray-700'} />
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ring-1 ring-inset ${BID_STATUS_COLORS[bid.status] ?? 'bg-slate-100 text-slate-700 ring-slate-200'}`}>
+                      {bid.status}
+                    </span>
                   </td>
-                  <td className="px-4 py-3 text-xs text-gray-500 whitespace-nowrap">
+                  <td className="px-4 py-3 text-xs text-slate-500 whitespace-nowrap">
                     {format(new Date(bid.createdAt), 'MMM d, yyyy HH:mm')}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex gap-1">
                       <Link
                         href={`/admin/bids/${bid.id}`}
-                        className="text-xs px-2 py-1 rounded text-blue-700 bg-blue-50 hover:bg-blue-100"
-                      >
-                        View
-                      </Link>
+                        className="text-xs font-medium px-2 py-1 rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors"
+                      >View</Link>
                       {bid.status === 'PENDING' && (
                         <button
                           onClick={() => setRejectModal({ bid })}
-                          className="text-xs px-2 py-1 rounded text-red-700 bg-red-50 hover:bg-red-100"
-                        >
-                          Reject
-                        </button>
+                          className="text-xs font-medium px-2 py-1 rounded-md text-red-700 bg-red-50 hover:bg-red-100 transition-colors"
+                        >Reject</button>
                       )}
                     </div>
                   </td>
@@ -269,82 +258,63 @@ export default function BidsPage() {
               ))}
             </tbody>
           </table>
-        </CardContent>
-      </Card>
-
-      {/* Pagination */}
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-500">
-          {pagination.total.toLocaleString()} total · page {pagination.page} of {pagination.totalPages}
-        </p>
-        <div className="flex gap-2">
-          <Button
-            size="sm" variant="outline"
-            disabled={pagination.page <= 1}
-            onClick={() => updateParam('page', pagination.page - 1)}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Button
-            size="sm" variant="outline"
-            disabled={pagination.page >= pagination.totalPages}
-            onClick={() => updateParam('page', pagination.page + 1)}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
         </div>
+
+        {/* Pagination */}
+        {!loading && displayed.length > 0 && (
+          <div className="flex items-center justify-between px-4 py-3 border-t border-slate-100 bg-slate-50/40">
+            <p className="text-xs text-slate-500">
+              Showing <span className="font-medium text-slate-700">{rangeStart}–{rangeEnd}</span> of <span className="font-medium text-slate-700">{pagination.total.toLocaleString()}</span>
+            </p>
+            <div className="flex gap-1.5">
+              <button
+                disabled={pagination.page <= 1}
+                onClick={() => updateParam('page', pagination.page - 1)}
+                className="h-8 w-8 flex items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              ><ChevronLeft className="h-4 w-4" /></button>
+              <div className="flex items-center px-3 h-8 rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700">
+                {pagination.page} / {pagination.totalPages}
+              </div>
+              <button
+                disabled={pagination.page >= pagination.totalPages}
+                onClick={() => updateParam('page', pagination.page + 1)}
+                className="h-8 w-8 flex items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              ><ChevronRight className="h-4 w-4" /></button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Force-reject modal */}
       {rejectModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md space-y-4">
-            <h2 className="text-lg font-semibold text-red-700">Force-Reject Bid</h2>
-            <p className="text-sm text-gray-600">
-              Reject the{' '}
-              <span className="font-semibold">${parseFloat(rejectModal.bid.amount).toFixed(2)}</span>{' '}
-              bid from merchant{' '}
-              <span className="font-mono text-xs bg-gray-100 px-1 rounded">{rejectModal.bid.merchantId.slice(0, 12)}…</span>?
-            </p>
-            <div className="flex justify-end gap-3">
-              <Button variant="outline" onClick={() => setRejectModal(null)}>Cancel</Button>
-              <Button
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
+            <div className="px-6 pt-6 pb-4">
+              <h2 className="text-base font-semibold text-red-700">Force-Reject Bid</h2>
+              <p className="text-sm text-slate-500 mt-1.5">
+                Reject the{' '}
+                <span className="font-semibold text-slate-700">${parseFloat(rejectModal.bid.amount).toFixed(2)}</span>{' '}
+                bid from merchant{' '}
+                <code className="text-xs bg-slate-100 px-1.5 py-0.5 rounded">{rejectModal.bid.merchantId.slice(0, 12)}…</code>?
+                {' '}This cannot be undone.
+              </p>
+            </div>
+            <div className="flex justify-end gap-2 px-6 pb-5">
+              <button
+                onClick={() => setRejectModal(null)}
+                className="px-4 py-2 text-sm font-medium text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
+              >Cancel</button>
+              <button
                 onClick={handleForceReject}
                 disabled={actionLoading}
-                className="bg-red-600 hover:bg-red-700 text-white"
+                className="px-4 py-2 text-sm font-medium bg-red-600 text-white rounded-xl hover:bg-red-700 disabled:opacity-50 transition-colors"
               >
                 {actionLoading ? 'Rejecting…' : 'Reject Bid'}
-              </Button>
+              </button>
             </div>
           </div>
         </div>
       )}
     </div>
-  )
-}
-
-function StatCard({
-  label, value, icon: Icon, color,
-}: {
-  label: string; value: string; icon: React.ElementType; color: string
-}) {
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-sm font-medium text-gray-600">{label}</CardTitle>
-        <Icon className={`h-4 w-4 ${color}`} />
-      </CardHeader>
-      <CardContent>
-        <p className="text-2xl font-bold">{value}</p>
-      </CardContent>
-    </Card>
-  )
-}
-
-function Badge({ label, colorClass }: { label: string; colorClass: string }) {
-  return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${colorClass}`}>
-      {label}
-    </span>
   )
 }

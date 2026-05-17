@@ -44,21 +44,6 @@ export type Request = $Result.DefaultSelection<Prisma.$RequestPayload>
  */
 export type RequestImage = $Result.DefaultSelection<Prisma.$RequestImagePayload>
 /**
- * Model RequestDraft
- * 
- */
-export type RequestDraft = $Result.DefaultSelection<Prisma.$RequestDraftPayload>
-/**
- * Model RequestExtension
- * 
- */
-export type RequestExtension = $Result.DefaultSelection<Prisma.$RequestExtensionPayload>
-/**
- * Model RequestSearchIndex
- * 
- */
-export type RequestSearchIndex = $Result.DefaultSelection<Prisma.$RequestSearchIndexPayload>
-/**
  * Model SavedSearch
  * 
  */
@@ -74,50 +59,20 @@ export type Bid = $Result.DefaultSelection<Prisma.$BidPayload>
  */
 export type ChatRoom = $Result.DefaultSelection<Prisma.$ChatRoomPayload>
 /**
- * Model ChatParticipant
+ * Model ChatRoomParticipant
  * 
  */
-export type ChatParticipant = $Result.DefaultSelection<Prisma.$ChatParticipantPayload>
-/**
- * Model NotificationTemplate
- * 
- */
-export type NotificationTemplate = $Result.DefaultSelection<Prisma.$NotificationTemplatePayload>
+export type ChatRoomParticipant = $Result.DefaultSelection<Prisma.$ChatRoomParticipantPayload>
 /**
  * Model Notification
  * 
  */
 export type Notification = $Result.DefaultSelection<Prisma.$NotificationPayload>
 /**
- * Model NotificationChannel
+ * Model Review
  * 
  */
-export type NotificationChannel = $Result.DefaultSelection<Prisma.$NotificationChannelPayload>
-/**
- * Model NotificationPreference
- * 
- */
-export type NotificationPreference = $Result.DefaultSelection<Prisma.$NotificationPreferencePayload>
-/**
- * Model NotificationDelivery
- * 
- */
-export type NotificationDelivery = $Result.DefaultSelection<Prisma.$NotificationDeliveryPayload>
-/**
- * Model NotificationRead
- * 
- */
-export type NotificationRead = $Result.DefaultSelection<Prisma.$NotificationReadPayload>
-/**
- * Model NotificationStat
- * 
- */
-export type NotificationStat = $Result.DefaultSelection<Prisma.$NotificationStatPayload>
-/**
- * Model BidTemplate
- * 
- */
-export type BidTemplate = $Result.DefaultSelection<Prisma.$BidTemplatePayload>
+export type Review = $Result.DefaultSelection<Prisma.$ReviewPayload>
 
 /**
  * Enums
@@ -182,6 +137,17 @@ export const BidStatus: {
 export type BidStatus = (typeof BidStatus)[keyof typeof BidStatus]
 
 
+export const FulfillmentStatus: {
+  AWAITING: 'AWAITING',
+  PREPARING: 'PREPARING',
+  IN_DELIVERY: 'IN_DELIVERY',
+  DELIVERED: 'DELIVERED',
+  CONFIRMED: 'CONFIRMED'
+};
+
+export type FulfillmentStatus = (typeof FulfillmentStatus)[keyof typeof FulfillmentStatus]
+
+
 export const RoomType: {
   DIRECT: 'DIRECT',
   GROUP: 'GROUP',
@@ -193,96 +159,23 @@ export const RoomType: {
 export type RoomType = (typeof RoomType)[keyof typeof RoomType]
 
 
-export const ParticipantRole: {
-  OWNER: 'OWNER',
-  ADMIN: 'ADMIN',
-  MODERATOR: 'MODERATOR',
-  MEMBER: 'MEMBER'
-};
-
-export type ParticipantRole = (typeof ParticipantRole)[keyof typeof ParticipantRole]
-
-
 export const NotificationType: {
-  SYSTEM: 'SYSTEM',
-  REQUEST: 'REQUEST',
-  BID: 'BID',
-  PAYMENT: 'PAYMENT',
-  CHAT: 'CHAT',
-  SUBSCRIPTION: 'SUBSCRIPTION',
-  SECURITY: 'SECURITY',
-  MARKETING: 'MARKETING'
+  NEW_MESSAGE: 'NEW_MESSAGE',
+  BID_PLACED: 'BID_PLACED',
+  STATUS_IN_DELIVERY: 'STATUS_IN_DELIVERY',
+  BID_ACCEPTED: 'BID_ACCEPTED',
+  BUYER_REVIEW: 'BUYER_REVIEW'
 };
 
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
 
 
-export const NotifChannel: {
-  IN_APP: 'IN_APP',
-  PUSH: 'PUSH',
-  EMAIL: 'EMAIL',
-  SMS: 'SMS',
-  WEBHOOK: 'WEBHOOK'
+export const ReviewType: {
+  BUYER_TO_MERCHANT: 'BUYER_TO_MERCHANT',
+  MERCHANT_TO_BUYER: 'MERCHANT_TO_BUYER'
 };
 
-export type NotifChannel = (typeof NotifChannel)[keyof typeof NotifChannel]
-
-
-export const NotificationPriority: {
-  LOW: 'LOW',
-  NORMAL: 'NORMAL',
-  HIGH: 'HIGH',
-  URGENT: 'URGENT'
-};
-
-export type NotificationPriority = (typeof NotificationPriority)[keyof typeof NotificationPriority]
-
-
-export const NotificationStatus: {
-  PENDING: 'PENDING',
-  PROCESSING: 'PROCESSING',
-  SENT: 'SENT',
-  DELIVERED: 'DELIVERED',
-  FAILED: 'FAILED',
-  EXPIRED: 'EXPIRED',
-  READ: 'READ'
-};
-
-export type NotificationStatus = (typeof NotificationStatus)[keyof typeof NotificationStatus]
-
-
-export const NotifDeliveryStatus: {
-  PENDING: 'PENDING',
-  PROCESSING: 'PROCESSING',
-  SENT: 'SENT',
-  DELIVERED: 'DELIVERED',
-  FAILED: 'FAILED',
-  BOUNCED: 'BOUNCED'
-};
-
-export type NotifDeliveryStatus = (typeof NotifDeliveryStatus)[keyof typeof NotifDeliveryStatus]
-
-
-export const NotifAnalyticsEvent: {
-  SENT: 'SENT',
-  DELIVERED: 'DELIVERED',
-  READ: 'READ',
-  FAILED: 'FAILED',
-  BOUNCED: 'BOUNCED',
-  CLICKED: 'CLICKED',
-  DISMISSED: 'DISMISSED'
-};
-
-export type NotifAnalyticsEvent = (typeof NotifAnalyticsEvent)[keyof typeof NotifAnalyticsEvent]
-
-
-export const AmountType: {
-  FIXED: 'FIXED',
-  PERCENTAGE: 'PERCENTAGE',
-  RANGE: 'RANGE'
-};
-
-export type AmountType = (typeof AmountType)[keyof typeof AmountType]
+export type ReviewType = (typeof ReviewType)[keyof typeof ReviewType]
 
 }
 
@@ -310,41 +203,21 @@ export type BidStatus = $Enums.BidStatus
 
 export const BidStatus: typeof $Enums.BidStatus
 
+export type FulfillmentStatus = $Enums.FulfillmentStatus
+
+export const FulfillmentStatus: typeof $Enums.FulfillmentStatus
+
 export type RoomType = $Enums.RoomType
 
 export const RoomType: typeof $Enums.RoomType
-
-export type ParticipantRole = $Enums.ParticipantRole
-
-export const ParticipantRole: typeof $Enums.ParticipantRole
 
 export type NotificationType = $Enums.NotificationType
 
 export const NotificationType: typeof $Enums.NotificationType
 
-export type NotifChannel = $Enums.NotifChannel
+export type ReviewType = $Enums.ReviewType
 
-export const NotifChannel: typeof $Enums.NotifChannel
-
-export type NotificationPriority = $Enums.NotificationPriority
-
-export const NotificationPriority: typeof $Enums.NotificationPriority
-
-export type NotificationStatus = $Enums.NotificationStatus
-
-export const NotificationStatus: typeof $Enums.NotificationStatus
-
-export type NotifDeliveryStatus = $Enums.NotifDeliveryStatus
-
-export const NotifDeliveryStatus: typeof $Enums.NotifDeliveryStatus
-
-export type NotifAnalyticsEvent = $Enums.NotifAnalyticsEvent
-
-export const NotifAnalyticsEvent: typeof $Enums.NotifAnalyticsEvent
-
-export type AmountType = $Enums.AmountType
-
-export const AmountType: typeof $Enums.AmountType
+export const ReviewType: typeof $Enums.ReviewType
 
 /**
  * ##  Prisma Client ʲˢ
@@ -530,36 +403,6 @@ export class PrismaClient<
   get requestImage(): Prisma.RequestImageDelegate<ExtArgs>;
 
   /**
-   * `prisma.requestDraft`: Exposes CRUD operations for the **RequestDraft** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more RequestDrafts
-    * const requestDrafts = await prisma.requestDraft.findMany()
-    * ```
-    */
-  get requestDraft(): Prisma.RequestDraftDelegate<ExtArgs>;
-
-  /**
-   * `prisma.requestExtension`: Exposes CRUD operations for the **RequestExtension** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more RequestExtensions
-    * const requestExtensions = await prisma.requestExtension.findMany()
-    * ```
-    */
-  get requestExtension(): Prisma.RequestExtensionDelegate<ExtArgs>;
-
-  /**
-   * `prisma.requestSearchIndex`: Exposes CRUD operations for the **RequestSearchIndex** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more RequestSearchIndices
-    * const requestSearchIndices = await prisma.requestSearchIndex.findMany()
-    * ```
-    */
-  get requestSearchIndex(): Prisma.RequestSearchIndexDelegate<ExtArgs>;
-
-  /**
    * `prisma.savedSearch`: Exposes CRUD operations for the **SavedSearch** model.
     * Example usage:
     * ```ts
@@ -590,24 +433,14 @@ export class PrismaClient<
   get chatRoom(): Prisma.ChatRoomDelegate<ExtArgs>;
 
   /**
-   * `prisma.chatParticipant`: Exposes CRUD operations for the **ChatParticipant** model.
+   * `prisma.chatRoomParticipant`: Exposes CRUD operations for the **ChatRoomParticipant** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more ChatParticipants
-    * const chatParticipants = await prisma.chatParticipant.findMany()
+    * // Fetch zero or more ChatRoomParticipants
+    * const chatRoomParticipants = await prisma.chatRoomParticipant.findMany()
     * ```
     */
-  get chatParticipant(): Prisma.ChatParticipantDelegate<ExtArgs>;
-
-  /**
-   * `prisma.notificationTemplate`: Exposes CRUD operations for the **NotificationTemplate** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more NotificationTemplates
-    * const notificationTemplates = await prisma.notificationTemplate.findMany()
-    * ```
-    */
-  get notificationTemplate(): Prisma.NotificationTemplateDelegate<ExtArgs>;
+  get chatRoomParticipant(): Prisma.ChatRoomParticipantDelegate<ExtArgs>;
 
   /**
    * `prisma.notification`: Exposes CRUD operations for the **Notification** model.
@@ -620,64 +453,14 @@ export class PrismaClient<
   get notification(): Prisma.NotificationDelegate<ExtArgs>;
 
   /**
-   * `prisma.notificationChannel`: Exposes CRUD operations for the **NotificationChannel** model.
+   * `prisma.review`: Exposes CRUD operations for the **Review** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more NotificationChannels
-    * const notificationChannels = await prisma.notificationChannel.findMany()
+    * // Fetch zero or more Reviews
+    * const reviews = await prisma.review.findMany()
     * ```
     */
-  get notificationChannel(): Prisma.NotificationChannelDelegate<ExtArgs>;
-
-  /**
-   * `prisma.notificationPreference`: Exposes CRUD operations for the **NotificationPreference** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more NotificationPreferences
-    * const notificationPreferences = await prisma.notificationPreference.findMany()
-    * ```
-    */
-  get notificationPreference(): Prisma.NotificationPreferenceDelegate<ExtArgs>;
-
-  /**
-   * `prisma.notificationDelivery`: Exposes CRUD operations for the **NotificationDelivery** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more NotificationDeliveries
-    * const notificationDeliveries = await prisma.notificationDelivery.findMany()
-    * ```
-    */
-  get notificationDelivery(): Prisma.NotificationDeliveryDelegate<ExtArgs>;
-
-  /**
-   * `prisma.notificationRead`: Exposes CRUD operations for the **NotificationRead** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more NotificationReads
-    * const notificationReads = await prisma.notificationRead.findMany()
-    * ```
-    */
-  get notificationRead(): Prisma.NotificationReadDelegate<ExtArgs>;
-
-  /**
-   * `prisma.notificationStat`: Exposes CRUD operations for the **NotificationStat** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more NotificationStats
-    * const notificationStats = await prisma.notificationStat.findMany()
-    * ```
-    */
-  get notificationStat(): Prisma.NotificationStatDelegate<ExtArgs>;
-
-  /**
-   * `prisma.bidTemplate`: Exposes CRUD operations for the **BidTemplate** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more BidTemplates
-    * const bidTemplates = await prisma.bidTemplate.findMany()
-    * ```
-    */
-  get bidTemplate(): Prisma.BidTemplateDelegate<ExtArgs>;
+  get review(): Prisma.ReviewDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -1125,21 +908,12 @@ export namespace Prisma {
     RequestCategory: 'RequestCategory',
     Request: 'Request',
     RequestImage: 'RequestImage',
-    RequestDraft: 'RequestDraft',
-    RequestExtension: 'RequestExtension',
-    RequestSearchIndex: 'RequestSearchIndex',
     SavedSearch: 'SavedSearch',
     Bid: 'Bid',
     ChatRoom: 'ChatRoom',
-    ChatParticipant: 'ChatParticipant',
-    NotificationTemplate: 'NotificationTemplate',
+    ChatRoomParticipant: 'ChatRoomParticipant',
     Notification: 'Notification',
-    NotificationChannel: 'NotificationChannel',
-    NotificationPreference: 'NotificationPreference',
-    NotificationDelivery: 'NotificationDelivery',
-    NotificationRead: 'NotificationRead',
-    NotificationStat: 'NotificationStat',
-    BidTemplate: 'BidTemplate'
+    Review: 'Review'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1155,7 +929,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "user" | "userProfile" | "authToken" | "requestCategory" | "request" | "requestImage" | "requestDraft" | "requestExtension" | "requestSearchIndex" | "savedSearch" | "bid" | "chatRoom" | "chatParticipant" | "notificationTemplate" | "notification" | "notificationChannel" | "notificationPreference" | "notificationDelivery" | "notificationRead" | "notificationStat" | "bidTemplate"
+      modelProps: "user" | "userProfile" | "authToken" | "requestCategory" | "request" | "requestImage" | "savedSearch" | "bid" | "chatRoom" | "chatRoomParticipant" | "notification" | "review"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1579,216 +1353,6 @@ export namespace Prisma {
           }
         }
       }
-      RequestDraft: {
-        payload: Prisma.$RequestDraftPayload<ExtArgs>
-        fields: Prisma.RequestDraftFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.RequestDraftFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RequestDraftPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.RequestDraftFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RequestDraftPayload>
-          }
-          findFirst: {
-            args: Prisma.RequestDraftFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RequestDraftPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.RequestDraftFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RequestDraftPayload>
-          }
-          findMany: {
-            args: Prisma.RequestDraftFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RequestDraftPayload>[]
-          }
-          create: {
-            args: Prisma.RequestDraftCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RequestDraftPayload>
-          }
-          createMany: {
-            args: Prisma.RequestDraftCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          createManyAndReturn: {
-            args: Prisma.RequestDraftCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RequestDraftPayload>[]
-          }
-          delete: {
-            args: Prisma.RequestDraftDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RequestDraftPayload>
-          }
-          update: {
-            args: Prisma.RequestDraftUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RequestDraftPayload>
-          }
-          deleteMany: {
-            args: Prisma.RequestDraftDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.RequestDraftUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          upsert: {
-            args: Prisma.RequestDraftUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RequestDraftPayload>
-          }
-          aggregate: {
-            args: Prisma.RequestDraftAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateRequestDraft>
-          }
-          groupBy: {
-            args: Prisma.RequestDraftGroupByArgs<ExtArgs>
-            result: $Utils.Optional<RequestDraftGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.RequestDraftCountArgs<ExtArgs>
-            result: $Utils.Optional<RequestDraftCountAggregateOutputType> | number
-          }
-        }
-      }
-      RequestExtension: {
-        payload: Prisma.$RequestExtensionPayload<ExtArgs>
-        fields: Prisma.RequestExtensionFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.RequestExtensionFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RequestExtensionPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.RequestExtensionFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RequestExtensionPayload>
-          }
-          findFirst: {
-            args: Prisma.RequestExtensionFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RequestExtensionPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.RequestExtensionFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RequestExtensionPayload>
-          }
-          findMany: {
-            args: Prisma.RequestExtensionFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RequestExtensionPayload>[]
-          }
-          create: {
-            args: Prisma.RequestExtensionCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RequestExtensionPayload>
-          }
-          createMany: {
-            args: Prisma.RequestExtensionCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          createManyAndReturn: {
-            args: Prisma.RequestExtensionCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RequestExtensionPayload>[]
-          }
-          delete: {
-            args: Prisma.RequestExtensionDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RequestExtensionPayload>
-          }
-          update: {
-            args: Prisma.RequestExtensionUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RequestExtensionPayload>
-          }
-          deleteMany: {
-            args: Prisma.RequestExtensionDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.RequestExtensionUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          upsert: {
-            args: Prisma.RequestExtensionUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RequestExtensionPayload>
-          }
-          aggregate: {
-            args: Prisma.RequestExtensionAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateRequestExtension>
-          }
-          groupBy: {
-            args: Prisma.RequestExtensionGroupByArgs<ExtArgs>
-            result: $Utils.Optional<RequestExtensionGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.RequestExtensionCountArgs<ExtArgs>
-            result: $Utils.Optional<RequestExtensionCountAggregateOutputType> | number
-          }
-        }
-      }
-      RequestSearchIndex: {
-        payload: Prisma.$RequestSearchIndexPayload<ExtArgs>
-        fields: Prisma.RequestSearchIndexFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.RequestSearchIndexFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RequestSearchIndexPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.RequestSearchIndexFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RequestSearchIndexPayload>
-          }
-          findFirst: {
-            args: Prisma.RequestSearchIndexFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RequestSearchIndexPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.RequestSearchIndexFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RequestSearchIndexPayload>
-          }
-          findMany: {
-            args: Prisma.RequestSearchIndexFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RequestSearchIndexPayload>[]
-          }
-          create: {
-            args: Prisma.RequestSearchIndexCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RequestSearchIndexPayload>
-          }
-          createMany: {
-            args: Prisma.RequestSearchIndexCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          createManyAndReturn: {
-            args: Prisma.RequestSearchIndexCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RequestSearchIndexPayload>[]
-          }
-          delete: {
-            args: Prisma.RequestSearchIndexDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RequestSearchIndexPayload>
-          }
-          update: {
-            args: Prisma.RequestSearchIndexUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RequestSearchIndexPayload>
-          }
-          deleteMany: {
-            args: Prisma.RequestSearchIndexDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.RequestSearchIndexUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          upsert: {
-            args: Prisma.RequestSearchIndexUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$RequestSearchIndexPayload>
-          }
-          aggregate: {
-            args: Prisma.RequestSearchIndexAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateRequestSearchIndex>
-          }
-          groupBy: {
-            args: Prisma.RequestSearchIndexGroupByArgs<ExtArgs>
-            result: $Utils.Optional<RequestSearchIndexGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.RequestSearchIndexCountArgs<ExtArgs>
-            result: $Utils.Optional<RequestSearchIndexCountAggregateOutputType> | number
-          }
-        }
-      }
       SavedSearch: {
         payload: Prisma.$SavedSearchPayload<ExtArgs>
         fields: Prisma.SavedSearchFieldRefs
@@ -1999,143 +1563,73 @@ export namespace Prisma {
           }
         }
       }
-      ChatParticipant: {
-        payload: Prisma.$ChatParticipantPayload<ExtArgs>
-        fields: Prisma.ChatParticipantFieldRefs
+      ChatRoomParticipant: {
+        payload: Prisma.$ChatRoomParticipantPayload<ExtArgs>
+        fields: Prisma.ChatRoomParticipantFieldRefs
         operations: {
           findUnique: {
-            args: Prisma.ChatParticipantFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ChatParticipantPayload> | null
+            args: Prisma.ChatRoomParticipantFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChatRoomParticipantPayload> | null
           }
           findUniqueOrThrow: {
-            args: Prisma.ChatParticipantFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ChatParticipantPayload>
+            args: Prisma.ChatRoomParticipantFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChatRoomParticipantPayload>
           }
           findFirst: {
-            args: Prisma.ChatParticipantFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ChatParticipantPayload> | null
+            args: Prisma.ChatRoomParticipantFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChatRoomParticipantPayload> | null
           }
           findFirstOrThrow: {
-            args: Prisma.ChatParticipantFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ChatParticipantPayload>
+            args: Prisma.ChatRoomParticipantFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChatRoomParticipantPayload>
           }
           findMany: {
-            args: Prisma.ChatParticipantFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ChatParticipantPayload>[]
+            args: Prisma.ChatRoomParticipantFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChatRoomParticipantPayload>[]
           }
           create: {
-            args: Prisma.ChatParticipantCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ChatParticipantPayload>
+            args: Prisma.ChatRoomParticipantCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChatRoomParticipantPayload>
           }
           createMany: {
-            args: Prisma.ChatParticipantCreateManyArgs<ExtArgs>
+            args: Prisma.ChatRoomParticipantCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
           createManyAndReturn: {
-            args: Prisma.ChatParticipantCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ChatParticipantPayload>[]
+            args: Prisma.ChatRoomParticipantCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChatRoomParticipantPayload>[]
           }
           delete: {
-            args: Prisma.ChatParticipantDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ChatParticipantPayload>
+            args: Prisma.ChatRoomParticipantDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChatRoomParticipantPayload>
           }
           update: {
-            args: Prisma.ChatParticipantUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ChatParticipantPayload>
+            args: Prisma.ChatRoomParticipantUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChatRoomParticipantPayload>
           }
           deleteMany: {
-            args: Prisma.ChatParticipantDeleteManyArgs<ExtArgs>
+            args: Prisma.ChatRoomParticipantDeleteManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateMany: {
-            args: Prisma.ChatParticipantUpdateManyArgs<ExtArgs>
+            args: Prisma.ChatRoomParticipantUpdateManyArgs<ExtArgs>
             result: BatchPayload
           }
           upsert: {
-            args: Prisma.ChatParticipantUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ChatParticipantPayload>
+            args: Prisma.ChatRoomParticipantUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChatRoomParticipantPayload>
           }
           aggregate: {
-            args: Prisma.ChatParticipantAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateChatParticipant>
+            args: Prisma.ChatRoomParticipantAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateChatRoomParticipant>
           }
           groupBy: {
-            args: Prisma.ChatParticipantGroupByArgs<ExtArgs>
-            result: $Utils.Optional<ChatParticipantGroupByOutputType>[]
+            args: Prisma.ChatRoomParticipantGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ChatRoomParticipantGroupByOutputType>[]
           }
           count: {
-            args: Prisma.ChatParticipantCountArgs<ExtArgs>
-            result: $Utils.Optional<ChatParticipantCountAggregateOutputType> | number
-          }
-        }
-      }
-      NotificationTemplate: {
-        payload: Prisma.$NotificationTemplatePayload<ExtArgs>
-        fields: Prisma.NotificationTemplateFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.NotificationTemplateFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationTemplatePayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.NotificationTemplateFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationTemplatePayload>
-          }
-          findFirst: {
-            args: Prisma.NotificationTemplateFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationTemplatePayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.NotificationTemplateFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationTemplatePayload>
-          }
-          findMany: {
-            args: Prisma.NotificationTemplateFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationTemplatePayload>[]
-          }
-          create: {
-            args: Prisma.NotificationTemplateCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationTemplatePayload>
-          }
-          createMany: {
-            args: Prisma.NotificationTemplateCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          createManyAndReturn: {
-            args: Prisma.NotificationTemplateCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationTemplatePayload>[]
-          }
-          delete: {
-            args: Prisma.NotificationTemplateDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationTemplatePayload>
-          }
-          update: {
-            args: Prisma.NotificationTemplateUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationTemplatePayload>
-          }
-          deleteMany: {
-            args: Prisma.NotificationTemplateDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.NotificationTemplateUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          upsert: {
-            args: Prisma.NotificationTemplateUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationTemplatePayload>
-          }
-          aggregate: {
-            args: Prisma.NotificationTemplateAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateNotificationTemplate>
-          }
-          groupBy: {
-            args: Prisma.NotificationTemplateGroupByArgs<ExtArgs>
-            result: $Utils.Optional<NotificationTemplateGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.NotificationTemplateCountArgs<ExtArgs>
-            result: $Utils.Optional<NotificationTemplateCountAggregateOutputType> | number
+            args: Prisma.ChatRoomParticipantCountArgs<ExtArgs>
+            result: $Utils.Optional<ChatRoomParticipantCountAggregateOutputType> | number
           }
         }
       }
@@ -2209,423 +1703,73 @@ export namespace Prisma {
           }
         }
       }
-      NotificationChannel: {
-        payload: Prisma.$NotificationChannelPayload<ExtArgs>
-        fields: Prisma.NotificationChannelFieldRefs
+      Review: {
+        payload: Prisma.$ReviewPayload<ExtArgs>
+        fields: Prisma.ReviewFieldRefs
         operations: {
           findUnique: {
-            args: Prisma.NotificationChannelFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationChannelPayload> | null
+            args: Prisma.ReviewFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload> | null
           }
           findUniqueOrThrow: {
-            args: Prisma.NotificationChannelFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationChannelPayload>
+            args: Prisma.ReviewFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload>
           }
           findFirst: {
-            args: Prisma.NotificationChannelFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationChannelPayload> | null
+            args: Prisma.ReviewFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload> | null
           }
           findFirstOrThrow: {
-            args: Prisma.NotificationChannelFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationChannelPayload>
+            args: Prisma.ReviewFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload>
           }
           findMany: {
-            args: Prisma.NotificationChannelFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationChannelPayload>[]
+            args: Prisma.ReviewFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload>[]
           }
           create: {
-            args: Prisma.NotificationChannelCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationChannelPayload>
+            args: Prisma.ReviewCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload>
           }
           createMany: {
-            args: Prisma.NotificationChannelCreateManyArgs<ExtArgs>
+            args: Prisma.ReviewCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
           createManyAndReturn: {
-            args: Prisma.NotificationChannelCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationChannelPayload>[]
+            args: Prisma.ReviewCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload>[]
           }
           delete: {
-            args: Prisma.NotificationChannelDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationChannelPayload>
+            args: Prisma.ReviewDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload>
           }
           update: {
-            args: Prisma.NotificationChannelUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationChannelPayload>
+            args: Prisma.ReviewUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload>
           }
           deleteMany: {
-            args: Prisma.NotificationChannelDeleteManyArgs<ExtArgs>
+            args: Prisma.ReviewDeleteManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateMany: {
-            args: Prisma.NotificationChannelUpdateManyArgs<ExtArgs>
+            args: Prisma.ReviewUpdateManyArgs<ExtArgs>
             result: BatchPayload
           }
           upsert: {
-            args: Prisma.NotificationChannelUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationChannelPayload>
+            args: Prisma.ReviewUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ReviewPayload>
           }
           aggregate: {
-            args: Prisma.NotificationChannelAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateNotificationChannel>
+            args: Prisma.ReviewAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateReview>
           }
           groupBy: {
-            args: Prisma.NotificationChannelGroupByArgs<ExtArgs>
-            result: $Utils.Optional<NotificationChannelGroupByOutputType>[]
+            args: Prisma.ReviewGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ReviewGroupByOutputType>[]
           }
           count: {
-            args: Prisma.NotificationChannelCountArgs<ExtArgs>
-            result: $Utils.Optional<NotificationChannelCountAggregateOutputType> | number
-          }
-        }
-      }
-      NotificationPreference: {
-        payload: Prisma.$NotificationPreferencePayload<ExtArgs>
-        fields: Prisma.NotificationPreferenceFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.NotificationPreferenceFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationPreferencePayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.NotificationPreferenceFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>
-          }
-          findFirst: {
-            args: Prisma.NotificationPreferenceFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationPreferencePayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.NotificationPreferenceFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>
-          }
-          findMany: {
-            args: Prisma.NotificationPreferenceFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>[]
-          }
-          create: {
-            args: Prisma.NotificationPreferenceCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>
-          }
-          createMany: {
-            args: Prisma.NotificationPreferenceCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          createManyAndReturn: {
-            args: Prisma.NotificationPreferenceCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>[]
-          }
-          delete: {
-            args: Prisma.NotificationPreferenceDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>
-          }
-          update: {
-            args: Prisma.NotificationPreferenceUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>
-          }
-          deleteMany: {
-            args: Prisma.NotificationPreferenceDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.NotificationPreferenceUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          upsert: {
-            args: Prisma.NotificationPreferenceUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationPreferencePayload>
-          }
-          aggregate: {
-            args: Prisma.NotificationPreferenceAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateNotificationPreference>
-          }
-          groupBy: {
-            args: Prisma.NotificationPreferenceGroupByArgs<ExtArgs>
-            result: $Utils.Optional<NotificationPreferenceGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.NotificationPreferenceCountArgs<ExtArgs>
-            result: $Utils.Optional<NotificationPreferenceCountAggregateOutputType> | number
-          }
-        }
-      }
-      NotificationDelivery: {
-        payload: Prisma.$NotificationDeliveryPayload<ExtArgs>
-        fields: Prisma.NotificationDeliveryFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.NotificationDeliveryFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationDeliveryPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.NotificationDeliveryFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationDeliveryPayload>
-          }
-          findFirst: {
-            args: Prisma.NotificationDeliveryFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationDeliveryPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.NotificationDeliveryFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationDeliveryPayload>
-          }
-          findMany: {
-            args: Prisma.NotificationDeliveryFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationDeliveryPayload>[]
-          }
-          create: {
-            args: Prisma.NotificationDeliveryCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationDeliveryPayload>
-          }
-          createMany: {
-            args: Prisma.NotificationDeliveryCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          createManyAndReturn: {
-            args: Prisma.NotificationDeliveryCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationDeliveryPayload>[]
-          }
-          delete: {
-            args: Prisma.NotificationDeliveryDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationDeliveryPayload>
-          }
-          update: {
-            args: Prisma.NotificationDeliveryUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationDeliveryPayload>
-          }
-          deleteMany: {
-            args: Prisma.NotificationDeliveryDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.NotificationDeliveryUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          upsert: {
-            args: Prisma.NotificationDeliveryUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationDeliveryPayload>
-          }
-          aggregate: {
-            args: Prisma.NotificationDeliveryAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateNotificationDelivery>
-          }
-          groupBy: {
-            args: Prisma.NotificationDeliveryGroupByArgs<ExtArgs>
-            result: $Utils.Optional<NotificationDeliveryGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.NotificationDeliveryCountArgs<ExtArgs>
-            result: $Utils.Optional<NotificationDeliveryCountAggregateOutputType> | number
-          }
-        }
-      }
-      NotificationRead: {
-        payload: Prisma.$NotificationReadPayload<ExtArgs>
-        fields: Prisma.NotificationReadFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.NotificationReadFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationReadPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.NotificationReadFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationReadPayload>
-          }
-          findFirst: {
-            args: Prisma.NotificationReadFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationReadPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.NotificationReadFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationReadPayload>
-          }
-          findMany: {
-            args: Prisma.NotificationReadFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationReadPayload>[]
-          }
-          create: {
-            args: Prisma.NotificationReadCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationReadPayload>
-          }
-          createMany: {
-            args: Prisma.NotificationReadCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          createManyAndReturn: {
-            args: Prisma.NotificationReadCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationReadPayload>[]
-          }
-          delete: {
-            args: Prisma.NotificationReadDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationReadPayload>
-          }
-          update: {
-            args: Prisma.NotificationReadUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationReadPayload>
-          }
-          deleteMany: {
-            args: Prisma.NotificationReadDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.NotificationReadUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          upsert: {
-            args: Prisma.NotificationReadUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationReadPayload>
-          }
-          aggregate: {
-            args: Prisma.NotificationReadAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateNotificationRead>
-          }
-          groupBy: {
-            args: Prisma.NotificationReadGroupByArgs<ExtArgs>
-            result: $Utils.Optional<NotificationReadGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.NotificationReadCountArgs<ExtArgs>
-            result: $Utils.Optional<NotificationReadCountAggregateOutputType> | number
-          }
-        }
-      }
-      NotificationStat: {
-        payload: Prisma.$NotificationStatPayload<ExtArgs>
-        fields: Prisma.NotificationStatFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.NotificationStatFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationStatPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.NotificationStatFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationStatPayload>
-          }
-          findFirst: {
-            args: Prisma.NotificationStatFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationStatPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.NotificationStatFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationStatPayload>
-          }
-          findMany: {
-            args: Prisma.NotificationStatFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationStatPayload>[]
-          }
-          create: {
-            args: Prisma.NotificationStatCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationStatPayload>
-          }
-          createMany: {
-            args: Prisma.NotificationStatCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          createManyAndReturn: {
-            args: Prisma.NotificationStatCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationStatPayload>[]
-          }
-          delete: {
-            args: Prisma.NotificationStatDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationStatPayload>
-          }
-          update: {
-            args: Prisma.NotificationStatUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationStatPayload>
-          }
-          deleteMany: {
-            args: Prisma.NotificationStatDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.NotificationStatUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          upsert: {
-            args: Prisma.NotificationStatUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$NotificationStatPayload>
-          }
-          aggregate: {
-            args: Prisma.NotificationStatAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateNotificationStat>
-          }
-          groupBy: {
-            args: Prisma.NotificationStatGroupByArgs<ExtArgs>
-            result: $Utils.Optional<NotificationStatGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.NotificationStatCountArgs<ExtArgs>
-            result: $Utils.Optional<NotificationStatCountAggregateOutputType> | number
-          }
-        }
-      }
-      BidTemplate: {
-        payload: Prisma.$BidTemplatePayload<ExtArgs>
-        fields: Prisma.BidTemplateFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.BidTemplateFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BidTemplatePayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.BidTemplateFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BidTemplatePayload>
-          }
-          findFirst: {
-            args: Prisma.BidTemplateFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BidTemplatePayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.BidTemplateFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BidTemplatePayload>
-          }
-          findMany: {
-            args: Prisma.BidTemplateFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BidTemplatePayload>[]
-          }
-          create: {
-            args: Prisma.BidTemplateCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BidTemplatePayload>
-          }
-          createMany: {
-            args: Prisma.BidTemplateCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          createManyAndReturn: {
-            args: Prisma.BidTemplateCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BidTemplatePayload>[]
-          }
-          delete: {
-            args: Prisma.BidTemplateDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BidTemplatePayload>
-          }
-          update: {
-            args: Prisma.BidTemplateUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BidTemplatePayload>
-          }
-          deleteMany: {
-            args: Prisma.BidTemplateDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.BidTemplateUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          upsert: {
-            args: Prisma.BidTemplateUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BidTemplatePayload>
-          }
-          aggregate: {
-            args: Prisma.BidTemplateAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateBidTemplate>
-          }
-          groupBy: {
-            args: Prisma.BidTemplateGroupByArgs<ExtArgs>
-            result: $Utils.Optional<BidTemplateGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.BidTemplateCountArgs<ExtArgs>
-            result: $Utils.Optional<BidTemplateCountAggregateOutputType> | number
+            args: Prisma.ReviewCountArgs<ExtArgs>
+            result: $Utils.Optional<ReviewCountAggregateOutputType> | number
           }
         }
       }
@@ -2823,13 +1967,11 @@ export namespace Prisma {
   export type RequestCategoryCountOutputType = {
     children: number
     requests: number
-    drafts: number
   }
 
   export type RequestCategoryCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     children?: boolean | RequestCategoryCountOutputTypeCountChildrenArgs
     requests?: boolean | RequestCategoryCountOutputTypeCountRequestsArgs
-    drafts?: boolean | RequestCategoryCountOutputTypeCountDraftsArgs
   }
 
   // Custom InputTypes
@@ -2857,13 +1999,6 @@ export namespace Prisma {
     where?: RequestWhereInput
   }
 
-  /**
-   * RequestCategoryCountOutputType without action
-   */
-  export type RequestCategoryCountOutputTypeCountDraftsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: RequestDraftWhereInput
-  }
-
 
   /**
    * Count Type RequestCountOutputType
@@ -2871,12 +2006,10 @@ export namespace Prisma {
 
   export type RequestCountOutputType = {
     images: number
-    extensions: number
   }
 
   export type RequestCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     images?: boolean | RequestCountOutputTypeCountImagesArgs
-    extensions?: boolean | RequestCountOutputTypeCountExtensionsArgs
   }
 
   // Custom InputTypes
@@ -2897,11 +2030,35 @@ export namespace Prisma {
     where?: RequestImageWhereInput
   }
 
+
   /**
-   * RequestCountOutputType without action
+   * Count Type BidCountOutputType
    */
-  export type RequestCountOutputTypeCountExtensionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: RequestExtensionWhereInput
+
+  export type BidCountOutputType = {
+    reviews: number
+  }
+
+  export type BidCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    reviews?: boolean | BidCountOutputTypeCountReviewsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * BidCountOutputType without action
+   */
+  export type BidCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BidCountOutputType
+     */
+    select?: BidCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * BidCountOutputType without action
+   */
+  export type BidCountOutputTypeCountReviewsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ReviewWhereInput
   }
 
 
@@ -2932,87 +2089,7 @@ export namespace Prisma {
    * ChatRoomCountOutputType without action
    */
   export type ChatRoomCountOutputTypeCountParticipantsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ChatParticipantWhereInput
-  }
-
-
-  /**
-   * Count Type NotificationTemplateCountOutputType
-   */
-
-  export type NotificationTemplateCountOutputType = {
-    notifications: number
-  }
-
-  export type NotificationTemplateCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    notifications?: boolean | NotificationTemplateCountOutputTypeCountNotificationsArgs
-  }
-
-  // Custom InputTypes
-  /**
-   * NotificationTemplateCountOutputType without action
-   */
-  export type NotificationTemplateCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationTemplateCountOutputType
-     */
-    select?: NotificationTemplateCountOutputTypeSelect<ExtArgs> | null
-  }
-
-  /**
-   * NotificationTemplateCountOutputType without action
-   */
-  export type NotificationTemplateCountOutputTypeCountNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: NotificationWhereInput
-  }
-
-
-  /**
-   * Count Type NotificationCountOutputType
-   */
-
-  export type NotificationCountOutputType = {
-    deliveries: number
-    reads: number
-    analytics: number
-  }
-
-  export type NotificationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    deliveries?: boolean | NotificationCountOutputTypeCountDeliveriesArgs
-    reads?: boolean | NotificationCountOutputTypeCountReadsArgs
-    analytics?: boolean | NotificationCountOutputTypeCountAnalyticsArgs
-  }
-
-  // Custom InputTypes
-  /**
-   * NotificationCountOutputType without action
-   */
-  export type NotificationCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationCountOutputType
-     */
-    select?: NotificationCountOutputTypeSelect<ExtArgs> | null
-  }
-
-  /**
-   * NotificationCountOutputType without action
-   */
-  export type NotificationCountOutputTypeCountDeliveriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: NotificationDeliveryWhereInput
-  }
-
-  /**
-   * NotificationCountOutputType without action
-   */
-  export type NotificationCountOutputTypeCountReadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: NotificationReadWhereInput
-  }
-
-  /**
-   * NotificationCountOutputType without action
-   */
-  export type NotificationCountOutputTypeCountAnalyticsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: NotificationStatWhereInput
+    where?: ChatRoomParticipantWhereInput
   }
 
 
@@ -6402,7 +5479,6 @@ export namespace Prisma {
     parent?: boolean | RequestCategory$parentArgs<ExtArgs>
     children?: boolean | RequestCategory$childrenArgs<ExtArgs>
     requests?: boolean | RequestCategory$requestsArgs<ExtArgs>
-    drafts?: boolean | RequestCategory$draftsArgs<ExtArgs>
     _count?: boolean | RequestCategoryCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["requestCategory"]>
 
@@ -6437,7 +5513,6 @@ export namespace Prisma {
     parent?: boolean | RequestCategory$parentArgs<ExtArgs>
     children?: boolean | RequestCategory$childrenArgs<ExtArgs>
     requests?: boolean | RequestCategory$requestsArgs<ExtArgs>
-    drafts?: boolean | RequestCategory$draftsArgs<ExtArgs>
     _count?: boolean | RequestCategoryCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type RequestCategoryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6450,7 +5525,6 @@ export namespace Prisma {
       parent: Prisma.$RequestCategoryPayload<ExtArgs> | null
       children: Prisma.$RequestCategoryPayload<ExtArgs>[]
       requests: Prisma.$RequestPayload<ExtArgs>[]
-      drafts: Prisma.$RequestDraftPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -6830,7 +5904,6 @@ export namespace Prisma {
     parent<T extends RequestCategory$parentArgs<ExtArgs> = {}>(args?: Subset<T, RequestCategory$parentArgs<ExtArgs>>): Prisma__RequestCategoryClient<$Result.GetResult<Prisma.$RequestCategoryPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     children<T extends RequestCategory$childrenArgs<ExtArgs> = {}>(args?: Subset<T, RequestCategory$childrenArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RequestCategoryPayload<ExtArgs>, T, "findMany"> | Null>
     requests<T extends RequestCategory$requestsArgs<ExtArgs> = {}>(args?: Subset<T, RequestCategory$requestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RequestPayload<ExtArgs>, T, "findMany"> | Null>
-    drafts<T extends RequestCategory$draftsArgs<ExtArgs> = {}>(args?: Subset<T, RequestCategory$draftsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RequestDraftPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -7243,26 +6316,6 @@ export namespace Prisma {
   }
 
   /**
-   * RequestCategory.drafts
-   */
-  export type RequestCategory$draftsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestDraft
-     */
-    select?: RequestDraftSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestDraftInclude<ExtArgs> | null
-    where?: RequestDraftWhereInput
-    orderBy?: RequestDraftOrderByWithRelationInput | RequestDraftOrderByWithRelationInput[]
-    cursor?: RequestDraftWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: RequestDraftScalarFieldEnum | RequestDraftScalarFieldEnum[]
-  }
-
-  /**
    * RequestCategory without action
    */
   export type RequestCategoryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7559,7 +6612,7 @@ export namespace Prisma {
   export type RequestGroupByOutputType = {
     id: string
     buyerId: string
-    categoryId: string
+    categoryId: string | null
     title: string
     description: string
     budgetMin: Decimal | null
@@ -7619,10 +6672,8 @@ export namespace Prisma {
     publishedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    category?: boolean | RequestCategoryDefaultArgs<ExtArgs>
+    category?: boolean | Request$categoryArgs<ExtArgs>
     images?: boolean | Request$imagesArgs<ExtArgs>
-    extensions?: boolean | Request$extensionsArgs<ExtArgs>
-    searchIndex?: boolean | Request$searchIndexArgs<ExtArgs>
     _count?: boolean | RequestCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["request"]>
 
@@ -7647,7 +6698,7 @@ export namespace Prisma {
     publishedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    category?: boolean | RequestCategoryDefaultArgs<ExtArgs>
+    category?: boolean | Request$categoryArgs<ExtArgs>
   }, ExtArgs["result"]["request"]>
 
   export type RequestSelectScalar = {
@@ -7674,28 +6725,24 @@ export namespace Prisma {
   }
 
   export type RequestInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    category?: boolean | RequestCategoryDefaultArgs<ExtArgs>
+    category?: boolean | Request$categoryArgs<ExtArgs>
     images?: boolean | Request$imagesArgs<ExtArgs>
-    extensions?: boolean | Request$extensionsArgs<ExtArgs>
-    searchIndex?: boolean | Request$searchIndexArgs<ExtArgs>
     _count?: boolean | RequestCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type RequestIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    category?: boolean | RequestCategoryDefaultArgs<ExtArgs>
+    category?: boolean | Request$categoryArgs<ExtArgs>
   }
 
   export type $RequestPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Request"
     objects: {
-      category: Prisma.$RequestCategoryPayload<ExtArgs>
+      category: Prisma.$RequestCategoryPayload<ExtArgs> | null
       images: Prisma.$RequestImagePayload<ExtArgs>[]
-      extensions: Prisma.$RequestExtensionPayload<ExtArgs>[]
-      searchIndex: Prisma.$RequestSearchIndexPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       buyerId: string
-      categoryId: string
+      categoryId: string | null
       title: string
       description: string
       budgetMin: Prisma.Decimal | null
@@ -8077,10 +7124,8 @@ export namespace Prisma {
    */
   export interface Prisma__RequestClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    category<T extends RequestCategoryDefaultArgs<ExtArgs> = {}>(args?: Subset<T, RequestCategoryDefaultArgs<ExtArgs>>): Prisma__RequestCategoryClient<$Result.GetResult<Prisma.$RequestCategoryPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    category<T extends Request$categoryArgs<ExtArgs> = {}>(args?: Subset<T, Request$categoryArgs<ExtArgs>>): Prisma__RequestCategoryClient<$Result.GetResult<Prisma.$RequestCategoryPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     images<T extends Request$imagesArgs<ExtArgs> = {}>(args?: Subset<T, Request$imagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RequestImagePayload<ExtArgs>, T, "findMany"> | Null>
-    extensions<T extends Request$extensionsArgs<ExtArgs> = {}>(args?: Subset<T, Request$extensionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RequestExtensionPayload<ExtArgs>, T, "findMany"> | Null>
-    searchIndex<T extends Request$searchIndexArgs<ExtArgs> = {}>(args?: Subset<T, Request$searchIndexArgs<ExtArgs>>): Prisma__RequestSearchIndexClient<$Result.GetResult<Prisma.$RequestSearchIndexPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -8448,6 +7493,21 @@ export namespace Prisma {
   }
 
   /**
+   * Request.category
+   */
+  export type Request$categoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RequestCategory
+     */
+    select?: RequestCategorySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RequestCategoryInclude<ExtArgs> | null
+    where?: RequestCategoryWhereInput
+  }
+
+  /**
    * Request.images
    */
   export type Request$imagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -8465,41 +7525,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: RequestImageScalarFieldEnum | RequestImageScalarFieldEnum[]
-  }
-
-  /**
-   * Request.extensions
-   */
-  export type Request$extensionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestExtension
-     */
-    select?: RequestExtensionSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestExtensionInclude<ExtArgs> | null
-    where?: RequestExtensionWhereInput
-    orderBy?: RequestExtensionOrderByWithRelationInput | RequestExtensionOrderByWithRelationInput[]
-    cursor?: RequestExtensionWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: RequestExtensionScalarFieldEnum | RequestExtensionScalarFieldEnum[]
-  }
-
-  /**
-   * Request.searchIndex
-   */
-  export type Request$searchIndexArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestSearchIndex
-     */
-    select?: RequestSearchIndexSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestSearchIndexInclude<ExtArgs> | null
-    where?: RequestSearchIndexWhereInput
   }
 
   /**
@@ -9581,3018 +8606,6 @@ export namespace Prisma {
 
 
   /**
-   * Model RequestDraft
-   */
-
-  export type AggregateRequestDraft = {
-    _count: RequestDraftCountAggregateOutputType | null
-    _avg: RequestDraftAvgAggregateOutputType | null
-    _sum: RequestDraftSumAggregateOutputType | null
-    _min: RequestDraftMinAggregateOutputType | null
-    _max: RequestDraftMaxAggregateOutputType | null
-  }
-
-  export type RequestDraftAvgAggregateOutputType = {
-    budgetMin: Decimal | null
-    budgetMax: Decimal | null
-    locationLat: Decimal | null
-    locationLng: Decimal | null
-  }
-
-  export type RequestDraftSumAggregateOutputType = {
-    budgetMin: Decimal | null
-    budgetMax: Decimal | null
-    locationLat: Decimal | null
-    locationLng: Decimal | null
-  }
-
-  export type RequestDraftMinAggregateOutputType = {
-    id: string | null
-    buyerId: string | null
-    categoryId: string | null
-    title: string | null
-    description: string | null
-    budgetMin: Decimal | null
-    budgetMax: Decimal | null
-    locationLat: Decimal | null
-    locationLng: Decimal | null
-    locationAddress: string | null
-    expiresAt: Date | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type RequestDraftMaxAggregateOutputType = {
-    id: string | null
-    buyerId: string | null
-    categoryId: string | null
-    title: string | null
-    description: string | null
-    budgetMin: Decimal | null
-    budgetMax: Decimal | null
-    locationLat: Decimal | null
-    locationLng: Decimal | null
-    locationAddress: string | null
-    expiresAt: Date | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type RequestDraftCountAggregateOutputType = {
-    id: number
-    buyerId: number
-    categoryId: number
-    title: number
-    description: number
-    budgetMin: number
-    budgetMax: number
-    locationLat: number
-    locationLng: number
-    locationAddress: number
-    autoSaveData: number
-    expiresAt: number
-    createdAt: number
-    updatedAt: number
-    _all: number
-  }
-
-
-  export type RequestDraftAvgAggregateInputType = {
-    budgetMin?: true
-    budgetMax?: true
-    locationLat?: true
-    locationLng?: true
-  }
-
-  export type RequestDraftSumAggregateInputType = {
-    budgetMin?: true
-    budgetMax?: true
-    locationLat?: true
-    locationLng?: true
-  }
-
-  export type RequestDraftMinAggregateInputType = {
-    id?: true
-    buyerId?: true
-    categoryId?: true
-    title?: true
-    description?: true
-    budgetMin?: true
-    budgetMax?: true
-    locationLat?: true
-    locationLng?: true
-    locationAddress?: true
-    expiresAt?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type RequestDraftMaxAggregateInputType = {
-    id?: true
-    buyerId?: true
-    categoryId?: true
-    title?: true
-    description?: true
-    budgetMin?: true
-    budgetMax?: true
-    locationLat?: true
-    locationLng?: true
-    locationAddress?: true
-    expiresAt?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type RequestDraftCountAggregateInputType = {
-    id?: true
-    buyerId?: true
-    categoryId?: true
-    title?: true
-    description?: true
-    budgetMin?: true
-    budgetMax?: true
-    locationLat?: true
-    locationLng?: true
-    locationAddress?: true
-    autoSaveData?: true
-    expiresAt?: true
-    createdAt?: true
-    updatedAt?: true
-    _all?: true
-  }
-
-  export type RequestDraftAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which RequestDraft to aggregate.
-     */
-    where?: RequestDraftWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of RequestDrafts to fetch.
-     */
-    orderBy?: RequestDraftOrderByWithRelationInput | RequestDraftOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: RequestDraftWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` RequestDrafts from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` RequestDrafts.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned RequestDrafts
-    **/
-    _count?: true | RequestDraftCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: RequestDraftAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: RequestDraftSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: RequestDraftMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: RequestDraftMaxAggregateInputType
-  }
-
-  export type GetRequestDraftAggregateType<T extends RequestDraftAggregateArgs> = {
-        [P in keyof T & keyof AggregateRequestDraft]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateRequestDraft[P]>
-      : GetScalarType<T[P], AggregateRequestDraft[P]>
-  }
-
-
-
-
-  export type RequestDraftGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: RequestDraftWhereInput
-    orderBy?: RequestDraftOrderByWithAggregationInput | RequestDraftOrderByWithAggregationInput[]
-    by: RequestDraftScalarFieldEnum[] | RequestDraftScalarFieldEnum
-    having?: RequestDraftScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: RequestDraftCountAggregateInputType | true
-    _avg?: RequestDraftAvgAggregateInputType
-    _sum?: RequestDraftSumAggregateInputType
-    _min?: RequestDraftMinAggregateInputType
-    _max?: RequestDraftMaxAggregateInputType
-  }
-
-  export type RequestDraftGroupByOutputType = {
-    id: string
-    buyerId: string
-    categoryId: string | null
-    title: string | null
-    description: string | null
-    budgetMin: Decimal | null
-    budgetMax: Decimal | null
-    locationLat: Decimal | null
-    locationLng: Decimal | null
-    locationAddress: string | null
-    autoSaveData: JsonValue
-    expiresAt: Date
-    createdAt: Date
-    updatedAt: Date
-    _count: RequestDraftCountAggregateOutputType | null
-    _avg: RequestDraftAvgAggregateOutputType | null
-    _sum: RequestDraftSumAggregateOutputType | null
-    _min: RequestDraftMinAggregateOutputType | null
-    _max: RequestDraftMaxAggregateOutputType | null
-  }
-
-  type GetRequestDraftGroupByPayload<T extends RequestDraftGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<RequestDraftGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof RequestDraftGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], RequestDraftGroupByOutputType[P]>
-            : GetScalarType<T[P], RequestDraftGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type RequestDraftSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    buyerId?: boolean
-    categoryId?: boolean
-    title?: boolean
-    description?: boolean
-    budgetMin?: boolean
-    budgetMax?: boolean
-    locationLat?: boolean
-    locationLng?: boolean
-    locationAddress?: boolean
-    autoSaveData?: boolean
-    expiresAt?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    category?: boolean | RequestDraft$categoryArgs<ExtArgs>
-  }, ExtArgs["result"]["requestDraft"]>
-
-  export type RequestDraftSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    buyerId?: boolean
-    categoryId?: boolean
-    title?: boolean
-    description?: boolean
-    budgetMin?: boolean
-    budgetMax?: boolean
-    locationLat?: boolean
-    locationLng?: boolean
-    locationAddress?: boolean
-    autoSaveData?: boolean
-    expiresAt?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    category?: boolean | RequestDraft$categoryArgs<ExtArgs>
-  }, ExtArgs["result"]["requestDraft"]>
-
-  export type RequestDraftSelectScalar = {
-    id?: boolean
-    buyerId?: boolean
-    categoryId?: boolean
-    title?: boolean
-    description?: boolean
-    budgetMin?: boolean
-    budgetMax?: boolean
-    locationLat?: boolean
-    locationLng?: boolean
-    locationAddress?: boolean
-    autoSaveData?: boolean
-    expiresAt?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-  }
-
-  export type RequestDraftInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    category?: boolean | RequestDraft$categoryArgs<ExtArgs>
-  }
-  export type RequestDraftIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    category?: boolean | RequestDraft$categoryArgs<ExtArgs>
-  }
-
-  export type $RequestDraftPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "RequestDraft"
-    objects: {
-      category: Prisma.$RequestCategoryPayload<ExtArgs> | null
-    }
-    scalars: $Extensions.GetPayloadResult<{
-      id: string
-      buyerId: string
-      categoryId: string | null
-      title: string | null
-      description: string | null
-      budgetMin: Prisma.Decimal | null
-      budgetMax: Prisma.Decimal | null
-      locationLat: Prisma.Decimal | null
-      locationLng: Prisma.Decimal | null
-      locationAddress: string | null
-      autoSaveData: Prisma.JsonValue
-      expiresAt: Date
-      createdAt: Date
-      updatedAt: Date
-    }, ExtArgs["result"]["requestDraft"]>
-    composites: {}
-  }
-
-  type RequestDraftGetPayload<S extends boolean | null | undefined | RequestDraftDefaultArgs> = $Result.GetResult<Prisma.$RequestDraftPayload, S>
-
-  type RequestDraftCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
-    Omit<RequestDraftFindManyArgs, 'select' | 'include' | 'distinct'> & {
-      select?: RequestDraftCountAggregateInputType | true
-    }
-
-  export interface RequestDraftDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['RequestDraft'], meta: { name: 'RequestDraft' } }
-    /**
-     * Find zero or one RequestDraft that matches the filter.
-     * @param {RequestDraftFindUniqueArgs} args - Arguments to find a RequestDraft
-     * @example
-     * // Get one RequestDraft
-     * const requestDraft = await prisma.requestDraft.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends RequestDraftFindUniqueArgs>(args: SelectSubset<T, RequestDraftFindUniqueArgs<ExtArgs>>): Prisma__RequestDraftClient<$Result.GetResult<Prisma.$RequestDraftPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
-
-    /**
-     * Find one RequestDraft that matches the filter or throw an error with `error.code='P2025'` 
-     * if no matches were found.
-     * @param {RequestDraftFindUniqueOrThrowArgs} args - Arguments to find a RequestDraft
-     * @example
-     * // Get one RequestDraft
-     * const requestDraft = await prisma.requestDraft.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends RequestDraftFindUniqueOrThrowArgs>(args: SelectSubset<T, RequestDraftFindUniqueOrThrowArgs<ExtArgs>>): Prisma__RequestDraftClient<$Result.GetResult<Prisma.$RequestDraftPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
-
-    /**
-     * Find the first RequestDraft that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RequestDraftFindFirstArgs} args - Arguments to find a RequestDraft
-     * @example
-     * // Get one RequestDraft
-     * const requestDraft = await prisma.requestDraft.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends RequestDraftFindFirstArgs>(args?: SelectSubset<T, RequestDraftFindFirstArgs<ExtArgs>>): Prisma__RequestDraftClient<$Result.GetResult<Prisma.$RequestDraftPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
-
-    /**
-     * Find the first RequestDraft that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RequestDraftFindFirstOrThrowArgs} args - Arguments to find a RequestDraft
-     * @example
-     * // Get one RequestDraft
-     * const requestDraft = await prisma.requestDraft.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends RequestDraftFindFirstOrThrowArgs>(args?: SelectSubset<T, RequestDraftFindFirstOrThrowArgs<ExtArgs>>): Prisma__RequestDraftClient<$Result.GetResult<Prisma.$RequestDraftPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
-
-    /**
-     * Find zero or more RequestDrafts that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RequestDraftFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all RequestDrafts
-     * const requestDrafts = await prisma.requestDraft.findMany()
-     * 
-     * // Get first 10 RequestDrafts
-     * const requestDrafts = await prisma.requestDraft.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const requestDraftWithIdOnly = await prisma.requestDraft.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends RequestDraftFindManyArgs>(args?: SelectSubset<T, RequestDraftFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RequestDraftPayload<ExtArgs>, T, "findMany">>
-
-    /**
-     * Create a RequestDraft.
-     * @param {RequestDraftCreateArgs} args - Arguments to create a RequestDraft.
-     * @example
-     * // Create one RequestDraft
-     * const RequestDraft = await prisma.requestDraft.create({
-     *   data: {
-     *     // ... data to create a RequestDraft
-     *   }
-     * })
-     * 
-     */
-    create<T extends RequestDraftCreateArgs>(args: SelectSubset<T, RequestDraftCreateArgs<ExtArgs>>): Prisma__RequestDraftClient<$Result.GetResult<Prisma.$RequestDraftPayload<ExtArgs>, T, "create">, never, ExtArgs>
-
-    /**
-     * Create many RequestDrafts.
-     * @param {RequestDraftCreateManyArgs} args - Arguments to create many RequestDrafts.
-     * @example
-     * // Create many RequestDrafts
-     * const requestDraft = await prisma.requestDraft.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends RequestDraftCreateManyArgs>(args?: SelectSubset<T, RequestDraftCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create many RequestDrafts and returns the data saved in the database.
-     * @param {RequestDraftCreateManyAndReturnArgs} args - Arguments to create many RequestDrafts.
-     * @example
-     * // Create many RequestDrafts
-     * const requestDraft = await prisma.requestDraft.createManyAndReturn({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Create many RequestDrafts and only return the `id`
-     * const requestDraftWithIdOnly = await prisma.requestDraft.createManyAndReturn({ 
-     *   select: { id: true },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    createManyAndReturn<T extends RequestDraftCreateManyAndReturnArgs>(args?: SelectSubset<T, RequestDraftCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RequestDraftPayload<ExtArgs>, T, "createManyAndReturn">>
-
-    /**
-     * Delete a RequestDraft.
-     * @param {RequestDraftDeleteArgs} args - Arguments to delete one RequestDraft.
-     * @example
-     * // Delete one RequestDraft
-     * const RequestDraft = await prisma.requestDraft.delete({
-     *   where: {
-     *     // ... filter to delete one RequestDraft
-     *   }
-     * })
-     * 
-     */
-    delete<T extends RequestDraftDeleteArgs>(args: SelectSubset<T, RequestDraftDeleteArgs<ExtArgs>>): Prisma__RequestDraftClient<$Result.GetResult<Prisma.$RequestDraftPayload<ExtArgs>, T, "delete">, never, ExtArgs>
-
-    /**
-     * Update one RequestDraft.
-     * @param {RequestDraftUpdateArgs} args - Arguments to update one RequestDraft.
-     * @example
-     * // Update one RequestDraft
-     * const requestDraft = await prisma.requestDraft.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends RequestDraftUpdateArgs>(args: SelectSubset<T, RequestDraftUpdateArgs<ExtArgs>>): Prisma__RequestDraftClient<$Result.GetResult<Prisma.$RequestDraftPayload<ExtArgs>, T, "update">, never, ExtArgs>
-
-    /**
-     * Delete zero or more RequestDrafts.
-     * @param {RequestDraftDeleteManyArgs} args - Arguments to filter RequestDrafts to delete.
-     * @example
-     * // Delete a few RequestDrafts
-     * const { count } = await prisma.requestDraft.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends RequestDraftDeleteManyArgs>(args?: SelectSubset<T, RequestDraftDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more RequestDrafts.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RequestDraftUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many RequestDrafts
-     * const requestDraft = await prisma.requestDraft.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends RequestDraftUpdateManyArgs>(args: SelectSubset<T, RequestDraftUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one RequestDraft.
-     * @param {RequestDraftUpsertArgs} args - Arguments to update or create a RequestDraft.
-     * @example
-     * // Update or create a RequestDraft
-     * const requestDraft = await prisma.requestDraft.upsert({
-     *   create: {
-     *     // ... data to create a RequestDraft
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the RequestDraft we want to update
-     *   }
-     * })
-     */
-    upsert<T extends RequestDraftUpsertArgs>(args: SelectSubset<T, RequestDraftUpsertArgs<ExtArgs>>): Prisma__RequestDraftClient<$Result.GetResult<Prisma.$RequestDraftPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
-
-
-    /**
-     * Count the number of RequestDrafts.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RequestDraftCountArgs} args - Arguments to filter RequestDrafts to count.
-     * @example
-     * // Count the number of RequestDrafts
-     * const count = await prisma.requestDraft.count({
-     *   where: {
-     *     // ... the filter for the RequestDrafts we want to count
-     *   }
-     * })
-    **/
-    count<T extends RequestDraftCountArgs>(
-      args?: Subset<T, RequestDraftCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], RequestDraftCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a RequestDraft.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RequestDraftAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends RequestDraftAggregateArgs>(args: Subset<T, RequestDraftAggregateArgs>): Prisma.PrismaPromise<GetRequestDraftAggregateType<T>>
-
-    /**
-     * Group by RequestDraft.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RequestDraftGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends RequestDraftGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: RequestDraftGroupByArgs['orderBy'] }
-        : { orderBy?: RequestDraftGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, RequestDraftGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRequestDraftGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the RequestDraft model
-   */
-  readonly fields: RequestDraftFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for RequestDraft.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__RequestDraftClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    category<T extends RequestDraft$categoryArgs<ExtArgs> = {}>(args?: Subset<T, RequestDraft$categoryArgs<ExtArgs>>): Prisma__RequestCategoryClient<$Result.GetResult<Prisma.$RequestCategoryPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the RequestDraft model
-   */ 
-  interface RequestDraftFieldRefs {
-    readonly id: FieldRef<"RequestDraft", 'String'>
-    readonly buyerId: FieldRef<"RequestDraft", 'String'>
-    readonly categoryId: FieldRef<"RequestDraft", 'String'>
-    readonly title: FieldRef<"RequestDraft", 'String'>
-    readonly description: FieldRef<"RequestDraft", 'String'>
-    readonly budgetMin: FieldRef<"RequestDraft", 'Decimal'>
-    readonly budgetMax: FieldRef<"RequestDraft", 'Decimal'>
-    readonly locationLat: FieldRef<"RequestDraft", 'Decimal'>
-    readonly locationLng: FieldRef<"RequestDraft", 'Decimal'>
-    readonly locationAddress: FieldRef<"RequestDraft", 'String'>
-    readonly autoSaveData: FieldRef<"RequestDraft", 'Json'>
-    readonly expiresAt: FieldRef<"RequestDraft", 'DateTime'>
-    readonly createdAt: FieldRef<"RequestDraft", 'DateTime'>
-    readonly updatedAt: FieldRef<"RequestDraft", 'DateTime'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * RequestDraft findUnique
-   */
-  export type RequestDraftFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestDraft
-     */
-    select?: RequestDraftSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestDraftInclude<ExtArgs> | null
-    /**
-     * Filter, which RequestDraft to fetch.
-     */
-    where: RequestDraftWhereUniqueInput
-  }
-
-  /**
-   * RequestDraft findUniqueOrThrow
-   */
-  export type RequestDraftFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestDraft
-     */
-    select?: RequestDraftSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestDraftInclude<ExtArgs> | null
-    /**
-     * Filter, which RequestDraft to fetch.
-     */
-    where: RequestDraftWhereUniqueInput
-  }
-
-  /**
-   * RequestDraft findFirst
-   */
-  export type RequestDraftFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestDraft
-     */
-    select?: RequestDraftSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestDraftInclude<ExtArgs> | null
-    /**
-     * Filter, which RequestDraft to fetch.
-     */
-    where?: RequestDraftWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of RequestDrafts to fetch.
-     */
-    orderBy?: RequestDraftOrderByWithRelationInput | RequestDraftOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for RequestDrafts.
-     */
-    cursor?: RequestDraftWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` RequestDrafts from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` RequestDrafts.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of RequestDrafts.
-     */
-    distinct?: RequestDraftScalarFieldEnum | RequestDraftScalarFieldEnum[]
-  }
-
-  /**
-   * RequestDraft findFirstOrThrow
-   */
-  export type RequestDraftFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestDraft
-     */
-    select?: RequestDraftSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestDraftInclude<ExtArgs> | null
-    /**
-     * Filter, which RequestDraft to fetch.
-     */
-    where?: RequestDraftWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of RequestDrafts to fetch.
-     */
-    orderBy?: RequestDraftOrderByWithRelationInput | RequestDraftOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for RequestDrafts.
-     */
-    cursor?: RequestDraftWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` RequestDrafts from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` RequestDrafts.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of RequestDrafts.
-     */
-    distinct?: RequestDraftScalarFieldEnum | RequestDraftScalarFieldEnum[]
-  }
-
-  /**
-   * RequestDraft findMany
-   */
-  export type RequestDraftFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestDraft
-     */
-    select?: RequestDraftSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestDraftInclude<ExtArgs> | null
-    /**
-     * Filter, which RequestDrafts to fetch.
-     */
-    where?: RequestDraftWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of RequestDrafts to fetch.
-     */
-    orderBy?: RequestDraftOrderByWithRelationInput | RequestDraftOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing RequestDrafts.
-     */
-    cursor?: RequestDraftWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` RequestDrafts from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` RequestDrafts.
-     */
-    skip?: number
-    distinct?: RequestDraftScalarFieldEnum | RequestDraftScalarFieldEnum[]
-  }
-
-  /**
-   * RequestDraft create
-   */
-  export type RequestDraftCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestDraft
-     */
-    select?: RequestDraftSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestDraftInclude<ExtArgs> | null
-    /**
-     * The data needed to create a RequestDraft.
-     */
-    data: XOR<RequestDraftCreateInput, RequestDraftUncheckedCreateInput>
-  }
-
-  /**
-   * RequestDraft createMany
-   */
-  export type RequestDraftCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many RequestDrafts.
-     */
-    data: RequestDraftCreateManyInput | RequestDraftCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * RequestDraft createManyAndReturn
-   */
-  export type RequestDraftCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestDraft
-     */
-    select?: RequestDraftSelectCreateManyAndReturn<ExtArgs> | null
-    /**
-     * The data used to create many RequestDrafts.
-     */
-    data: RequestDraftCreateManyInput | RequestDraftCreateManyInput[]
-    skipDuplicates?: boolean
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestDraftIncludeCreateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * RequestDraft update
-   */
-  export type RequestDraftUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestDraft
-     */
-    select?: RequestDraftSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestDraftInclude<ExtArgs> | null
-    /**
-     * The data needed to update a RequestDraft.
-     */
-    data: XOR<RequestDraftUpdateInput, RequestDraftUncheckedUpdateInput>
-    /**
-     * Choose, which RequestDraft to update.
-     */
-    where: RequestDraftWhereUniqueInput
-  }
-
-  /**
-   * RequestDraft updateMany
-   */
-  export type RequestDraftUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update RequestDrafts.
-     */
-    data: XOR<RequestDraftUpdateManyMutationInput, RequestDraftUncheckedUpdateManyInput>
-    /**
-     * Filter which RequestDrafts to update
-     */
-    where?: RequestDraftWhereInput
-  }
-
-  /**
-   * RequestDraft upsert
-   */
-  export type RequestDraftUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestDraft
-     */
-    select?: RequestDraftSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestDraftInclude<ExtArgs> | null
-    /**
-     * The filter to search for the RequestDraft to update in case it exists.
-     */
-    where: RequestDraftWhereUniqueInput
-    /**
-     * In case the RequestDraft found by the `where` argument doesn't exist, create a new RequestDraft with this data.
-     */
-    create: XOR<RequestDraftCreateInput, RequestDraftUncheckedCreateInput>
-    /**
-     * In case the RequestDraft was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<RequestDraftUpdateInput, RequestDraftUncheckedUpdateInput>
-  }
-
-  /**
-   * RequestDraft delete
-   */
-  export type RequestDraftDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestDraft
-     */
-    select?: RequestDraftSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestDraftInclude<ExtArgs> | null
-    /**
-     * Filter which RequestDraft to delete.
-     */
-    where: RequestDraftWhereUniqueInput
-  }
-
-  /**
-   * RequestDraft deleteMany
-   */
-  export type RequestDraftDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which RequestDrafts to delete
-     */
-    where?: RequestDraftWhereInput
-  }
-
-  /**
-   * RequestDraft.category
-   */
-  export type RequestDraft$categoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestCategory
-     */
-    select?: RequestCategorySelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestCategoryInclude<ExtArgs> | null
-    where?: RequestCategoryWhereInput
-  }
-
-  /**
-   * RequestDraft without action
-   */
-  export type RequestDraftDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestDraft
-     */
-    select?: RequestDraftSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestDraftInclude<ExtArgs> | null
-  }
-
-
-  /**
-   * Model RequestExtension
-   */
-
-  export type AggregateRequestExtension = {
-    _count: RequestExtensionCountAggregateOutputType | null
-    _min: RequestExtensionMinAggregateOutputType | null
-    _max: RequestExtensionMaxAggregateOutputType | null
-  }
-
-  export type RequestExtensionMinAggregateOutputType = {
-    id: string | null
-    requestId: string | null
-    originalExpiresAt: Date | null
-    newExpiresAt: Date | null
-    extensionReason: string | null
-    extendedBy: string | null
-    createdAt: Date | null
-  }
-
-  export type RequestExtensionMaxAggregateOutputType = {
-    id: string | null
-    requestId: string | null
-    originalExpiresAt: Date | null
-    newExpiresAt: Date | null
-    extensionReason: string | null
-    extendedBy: string | null
-    createdAt: Date | null
-  }
-
-  export type RequestExtensionCountAggregateOutputType = {
-    id: number
-    requestId: number
-    originalExpiresAt: number
-    newExpiresAt: number
-    extensionReason: number
-    extendedBy: number
-    createdAt: number
-    _all: number
-  }
-
-
-  export type RequestExtensionMinAggregateInputType = {
-    id?: true
-    requestId?: true
-    originalExpiresAt?: true
-    newExpiresAt?: true
-    extensionReason?: true
-    extendedBy?: true
-    createdAt?: true
-  }
-
-  export type RequestExtensionMaxAggregateInputType = {
-    id?: true
-    requestId?: true
-    originalExpiresAt?: true
-    newExpiresAt?: true
-    extensionReason?: true
-    extendedBy?: true
-    createdAt?: true
-  }
-
-  export type RequestExtensionCountAggregateInputType = {
-    id?: true
-    requestId?: true
-    originalExpiresAt?: true
-    newExpiresAt?: true
-    extensionReason?: true
-    extendedBy?: true
-    createdAt?: true
-    _all?: true
-  }
-
-  export type RequestExtensionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which RequestExtension to aggregate.
-     */
-    where?: RequestExtensionWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of RequestExtensions to fetch.
-     */
-    orderBy?: RequestExtensionOrderByWithRelationInput | RequestExtensionOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: RequestExtensionWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` RequestExtensions from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` RequestExtensions.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned RequestExtensions
-    **/
-    _count?: true | RequestExtensionCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: RequestExtensionMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: RequestExtensionMaxAggregateInputType
-  }
-
-  export type GetRequestExtensionAggregateType<T extends RequestExtensionAggregateArgs> = {
-        [P in keyof T & keyof AggregateRequestExtension]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateRequestExtension[P]>
-      : GetScalarType<T[P], AggregateRequestExtension[P]>
-  }
-
-
-
-
-  export type RequestExtensionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: RequestExtensionWhereInput
-    orderBy?: RequestExtensionOrderByWithAggregationInput | RequestExtensionOrderByWithAggregationInput[]
-    by: RequestExtensionScalarFieldEnum[] | RequestExtensionScalarFieldEnum
-    having?: RequestExtensionScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: RequestExtensionCountAggregateInputType | true
-    _min?: RequestExtensionMinAggregateInputType
-    _max?: RequestExtensionMaxAggregateInputType
-  }
-
-  export type RequestExtensionGroupByOutputType = {
-    id: string
-    requestId: string
-    originalExpiresAt: Date
-    newExpiresAt: Date
-    extensionReason: string | null
-    extendedBy: string | null
-    createdAt: Date
-    _count: RequestExtensionCountAggregateOutputType | null
-    _min: RequestExtensionMinAggregateOutputType | null
-    _max: RequestExtensionMaxAggregateOutputType | null
-  }
-
-  type GetRequestExtensionGroupByPayload<T extends RequestExtensionGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<RequestExtensionGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof RequestExtensionGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], RequestExtensionGroupByOutputType[P]>
-            : GetScalarType<T[P], RequestExtensionGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type RequestExtensionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    requestId?: boolean
-    originalExpiresAt?: boolean
-    newExpiresAt?: boolean
-    extensionReason?: boolean
-    extendedBy?: boolean
-    createdAt?: boolean
-    request?: boolean | RequestDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["requestExtension"]>
-
-  export type RequestExtensionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    requestId?: boolean
-    originalExpiresAt?: boolean
-    newExpiresAt?: boolean
-    extensionReason?: boolean
-    extendedBy?: boolean
-    createdAt?: boolean
-    request?: boolean | RequestDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["requestExtension"]>
-
-  export type RequestExtensionSelectScalar = {
-    id?: boolean
-    requestId?: boolean
-    originalExpiresAt?: boolean
-    newExpiresAt?: boolean
-    extensionReason?: boolean
-    extendedBy?: boolean
-    createdAt?: boolean
-  }
-
-  export type RequestExtensionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    request?: boolean | RequestDefaultArgs<ExtArgs>
-  }
-  export type RequestExtensionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    request?: boolean | RequestDefaultArgs<ExtArgs>
-  }
-
-  export type $RequestExtensionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "RequestExtension"
-    objects: {
-      request: Prisma.$RequestPayload<ExtArgs>
-    }
-    scalars: $Extensions.GetPayloadResult<{
-      id: string
-      requestId: string
-      originalExpiresAt: Date
-      newExpiresAt: Date
-      extensionReason: string | null
-      extendedBy: string | null
-      createdAt: Date
-    }, ExtArgs["result"]["requestExtension"]>
-    composites: {}
-  }
-
-  type RequestExtensionGetPayload<S extends boolean | null | undefined | RequestExtensionDefaultArgs> = $Result.GetResult<Prisma.$RequestExtensionPayload, S>
-
-  type RequestExtensionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
-    Omit<RequestExtensionFindManyArgs, 'select' | 'include' | 'distinct'> & {
-      select?: RequestExtensionCountAggregateInputType | true
-    }
-
-  export interface RequestExtensionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['RequestExtension'], meta: { name: 'RequestExtension' } }
-    /**
-     * Find zero or one RequestExtension that matches the filter.
-     * @param {RequestExtensionFindUniqueArgs} args - Arguments to find a RequestExtension
-     * @example
-     * // Get one RequestExtension
-     * const requestExtension = await prisma.requestExtension.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends RequestExtensionFindUniqueArgs>(args: SelectSubset<T, RequestExtensionFindUniqueArgs<ExtArgs>>): Prisma__RequestExtensionClient<$Result.GetResult<Prisma.$RequestExtensionPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
-
-    /**
-     * Find one RequestExtension that matches the filter or throw an error with `error.code='P2025'` 
-     * if no matches were found.
-     * @param {RequestExtensionFindUniqueOrThrowArgs} args - Arguments to find a RequestExtension
-     * @example
-     * // Get one RequestExtension
-     * const requestExtension = await prisma.requestExtension.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends RequestExtensionFindUniqueOrThrowArgs>(args: SelectSubset<T, RequestExtensionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__RequestExtensionClient<$Result.GetResult<Prisma.$RequestExtensionPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
-
-    /**
-     * Find the first RequestExtension that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RequestExtensionFindFirstArgs} args - Arguments to find a RequestExtension
-     * @example
-     * // Get one RequestExtension
-     * const requestExtension = await prisma.requestExtension.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends RequestExtensionFindFirstArgs>(args?: SelectSubset<T, RequestExtensionFindFirstArgs<ExtArgs>>): Prisma__RequestExtensionClient<$Result.GetResult<Prisma.$RequestExtensionPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
-
-    /**
-     * Find the first RequestExtension that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RequestExtensionFindFirstOrThrowArgs} args - Arguments to find a RequestExtension
-     * @example
-     * // Get one RequestExtension
-     * const requestExtension = await prisma.requestExtension.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends RequestExtensionFindFirstOrThrowArgs>(args?: SelectSubset<T, RequestExtensionFindFirstOrThrowArgs<ExtArgs>>): Prisma__RequestExtensionClient<$Result.GetResult<Prisma.$RequestExtensionPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
-
-    /**
-     * Find zero or more RequestExtensions that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RequestExtensionFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all RequestExtensions
-     * const requestExtensions = await prisma.requestExtension.findMany()
-     * 
-     * // Get first 10 RequestExtensions
-     * const requestExtensions = await prisma.requestExtension.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const requestExtensionWithIdOnly = await prisma.requestExtension.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends RequestExtensionFindManyArgs>(args?: SelectSubset<T, RequestExtensionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RequestExtensionPayload<ExtArgs>, T, "findMany">>
-
-    /**
-     * Create a RequestExtension.
-     * @param {RequestExtensionCreateArgs} args - Arguments to create a RequestExtension.
-     * @example
-     * // Create one RequestExtension
-     * const RequestExtension = await prisma.requestExtension.create({
-     *   data: {
-     *     // ... data to create a RequestExtension
-     *   }
-     * })
-     * 
-     */
-    create<T extends RequestExtensionCreateArgs>(args: SelectSubset<T, RequestExtensionCreateArgs<ExtArgs>>): Prisma__RequestExtensionClient<$Result.GetResult<Prisma.$RequestExtensionPayload<ExtArgs>, T, "create">, never, ExtArgs>
-
-    /**
-     * Create many RequestExtensions.
-     * @param {RequestExtensionCreateManyArgs} args - Arguments to create many RequestExtensions.
-     * @example
-     * // Create many RequestExtensions
-     * const requestExtension = await prisma.requestExtension.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends RequestExtensionCreateManyArgs>(args?: SelectSubset<T, RequestExtensionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create many RequestExtensions and returns the data saved in the database.
-     * @param {RequestExtensionCreateManyAndReturnArgs} args - Arguments to create many RequestExtensions.
-     * @example
-     * // Create many RequestExtensions
-     * const requestExtension = await prisma.requestExtension.createManyAndReturn({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Create many RequestExtensions and only return the `id`
-     * const requestExtensionWithIdOnly = await prisma.requestExtension.createManyAndReturn({ 
-     *   select: { id: true },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    createManyAndReturn<T extends RequestExtensionCreateManyAndReturnArgs>(args?: SelectSubset<T, RequestExtensionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RequestExtensionPayload<ExtArgs>, T, "createManyAndReturn">>
-
-    /**
-     * Delete a RequestExtension.
-     * @param {RequestExtensionDeleteArgs} args - Arguments to delete one RequestExtension.
-     * @example
-     * // Delete one RequestExtension
-     * const RequestExtension = await prisma.requestExtension.delete({
-     *   where: {
-     *     // ... filter to delete one RequestExtension
-     *   }
-     * })
-     * 
-     */
-    delete<T extends RequestExtensionDeleteArgs>(args: SelectSubset<T, RequestExtensionDeleteArgs<ExtArgs>>): Prisma__RequestExtensionClient<$Result.GetResult<Prisma.$RequestExtensionPayload<ExtArgs>, T, "delete">, never, ExtArgs>
-
-    /**
-     * Update one RequestExtension.
-     * @param {RequestExtensionUpdateArgs} args - Arguments to update one RequestExtension.
-     * @example
-     * // Update one RequestExtension
-     * const requestExtension = await prisma.requestExtension.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends RequestExtensionUpdateArgs>(args: SelectSubset<T, RequestExtensionUpdateArgs<ExtArgs>>): Prisma__RequestExtensionClient<$Result.GetResult<Prisma.$RequestExtensionPayload<ExtArgs>, T, "update">, never, ExtArgs>
-
-    /**
-     * Delete zero or more RequestExtensions.
-     * @param {RequestExtensionDeleteManyArgs} args - Arguments to filter RequestExtensions to delete.
-     * @example
-     * // Delete a few RequestExtensions
-     * const { count } = await prisma.requestExtension.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends RequestExtensionDeleteManyArgs>(args?: SelectSubset<T, RequestExtensionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more RequestExtensions.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RequestExtensionUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many RequestExtensions
-     * const requestExtension = await prisma.requestExtension.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends RequestExtensionUpdateManyArgs>(args: SelectSubset<T, RequestExtensionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one RequestExtension.
-     * @param {RequestExtensionUpsertArgs} args - Arguments to update or create a RequestExtension.
-     * @example
-     * // Update or create a RequestExtension
-     * const requestExtension = await prisma.requestExtension.upsert({
-     *   create: {
-     *     // ... data to create a RequestExtension
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the RequestExtension we want to update
-     *   }
-     * })
-     */
-    upsert<T extends RequestExtensionUpsertArgs>(args: SelectSubset<T, RequestExtensionUpsertArgs<ExtArgs>>): Prisma__RequestExtensionClient<$Result.GetResult<Prisma.$RequestExtensionPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
-
-
-    /**
-     * Count the number of RequestExtensions.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RequestExtensionCountArgs} args - Arguments to filter RequestExtensions to count.
-     * @example
-     * // Count the number of RequestExtensions
-     * const count = await prisma.requestExtension.count({
-     *   where: {
-     *     // ... the filter for the RequestExtensions we want to count
-     *   }
-     * })
-    **/
-    count<T extends RequestExtensionCountArgs>(
-      args?: Subset<T, RequestExtensionCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], RequestExtensionCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a RequestExtension.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RequestExtensionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends RequestExtensionAggregateArgs>(args: Subset<T, RequestExtensionAggregateArgs>): Prisma.PrismaPromise<GetRequestExtensionAggregateType<T>>
-
-    /**
-     * Group by RequestExtension.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RequestExtensionGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends RequestExtensionGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: RequestExtensionGroupByArgs['orderBy'] }
-        : { orderBy?: RequestExtensionGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, RequestExtensionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRequestExtensionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the RequestExtension model
-   */
-  readonly fields: RequestExtensionFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for RequestExtension.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__RequestExtensionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    request<T extends RequestDefaultArgs<ExtArgs> = {}>(args?: Subset<T, RequestDefaultArgs<ExtArgs>>): Prisma__RequestClient<$Result.GetResult<Prisma.$RequestPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the RequestExtension model
-   */ 
-  interface RequestExtensionFieldRefs {
-    readonly id: FieldRef<"RequestExtension", 'String'>
-    readonly requestId: FieldRef<"RequestExtension", 'String'>
-    readonly originalExpiresAt: FieldRef<"RequestExtension", 'DateTime'>
-    readonly newExpiresAt: FieldRef<"RequestExtension", 'DateTime'>
-    readonly extensionReason: FieldRef<"RequestExtension", 'String'>
-    readonly extendedBy: FieldRef<"RequestExtension", 'String'>
-    readonly createdAt: FieldRef<"RequestExtension", 'DateTime'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * RequestExtension findUnique
-   */
-  export type RequestExtensionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestExtension
-     */
-    select?: RequestExtensionSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestExtensionInclude<ExtArgs> | null
-    /**
-     * Filter, which RequestExtension to fetch.
-     */
-    where: RequestExtensionWhereUniqueInput
-  }
-
-  /**
-   * RequestExtension findUniqueOrThrow
-   */
-  export type RequestExtensionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestExtension
-     */
-    select?: RequestExtensionSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestExtensionInclude<ExtArgs> | null
-    /**
-     * Filter, which RequestExtension to fetch.
-     */
-    where: RequestExtensionWhereUniqueInput
-  }
-
-  /**
-   * RequestExtension findFirst
-   */
-  export type RequestExtensionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestExtension
-     */
-    select?: RequestExtensionSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestExtensionInclude<ExtArgs> | null
-    /**
-     * Filter, which RequestExtension to fetch.
-     */
-    where?: RequestExtensionWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of RequestExtensions to fetch.
-     */
-    orderBy?: RequestExtensionOrderByWithRelationInput | RequestExtensionOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for RequestExtensions.
-     */
-    cursor?: RequestExtensionWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` RequestExtensions from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` RequestExtensions.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of RequestExtensions.
-     */
-    distinct?: RequestExtensionScalarFieldEnum | RequestExtensionScalarFieldEnum[]
-  }
-
-  /**
-   * RequestExtension findFirstOrThrow
-   */
-  export type RequestExtensionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestExtension
-     */
-    select?: RequestExtensionSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestExtensionInclude<ExtArgs> | null
-    /**
-     * Filter, which RequestExtension to fetch.
-     */
-    where?: RequestExtensionWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of RequestExtensions to fetch.
-     */
-    orderBy?: RequestExtensionOrderByWithRelationInput | RequestExtensionOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for RequestExtensions.
-     */
-    cursor?: RequestExtensionWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` RequestExtensions from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` RequestExtensions.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of RequestExtensions.
-     */
-    distinct?: RequestExtensionScalarFieldEnum | RequestExtensionScalarFieldEnum[]
-  }
-
-  /**
-   * RequestExtension findMany
-   */
-  export type RequestExtensionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestExtension
-     */
-    select?: RequestExtensionSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestExtensionInclude<ExtArgs> | null
-    /**
-     * Filter, which RequestExtensions to fetch.
-     */
-    where?: RequestExtensionWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of RequestExtensions to fetch.
-     */
-    orderBy?: RequestExtensionOrderByWithRelationInput | RequestExtensionOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing RequestExtensions.
-     */
-    cursor?: RequestExtensionWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` RequestExtensions from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` RequestExtensions.
-     */
-    skip?: number
-    distinct?: RequestExtensionScalarFieldEnum | RequestExtensionScalarFieldEnum[]
-  }
-
-  /**
-   * RequestExtension create
-   */
-  export type RequestExtensionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestExtension
-     */
-    select?: RequestExtensionSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestExtensionInclude<ExtArgs> | null
-    /**
-     * The data needed to create a RequestExtension.
-     */
-    data: XOR<RequestExtensionCreateInput, RequestExtensionUncheckedCreateInput>
-  }
-
-  /**
-   * RequestExtension createMany
-   */
-  export type RequestExtensionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many RequestExtensions.
-     */
-    data: RequestExtensionCreateManyInput | RequestExtensionCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * RequestExtension createManyAndReturn
-   */
-  export type RequestExtensionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestExtension
-     */
-    select?: RequestExtensionSelectCreateManyAndReturn<ExtArgs> | null
-    /**
-     * The data used to create many RequestExtensions.
-     */
-    data: RequestExtensionCreateManyInput | RequestExtensionCreateManyInput[]
-    skipDuplicates?: boolean
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestExtensionIncludeCreateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * RequestExtension update
-   */
-  export type RequestExtensionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestExtension
-     */
-    select?: RequestExtensionSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestExtensionInclude<ExtArgs> | null
-    /**
-     * The data needed to update a RequestExtension.
-     */
-    data: XOR<RequestExtensionUpdateInput, RequestExtensionUncheckedUpdateInput>
-    /**
-     * Choose, which RequestExtension to update.
-     */
-    where: RequestExtensionWhereUniqueInput
-  }
-
-  /**
-   * RequestExtension updateMany
-   */
-  export type RequestExtensionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update RequestExtensions.
-     */
-    data: XOR<RequestExtensionUpdateManyMutationInput, RequestExtensionUncheckedUpdateManyInput>
-    /**
-     * Filter which RequestExtensions to update
-     */
-    where?: RequestExtensionWhereInput
-  }
-
-  /**
-   * RequestExtension upsert
-   */
-  export type RequestExtensionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestExtension
-     */
-    select?: RequestExtensionSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestExtensionInclude<ExtArgs> | null
-    /**
-     * The filter to search for the RequestExtension to update in case it exists.
-     */
-    where: RequestExtensionWhereUniqueInput
-    /**
-     * In case the RequestExtension found by the `where` argument doesn't exist, create a new RequestExtension with this data.
-     */
-    create: XOR<RequestExtensionCreateInput, RequestExtensionUncheckedCreateInput>
-    /**
-     * In case the RequestExtension was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<RequestExtensionUpdateInput, RequestExtensionUncheckedUpdateInput>
-  }
-
-  /**
-   * RequestExtension delete
-   */
-  export type RequestExtensionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestExtension
-     */
-    select?: RequestExtensionSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestExtensionInclude<ExtArgs> | null
-    /**
-     * Filter which RequestExtension to delete.
-     */
-    where: RequestExtensionWhereUniqueInput
-  }
-
-  /**
-   * RequestExtension deleteMany
-   */
-  export type RequestExtensionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which RequestExtensions to delete
-     */
-    where?: RequestExtensionWhereInput
-  }
-
-  /**
-   * RequestExtension without action
-   */
-  export type RequestExtensionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestExtension
-     */
-    select?: RequestExtensionSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestExtensionInclude<ExtArgs> | null
-  }
-
-
-  /**
-   * Model RequestSearchIndex
-   */
-
-  export type AggregateRequestSearchIndex = {
-    _count: RequestSearchIndexCountAggregateOutputType | null
-    _min: RequestSearchIndexMinAggregateOutputType | null
-    _max: RequestSearchIndexMaxAggregateOutputType | null
-  }
-
-  export type RequestSearchIndexMinAggregateOutputType = {
-    id: string | null
-    requestId: string | null
-    searchVector: string | null
-    categoryPath: string | null
-    locationText: string | null
-    budgetRange: string | null
-    createdAt: Date | null
-  }
-
-  export type RequestSearchIndexMaxAggregateOutputType = {
-    id: string | null
-    requestId: string | null
-    searchVector: string | null
-    categoryPath: string | null
-    locationText: string | null
-    budgetRange: string | null
-    createdAt: Date | null
-  }
-
-  export type RequestSearchIndexCountAggregateOutputType = {
-    id: number
-    requestId: number
-    searchVector: number
-    categoryPath: number
-    locationText: number
-    budgetRange: number
-    createdAt: number
-    _all: number
-  }
-
-
-  export type RequestSearchIndexMinAggregateInputType = {
-    id?: true
-    requestId?: true
-    searchVector?: true
-    categoryPath?: true
-    locationText?: true
-    budgetRange?: true
-    createdAt?: true
-  }
-
-  export type RequestSearchIndexMaxAggregateInputType = {
-    id?: true
-    requestId?: true
-    searchVector?: true
-    categoryPath?: true
-    locationText?: true
-    budgetRange?: true
-    createdAt?: true
-  }
-
-  export type RequestSearchIndexCountAggregateInputType = {
-    id?: true
-    requestId?: true
-    searchVector?: true
-    categoryPath?: true
-    locationText?: true
-    budgetRange?: true
-    createdAt?: true
-    _all?: true
-  }
-
-  export type RequestSearchIndexAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which RequestSearchIndex to aggregate.
-     */
-    where?: RequestSearchIndexWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of RequestSearchIndices to fetch.
-     */
-    orderBy?: RequestSearchIndexOrderByWithRelationInput | RequestSearchIndexOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: RequestSearchIndexWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` RequestSearchIndices from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` RequestSearchIndices.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned RequestSearchIndices
-    **/
-    _count?: true | RequestSearchIndexCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: RequestSearchIndexMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: RequestSearchIndexMaxAggregateInputType
-  }
-
-  export type GetRequestSearchIndexAggregateType<T extends RequestSearchIndexAggregateArgs> = {
-        [P in keyof T & keyof AggregateRequestSearchIndex]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateRequestSearchIndex[P]>
-      : GetScalarType<T[P], AggregateRequestSearchIndex[P]>
-  }
-
-
-
-
-  export type RequestSearchIndexGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: RequestSearchIndexWhereInput
-    orderBy?: RequestSearchIndexOrderByWithAggregationInput | RequestSearchIndexOrderByWithAggregationInput[]
-    by: RequestSearchIndexScalarFieldEnum[] | RequestSearchIndexScalarFieldEnum
-    having?: RequestSearchIndexScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: RequestSearchIndexCountAggregateInputType | true
-    _min?: RequestSearchIndexMinAggregateInputType
-    _max?: RequestSearchIndexMaxAggregateInputType
-  }
-
-  export type RequestSearchIndexGroupByOutputType = {
-    id: string
-    requestId: string
-    searchVector: string | null
-    categoryPath: string | null
-    locationText: string | null
-    budgetRange: string | null
-    createdAt: Date
-    _count: RequestSearchIndexCountAggregateOutputType | null
-    _min: RequestSearchIndexMinAggregateOutputType | null
-    _max: RequestSearchIndexMaxAggregateOutputType | null
-  }
-
-  type GetRequestSearchIndexGroupByPayload<T extends RequestSearchIndexGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<RequestSearchIndexGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof RequestSearchIndexGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], RequestSearchIndexGroupByOutputType[P]>
-            : GetScalarType<T[P], RequestSearchIndexGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type RequestSearchIndexSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    requestId?: boolean
-    searchVector?: boolean
-    categoryPath?: boolean
-    locationText?: boolean
-    budgetRange?: boolean
-    createdAt?: boolean
-    request?: boolean | RequestDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["requestSearchIndex"]>
-
-  export type RequestSearchIndexSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    requestId?: boolean
-    searchVector?: boolean
-    categoryPath?: boolean
-    locationText?: boolean
-    budgetRange?: boolean
-    createdAt?: boolean
-    request?: boolean | RequestDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["requestSearchIndex"]>
-
-  export type RequestSearchIndexSelectScalar = {
-    id?: boolean
-    requestId?: boolean
-    searchVector?: boolean
-    categoryPath?: boolean
-    locationText?: boolean
-    budgetRange?: boolean
-    createdAt?: boolean
-  }
-
-  export type RequestSearchIndexInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    request?: boolean | RequestDefaultArgs<ExtArgs>
-  }
-  export type RequestSearchIndexIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    request?: boolean | RequestDefaultArgs<ExtArgs>
-  }
-
-  export type $RequestSearchIndexPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "RequestSearchIndex"
-    objects: {
-      request: Prisma.$RequestPayload<ExtArgs>
-    }
-    scalars: $Extensions.GetPayloadResult<{
-      id: string
-      requestId: string
-      searchVector: string | null
-      categoryPath: string | null
-      locationText: string | null
-      budgetRange: string | null
-      createdAt: Date
-    }, ExtArgs["result"]["requestSearchIndex"]>
-    composites: {}
-  }
-
-  type RequestSearchIndexGetPayload<S extends boolean | null | undefined | RequestSearchIndexDefaultArgs> = $Result.GetResult<Prisma.$RequestSearchIndexPayload, S>
-
-  type RequestSearchIndexCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
-    Omit<RequestSearchIndexFindManyArgs, 'select' | 'include' | 'distinct'> & {
-      select?: RequestSearchIndexCountAggregateInputType | true
-    }
-
-  export interface RequestSearchIndexDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['RequestSearchIndex'], meta: { name: 'RequestSearchIndex' } }
-    /**
-     * Find zero or one RequestSearchIndex that matches the filter.
-     * @param {RequestSearchIndexFindUniqueArgs} args - Arguments to find a RequestSearchIndex
-     * @example
-     * // Get one RequestSearchIndex
-     * const requestSearchIndex = await prisma.requestSearchIndex.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends RequestSearchIndexFindUniqueArgs>(args: SelectSubset<T, RequestSearchIndexFindUniqueArgs<ExtArgs>>): Prisma__RequestSearchIndexClient<$Result.GetResult<Prisma.$RequestSearchIndexPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
-
-    /**
-     * Find one RequestSearchIndex that matches the filter or throw an error with `error.code='P2025'` 
-     * if no matches were found.
-     * @param {RequestSearchIndexFindUniqueOrThrowArgs} args - Arguments to find a RequestSearchIndex
-     * @example
-     * // Get one RequestSearchIndex
-     * const requestSearchIndex = await prisma.requestSearchIndex.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends RequestSearchIndexFindUniqueOrThrowArgs>(args: SelectSubset<T, RequestSearchIndexFindUniqueOrThrowArgs<ExtArgs>>): Prisma__RequestSearchIndexClient<$Result.GetResult<Prisma.$RequestSearchIndexPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
-
-    /**
-     * Find the first RequestSearchIndex that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RequestSearchIndexFindFirstArgs} args - Arguments to find a RequestSearchIndex
-     * @example
-     * // Get one RequestSearchIndex
-     * const requestSearchIndex = await prisma.requestSearchIndex.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends RequestSearchIndexFindFirstArgs>(args?: SelectSubset<T, RequestSearchIndexFindFirstArgs<ExtArgs>>): Prisma__RequestSearchIndexClient<$Result.GetResult<Prisma.$RequestSearchIndexPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
-
-    /**
-     * Find the first RequestSearchIndex that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RequestSearchIndexFindFirstOrThrowArgs} args - Arguments to find a RequestSearchIndex
-     * @example
-     * // Get one RequestSearchIndex
-     * const requestSearchIndex = await prisma.requestSearchIndex.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends RequestSearchIndexFindFirstOrThrowArgs>(args?: SelectSubset<T, RequestSearchIndexFindFirstOrThrowArgs<ExtArgs>>): Prisma__RequestSearchIndexClient<$Result.GetResult<Prisma.$RequestSearchIndexPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
-
-    /**
-     * Find zero or more RequestSearchIndices that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RequestSearchIndexFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all RequestSearchIndices
-     * const requestSearchIndices = await prisma.requestSearchIndex.findMany()
-     * 
-     * // Get first 10 RequestSearchIndices
-     * const requestSearchIndices = await prisma.requestSearchIndex.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const requestSearchIndexWithIdOnly = await prisma.requestSearchIndex.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends RequestSearchIndexFindManyArgs>(args?: SelectSubset<T, RequestSearchIndexFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RequestSearchIndexPayload<ExtArgs>, T, "findMany">>
-
-    /**
-     * Create a RequestSearchIndex.
-     * @param {RequestSearchIndexCreateArgs} args - Arguments to create a RequestSearchIndex.
-     * @example
-     * // Create one RequestSearchIndex
-     * const RequestSearchIndex = await prisma.requestSearchIndex.create({
-     *   data: {
-     *     // ... data to create a RequestSearchIndex
-     *   }
-     * })
-     * 
-     */
-    create<T extends RequestSearchIndexCreateArgs>(args: SelectSubset<T, RequestSearchIndexCreateArgs<ExtArgs>>): Prisma__RequestSearchIndexClient<$Result.GetResult<Prisma.$RequestSearchIndexPayload<ExtArgs>, T, "create">, never, ExtArgs>
-
-    /**
-     * Create many RequestSearchIndices.
-     * @param {RequestSearchIndexCreateManyArgs} args - Arguments to create many RequestSearchIndices.
-     * @example
-     * // Create many RequestSearchIndices
-     * const requestSearchIndex = await prisma.requestSearchIndex.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends RequestSearchIndexCreateManyArgs>(args?: SelectSubset<T, RequestSearchIndexCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create many RequestSearchIndices and returns the data saved in the database.
-     * @param {RequestSearchIndexCreateManyAndReturnArgs} args - Arguments to create many RequestSearchIndices.
-     * @example
-     * // Create many RequestSearchIndices
-     * const requestSearchIndex = await prisma.requestSearchIndex.createManyAndReturn({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Create many RequestSearchIndices and only return the `id`
-     * const requestSearchIndexWithIdOnly = await prisma.requestSearchIndex.createManyAndReturn({ 
-     *   select: { id: true },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    createManyAndReturn<T extends RequestSearchIndexCreateManyAndReturnArgs>(args?: SelectSubset<T, RequestSearchIndexCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RequestSearchIndexPayload<ExtArgs>, T, "createManyAndReturn">>
-
-    /**
-     * Delete a RequestSearchIndex.
-     * @param {RequestSearchIndexDeleteArgs} args - Arguments to delete one RequestSearchIndex.
-     * @example
-     * // Delete one RequestSearchIndex
-     * const RequestSearchIndex = await prisma.requestSearchIndex.delete({
-     *   where: {
-     *     // ... filter to delete one RequestSearchIndex
-     *   }
-     * })
-     * 
-     */
-    delete<T extends RequestSearchIndexDeleteArgs>(args: SelectSubset<T, RequestSearchIndexDeleteArgs<ExtArgs>>): Prisma__RequestSearchIndexClient<$Result.GetResult<Prisma.$RequestSearchIndexPayload<ExtArgs>, T, "delete">, never, ExtArgs>
-
-    /**
-     * Update one RequestSearchIndex.
-     * @param {RequestSearchIndexUpdateArgs} args - Arguments to update one RequestSearchIndex.
-     * @example
-     * // Update one RequestSearchIndex
-     * const requestSearchIndex = await prisma.requestSearchIndex.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends RequestSearchIndexUpdateArgs>(args: SelectSubset<T, RequestSearchIndexUpdateArgs<ExtArgs>>): Prisma__RequestSearchIndexClient<$Result.GetResult<Prisma.$RequestSearchIndexPayload<ExtArgs>, T, "update">, never, ExtArgs>
-
-    /**
-     * Delete zero or more RequestSearchIndices.
-     * @param {RequestSearchIndexDeleteManyArgs} args - Arguments to filter RequestSearchIndices to delete.
-     * @example
-     * // Delete a few RequestSearchIndices
-     * const { count } = await prisma.requestSearchIndex.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends RequestSearchIndexDeleteManyArgs>(args?: SelectSubset<T, RequestSearchIndexDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more RequestSearchIndices.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RequestSearchIndexUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many RequestSearchIndices
-     * const requestSearchIndex = await prisma.requestSearchIndex.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends RequestSearchIndexUpdateManyArgs>(args: SelectSubset<T, RequestSearchIndexUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one RequestSearchIndex.
-     * @param {RequestSearchIndexUpsertArgs} args - Arguments to update or create a RequestSearchIndex.
-     * @example
-     * // Update or create a RequestSearchIndex
-     * const requestSearchIndex = await prisma.requestSearchIndex.upsert({
-     *   create: {
-     *     // ... data to create a RequestSearchIndex
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the RequestSearchIndex we want to update
-     *   }
-     * })
-     */
-    upsert<T extends RequestSearchIndexUpsertArgs>(args: SelectSubset<T, RequestSearchIndexUpsertArgs<ExtArgs>>): Prisma__RequestSearchIndexClient<$Result.GetResult<Prisma.$RequestSearchIndexPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
-
-
-    /**
-     * Count the number of RequestSearchIndices.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RequestSearchIndexCountArgs} args - Arguments to filter RequestSearchIndices to count.
-     * @example
-     * // Count the number of RequestSearchIndices
-     * const count = await prisma.requestSearchIndex.count({
-     *   where: {
-     *     // ... the filter for the RequestSearchIndices we want to count
-     *   }
-     * })
-    **/
-    count<T extends RequestSearchIndexCountArgs>(
-      args?: Subset<T, RequestSearchIndexCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], RequestSearchIndexCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a RequestSearchIndex.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RequestSearchIndexAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends RequestSearchIndexAggregateArgs>(args: Subset<T, RequestSearchIndexAggregateArgs>): Prisma.PrismaPromise<GetRequestSearchIndexAggregateType<T>>
-
-    /**
-     * Group by RequestSearchIndex.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {RequestSearchIndexGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends RequestSearchIndexGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: RequestSearchIndexGroupByArgs['orderBy'] }
-        : { orderBy?: RequestSearchIndexGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, RequestSearchIndexGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRequestSearchIndexGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the RequestSearchIndex model
-   */
-  readonly fields: RequestSearchIndexFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for RequestSearchIndex.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__RequestSearchIndexClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    request<T extends RequestDefaultArgs<ExtArgs> = {}>(args?: Subset<T, RequestDefaultArgs<ExtArgs>>): Prisma__RequestClient<$Result.GetResult<Prisma.$RequestPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the RequestSearchIndex model
-   */ 
-  interface RequestSearchIndexFieldRefs {
-    readonly id: FieldRef<"RequestSearchIndex", 'String'>
-    readonly requestId: FieldRef<"RequestSearchIndex", 'String'>
-    readonly searchVector: FieldRef<"RequestSearchIndex", 'String'>
-    readonly categoryPath: FieldRef<"RequestSearchIndex", 'String'>
-    readonly locationText: FieldRef<"RequestSearchIndex", 'String'>
-    readonly budgetRange: FieldRef<"RequestSearchIndex", 'String'>
-    readonly createdAt: FieldRef<"RequestSearchIndex", 'DateTime'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * RequestSearchIndex findUnique
-   */
-  export type RequestSearchIndexFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestSearchIndex
-     */
-    select?: RequestSearchIndexSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestSearchIndexInclude<ExtArgs> | null
-    /**
-     * Filter, which RequestSearchIndex to fetch.
-     */
-    where: RequestSearchIndexWhereUniqueInput
-  }
-
-  /**
-   * RequestSearchIndex findUniqueOrThrow
-   */
-  export type RequestSearchIndexFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestSearchIndex
-     */
-    select?: RequestSearchIndexSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestSearchIndexInclude<ExtArgs> | null
-    /**
-     * Filter, which RequestSearchIndex to fetch.
-     */
-    where: RequestSearchIndexWhereUniqueInput
-  }
-
-  /**
-   * RequestSearchIndex findFirst
-   */
-  export type RequestSearchIndexFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestSearchIndex
-     */
-    select?: RequestSearchIndexSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestSearchIndexInclude<ExtArgs> | null
-    /**
-     * Filter, which RequestSearchIndex to fetch.
-     */
-    where?: RequestSearchIndexWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of RequestSearchIndices to fetch.
-     */
-    orderBy?: RequestSearchIndexOrderByWithRelationInput | RequestSearchIndexOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for RequestSearchIndices.
-     */
-    cursor?: RequestSearchIndexWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` RequestSearchIndices from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` RequestSearchIndices.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of RequestSearchIndices.
-     */
-    distinct?: RequestSearchIndexScalarFieldEnum | RequestSearchIndexScalarFieldEnum[]
-  }
-
-  /**
-   * RequestSearchIndex findFirstOrThrow
-   */
-  export type RequestSearchIndexFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestSearchIndex
-     */
-    select?: RequestSearchIndexSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestSearchIndexInclude<ExtArgs> | null
-    /**
-     * Filter, which RequestSearchIndex to fetch.
-     */
-    where?: RequestSearchIndexWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of RequestSearchIndices to fetch.
-     */
-    orderBy?: RequestSearchIndexOrderByWithRelationInput | RequestSearchIndexOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for RequestSearchIndices.
-     */
-    cursor?: RequestSearchIndexWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` RequestSearchIndices from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` RequestSearchIndices.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of RequestSearchIndices.
-     */
-    distinct?: RequestSearchIndexScalarFieldEnum | RequestSearchIndexScalarFieldEnum[]
-  }
-
-  /**
-   * RequestSearchIndex findMany
-   */
-  export type RequestSearchIndexFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestSearchIndex
-     */
-    select?: RequestSearchIndexSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestSearchIndexInclude<ExtArgs> | null
-    /**
-     * Filter, which RequestSearchIndices to fetch.
-     */
-    where?: RequestSearchIndexWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of RequestSearchIndices to fetch.
-     */
-    orderBy?: RequestSearchIndexOrderByWithRelationInput | RequestSearchIndexOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing RequestSearchIndices.
-     */
-    cursor?: RequestSearchIndexWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` RequestSearchIndices from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` RequestSearchIndices.
-     */
-    skip?: number
-    distinct?: RequestSearchIndexScalarFieldEnum | RequestSearchIndexScalarFieldEnum[]
-  }
-
-  /**
-   * RequestSearchIndex create
-   */
-  export type RequestSearchIndexCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestSearchIndex
-     */
-    select?: RequestSearchIndexSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestSearchIndexInclude<ExtArgs> | null
-    /**
-     * The data needed to create a RequestSearchIndex.
-     */
-    data: XOR<RequestSearchIndexCreateInput, RequestSearchIndexUncheckedCreateInput>
-  }
-
-  /**
-   * RequestSearchIndex createMany
-   */
-  export type RequestSearchIndexCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many RequestSearchIndices.
-     */
-    data: RequestSearchIndexCreateManyInput | RequestSearchIndexCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * RequestSearchIndex createManyAndReturn
-   */
-  export type RequestSearchIndexCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestSearchIndex
-     */
-    select?: RequestSearchIndexSelectCreateManyAndReturn<ExtArgs> | null
-    /**
-     * The data used to create many RequestSearchIndices.
-     */
-    data: RequestSearchIndexCreateManyInput | RequestSearchIndexCreateManyInput[]
-    skipDuplicates?: boolean
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestSearchIndexIncludeCreateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * RequestSearchIndex update
-   */
-  export type RequestSearchIndexUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestSearchIndex
-     */
-    select?: RequestSearchIndexSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestSearchIndexInclude<ExtArgs> | null
-    /**
-     * The data needed to update a RequestSearchIndex.
-     */
-    data: XOR<RequestSearchIndexUpdateInput, RequestSearchIndexUncheckedUpdateInput>
-    /**
-     * Choose, which RequestSearchIndex to update.
-     */
-    where: RequestSearchIndexWhereUniqueInput
-  }
-
-  /**
-   * RequestSearchIndex updateMany
-   */
-  export type RequestSearchIndexUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update RequestSearchIndices.
-     */
-    data: XOR<RequestSearchIndexUpdateManyMutationInput, RequestSearchIndexUncheckedUpdateManyInput>
-    /**
-     * Filter which RequestSearchIndices to update
-     */
-    where?: RequestSearchIndexWhereInput
-  }
-
-  /**
-   * RequestSearchIndex upsert
-   */
-  export type RequestSearchIndexUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestSearchIndex
-     */
-    select?: RequestSearchIndexSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestSearchIndexInclude<ExtArgs> | null
-    /**
-     * The filter to search for the RequestSearchIndex to update in case it exists.
-     */
-    where: RequestSearchIndexWhereUniqueInput
-    /**
-     * In case the RequestSearchIndex found by the `where` argument doesn't exist, create a new RequestSearchIndex with this data.
-     */
-    create: XOR<RequestSearchIndexCreateInput, RequestSearchIndexUncheckedCreateInput>
-    /**
-     * In case the RequestSearchIndex was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<RequestSearchIndexUpdateInput, RequestSearchIndexUncheckedUpdateInput>
-  }
-
-  /**
-   * RequestSearchIndex delete
-   */
-  export type RequestSearchIndexDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestSearchIndex
-     */
-    select?: RequestSearchIndexSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestSearchIndexInclude<ExtArgs> | null
-    /**
-     * Filter which RequestSearchIndex to delete.
-     */
-    where: RequestSearchIndexWhereUniqueInput
-  }
-
-  /**
-   * RequestSearchIndex deleteMany
-   */
-  export type RequestSearchIndexDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which RequestSearchIndices to delete
-     */
-    where?: RequestSearchIndexWhereInput
-  }
-
-  /**
-   * RequestSearchIndex without action
-   */
-  export type RequestSearchIndexDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RequestSearchIndex
-     */
-    select?: RequestSearchIndexSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RequestSearchIndexInclude<ExtArgs> | null
-  }
-
-
-  /**
    * Model SavedSearch
    */
 
@@ -13536,6 +9549,9 @@ export namespace Prisma {
     acceptedAt: Date | null
     rejectedAt: Date | null
     withdrawnAt: Date | null
+    chatRoomId: string | null
+    fulfillmentStatus: $Enums.FulfillmentStatus | null
+    fulfillmentUpdatedAt: Date | null
   }
 
   export type BidMaxAggregateOutputType = {
@@ -13558,6 +9574,9 @@ export namespace Prisma {
     acceptedAt: Date | null
     rejectedAt: Date | null
     withdrawnAt: Date | null
+    chatRoomId: string | null
+    fulfillmentStatus: $Enums.FulfillmentStatus | null
+    fulfillmentUpdatedAt: Date | null
   }
 
   export type BidCountAggregateOutputType = {
@@ -13580,6 +9599,9 @@ export namespace Prisma {
     acceptedAt: number
     rejectedAt: number
     withdrawnAt: number
+    chatRoomId: number
+    fulfillmentStatus: number
+    fulfillmentUpdatedAt: number
     _all: number
   }
 
@@ -13618,6 +9640,9 @@ export namespace Prisma {
     acceptedAt?: true
     rejectedAt?: true
     withdrawnAt?: true
+    chatRoomId?: true
+    fulfillmentStatus?: true
+    fulfillmentUpdatedAt?: true
   }
 
   export type BidMaxAggregateInputType = {
@@ -13640,6 +9665,9 @@ export namespace Prisma {
     acceptedAt?: true
     rejectedAt?: true
     withdrawnAt?: true
+    chatRoomId?: true
+    fulfillmentStatus?: true
+    fulfillmentUpdatedAt?: true
   }
 
   export type BidCountAggregateInputType = {
@@ -13662,6 +9690,9 @@ export namespace Prisma {
     acceptedAt?: true
     rejectedAt?: true
     withdrawnAt?: true
+    chatRoomId?: true
+    fulfillmentStatus?: true
+    fulfillmentUpdatedAt?: true
     _all?: true
   }
 
@@ -13771,6 +9802,9 @@ export namespace Prisma {
     acceptedAt: Date | null
     rejectedAt: Date | null
     withdrawnAt: Date | null
+    chatRoomId: string | null
+    fulfillmentStatus: $Enums.FulfillmentStatus | null
+    fulfillmentUpdatedAt: Date | null
     _count: BidCountAggregateOutputType | null
     _avg: BidAvgAggregateOutputType | null
     _sum: BidSumAggregateOutputType | null
@@ -13812,6 +9846,11 @@ export namespace Prisma {
     acceptedAt?: boolean
     rejectedAt?: boolean
     withdrawnAt?: boolean
+    chatRoomId?: boolean
+    fulfillmentStatus?: boolean
+    fulfillmentUpdatedAt?: boolean
+    reviews?: boolean | Bid$reviewsArgs<ExtArgs>
+    _count?: boolean | BidCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["bid"]>
 
   export type BidSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -13834,6 +9873,9 @@ export namespace Prisma {
     acceptedAt?: boolean
     rejectedAt?: boolean
     withdrawnAt?: boolean
+    chatRoomId?: boolean
+    fulfillmentStatus?: boolean
+    fulfillmentUpdatedAt?: boolean
   }, ExtArgs["result"]["bid"]>
 
   export type BidSelectScalar = {
@@ -13856,12 +9898,22 @@ export namespace Prisma {
     acceptedAt?: boolean
     rejectedAt?: boolean
     withdrawnAt?: boolean
+    chatRoomId?: boolean
+    fulfillmentStatus?: boolean
+    fulfillmentUpdatedAt?: boolean
   }
 
+  export type BidInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    reviews?: boolean | Bid$reviewsArgs<ExtArgs>
+    _count?: boolean | BidCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type BidIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
 
   export type $BidPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Bid"
-    objects: {}
+    objects: {
+      reviews: Prisma.$ReviewPayload<ExtArgs>[]
+    }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       requestId: string
@@ -13882,6 +9934,9 @@ export namespace Prisma {
       acceptedAt: Date | null
       rejectedAt: Date | null
       withdrawnAt: Date | null
+      chatRoomId: string | null
+      fulfillmentStatus: $Enums.FulfillmentStatus | null
+      fulfillmentUpdatedAt: Date | null
     }, ExtArgs["result"]["bid"]>
     composites: {}
   }
@@ -14246,6 +10301,7 @@ export namespace Prisma {
    */
   export interface Prisma__BidClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    reviews<T extends Bid$reviewsArgs<ExtArgs> = {}>(args?: Subset<T, Bid$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -14294,6 +10350,9 @@ export namespace Prisma {
     readonly acceptedAt: FieldRef<"Bid", 'DateTime'>
     readonly rejectedAt: FieldRef<"Bid", 'DateTime'>
     readonly withdrawnAt: FieldRef<"Bid", 'DateTime'>
+    readonly chatRoomId: FieldRef<"Bid", 'String'>
+    readonly fulfillmentStatus: FieldRef<"Bid", 'FulfillmentStatus'>
+    readonly fulfillmentUpdatedAt: FieldRef<"Bid", 'DateTime'>
   }
     
 
@@ -14306,6 +10365,10 @@ export namespace Prisma {
      * Select specific fields to fetch from the Bid
      */
     select?: BidSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BidInclude<ExtArgs> | null
     /**
      * Filter, which Bid to fetch.
      */
@@ -14321,6 +10384,10 @@ export namespace Prisma {
      */
     select?: BidSelect<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BidInclude<ExtArgs> | null
+    /**
      * Filter, which Bid to fetch.
      */
     where: BidWhereUniqueInput
@@ -14334,6 +10401,10 @@ export namespace Prisma {
      * Select specific fields to fetch from the Bid
      */
     select?: BidSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BidInclude<ExtArgs> | null
     /**
      * Filter, which Bid to fetch.
      */
@@ -14379,6 +10450,10 @@ export namespace Prisma {
      */
     select?: BidSelect<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BidInclude<ExtArgs> | null
+    /**
      * Filter, which Bid to fetch.
      */
     where?: BidWhereInput
@@ -14423,6 +10498,10 @@ export namespace Prisma {
      */
     select?: BidSelect<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BidInclude<ExtArgs> | null
+    /**
      * Filter, which Bids to fetch.
      */
     where?: BidWhereInput
@@ -14461,6 +10540,10 @@ export namespace Prisma {
      * Select specific fields to fetch from the Bid
      */
     select?: BidSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BidInclude<ExtArgs> | null
     /**
      * The data needed to create a Bid.
      */
@@ -14502,6 +10585,10 @@ export namespace Prisma {
      */
     select?: BidSelect<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BidInclude<ExtArgs> | null
+    /**
      * The data needed to update a Bid.
      */
     data: XOR<BidUpdateInput, BidUncheckedUpdateInput>
@@ -14534,6 +10621,10 @@ export namespace Prisma {
      */
     select?: BidSelect<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BidInclude<ExtArgs> | null
+    /**
      * The filter to search for the Bid to update in case it exists.
      */
     where: BidWhereUniqueInput
@@ -14556,6 +10647,10 @@ export namespace Prisma {
      */
     select?: BidSelect<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BidInclude<ExtArgs> | null
+    /**
      * Filter which Bid to delete.
      */
     where: BidWhereUniqueInput
@@ -14572,6 +10667,26 @@ export namespace Prisma {
   }
 
   /**
+   * Bid.reviews
+   */
+  export type Bid$reviewsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Review
+     */
+    select?: ReviewSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ReviewInclude<ExtArgs> | null
+    where?: ReviewWhereInput
+    orderBy?: ReviewOrderByWithRelationInput | ReviewOrderByWithRelationInput[]
+    cursor?: ReviewWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ReviewScalarFieldEnum | ReviewScalarFieldEnum[]
+  }
+
+  /**
    * Bid without action
    */
   export type BidDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -14579,6 +10694,10 @@ export namespace Prisma {
      * Select specific fields to fetch from the Bid
      */
     select?: BidSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BidInclude<ExtArgs> | null
   }
 
 
@@ -14879,7 +10998,7 @@ export namespace Prisma {
   export type $ChatRoomPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "ChatRoom"
     objects: {
-      participants: Prisma.$ChatParticipantPayload<ExtArgs>[]
+      participants: Prisma.$ChatRoomParticipantPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -15258,7 +11377,7 @@ export namespace Prisma {
    */
   export interface Prisma__ChatRoomClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    participants<T extends ChatRoom$participantsArgs<ExtArgs> = {}>(args?: Subset<T, ChatRoom$participantsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChatParticipantPayload<ExtArgs>, T, "findMany"> | Null>
+    participants<T extends ChatRoom$participantsArgs<ExtArgs> = {}>(args?: Subset<T, ChatRoom$participantsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChatRoomParticipantPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -15618,19 +11737,19 @@ export namespace Prisma {
    */
   export type ChatRoom$participantsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the ChatParticipant
+     * Select specific fields to fetch from the ChatRoomParticipant
      */
-    select?: ChatParticipantSelect<ExtArgs> | null
+    select?: ChatRoomParticipantSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: ChatParticipantInclude<ExtArgs> | null
-    where?: ChatParticipantWhereInput
-    orderBy?: ChatParticipantOrderByWithRelationInput | ChatParticipantOrderByWithRelationInput[]
-    cursor?: ChatParticipantWhereUniqueInput
+    include?: ChatRoomParticipantInclude<ExtArgs> | null
+    where?: ChatRoomParticipantWhereInput
+    orderBy?: ChatRoomParticipantOrderByWithRelationInput | ChatRoomParticipantOrderByWithRelationInput[]
+    cursor?: ChatRoomParticipantWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: ChatParticipantScalarFieldEnum | ChatParticipantScalarFieldEnum[]
+    distinct?: ChatRoomParticipantScalarFieldEnum | ChatRoomParticipantScalarFieldEnum[]
   }
 
   /**
@@ -15649,268 +11768,218 @@ export namespace Prisma {
 
 
   /**
-   * Model ChatParticipant
+   * Model ChatRoomParticipant
    */
 
-  export type AggregateChatParticipant = {
-    _count: ChatParticipantCountAggregateOutputType | null
-    _min: ChatParticipantMinAggregateOutputType | null
-    _max: ChatParticipantMaxAggregateOutputType | null
+  export type AggregateChatRoomParticipant = {
+    _count: ChatRoomParticipantCountAggregateOutputType | null
+    _min: ChatRoomParticipantMinAggregateOutputType | null
+    _max: ChatRoomParticipantMaxAggregateOutputType | null
   }
 
-  export type ChatParticipantMinAggregateOutputType = {
+  export type ChatRoomParticipantMinAggregateOutputType = {
     id: string | null
     roomId: string | null
     userId: string | null
-    role: $Enums.ParticipantRole | null
-    joinedAt: Date | null
+    role: string | null
     lastReadAt: Date | null
-    isMuted: boolean | null
-    isBanned: boolean | null
-    bannedUntil: Date | null
-    bannedBy: string | null
-    bannedReason: string | null
+    joinedAt: Date | null
     leftAt: Date | null
   }
 
-  export type ChatParticipantMaxAggregateOutputType = {
+  export type ChatRoomParticipantMaxAggregateOutputType = {
     id: string | null
     roomId: string | null
     userId: string | null
-    role: $Enums.ParticipantRole | null
-    joinedAt: Date | null
+    role: string | null
     lastReadAt: Date | null
-    isMuted: boolean | null
-    isBanned: boolean | null
-    bannedUntil: Date | null
-    bannedBy: string | null
-    bannedReason: string | null
+    joinedAt: Date | null
     leftAt: Date | null
   }
 
-  export type ChatParticipantCountAggregateOutputType = {
+  export type ChatRoomParticipantCountAggregateOutputType = {
     id: number
     roomId: number
     userId: number
     role: number
-    joinedAt: number
     lastReadAt: number
-    isMuted: number
-    isBanned: number
-    bannedUntil: number
-    bannedBy: number
-    bannedReason: number
+    joinedAt: number
     leftAt: number
     _all: number
   }
 
 
-  export type ChatParticipantMinAggregateInputType = {
+  export type ChatRoomParticipantMinAggregateInputType = {
     id?: true
     roomId?: true
     userId?: true
     role?: true
-    joinedAt?: true
     lastReadAt?: true
-    isMuted?: true
-    isBanned?: true
-    bannedUntil?: true
-    bannedBy?: true
-    bannedReason?: true
+    joinedAt?: true
     leftAt?: true
   }
 
-  export type ChatParticipantMaxAggregateInputType = {
+  export type ChatRoomParticipantMaxAggregateInputType = {
     id?: true
     roomId?: true
     userId?: true
     role?: true
-    joinedAt?: true
     lastReadAt?: true
-    isMuted?: true
-    isBanned?: true
-    bannedUntil?: true
-    bannedBy?: true
-    bannedReason?: true
+    joinedAt?: true
     leftAt?: true
   }
 
-  export type ChatParticipantCountAggregateInputType = {
+  export type ChatRoomParticipantCountAggregateInputType = {
     id?: true
     roomId?: true
     userId?: true
     role?: true
-    joinedAt?: true
     lastReadAt?: true
-    isMuted?: true
-    isBanned?: true
-    bannedUntil?: true
-    bannedBy?: true
-    bannedReason?: true
+    joinedAt?: true
     leftAt?: true
     _all?: true
   }
 
-  export type ChatParticipantAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ChatRoomParticipantAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which ChatParticipant to aggregate.
+     * Filter which ChatRoomParticipant to aggregate.
      */
-    where?: ChatParticipantWhereInput
+    where?: ChatRoomParticipantWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of ChatParticipants to fetch.
+     * Determine the order of ChatRoomParticipants to fetch.
      */
-    orderBy?: ChatParticipantOrderByWithRelationInput | ChatParticipantOrderByWithRelationInput[]
+    orderBy?: ChatRoomParticipantOrderByWithRelationInput | ChatRoomParticipantOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
      */
-    cursor?: ChatParticipantWhereUniqueInput
+    cursor?: ChatRoomParticipantWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` ChatParticipants from the position of the cursor.
+     * Take `±n` ChatRoomParticipants from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` ChatParticipants.
+     * Skip the first `n` ChatRoomParticipants.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Count returned ChatParticipants
+     * Count returned ChatRoomParticipants
     **/
-    _count?: true | ChatParticipantCountAggregateInputType
+    _count?: true | ChatRoomParticipantCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
-    _min?: ChatParticipantMinAggregateInputType
+    _min?: ChatRoomParticipantMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
-    _max?: ChatParticipantMaxAggregateInputType
+    _max?: ChatRoomParticipantMaxAggregateInputType
   }
 
-  export type GetChatParticipantAggregateType<T extends ChatParticipantAggregateArgs> = {
-        [P in keyof T & keyof AggregateChatParticipant]: P extends '_count' | 'count'
+  export type GetChatRoomParticipantAggregateType<T extends ChatRoomParticipantAggregateArgs> = {
+        [P in keyof T & keyof AggregateChatRoomParticipant]: P extends '_count' | 'count'
       ? T[P] extends true
         ? number
-        : GetScalarType<T[P], AggregateChatParticipant[P]>
-      : GetScalarType<T[P], AggregateChatParticipant[P]>
+        : GetScalarType<T[P], AggregateChatRoomParticipant[P]>
+      : GetScalarType<T[P], AggregateChatRoomParticipant[P]>
   }
 
 
 
 
-  export type ChatParticipantGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ChatParticipantWhereInput
-    orderBy?: ChatParticipantOrderByWithAggregationInput | ChatParticipantOrderByWithAggregationInput[]
-    by: ChatParticipantScalarFieldEnum[] | ChatParticipantScalarFieldEnum
-    having?: ChatParticipantScalarWhereWithAggregatesInput
+  export type ChatRoomParticipantGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ChatRoomParticipantWhereInput
+    orderBy?: ChatRoomParticipantOrderByWithAggregationInput | ChatRoomParticipantOrderByWithAggregationInput[]
+    by: ChatRoomParticipantScalarFieldEnum[] | ChatRoomParticipantScalarFieldEnum
+    having?: ChatRoomParticipantScalarWhereWithAggregatesInput
     take?: number
     skip?: number
-    _count?: ChatParticipantCountAggregateInputType | true
-    _min?: ChatParticipantMinAggregateInputType
-    _max?: ChatParticipantMaxAggregateInputType
+    _count?: ChatRoomParticipantCountAggregateInputType | true
+    _min?: ChatRoomParticipantMinAggregateInputType
+    _max?: ChatRoomParticipantMaxAggregateInputType
   }
 
-  export type ChatParticipantGroupByOutputType = {
+  export type ChatRoomParticipantGroupByOutputType = {
     id: string
     roomId: string
     userId: string
-    role: $Enums.ParticipantRole
-    joinedAt: Date
+    role: string
     lastReadAt: Date | null
-    isMuted: boolean
-    isBanned: boolean
-    bannedUntil: Date | null
-    bannedBy: string | null
-    bannedReason: string | null
+    joinedAt: Date
     leftAt: Date | null
-    _count: ChatParticipantCountAggregateOutputType | null
-    _min: ChatParticipantMinAggregateOutputType | null
-    _max: ChatParticipantMaxAggregateOutputType | null
+    _count: ChatRoomParticipantCountAggregateOutputType | null
+    _min: ChatRoomParticipantMinAggregateOutputType | null
+    _max: ChatRoomParticipantMaxAggregateOutputType | null
   }
 
-  type GetChatParticipantGroupByPayload<T extends ChatParticipantGroupByArgs> = Prisma.PrismaPromise<
+  type GetChatRoomParticipantGroupByPayload<T extends ChatRoomParticipantGroupByArgs> = Prisma.PrismaPromise<
     Array<
-      PickEnumerable<ChatParticipantGroupByOutputType, T['by']> &
+      PickEnumerable<ChatRoomParticipantGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof ChatParticipantGroupByOutputType))]: P extends '_count'
+          [P in ((keyof T) & (keyof ChatRoomParticipantGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
               ? number
-              : GetScalarType<T[P], ChatParticipantGroupByOutputType[P]>
-            : GetScalarType<T[P], ChatParticipantGroupByOutputType[P]>
+              : GetScalarType<T[P], ChatRoomParticipantGroupByOutputType[P]>
+            : GetScalarType<T[P], ChatRoomParticipantGroupByOutputType[P]>
         }
       >
     >
 
 
-  export type ChatParticipantSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type ChatRoomParticipantSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     roomId?: boolean
     userId?: boolean
     role?: boolean
-    joinedAt?: boolean
     lastReadAt?: boolean
-    isMuted?: boolean
-    isBanned?: boolean
-    bannedUntil?: boolean
-    bannedBy?: boolean
-    bannedReason?: boolean
+    joinedAt?: boolean
     leftAt?: boolean
     room?: boolean | ChatRoomDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["chatParticipant"]>
+  }, ExtArgs["result"]["chatRoomParticipant"]>
 
-  export type ChatParticipantSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type ChatRoomParticipantSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     roomId?: boolean
     userId?: boolean
     role?: boolean
-    joinedAt?: boolean
     lastReadAt?: boolean
-    isMuted?: boolean
-    isBanned?: boolean
-    bannedUntil?: boolean
-    bannedBy?: boolean
-    bannedReason?: boolean
+    joinedAt?: boolean
     leftAt?: boolean
     room?: boolean | ChatRoomDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["chatParticipant"]>
+  }, ExtArgs["result"]["chatRoomParticipant"]>
 
-  export type ChatParticipantSelectScalar = {
+  export type ChatRoomParticipantSelectScalar = {
     id?: boolean
     roomId?: boolean
     userId?: boolean
     role?: boolean
-    joinedAt?: boolean
     lastReadAt?: boolean
-    isMuted?: boolean
-    isBanned?: boolean
-    bannedUntil?: boolean
-    bannedBy?: boolean
-    bannedReason?: boolean
+    joinedAt?: boolean
     leftAt?: boolean
   }
 
-  export type ChatParticipantInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ChatRoomParticipantInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     room?: boolean | ChatRoomDefaultArgs<ExtArgs>
   }
-  export type ChatParticipantIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ChatRoomParticipantIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     room?: boolean | ChatRoomDefaultArgs<ExtArgs>
   }
 
-  export type $ChatParticipantPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "ChatParticipant"
+  export type $ChatRoomParticipantPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ChatRoomParticipant"
     objects: {
       room: Prisma.$ChatRoomPayload<ExtArgs>
     }
@@ -15918,145 +11987,140 @@ export namespace Prisma {
       id: string
       roomId: string
       userId: string
-      role: $Enums.ParticipantRole
-      joinedAt: Date
+      role: string
       lastReadAt: Date | null
-      isMuted: boolean
-      isBanned: boolean
-      bannedUntil: Date | null
-      bannedBy: string | null
-      bannedReason: string | null
+      joinedAt: Date
       leftAt: Date | null
-    }, ExtArgs["result"]["chatParticipant"]>
+    }, ExtArgs["result"]["chatRoomParticipant"]>
     composites: {}
   }
 
-  type ChatParticipantGetPayload<S extends boolean | null | undefined | ChatParticipantDefaultArgs> = $Result.GetResult<Prisma.$ChatParticipantPayload, S>
+  type ChatRoomParticipantGetPayload<S extends boolean | null | undefined | ChatRoomParticipantDefaultArgs> = $Result.GetResult<Prisma.$ChatRoomParticipantPayload, S>
 
-  type ChatParticipantCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
-    Omit<ChatParticipantFindManyArgs, 'select' | 'include' | 'distinct'> & {
-      select?: ChatParticipantCountAggregateInputType | true
+  type ChatRoomParticipantCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<ChatRoomParticipantFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: ChatRoomParticipantCountAggregateInputType | true
     }
 
-  export interface ChatParticipantDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ChatParticipant'], meta: { name: 'ChatParticipant' } }
+  export interface ChatRoomParticipantDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ChatRoomParticipant'], meta: { name: 'ChatRoomParticipant' } }
     /**
-     * Find zero or one ChatParticipant that matches the filter.
-     * @param {ChatParticipantFindUniqueArgs} args - Arguments to find a ChatParticipant
+     * Find zero or one ChatRoomParticipant that matches the filter.
+     * @param {ChatRoomParticipantFindUniqueArgs} args - Arguments to find a ChatRoomParticipant
      * @example
-     * // Get one ChatParticipant
-     * const chatParticipant = await prisma.chatParticipant.findUnique({
+     * // Get one ChatRoomParticipant
+     * const chatRoomParticipant = await prisma.chatRoomParticipant.findUnique({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUnique<T extends ChatParticipantFindUniqueArgs>(args: SelectSubset<T, ChatParticipantFindUniqueArgs<ExtArgs>>): Prisma__ChatParticipantClient<$Result.GetResult<Prisma.$ChatParticipantPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+    findUnique<T extends ChatRoomParticipantFindUniqueArgs>(args: SelectSubset<T, ChatRoomParticipantFindUniqueArgs<ExtArgs>>): Prisma__ChatRoomParticipantClient<$Result.GetResult<Prisma.$ChatRoomParticipantPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
 
     /**
-     * Find one ChatParticipant that matches the filter or throw an error with `error.code='P2025'` 
+     * Find one ChatRoomParticipant that matches the filter or throw an error with `error.code='P2025'` 
      * if no matches were found.
-     * @param {ChatParticipantFindUniqueOrThrowArgs} args - Arguments to find a ChatParticipant
+     * @param {ChatRoomParticipantFindUniqueOrThrowArgs} args - Arguments to find a ChatRoomParticipant
      * @example
-     * // Get one ChatParticipant
-     * const chatParticipant = await prisma.chatParticipant.findUniqueOrThrow({
+     * // Get one ChatRoomParticipant
+     * const chatRoomParticipant = await prisma.chatRoomParticipant.findUniqueOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUniqueOrThrow<T extends ChatParticipantFindUniqueOrThrowArgs>(args: SelectSubset<T, ChatParticipantFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ChatParticipantClient<$Result.GetResult<Prisma.$ChatParticipantPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+    findUniqueOrThrow<T extends ChatRoomParticipantFindUniqueOrThrowArgs>(args: SelectSubset<T, ChatRoomParticipantFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ChatRoomParticipantClient<$Result.GetResult<Prisma.$ChatRoomParticipantPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
 
     /**
-     * Find the first ChatParticipant that matches the filter.
+     * Find the first ChatRoomParticipant that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {ChatParticipantFindFirstArgs} args - Arguments to find a ChatParticipant
+     * @param {ChatRoomParticipantFindFirstArgs} args - Arguments to find a ChatRoomParticipant
      * @example
-     * // Get one ChatParticipant
-     * const chatParticipant = await prisma.chatParticipant.findFirst({
+     * // Get one ChatRoomParticipant
+     * const chatRoomParticipant = await prisma.chatRoomParticipant.findFirst({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirst<T extends ChatParticipantFindFirstArgs>(args?: SelectSubset<T, ChatParticipantFindFirstArgs<ExtArgs>>): Prisma__ChatParticipantClient<$Result.GetResult<Prisma.$ChatParticipantPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+    findFirst<T extends ChatRoomParticipantFindFirstArgs>(args?: SelectSubset<T, ChatRoomParticipantFindFirstArgs<ExtArgs>>): Prisma__ChatRoomParticipantClient<$Result.GetResult<Prisma.$ChatRoomParticipantPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
 
     /**
-     * Find the first ChatParticipant that matches the filter or
+     * Find the first ChatRoomParticipant that matches the filter or
      * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {ChatParticipantFindFirstOrThrowArgs} args - Arguments to find a ChatParticipant
+     * @param {ChatRoomParticipantFindFirstOrThrowArgs} args - Arguments to find a ChatRoomParticipant
      * @example
-     * // Get one ChatParticipant
-     * const chatParticipant = await prisma.chatParticipant.findFirstOrThrow({
+     * // Get one ChatRoomParticipant
+     * const chatRoomParticipant = await prisma.chatRoomParticipant.findFirstOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirstOrThrow<T extends ChatParticipantFindFirstOrThrowArgs>(args?: SelectSubset<T, ChatParticipantFindFirstOrThrowArgs<ExtArgs>>): Prisma__ChatParticipantClient<$Result.GetResult<Prisma.$ChatParticipantPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+    findFirstOrThrow<T extends ChatRoomParticipantFindFirstOrThrowArgs>(args?: SelectSubset<T, ChatRoomParticipantFindFirstOrThrowArgs<ExtArgs>>): Prisma__ChatRoomParticipantClient<$Result.GetResult<Prisma.$ChatRoomParticipantPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
 
     /**
-     * Find zero or more ChatParticipants that matches the filter.
+     * Find zero or more ChatRoomParticipants that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {ChatParticipantFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @param {ChatRoomParticipantFindManyArgs} args - Arguments to filter and select certain fields only.
      * @example
-     * // Get all ChatParticipants
-     * const chatParticipants = await prisma.chatParticipant.findMany()
+     * // Get all ChatRoomParticipants
+     * const chatRoomParticipants = await prisma.chatRoomParticipant.findMany()
      * 
-     * // Get first 10 ChatParticipants
-     * const chatParticipants = await prisma.chatParticipant.findMany({ take: 10 })
+     * // Get first 10 ChatRoomParticipants
+     * const chatRoomParticipants = await prisma.chatRoomParticipant.findMany({ take: 10 })
      * 
      * // Only select the `id`
-     * const chatParticipantWithIdOnly = await prisma.chatParticipant.findMany({ select: { id: true } })
+     * const chatRoomParticipantWithIdOnly = await prisma.chatRoomParticipant.findMany({ select: { id: true } })
      * 
      */
-    findMany<T extends ChatParticipantFindManyArgs>(args?: SelectSubset<T, ChatParticipantFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChatParticipantPayload<ExtArgs>, T, "findMany">>
+    findMany<T extends ChatRoomParticipantFindManyArgs>(args?: SelectSubset<T, ChatRoomParticipantFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChatRoomParticipantPayload<ExtArgs>, T, "findMany">>
 
     /**
-     * Create a ChatParticipant.
-     * @param {ChatParticipantCreateArgs} args - Arguments to create a ChatParticipant.
+     * Create a ChatRoomParticipant.
+     * @param {ChatRoomParticipantCreateArgs} args - Arguments to create a ChatRoomParticipant.
      * @example
-     * // Create one ChatParticipant
-     * const ChatParticipant = await prisma.chatParticipant.create({
+     * // Create one ChatRoomParticipant
+     * const ChatRoomParticipant = await prisma.chatRoomParticipant.create({
      *   data: {
-     *     // ... data to create a ChatParticipant
+     *     // ... data to create a ChatRoomParticipant
      *   }
      * })
      * 
      */
-    create<T extends ChatParticipantCreateArgs>(args: SelectSubset<T, ChatParticipantCreateArgs<ExtArgs>>): Prisma__ChatParticipantClient<$Result.GetResult<Prisma.$ChatParticipantPayload<ExtArgs>, T, "create">, never, ExtArgs>
+    create<T extends ChatRoomParticipantCreateArgs>(args: SelectSubset<T, ChatRoomParticipantCreateArgs<ExtArgs>>): Prisma__ChatRoomParticipantClient<$Result.GetResult<Prisma.$ChatRoomParticipantPayload<ExtArgs>, T, "create">, never, ExtArgs>
 
     /**
-     * Create many ChatParticipants.
-     * @param {ChatParticipantCreateManyArgs} args - Arguments to create many ChatParticipants.
+     * Create many ChatRoomParticipants.
+     * @param {ChatRoomParticipantCreateManyArgs} args - Arguments to create many ChatRoomParticipants.
      * @example
-     * // Create many ChatParticipants
-     * const chatParticipant = await prisma.chatParticipant.createMany({
+     * // Create many ChatRoomParticipants
+     * const chatRoomParticipant = await prisma.chatRoomParticipant.createMany({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      *     
      */
-    createMany<T extends ChatParticipantCreateManyArgs>(args?: SelectSubset<T, ChatParticipantCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    createMany<T extends ChatRoomParticipantCreateManyArgs>(args?: SelectSubset<T, ChatRoomParticipantCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Create many ChatParticipants and returns the data saved in the database.
-     * @param {ChatParticipantCreateManyAndReturnArgs} args - Arguments to create many ChatParticipants.
+     * Create many ChatRoomParticipants and returns the data saved in the database.
+     * @param {ChatRoomParticipantCreateManyAndReturnArgs} args - Arguments to create many ChatRoomParticipants.
      * @example
-     * // Create many ChatParticipants
-     * const chatParticipant = await prisma.chatParticipant.createManyAndReturn({
+     * // Create many ChatRoomParticipants
+     * const chatRoomParticipant = await prisma.chatRoomParticipant.createManyAndReturn({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      * 
-     * // Create many ChatParticipants and only return the `id`
-     * const chatParticipantWithIdOnly = await prisma.chatParticipant.createManyAndReturn({ 
+     * // Create many ChatRoomParticipants and only return the `id`
+     * const chatRoomParticipantWithIdOnly = await prisma.chatRoomParticipant.createManyAndReturn({ 
      *   select: { id: true },
      *   data: [
      *     // ... provide data here
@@ -16066,28 +12130,28 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    createManyAndReturn<T extends ChatParticipantCreateManyAndReturnArgs>(args?: SelectSubset<T, ChatParticipantCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChatParticipantPayload<ExtArgs>, T, "createManyAndReturn">>
+    createManyAndReturn<T extends ChatRoomParticipantCreateManyAndReturnArgs>(args?: SelectSubset<T, ChatRoomParticipantCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChatRoomParticipantPayload<ExtArgs>, T, "createManyAndReturn">>
 
     /**
-     * Delete a ChatParticipant.
-     * @param {ChatParticipantDeleteArgs} args - Arguments to delete one ChatParticipant.
+     * Delete a ChatRoomParticipant.
+     * @param {ChatRoomParticipantDeleteArgs} args - Arguments to delete one ChatRoomParticipant.
      * @example
-     * // Delete one ChatParticipant
-     * const ChatParticipant = await prisma.chatParticipant.delete({
+     * // Delete one ChatRoomParticipant
+     * const ChatRoomParticipant = await prisma.chatRoomParticipant.delete({
      *   where: {
-     *     // ... filter to delete one ChatParticipant
+     *     // ... filter to delete one ChatRoomParticipant
      *   }
      * })
      * 
      */
-    delete<T extends ChatParticipantDeleteArgs>(args: SelectSubset<T, ChatParticipantDeleteArgs<ExtArgs>>): Prisma__ChatParticipantClient<$Result.GetResult<Prisma.$ChatParticipantPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+    delete<T extends ChatRoomParticipantDeleteArgs>(args: SelectSubset<T, ChatRoomParticipantDeleteArgs<ExtArgs>>): Prisma__ChatRoomParticipantClient<$Result.GetResult<Prisma.$ChatRoomParticipantPayload<ExtArgs>, T, "delete">, never, ExtArgs>
 
     /**
-     * Update one ChatParticipant.
-     * @param {ChatParticipantUpdateArgs} args - Arguments to update one ChatParticipant.
+     * Update one ChatRoomParticipant.
+     * @param {ChatRoomParticipantUpdateArgs} args - Arguments to update one ChatRoomParticipant.
      * @example
-     * // Update one ChatParticipant
-     * const chatParticipant = await prisma.chatParticipant.update({
+     * // Update one ChatRoomParticipant
+     * const chatRoomParticipant = await prisma.chatRoomParticipant.update({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -16097,30 +12161,30 @@ export namespace Prisma {
      * })
      * 
      */
-    update<T extends ChatParticipantUpdateArgs>(args: SelectSubset<T, ChatParticipantUpdateArgs<ExtArgs>>): Prisma__ChatParticipantClient<$Result.GetResult<Prisma.$ChatParticipantPayload<ExtArgs>, T, "update">, never, ExtArgs>
+    update<T extends ChatRoomParticipantUpdateArgs>(args: SelectSubset<T, ChatRoomParticipantUpdateArgs<ExtArgs>>): Prisma__ChatRoomParticipantClient<$Result.GetResult<Prisma.$ChatRoomParticipantPayload<ExtArgs>, T, "update">, never, ExtArgs>
 
     /**
-     * Delete zero or more ChatParticipants.
-     * @param {ChatParticipantDeleteManyArgs} args - Arguments to filter ChatParticipants to delete.
+     * Delete zero or more ChatRoomParticipants.
+     * @param {ChatRoomParticipantDeleteManyArgs} args - Arguments to filter ChatRoomParticipants to delete.
      * @example
-     * // Delete a few ChatParticipants
-     * const { count } = await prisma.chatParticipant.deleteMany({
+     * // Delete a few ChatRoomParticipants
+     * const { count } = await prisma.chatRoomParticipant.deleteMany({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      * 
      */
-    deleteMany<T extends ChatParticipantDeleteManyArgs>(args?: SelectSubset<T, ChatParticipantDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    deleteMany<T extends ChatRoomParticipantDeleteManyArgs>(args?: SelectSubset<T, ChatRoomParticipantDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more ChatParticipants.
+     * Update zero or more ChatRoomParticipants.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {ChatParticipantUpdateManyArgs} args - Arguments to update one or more rows.
+     * @param {ChatRoomParticipantUpdateManyArgs} args - Arguments to update one or more rows.
      * @example
-     * // Update many ChatParticipants
-     * const chatParticipant = await prisma.chatParticipant.updateMany({
+     * // Update many ChatRoomParticipants
+     * const chatRoomParticipant = await prisma.chatRoomParticipant.updateMany({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -16130,56 +12194,56 @@ export namespace Prisma {
      * })
      * 
      */
-    updateMany<T extends ChatParticipantUpdateManyArgs>(args: SelectSubset<T, ChatParticipantUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    updateMany<T extends ChatRoomParticipantUpdateManyArgs>(args: SelectSubset<T, ChatRoomParticipantUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Create or update one ChatParticipant.
-     * @param {ChatParticipantUpsertArgs} args - Arguments to update or create a ChatParticipant.
+     * Create or update one ChatRoomParticipant.
+     * @param {ChatRoomParticipantUpsertArgs} args - Arguments to update or create a ChatRoomParticipant.
      * @example
-     * // Update or create a ChatParticipant
-     * const chatParticipant = await prisma.chatParticipant.upsert({
+     * // Update or create a ChatRoomParticipant
+     * const chatRoomParticipant = await prisma.chatRoomParticipant.upsert({
      *   create: {
-     *     // ... data to create a ChatParticipant
+     *     // ... data to create a ChatRoomParticipant
      *   },
      *   update: {
      *     // ... in case it already exists, update
      *   },
      *   where: {
-     *     // ... the filter for the ChatParticipant we want to update
+     *     // ... the filter for the ChatRoomParticipant we want to update
      *   }
      * })
      */
-    upsert<T extends ChatParticipantUpsertArgs>(args: SelectSubset<T, ChatParticipantUpsertArgs<ExtArgs>>): Prisma__ChatParticipantClient<$Result.GetResult<Prisma.$ChatParticipantPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+    upsert<T extends ChatRoomParticipantUpsertArgs>(args: SelectSubset<T, ChatRoomParticipantUpsertArgs<ExtArgs>>): Prisma__ChatRoomParticipantClient<$Result.GetResult<Prisma.$ChatRoomParticipantPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
 
 
     /**
-     * Count the number of ChatParticipants.
+     * Count the number of ChatRoomParticipants.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {ChatParticipantCountArgs} args - Arguments to filter ChatParticipants to count.
+     * @param {ChatRoomParticipantCountArgs} args - Arguments to filter ChatRoomParticipants to count.
      * @example
-     * // Count the number of ChatParticipants
-     * const count = await prisma.chatParticipant.count({
+     * // Count the number of ChatRoomParticipants
+     * const count = await prisma.chatRoomParticipant.count({
      *   where: {
-     *     // ... the filter for the ChatParticipants we want to count
+     *     // ... the filter for the ChatRoomParticipants we want to count
      *   }
      * })
     **/
-    count<T extends ChatParticipantCountArgs>(
-      args?: Subset<T, ChatParticipantCountArgs>,
+    count<T extends ChatRoomParticipantCountArgs>(
+      args?: Subset<T, ChatRoomParticipantCountArgs>,
     ): Prisma.PrismaPromise<
       T extends $Utils.Record<'select', any>
         ? T['select'] extends true
           ? number
-          : GetScalarType<T['select'], ChatParticipantCountAggregateOutputType>
+          : GetScalarType<T['select'], ChatRoomParticipantCountAggregateOutputType>
         : number
     >
 
     /**
-     * Allows you to perform aggregations operations on a ChatParticipant.
+     * Allows you to perform aggregations operations on a ChatRoomParticipant.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {ChatParticipantAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @param {ChatRoomParticipantAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
      * @example
      * // Ordered by age ascending
      * // Where email contains prisma.io
@@ -16199,13 +12263,13 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends ChatParticipantAggregateArgs>(args: Subset<T, ChatParticipantAggregateArgs>): Prisma.PrismaPromise<GetChatParticipantAggregateType<T>>
+    aggregate<T extends ChatRoomParticipantAggregateArgs>(args: Subset<T, ChatRoomParticipantAggregateArgs>): Prisma.PrismaPromise<GetChatRoomParticipantAggregateType<T>>
 
     /**
-     * Group by ChatParticipant.
+     * Group by ChatRoomParticipant.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {ChatParticipantGroupByArgs} args - Group by arguments.
+     * @param {ChatRoomParticipantGroupByArgs} args - Group by arguments.
      * @example
      * // Group by city, order by createdAt, get count
      * const result = await prisma.user.groupBy({
@@ -16220,14 +12284,14 @@ export namespace Prisma {
      * 
     **/
     groupBy<
-      T extends ChatParticipantGroupByArgs,
+      T extends ChatRoomParticipantGroupByArgs,
       HasSelectOrTake extends Or<
         Extends<'skip', Keys<T>>,
         Extends<'take', Keys<T>>
       >,
       OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: ChatParticipantGroupByArgs['orderBy'] }
-        : { orderBy?: ChatParticipantGroupByArgs['orderBy'] },
+        ? { orderBy: ChatRoomParticipantGroupByArgs['orderBy'] }
+        : { orderBy?: ChatRoomParticipantGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -16276,20 +12340,20 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, ChatParticipantGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetChatParticipantGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, ChatRoomParticipantGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetChatRoomParticipantGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
   /**
-   * Fields of the ChatParticipant model
+   * Fields of the ChatRoomParticipant model
    */
-  readonly fields: ChatParticipantFieldRefs;
+  readonly fields: ChatRoomParticipantFieldRefs;
   }
 
   /**
-   * The delegate class that acts as a "Promise-like" for ChatParticipant.
+   * The delegate class that acts as a "Promise-like" for ChatRoomParticipant.
    * Why is this prefixed with `Prisma__`?
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__ChatParticipantClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+  export interface Prisma__ChatRoomParticipantClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     room<T extends ChatRoomDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ChatRoomDefaultArgs<ExtArgs>>): Prisma__ChatRoomClient<$Result.GetResult<Prisma.$ChatRoomPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     /**
@@ -16318,1424 +12382,345 @@ export namespace Prisma {
 
 
   /**
-   * Fields of the ChatParticipant model
+   * Fields of the ChatRoomParticipant model
    */ 
-  interface ChatParticipantFieldRefs {
-    readonly id: FieldRef<"ChatParticipant", 'String'>
-    readonly roomId: FieldRef<"ChatParticipant", 'String'>
-    readonly userId: FieldRef<"ChatParticipant", 'String'>
-    readonly role: FieldRef<"ChatParticipant", 'ParticipantRole'>
-    readonly joinedAt: FieldRef<"ChatParticipant", 'DateTime'>
-    readonly lastReadAt: FieldRef<"ChatParticipant", 'DateTime'>
-    readonly isMuted: FieldRef<"ChatParticipant", 'Boolean'>
-    readonly isBanned: FieldRef<"ChatParticipant", 'Boolean'>
-    readonly bannedUntil: FieldRef<"ChatParticipant", 'DateTime'>
-    readonly bannedBy: FieldRef<"ChatParticipant", 'String'>
-    readonly bannedReason: FieldRef<"ChatParticipant", 'String'>
-    readonly leftAt: FieldRef<"ChatParticipant", 'DateTime'>
+  interface ChatRoomParticipantFieldRefs {
+    readonly id: FieldRef<"ChatRoomParticipant", 'String'>
+    readonly roomId: FieldRef<"ChatRoomParticipant", 'String'>
+    readonly userId: FieldRef<"ChatRoomParticipant", 'String'>
+    readonly role: FieldRef<"ChatRoomParticipant", 'String'>
+    readonly lastReadAt: FieldRef<"ChatRoomParticipant", 'DateTime'>
+    readonly joinedAt: FieldRef<"ChatRoomParticipant", 'DateTime'>
+    readonly leftAt: FieldRef<"ChatRoomParticipant", 'DateTime'>
   }
     
 
   // Custom InputTypes
   /**
-   * ChatParticipant findUnique
+   * ChatRoomParticipant findUnique
    */
-  export type ChatParticipantFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ChatRoomParticipantFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the ChatParticipant
+     * Select specific fields to fetch from the ChatRoomParticipant
      */
-    select?: ChatParticipantSelect<ExtArgs> | null
+    select?: ChatRoomParticipantSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: ChatParticipantInclude<ExtArgs> | null
+    include?: ChatRoomParticipantInclude<ExtArgs> | null
     /**
-     * Filter, which ChatParticipant to fetch.
+     * Filter, which ChatRoomParticipant to fetch.
      */
-    where: ChatParticipantWhereUniqueInput
+    where: ChatRoomParticipantWhereUniqueInput
   }
 
   /**
-   * ChatParticipant findUniqueOrThrow
+   * ChatRoomParticipant findUniqueOrThrow
    */
-  export type ChatParticipantFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ChatRoomParticipantFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the ChatParticipant
+     * Select specific fields to fetch from the ChatRoomParticipant
      */
-    select?: ChatParticipantSelect<ExtArgs> | null
+    select?: ChatRoomParticipantSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: ChatParticipantInclude<ExtArgs> | null
+    include?: ChatRoomParticipantInclude<ExtArgs> | null
     /**
-     * Filter, which ChatParticipant to fetch.
+     * Filter, which ChatRoomParticipant to fetch.
      */
-    where: ChatParticipantWhereUniqueInput
+    where: ChatRoomParticipantWhereUniqueInput
   }
 
   /**
-   * ChatParticipant findFirst
+   * ChatRoomParticipant findFirst
    */
-  export type ChatParticipantFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ChatRoomParticipantFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the ChatParticipant
+     * Select specific fields to fetch from the ChatRoomParticipant
      */
-    select?: ChatParticipantSelect<ExtArgs> | null
+    select?: ChatRoomParticipantSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: ChatParticipantInclude<ExtArgs> | null
+    include?: ChatRoomParticipantInclude<ExtArgs> | null
     /**
-     * Filter, which ChatParticipant to fetch.
+     * Filter, which ChatRoomParticipant to fetch.
      */
-    where?: ChatParticipantWhereInput
+    where?: ChatRoomParticipantWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of ChatParticipants to fetch.
+     * Determine the order of ChatRoomParticipants to fetch.
      */
-    orderBy?: ChatParticipantOrderByWithRelationInput | ChatParticipantOrderByWithRelationInput[]
+    orderBy?: ChatRoomParticipantOrderByWithRelationInput | ChatRoomParticipantOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for ChatParticipants.
+     * Sets the position for searching for ChatRoomParticipants.
      */
-    cursor?: ChatParticipantWhereUniqueInput
+    cursor?: ChatRoomParticipantWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` ChatParticipants from the position of the cursor.
+     * Take `±n` ChatRoomParticipants from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` ChatParticipants.
+     * Skip the first `n` ChatRoomParticipants.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of ChatParticipants.
+     * Filter by unique combinations of ChatRoomParticipants.
      */
-    distinct?: ChatParticipantScalarFieldEnum | ChatParticipantScalarFieldEnum[]
+    distinct?: ChatRoomParticipantScalarFieldEnum | ChatRoomParticipantScalarFieldEnum[]
   }
 
   /**
-   * ChatParticipant findFirstOrThrow
+   * ChatRoomParticipant findFirstOrThrow
    */
-  export type ChatParticipantFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ChatRoomParticipantFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the ChatParticipant
+     * Select specific fields to fetch from the ChatRoomParticipant
      */
-    select?: ChatParticipantSelect<ExtArgs> | null
+    select?: ChatRoomParticipantSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: ChatParticipantInclude<ExtArgs> | null
+    include?: ChatRoomParticipantInclude<ExtArgs> | null
     /**
-     * Filter, which ChatParticipant to fetch.
+     * Filter, which ChatRoomParticipant to fetch.
      */
-    where?: ChatParticipantWhereInput
+    where?: ChatRoomParticipantWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of ChatParticipants to fetch.
+     * Determine the order of ChatRoomParticipants to fetch.
      */
-    orderBy?: ChatParticipantOrderByWithRelationInput | ChatParticipantOrderByWithRelationInput[]
+    orderBy?: ChatRoomParticipantOrderByWithRelationInput | ChatRoomParticipantOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for ChatParticipants.
+     * Sets the position for searching for ChatRoomParticipants.
      */
-    cursor?: ChatParticipantWhereUniqueInput
+    cursor?: ChatRoomParticipantWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` ChatParticipants from the position of the cursor.
+     * Take `±n` ChatRoomParticipants from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` ChatParticipants.
+     * Skip the first `n` ChatRoomParticipants.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of ChatParticipants.
+     * Filter by unique combinations of ChatRoomParticipants.
      */
-    distinct?: ChatParticipantScalarFieldEnum | ChatParticipantScalarFieldEnum[]
+    distinct?: ChatRoomParticipantScalarFieldEnum | ChatRoomParticipantScalarFieldEnum[]
   }
 
   /**
-   * ChatParticipant findMany
+   * ChatRoomParticipant findMany
    */
-  export type ChatParticipantFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ChatRoomParticipantFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the ChatParticipant
+     * Select specific fields to fetch from the ChatRoomParticipant
      */
-    select?: ChatParticipantSelect<ExtArgs> | null
+    select?: ChatRoomParticipantSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: ChatParticipantInclude<ExtArgs> | null
+    include?: ChatRoomParticipantInclude<ExtArgs> | null
     /**
-     * Filter, which ChatParticipants to fetch.
+     * Filter, which ChatRoomParticipants to fetch.
      */
-    where?: ChatParticipantWhereInput
+    where?: ChatRoomParticipantWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of ChatParticipants to fetch.
+     * Determine the order of ChatRoomParticipants to fetch.
      */
-    orderBy?: ChatParticipantOrderByWithRelationInput | ChatParticipantOrderByWithRelationInput[]
+    orderBy?: ChatRoomParticipantOrderByWithRelationInput | ChatRoomParticipantOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for listing ChatParticipants.
+     * Sets the position for listing ChatRoomParticipants.
      */
-    cursor?: ChatParticipantWhereUniqueInput
+    cursor?: ChatRoomParticipantWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` ChatParticipants from the position of the cursor.
+     * Take `±n` ChatRoomParticipants from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` ChatParticipants.
+     * Skip the first `n` ChatRoomParticipants.
      */
     skip?: number
-    distinct?: ChatParticipantScalarFieldEnum | ChatParticipantScalarFieldEnum[]
+    distinct?: ChatRoomParticipantScalarFieldEnum | ChatRoomParticipantScalarFieldEnum[]
   }
 
   /**
-   * ChatParticipant create
+   * ChatRoomParticipant create
    */
-  export type ChatParticipantCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ChatRoomParticipantCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the ChatParticipant
+     * Select specific fields to fetch from the ChatRoomParticipant
      */
-    select?: ChatParticipantSelect<ExtArgs> | null
+    select?: ChatRoomParticipantSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: ChatParticipantInclude<ExtArgs> | null
+    include?: ChatRoomParticipantInclude<ExtArgs> | null
     /**
-     * The data needed to create a ChatParticipant.
+     * The data needed to create a ChatRoomParticipant.
      */
-    data: XOR<ChatParticipantCreateInput, ChatParticipantUncheckedCreateInput>
+    data: XOR<ChatRoomParticipantCreateInput, ChatRoomParticipantUncheckedCreateInput>
   }
 
   /**
-   * ChatParticipant createMany
+   * ChatRoomParticipant createMany
    */
-  export type ChatParticipantCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ChatRoomParticipantCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to create many ChatParticipants.
+     * The data used to create many ChatRoomParticipants.
      */
-    data: ChatParticipantCreateManyInput | ChatParticipantCreateManyInput[]
+    data: ChatRoomParticipantCreateManyInput | ChatRoomParticipantCreateManyInput[]
     skipDuplicates?: boolean
   }
 
   /**
-   * ChatParticipant createManyAndReturn
+   * ChatRoomParticipant createManyAndReturn
    */
-  export type ChatParticipantCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ChatRoomParticipantCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the ChatParticipant
+     * Select specific fields to fetch from the ChatRoomParticipant
      */
-    select?: ChatParticipantSelectCreateManyAndReturn<ExtArgs> | null
+    select?: ChatRoomParticipantSelectCreateManyAndReturn<ExtArgs> | null
     /**
-     * The data used to create many ChatParticipants.
+     * The data used to create many ChatRoomParticipants.
      */
-    data: ChatParticipantCreateManyInput | ChatParticipantCreateManyInput[]
+    data: ChatRoomParticipantCreateManyInput | ChatRoomParticipantCreateManyInput[]
     skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: ChatParticipantIncludeCreateManyAndReturn<ExtArgs> | null
+    include?: ChatRoomParticipantIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
-   * ChatParticipant update
+   * ChatRoomParticipant update
    */
-  export type ChatParticipantUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ChatRoomParticipantUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the ChatParticipant
+     * Select specific fields to fetch from the ChatRoomParticipant
      */
-    select?: ChatParticipantSelect<ExtArgs> | null
+    select?: ChatRoomParticipantSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: ChatParticipantInclude<ExtArgs> | null
+    include?: ChatRoomParticipantInclude<ExtArgs> | null
     /**
-     * The data needed to update a ChatParticipant.
+     * The data needed to update a ChatRoomParticipant.
      */
-    data: XOR<ChatParticipantUpdateInput, ChatParticipantUncheckedUpdateInput>
+    data: XOR<ChatRoomParticipantUpdateInput, ChatRoomParticipantUncheckedUpdateInput>
     /**
-     * Choose, which ChatParticipant to update.
+     * Choose, which ChatRoomParticipant to update.
      */
-    where: ChatParticipantWhereUniqueInput
+    where: ChatRoomParticipantWhereUniqueInput
   }
 
   /**
-   * ChatParticipant updateMany
+   * ChatRoomParticipant updateMany
    */
-  export type ChatParticipantUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ChatRoomParticipantUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to update ChatParticipants.
+     * The data used to update ChatRoomParticipants.
      */
-    data: XOR<ChatParticipantUpdateManyMutationInput, ChatParticipantUncheckedUpdateManyInput>
+    data: XOR<ChatRoomParticipantUpdateManyMutationInput, ChatRoomParticipantUncheckedUpdateManyInput>
     /**
-     * Filter which ChatParticipants to update
+     * Filter which ChatRoomParticipants to update
      */
-    where?: ChatParticipantWhereInput
+    where?: ChatRoomParticipantWhereInput
   }
 
   /**
-   * ChatParticipant upsert
+   * ChatRoomParticipant upsert
    */
-  export type ChatParticipantUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ChatRoomParticipantUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the ChatParticipant
+     * Select specific fields to fetch from the ChatRoomParticipant
      */
-    select?: ChatParticipantSelect<ExtArgs> | null
+    select?: ChatRoomParticipantSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: ChatParticipantInclude<ExtArgs> | null
+    include?: ChatRoomParticipantInclude<ExtArgs> | null
     /**
-     * The filter to search for the ChatParticipant to update in case it exists.
+     * The filter to search for the ChatRoomParticipant to update in case it exists.
      */
-    where: ChatParticipantWhereUniqueInput
+    where: ChatRoomParticipantWhereUniqueInput
     /**
-     * In case the ChatParticipant found by the `where` argument doesn't exist, create a new ChatParticipant with this data.
+     * In case the ChatRoomParticipant found by the `where` argument doesn't exist, create a new ChatRoomParticipant with this data.
      */
-    create: XOR<ChatParticipantCreateInput, ChatParticipantUncheckedCreateInput>
+    create: XOR<ChatRoomParticipantCreateInput, ChatRoomParticipantUncheckedCreateInput>
     /**
-     * In case the ChatParticipant was found with the provided `where` argument, update it with this data.
+     * In case the ChatRoomParticipant was found with the provided `where` argument, update it with this data.
      */
-    update: XOR<ChatParticipantUpdateInput, ChatParticipantUncheckedUpdateInput>
+    update: XOR<ChatRoomParticipantUpdateInput, ChatRoomParticipantUncheckedUpdateInput>
   }
 
   /**
-   * ChatParticipant delete
+   * ChatRoomParticipant delete
    */
-  export type ChatParticipantDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ChatRoomParticipantDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the ChatParticipant
+     * Select specific fields to fetch from the ChatRoomParticipant
      */
-    select?: ChatParticipantSelect<ExtArgs> | null
+    select?: ChatRoomParticipantSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: ChatParticipantInclude<ExtArgs> | null
+    include?: ChatRoomParticipantInclude<ExtArgs> | null
     /**
-     * Filter which ChatParticipant to delete.
+     * Filter which ChatRoomParticipant to delete.
      */
-    where: ChatParticipantWhereUniqueInput
+    where: ChatRoomParticipantWhereUniqueInput
   }
 
   /**
-   * ChatParticipant deleteMany
+   * ChatRoomParticipant deleteMany
    */
-  export type ChatParticipantDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ChatRoomParticipantDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which ChatParticipants to delete
+     * Filter which ChatRoomParticipants to delete
      */
-    where?: ChatParticipantWhereInput
+    where?: ChatRoomParticipantWhereInput
   }
 
   /**
-   * ChatParticipant without action
+   * ChatRoomParticipant without action
    */
-  export type ChatParticipantDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ChatRoomParticipantDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the ChatParticipant
+     * Select specific fields to fetch from the ChatRoomParticipant
      */
-    select?: ChatParticipantSelect<ExtArgs> | null
+    select?: ChatRoomParticipantSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: ChatParticipantInclude<ExtArgs> | null
-  }
-
-
-  /**
-   * Model NotificationTemplate
-   */
-
-  export type AggregateNotificationTemplate = {
-    _count: NotificationTemplateCountAggregateOutputType | null
-    _avg: NotificationTemplateAvgAggregateOutputType | null
-    _sum: NotificationTemplateSumAggregateOutputType | null
-    _min: NotificationTemplateMinAggregateOutputType | null
-    _max: NotificationTemplateMaxAggregateOutputType | null
-  }
-
-  export type NotificationTemplateAvgAggregateOutputType = {
-    version: number | null
-  }
-
-  export type NotificationTemplateSumAggregateOutputType = {
-    version: number | null
-  }
-
-  export type NotificationTemplateMinAggregateOutputType = {
-    id: string | null
-    name: string | null
-    type: $Enums.NotificationType | null
-    channel: $Enums.NotifChannel | null
-    subjectTemplate: string | null
-    contentTemplate: string | null
-    defaultLocale: string | null
-    isActive: boolean | null
-    version: number | null
-    createdBy: string | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type NotificationTemplateMaxAggregateOutputType = {
-    id: string | null
-    name: string | null
-    type: $Enums.NotificationType | null
-    channel: $Enums.NotifChannel | null
-    subjectTemplate: string | null
-    contentTemplate: string | null
-    defaultLocale: string | null
-    isActive: boolean | null
-    version: number | null
-    createdBy: string | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type NotificationTemplateCountAggregateOutputType = {
-    id: number
-    name: number
-    type: number
-    channel: number
-    subjectTemplate: number
-    contentTemplate: number
-    variables: number
-    defaultLocale: number
-    isActive: number
-    version: number
-    createdBy: number
-    createdAt: number
-    updatedAt: number
-    _all: number
-  }
-
-
-  export type NotificationTemplateAvgAggregateInputType = {
-    version?: true
-  }
-
-  export type NotificationTemplateSumAggregateInputType = {
-    version?: true
-  }
-
-  export type NotificationTemplateMinAggregateInputType = {
-    id?: true
-    name?: true
-    type?: true
-    channel?: true
-    subjectTemplate?: true
-    contentTemplate?: true
-    defaultLocale?: true
-    isActive?: true
-    version?: true
-    createdBy?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type NotificationTemplateMaxAggregateInputType = {
-    id?: true
-    name?: true
-    type?: true
-    channel?: true
-    subjectTemplate?: true
-    contentTemplate?: true
-    defaultLocale?: true
-    isActive?: true
-    version?: true
-    createdBy?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type NotificationTemplateCountAggregateInputType = {
-    id?: true
-    name?: true
-    type?: true
-    channel?: true
-    subjectTemplate?: true
-    contentTemplate?: true
-    variables?: true
-    defaultLocale?: true
-    isActive?: true
-    version?: true
-    createdBy?: true
-    createdAt?: true
-    updatedAt?: true
-    _all?: true
-  }
-
-  export type NotificationTemplateAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which NotificationTemplate to aggregate.
-     */
-    where?: NotificationTemplateWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of NotificationTemplates to fetch.
-     */
-    orderBy?: NotificationTemplateOrderByWithRelationInput | NotificationTemplateOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: NotificationTemplateWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` NotificationTemplates from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` NotificationTemplates.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned NotificationTemplates
-    **/
-    _count?: true | NotificationTemplateCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: NotificationTemplateAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: NotificationTemplateSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: NotificationTemplateMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: NotificationTemplateMaxAggregateInputType
-  }
-
-  export type GetNotificationTemplateAggregateType<T extends NotificationTemplateAggregateArgs> = {
-        [P in keyof T & keyof AggregateNotificationTemplate]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateNotificationTemplate[P]>
-      : GetScalarType<T[P], AggregateNotificationTemplate[P]>
-  }
-
-
-
-
-  export type NotificationTemplateGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: NotificationTemplateWhereInput
-    orderBy?: NotificationTemplateOrderByWithAggregationInput | NotificationTemplateOrderByWithAggregationInput[]
-    by: NotificationTemplateScalarFieldEnum[] | NotificationTemplateScalarFieldEnum
-    having?: NotificationTemplateScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: NotificationTemplateCountAggregateInputType | true
-    _avg?: NotificationTemplateAvgAggregateInputType
-    _sum?: NotificationTemplateSumAggregateInputType
-    _min?: NotificationTemplateMinAggregateInputType
-    _max?: NotificationTemplateMaxAggregateInputType
-  }
-
-  export type NotificationTemplateGroupByOutputType = {
-    id: string
-    name: string
-    type: $Enums.NotificationType
-    channel: $Enums.NotifChannel
-    subjectTemplate: string | null
-    contentTemplate: string
-    variables: JsonValue
-    defaultLocale: string
-    isActive: boolean
-    version: number
-    createdBy: string | null
-    createdAt: Date
-    updatedAt: Date
-    _count: NotificationTemplateCountAggregateOutputType | null
-    _avg: NotificationTemplateAvgAggregateOutputType | null
-    _sum: NotificationTemplateSumAggregateOutputType | null
-    _min: NotificationTemplateMinAggregateOutputType | null
-    _max: NotificationTemplateMaxAggregateOutputType | null
-  }
-
-  type GetNotificationTemplateGroupByPayload<T extends NotificationTemplateGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<NotificationTemplateGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof NotificationTemplateGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], NotificationTemplateGroupByOutputType[P]>
-            : GetScalarType<T[P], NotificationTemplateGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type NotificationTemplateSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    name?: boolean
-    type?: boolean
-    channel?: boolean
-    subjectTemplate?: boolean
-    contentTemplate?: boolean
-    variables?: boolean
-    defaultLocale?: boolean
-    isActive?: boolean
-    version?: boolean
-    createdBy?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    notifications?: boolean | NotificationTemplate$notificationsArgs<ExtArgs>
-    _count?: boolean | NotificationTemplateCountOutputTypeDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["notificationTemplate"]>
-
-  export type NotificationTemplateSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    name?: boolean
-    type?: boolean
-    channel?: boolean
-    subjectTemplate?: boolean
-    contentTemplate?: boolean
-    variables?: boolean
-    defaultLocale?: boolean
-    isActive?: boolean
-    version?: boolean
-    createdBy?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-  }, ExtArgs["result"]["notificationTemplate"]>
-
-  export type NotificationTemplateSelectScalar = {
-    id?: boolean
-    name?: boolean
-    type?: boolean
-    channel?: boolean
-    subjectTemplate?: boolean
-    contentTemplate?: boolean
-    variables?: boolean
-    defaultLocale?: boolean
-    isActive?: boolean
-    version?: boolean
-    createdBy?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-  }
-
-  export type NotificationTemplateInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    notifications?: boolean | NotificationTemplate$notificationsArgs<ExtArgs>
-    _count?: boolean | NotificationTemplateCountOutputTypeDefaultArgs<ExtArgs>
-  }
-  export type NotificationTemplateIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-
-  export type $NotificationTemplatePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "NotificationTemplate"
-    objects: {
-      notifications: Prisma.$NotificationPayload<ExtArgs>[]
-    }
-    scalars: $Extensions.GetPayloadResult<{
-      id: string
-      name: string
-      type: $Enums.NotificationType
-      channel: $Enums.NotifChannel
-      subjectTemplate: string | null
-      contentTemplate: string
-      variables: Prisma.JsonValue
-      defaultLocale: string
-      isActive: boolean
-      version: number
-      createdBy: string | null
-      createdAt: Date
-      updatedAt: Date
-    }, ExtArgs["result"]["notificationTemplate"]>
-    composites: {}
-  }
-
-  type NotificationTemplateGetPayload<S extends boolean | null | undefined | NotificationTemplateDefaultArgs> = $Result.GetResult<Prisma.$NotificationTemplatePayload, S>
-
-  type NotificationTemplateCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
-    Omit<NotificationTemplateFindManyArgs, 'select' | 'include' | 'distinct'> & {
-      select?: NotificationTemplateCountAggregateInputType | true
-    }
-
-  export interface NotificationTemplateDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['NotificationTemplate'], meta: { name: 'NotificationTemplate' } }
-    /**
-     * Find zero or one NotificationTemplate that matches the filter.
-     * @param {NotificationTemplateFindUniqueArgs} args - Arguments to find a NotificationTemplate
-     * @example
-     * // Get one NotificationTemplate
-     * const notificationTemplate = await prisma.notificationTemplate.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends NotificationTemplateFindUniqueArgs>(args: SelectSubset<T, NotificationTemplateFindUniqueArgs<ExtArgs>>): Prisma__NotificationTemplateClient<$Result.GetResult<Prisma.$NotificationTemplatePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
-
-    /**
-     * Find one NotificationTemplate that matches the filter or throw an error with `error.code='P2025'` 
-     * if no matches were found.
-     * @param {NotificationTemplateFindUniqueOrThrowArgs} args - Arguments to find a NotificationTemplate
-     * @example
-     * // Get one NotificationTemplate
-     * const notificationTemplate = await prisma.notificationTemplate.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends NotificationTemplateFindUniqueOrThrowArgs>(args: SelectSubset<T, NotificationTemplateFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NotificationTemplateClient<$Result.GetResult<Prisma.$NotificationTemplatePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
-
-    /**
-     * Find the first NotificationTemplate that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationTemplateFindFirstArgs} args - Arguments to find a NotificationTemplate
-     * @example
-     * // Get one NotificationTemplate
-     * const notificationTemplate = await prisma.notificationTemplate.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends NotificationTemplateFindFirstArgs>(args?: SelectSubset<T, NotificationTemplateFindFirstArgs<ExtArgs>>): Prisma__NotificationTemplateClient<$Result.GetResult<Prisma.$NotificationTemplatePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
-
-    /**
-     * Find the first NotificationTemplate that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationTemplateFindFirstOrThrowArgs} args - Arguments to find a NotificationTemplate
-     * @example
-     * // Get one NotificationTemplate
-     * const notificationTemplate = await prisma.notificationTemplate.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends NotificationTemplateFindFirstOrThrowArgs>(args?: SelectSubset<T, NotificationTemplateFindFirstOrThrowArgs<ExtArgs>>): Prisma__NotificationTemplateClient<$Result.GetResult<Prisma.$NotificationTemplatePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
-
-    /**
-     * Find zero or more NotificationTemplates that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationTemplateFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all NotificationTemplates
-     * const notificationTemplates = await prisma.notificationTemplate.findMany()
-     * 
-     * // Get first 10 NotificationTemplates
-     * const notificationTemplates = await prisma.notificationTemplate.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const notificationTemplateWithIdOnly = await prisma.notificationTemplate.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends NotificationTemplateFindManyArgs>(args?: SelectSubset<T, NotificationTemplateFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationTemplatePayload<ExtArgs>, T, "findMany">>
-
-    /**
-     * Create a NotificationTemplate.
-     * @param {NotificationTemplateCreateArgs} args - Arguments to create a NotificationTemplate.
-     * @example
-     * // Create one NotificationTemplate
-     * const NotificationTemplate = await prisma.notificationTemplate.create({
-     *   data: {
-     *     // ... data to create a NotificationTemplate
-     *   }
-     * })
-     * 
-     */
-    create<T extends NotificationTemplateCreateArgs>(args: SelectSubset<T, NotificationTemplateCreateArgs<ExtArgs>>): Prisma__NotificationTemplateClient<$Result.GetResult<Prisma.$NotificationTemplatePayload<ExtArgs>, T, "create">, never, ExtArgs>
-
-    /**
-     * Create many NotificationTemplates.
-     * @param {NotificationTemplateCreateManyArgs} args - Arguments to create many NotificationTemplates.
-     * @example
-     * // Create many NotificationTemplates
-     * const notificationTemplate = await prisma.notificationTemplate.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends NotificationTemplateCreateManyArgs>(args?: SelectSubset<T, NotificationTemplateCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create many NotificationTemplates and returns the data saved in the database.
-     * @param {NotificationTemplateCreateManyAndReturnArgs} args - Arguments to create many NotificationTemplates.
-     * @example
-     * // Create many NotificationTemplates
-     * const notificationTemplate = await prisma.notificationTemplate.createManyAndReturn({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Create many NotificationTemplates and only return the `id`
-     * const notificationTemplateWithIdOnly = await prisma.notificationTemplate.createManyAndReturn({ 
-     *   select: { id: true },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    createManyAndReturn<T extends NotificationTemplateCreateManyAndReturnArgs>(args?: SelectSubset<T, NotificationTemplateCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationTemplatePayload<ExtArgs>, T, "createManyAndReturn">>
-
-    /**
-     * Delete a NotificationTemplate.
-     * @param {NotificationTemplateDeleteArgs} args - Arguments to delete one NotificationTemplate.
-     * @example
-     * // Delete one NotificationTemplate
-     * const NotificationTemplate = await prisma.notificationTemplate.delete({
-     *   where: {
-     *     // ... filter to delete one NotificationTemplate
-     *   }
-     * })
-     * 
-     */
-    delete<T extends NotificationTemplateDeleteArgs>(args: SelectSubset<T, NotificationTemplateDeleteArgs<ExtArgs>>): Prisma__NotificationTemplateClient<$Result.GetResult<Prisma.$NotificationTemplatePayload<ExtArgs>, T, "delete">, never, ExtArgs>
-
-    /**
-     * Update one NotificationTemplate.
-     * @param {NotificationTemplateUpdateArgs} args - Arguments to update one NotificationTemplate.
-     * @example
-     * // Update one NotificationTemplate
-     * const notificationTemplate = await prisma.notificationTemplate.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends NotificationTemplateUpdateArgs>(args: SelectSubset<T, NotificationTemplateUpdateArgs<ExtArgs>>): Prisma__NotificationTemplateClient<$Result.GetResult<Prisma.$NotificationTemplatePayload<ExtArgs>, T, "update">, never, ExtArgs>
-
-    /**
-     * Delete zero or more NotificationTemplates.
-     * @param {NotificationTemplateDeleteManyArgs} args - Arguments to filter NotificationTemplates to delete.
-     * @example
-     * // Delete a few NotificationTemplates
-     * const { count } = await prisma.notificationTemplate.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends NotificationTemplateDeleteManyArgs>(args?: SelectSubset<T, NotificationTemplateDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more NotificationTemplates.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationTemplateUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many NotificationTemplates
-     * const notificationTemplate = await prisma.notificationTemplate.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends NotificationTemplateUpdateManyArgs>(args: SelectSubset<T, NotificationTemplateUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one NotificationTemplate.
-     * @param {NotificationTemplateUpsertArgs} args - Arguments to update or create a NotificationTemplate.
-     * @example
-     * // Update or create a NotificationTemplate
-     * const notificationTemplate = await prisma.notificationTemplate.upsert({
-     *   create: {
-     *     // ... data to create a NotificationTemplate
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the NotificationTemplate we want to update
-     *   }
-     * })
-     */
-    upsert<T extends NotificationTemplateUpsertArgs>(args: SelectSubset<T, NotificationTemplateUpsertArgs<ExtArgs>>): Prisma__NotificationTemplateClient<$Result.GetResult<Prisma.$NotificationTemplatePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
-
-
-    /**
-     * Count the number of NotificationTemplates.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationTemplateCountArgs} args - Arguments to filter NotificationTemplates to count.
-     * @example
-     * // Count the number of NotificationTemplates
-     * const count = await prisma.notificationTemplate.count({
-     *   where: {
-     *     // ... the filter for the NotificationTemplates we want to count
-     *   }
-     * })
-    **/
-    count<T extends NotificationTemplateCountArgs>(
-      args?: Subset<T, NotificationTemplateCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], NotificationTemplateCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a NotificationTemplate.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationTemplateAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends NotificationTemplateAggregateArgs>(args: Subset<T, NotificationTemplateAggregateArgs>): Prisma.PrismaPromise<GetNotificationTemplateAggregateType<T>>
-
-    /**
-     * Group by NotificationTemplate.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationTemplateGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends NotificationTemplateGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: NotificationTemplateGroupByArgs['orderBy'] }
-        : { orderBy?: NotificationTemplateGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, NotificationTemplateGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNotificationTemplateGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the NotificationTemplate model
-   */
-  readonly fields: NotificationTemplateFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for NotificationTemplate.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__NotificationTemplateClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    notifications<T extends NotificationTemplate$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, NotificationTemplate$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany"> | Null>
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the NotificationTemplate model
-   */ 
-  interface NotificationTemplateFieldRefs {
-    readonly id: FieldRef<"NotificationTemplate", 'String'>
-    readonly name: FieldRef<"NotificationTemplate", 'String'>
-    readonly type: FieldRef<"NotificationTemplate", 'NotificationType'>
-    readonly channel: FieldRef<"NotificationTemplate", 'NotifChannel'>
-    readonly subjectTemplate: FieldRef<"NotificationTemplate", 'String'>
-    readonly contentTemplate: FieldRef<"NotificationTemplate", 'String'>
-    readonly variables: FieldRef<"NotificationTemplate", 'Json'>
-    readonly defaultLocale: FieldRef<"NotificationTemplate", 'String'>
-    readonly isActive: FieldRef<"NotificationTemplate", 'Boolean'>
-    readonly version: FieldRef<"NotificationTemplate", 'Int'>
-    readonly createdBy: FieldRef<"NotificationTemplate", 'String'>
-    readonly createdAt: FieldRef<"NotificationTemplate", 'DateTime'>
-    readonly updatedAt: FieldRef<"NotificationTemplate", 'DateTime'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * NotificationTemplate findUnique
-   */
-  export type NotificationTemplateFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationTemplate
-     */
-    select?: NotificationTemplateSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationTemplateInclude<ExtArgs> | null
-    /**
-     * Filter, which NotificationTemplate to fetch.
-     */
-    where: NotificationTemplateWhereUniqueInput
-  }
-
-  /**
-   * NotificationTemplate findUniqueOrThrow
-   */
-  export type NotificationTemplateFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationTemplate
-     */
-    select?: NotificationTemplateSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationTemplateInclude<ExtArgs> | null
-    /**
-     * Filter, which NotificationTemplate to fetch.
-     */
-    where: NotificationTemplateWhereUniqueInput
-  }
-
-  /**
-   * NotificationTemplate findFirst
-   */
-  export type NotificationTemplateFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationTemplate
-     */
-    select?: NotificationTemplateSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationTemplateInclude<ExtArgs> | null
-    /**
-     * Filter, which NotificationTemplate to fetch.
-     */
-    where?: NotificationTemplateWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of NotificationTemplates to fetch.
-     */
-    orderBy?: NotificationTemplateOrderByWithRelationInput | NotificationTemplateOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for NotificationTemplates.
-     */
-    cursor?: NotificationTemplateWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` NotificationTemplates from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` NotificationTemplates.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of NotificationTemplates.
-     */
-    distinct?: NotificationTemplateScalarFieldEnum | NotificationTemplateScalarFieldEnum[]
-  }
-
-  /**
-   * NotificationTemplate findFirstOrThrow
-   */
-  export type NotificationTemplateFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationTemplate
-     */
-    select?: NotificationTemplateSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationTemplateInclude<ExtArgs> | null
-    /**
-     * Filter, which NotificationTemplate to fetch.
-     */
-    where?: NotificationTemplateWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of NotificationTemplates to fetch.
-     */
-    orderBy?: NotificationTemplateOrderByWithRelationInput | NotificationTemplateOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for NotificationTemplates.
-     */
-    cursor?: NotificationTemplateWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` NotificationTemplates from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` NotificationTemplates.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of NotificationTemplates.
-     */
-    distinct?: NotificationTemplateScalarFieldEnum | NotificationTemplateScalarFieldEnum[]
-  }
-
-  /**
-   * NotificationTemplate findMany
-   */
-  export type NotificationTemplateFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationTemplate
-     */
-    select?: NotificationTemplateSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationTemplateInclude<ExtArgs> | null
-    /**
-     * Filter, which NotificationTemplates to fetch.
-     */
-    where?: NotificationTemplateWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of NotificationTemplates to fetch.
-     */
-    orderBy?: NotificationTemplateOrderByWithRelationInput | NotificationTemplateOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing NotificationTemplates.
-     */
-    cursor?: NotificationTemplateWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` NotificationTemplates from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` NotificationTemplates.
-     */
-    skip?: number
-    distinct?: NotificationTemplateScalarFieldEnum | NotificationTemplateScalarFieldEnum[]
-  }
-
-  /**
-   * NotificationTemplate create
-   */
-  export type NotificationTemplateCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationTemplate
-     */
-    select?: NotificationTemplateSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationTemplateInclude<ExtArgs> | null
-    /**
-     * The data needed to create a NotificationTemplate.
-     */
-    data: XOR<NotificationTemplateCreateInput, NotificationTemplateUncheckedCreateInput>
-  }
-
-  /**
-   * NotificationTemplate createMany
-   */
-  export type NotificationTemplateCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many NotificationTemplates.
-     */
-    data: NotificationTemplateCreateManyInput | NotificationTemplateCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * NotificationTemplate createManyAndReturn
-   */
-  export type NotificationTemplateCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationTemplate
-     */
-    select?: NotificationTemplateSelectCreateManyAndReturn<ExtArgs> | null
-    /**
-     * The data used to create many NotificationTemplates.
-     */
-    data: NotificationTemplateCreateManyInput | NotificationTemplateCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * NotificationTemplate update
-   */
-  export type NotificationTemplateUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationTemplate
-     */
-    select?: NotificationTemplateSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationTemplateInclude<ExtArgs> | null
-    /**
-     * The data needed to update a NotificationTemplate.
-     */
-    data: XOR<NotificationTemplateUpdateInput, NotificationTemplateUncheckedUpdateInput>
-    /**
-     * Choose, which NotificationTemplate to update.
-     */
-    where: NotificationTemplateWhereUniqueInput
-  }
-
-  /**
-   * NotificationTemplate updateMany
-   */
-  export type NotificationTemplateUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update NotificationTemplates.
-     */
-    data: XOR<NotificationTemplateUpdateManyMutationInput, NotificationTemplateUncheckedUpdateManyInput>
-    /**
-     * Filter which NotificationTemplates to update
-     */
-    where?: NotificationTemplateWhereInput
-  }
-
-  /**
-   * NotificationTemplate upsert
-   */
-  export type NotificationTemplateUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationTemplate
-     */
-    select?: NotificationTemplateSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationTemplateInclude<ExtArgs> | null
-    /**
-     * The filter to search for the NotificationTemplate to update in case it exists.
-     */
-    where: NotificationTemplateWhereUniqueInput
-    /**
-     * In case the NotificationTemplate found by the `where` argument doesn't exist, create a new NotificationTemplate with this data.
-     */
-    create: XOR<NotificationTemplateCreateInput, NotificationTemplateUncheckedCreateInput>
-    /**
-     * In case the NotificationTemplate was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<NotificationTemplateUpdateInput, NotificationTemplateUncheckedUpdateInput>
-  }
-
-  /**
-   * NotificationTemplate delete
-   */
-  export type NotificationTemplateDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationTemplate
-     */
-    select?: NotificationTemplateSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationTemplateInclude<ExtArgs> | null
-    /**
-     * Filter which NotificationTemplate to delete.
-     */
-    where: NotificationTemplateWhereUniqueInput
-  }
-
-  /**
-   * NotificationTemplate deleteMany
-   */
-  export type NotificationTemplateDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which NotificationTemplates to delete
-     */
-    where?: NotificationTemplateWhereInput
-  }
-
-  /**
-   * NotificationTemplate.notifications
-   */
-  export type NotificationTemplate$notificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Notification
-     */
-    select?: NotificationSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
-    where?: NotificationWhereInput
-    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
-    cursor?: NotificationWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
-  }
-
-  /**
-   * NotificationTemplate without action
-   */
-  export type NotificationTemplateDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationTemplate
-     */
-    select?: NotificationTemplateSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationTemplateInclude<ExtArgs> | null
+    include?: ChatRoomParticipantInclude<ExtArgs> | null
   }
 
 
@@ -17754,18 +12739,9 @@ export namespace Prisma {
     userId: string | null
     type: $Enums.NotificationType | null
     title: string | null
-    content: string | null
-    channel: $Enums.NotifChannel | null
-    priority: $Enums.NotificationPriority | null
-    status: $Enums.NotificationStatus | null
-    templateId: string | null
-    scheduledAt: Date | null
-    sentAt: Date | null
-    deliveredAt: Date | null
-    readAt: Date | null
-    expiresAt: Date | null
+    body: string | null
+    isRead: boolean | null
     createdAt: Date | null
-    updatedAt: Date | null
   }
 
   export type NotificationMaxAggregateOutputType = {
@@ -17773,18 +12749,9 @@ export namespace Prisma {
     userId: string | null
     type: $Enums.NotificationType | null
     title: string | null
-    content: string | null
-    channel: $Enums.NotifChannel | null
-    priority: $Enums.NotificationPriority | null
-    status: $Enums.NotificationStatus | null
-    templateId: string | null
-    scheduledAt: Date | null
-    sentAt: Date | null
-    deliveredAt: Date | null
-    readAt: Date | null
-    expiresAt: Date | null
+    body: string | null
+    isRead: boolean | null
     createdAt: Date | null
-    updatedAt: Date | null
   }
 
   export type NotificationCountAggregateOutputType = {
@@ -17792,20 +12759,10 @@ export namespace Prisma {
     userId: number
     type: number
     title: number
-    content: number
-    channel: number
-    priority: number
-    status: number
-    templateId: number
-    templateVariables: number
-    metadata: number
-    scheduledAt: number
-    sentAt: number
-    deliveredAt: number
-    readAt: number
-    expiresAt: number
+    body: number
+    data: number
+    isRead: number
     createdAt: number
-    updatedAt: number
     _all: number
   }
 
@@ -17815,18 +12772,9 @@ export namespace Prisma {
     userId?: true
     type?: true
     title?: true
-    content?: true
-    channel?: true
-    priority?: true
-    status?: true
-    templateId?: true
-    scheduledAt?: true
-    sentAt?: true
-    deliveredAt?: true
-    readAt?: true
-    expiresAt?: true
+    body?: true
+    isRead?: true
     createdAt?: true
-    updatedAt?: true
   }
 
   export type NotificationMaxAggregateInputType = {
@@ -17834,18 +12782,9 @@ export namespace Prisma {
     userId?: true
     type?: true
     title?: true
-    content?: true
-    channel?: true
-    priority?: true
-    status?: true
-    templateId?: true
-    scheduledAt?: true
-    sentAt?: true
-    deliveredAt?: true
-    readAt?: true
-    expiresAt?: true
+    body?: true
+    isRead?: true
     createdAt?: true
-    updatedAt?: true
   }
 
   export type NotificationCountAggregateInputType = {
@@ -17853,20 +12792,10 @@ export namespace Prisma {
     userId?: true
     type?: true
     title?: true
-    content?: true
-    channel?: true
-    priority?: true
-    status?: true
-    templateId?: true
-    templateVariables?: true
-    metadata?: true
-    scheduledAt?: true
-    sentAt?: true
-    deliveredAt?: true
-    readAt?: true
-    expiresAt?: true
+    body?: true
+    data?: true
+    isRead?: true
     createdAt?: true
-    updatedAt?: true
     _all?: true
   }
 
@@ -17947,20 +12876,10 @@ export namespace Prisma {
     userId: string
     type: $Enums.NotificationType
     title: string
-    content: string
-    channel: $Enums.NotifChannel
-    priority: $Enums.NotificationPriority
-    status: $Enums.NotificationStatus
-    templateId: string | null
-    templateVariables: JsonValue
-    metadata: JsonValue
-    scheduledAt: Date | null
-    sentAt: Date | null
-    deliveredAt: Date | null
-    readAt: Date | null
-    expiresAt: Date | null
+    body: string
+    data: JsonValue
+    isRead: boolean
     createdAt: Date
-    updatedAt: Date
     _count: NotificationCountAggregateOutputType | null
     _min: NotificationMinAggregateOutputType | null
     _max: NotificationMaxAggregateOutputType | null
@@ -17985,25 +12904,10 @@ export namespace Prisma {
     userId?: boolean
     type?: boolean
     title?: boolean
-    content?: boolean
-    channel?: boolean
-    priority?: boolean
-    status?: boolean
-    templateId?: boolean
-    templateVariables?: boolean
-    metadata?: boolean
-    scheduledAt?: boolean
-    sentAt?: boolean
-    deliveredAt?: boolean
-    readAt?: boolean
-    expiresAt?: boolean
+    body?: boolean
+    data?: boolean
+    isRead?: boolean
     createdAt?: boolean
-    updatedAt?: boolean
-    template?: boolean | Notification$templateArgs<ExtArgs>
-    deliveries?: boolean | Notification$deliveriesArgs<ExtArgs>
-    reads?: boolean | Notification$readsArgs<ExtArgs>
-    analytics?: boolean | Notification$analyticsArgs<ExtArgs>
-    _count?: boolean | NotificationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["notification"]>
 
   export type NotificationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -18011,21 +12915,10 @@ export namespace Prisma {
     userId?: boolean
     type?: boolean
     title?: boolean
-    content?: boolean
-    channel?: boolean
-    priority?: boolean
-    status?: boolean
-    templateId?: boolean
-    templateVariables?: boolean
-    metadata?: boolean
-    scheduledAt?: boolean
-    sentAt?: boolean
-    deliveredAt?: boolean
-    readAt?: boolean
-    expiresAt?: boolean
+    body?: boolean
+    data?: boolean
+    isRead?: boolean
     createdAt?: boolean
-    updatedAt?: boolean
-    template?: boolean | Notification$templateArgs<ExtArgs>
   }, ExtArgs["result"]["notification"]>
 
   export type NotificationSelectScalar = {
@@ -18033,60 +12926,25 @@ export namespace Prisma {
     userId?: boolean
     type?: boolean
     title?: boolean
-    content?: boolean
-    channel?: boolean
-    priority?: boolean
-    status?: boolean
-    templateId?: boolean
-    templateVariables?: boolean
-    metadata?: boolean
-    scheduledAt?: boolean
-    sentAt?: boolean
-    deliveredAt?: boolean
-    readAt?: boolean
-    expiresAt?: boolean
+    body?: boolean
+    data?: boolean
+    isRead?: boolean
     createdAt?: boolean
-    updatedAt?: boolean
   }
 
-  export type NotificationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    template?: boolean | Notification$templateArgs<ExtArgs>
-    deliveries?: boolean | Notification$deliveriesArgs<ExtArgs>
-    reads?: boolean | Notification$readsArgs<ExtArgs>
-    analytics?: boolean | Notification$analyticsArgs<ExtArgs>
-    _count?: boolean | NotificationCountOutputTypeDefaultArgs<ExtArgs>
-  }
-  export type NotificationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    template?: boolean | Notification$templateArgs<ExtArgs>
-  }
 
   export type $NotificationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Notification"
-    objects: {
-      template: Prisma.$NotificationTemplatePayload<ExtArgs> | null
-      deliveries: Prisma.$NotificationDeliveryPayload<ExtArgs>[]
-      reads: Prisma.$NotificationReadPayload<ExtArgs>[]
-      analytics: Prisma.$NotificationStatPayload<ExtArgs>[]
-    }
+    objects: {}
     scalars: $Extensions.GetPayloadResult<{
       id: string
       userId: string
       type: $Enums.NotificationType
       title: string
-      content: string
-      channel: $Enums.NotifChannel
-      priority: $Enums.NotificationPriority
-      status: $Enums.NotificationStatus
-      templateId: string | null
-      templateVariables: Prisma.JsonValue
-      metadata: Prisma.JsonValue
-      scheduledAt: Date | null
-      sentAt: Date | null
-      deliveredAt: Date | null
-      readAt: Date | null
-      expiresAt: Date | null
+      body: string
+      data: Prisma.JsonValue
+      isRead: boolean
       createdAt: Date
-      updatedAt: Date
     }, ExtArgs["result"]["notification"]>
     composites: {}
   }
@@ -18451,10 +13309,6 @@ export namespace Prisma {
    */
   export interface Prisma__NotificationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    template<T extends Notification$templateArgs<ExtArgs> = {}>(args?: Subset<T, Notification$templateArgs<ExtArgs>>): Prisma__NotificationTemplateClient<$Result.GetResult<Prisma.$NotificationTemplatePayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
-    deliveries<T extends Notification$deliveriesArgs<ExtArgs> = {}>(args?: Subset<T, Notification$deliveriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationDeliveryPayload<ExtArgs>, T, "findMany"> | Null>
-    reads<T extends Notification$readsArgs<ExtArgs> = {}>(args?: Subset<T, Notification$readsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationReadPayload<ExtArgs>, T, "findMany"> | Null>
-    analytics<T extends Notification$analyticsArgs<ExtArgs> = {}>(args?: Subset<T, Notification$analyticsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationStatPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -18488,20 +13342,10 @@ export namespace Prisma {
     readonly userId: FieldRef<"Notification", 'String'>
     readonly type: FieldRef<"Notification", 'NotificationType'>
     readonly title: FieldRef<"Notification", 'String'>
-    readonly content: FieldRef<"Notification", 'String'>
-    readonly channel: FieldRef<"Notification", 'NotifChannel'>
-    readonly priority: FieldRef<"Notification", 'NotificationPriority'>
-    readonly status: FieldRef<"Notification", 'NotificationStatus'>
-    readonly templateId: FieldRef<"Notification", 'String'>
-    readonly templateVariables: FieldRef<"Notification", 'Json'>
-    readonly metadata: FieldRef<"Notification", 'Json'>
-    readonly scheduledAt: FieldRef<"Notification", 'DateTime'>
-    readonly sentAt: FieldRef<"Notification", 'DateTime'>
-    readonly deliveredAt: FieldRef<"Notification", 'DateTime'>
-    readonly readAt: FieldRef<"Notification", 'DateTime'>
-    readonly expiresAt: FieldRef<"Notification", 'DateTime'>
+    readonly body: FieldRef<"Notification", 'String'>
+    readonly data: FieldRef<"Notification", 'Json'>
+    readonly isRead: FieldRef<"Notification", 'Boolean'>
     readonly createdAt: FieldRef<"Notification", 'DateTime'>
-    readonly updatedAt: FieldRef<"Notification", 'DateTime'>
   }
     
 
@@ -18514,10 +13358,6 @@ export namespace Prisma {
      * Select specific fields to fetch from the Notification
      */
     select?: NotificationSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
     /**
      * Filter, which Notification to fetch.
      */
@@ -18533,10 +13373,6 @@ export namespace Prisma {
      */
     select?: NotificationSelect<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
-    /**
      * Filter, which Notification to fetch.
      */
     where: NotificationWhereUniqueInput
@@ -18550,10 +13386,6 @@ export namespace Prisma {
      * Select specific fields to fetch from the Notification
      */
     select?: NotificationSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
     /**
      * Filter, which Notification to fetch.
      */
@@ -18599,10 +13431,6 @@ export namespace Prisma {
      */
     select?: NotificationSelect<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
-    /**
      * Filter, which Notification to fetch.
      */
     where?: NotificationWhereInput
@@ -18647,10 +13475,6 @@ export namespace Prisma {
      */
     select?: NotificationSelect<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
-    /**
      * Filter, which Notifications to fetch.
      */
     where?: NotificationWhereInput
@@ -18690,10 +13514,6 @@ export namespace Prisma {
      */
     select?: NotificationSelect<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
-    /**
      * The data needed to create a Notification.
      */
     data: XOR<NotificationCreateInput, NotificationUncheckedCreateInput>
@@ -18723,10 +13543,6 @@ export namespace Prisma {
      */
     data: NotificationCreateManyInput | NotificationCreateManyInput[]
     skipDuplicates?: boolean
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -18737,10 +13553,6 @@ export namespace Prisma {
      * Select specific fields to fetch from the Notification
      */
     select?: NotificationSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
     /**
      * The data needed to update a Notification.
      */
@@ -18774,10 +13586,6 @@ export namespace Prisma {
      */
     select?: NotificationSelect<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
-    /**
      * The filter to search for the Notification to update in case it exists.
      */
     where: NotificationWhereUniqueInput
@@ -18800,10 +13608,6 @@ export namespace Prisma {
      */
     select?: NotificationSelect<ExtArgs> | null
     /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
-    /**
      * Filter which Notification to delete.
      */
     where: NotificationWhereUniqueInput
@@ -18820,81 +13624,6 @@ export namespace Prisma {
   }
 
   /**
-   * Notification.template
-   */
-  export type Notification$templateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationTemplate
-     */
-    select?: NotificationTemplateSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationTemplateInclude<ExtArgs> | null
-    where?: NotificationTemplateWhereInput
-  }
-
-  /**
-   * Notification.deliveries
-   */
-  export type Notification$deliveriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationDelivery
-     */
-    select?: NotificationDeliverySelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationDeliveryInclude<ExtArgs> | null
-    where?: NotificationDeliveryWhereInput
-    orderBy?: NotificationDeliveryOrderByWithRelationInput | NotificationDeliveryOrderByWithRelationInput[]
-    cursor?: NotificationDeliveryWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: NotificationDeliveryScalarFieldEnum | NotificationDeliveryScalarFieldEnum[]
-  }
-
-  /**
-   * Notification.reads
-   */
-  export type Notification$readsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationRead
-     */
-    select?: NotificationReadSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationReadInclude<ExtArgs> | null
-    where?: NotificationReadWhereInput
-    orderBy?: NotificationReadOrderByWithRelationInput | NotificationReadOrderByWithRelationInput[]
-    cursor?: NotificationReadWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: NotificationReadScalarFieldEnum | NotificationReadScalarFieldEnum[]
-  }
-
-  /**
-   * Notification.analytics
-   */
-  export type Notification$analyticsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationStat
-     */
-    select?: NotificationStatSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationStatInclude<ExtArgs> | null
-    where?: NotificationStatWhereInput
-    orderBy?: NotificationStatOrderByWithRelationInput | NotificationStatOrderByWithRelationInput[]
-    cursor?: NotificationStatWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: NotificationStatScalarFieldEnum | NotificationStatScalarFieldEnum[]
-  }
-
-  /**
    * Notification without action
    */
   export type NotificationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -18902,2413 +13631,419 @@ export namespace Prisma {
      * Select specific fields to fetch from the Notification
      */
     select?: NotificationSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
   }
 
 
   /**
-   * Model NotificationChannel
+   * Model Review
    */
 
-  export type AggregateNotificationChannel = {
-    _count: NotificationChannelCountAggregateOutputType | null
-    _min: NotificationChannelMinAggregateOutputType | null
-    _max: NotificationChannelMaxAggregateOutputType | null
+  export type AggregateReview = {
+    _count: ReviewCountAggregateOutputType | null
+    _avg: ReviewAvgAggregateOutputType | null
+    _sum: ReviewSumAggregateOutputType | null
+    _min: ReviewMinAggregateOutputType | null
+    _max: ReviewMaxAggregateOutputType | null
   }
 
-  export type NotificationChannelMinAggregateOutputType = {
+  export type ReviewAvgAggregateOutputType = {
+    rating: number | null
+  }
+
+  export type ReviewSumAggregateOutputType = {
+    rating: number | null
+  }
+
+  export type ReviewMinAggregateOutputType = {
     id: string | null
-    userId: string | null
-    channelType: $Enums.NotifChannel | null
-    isEnabled: boolean | null
-    deviceToken: string | null
-    emailAddress: string | null
-    phoneNumber: string | null
-    lastUsedAt: Date | null
-    verifiedAt: Date | null
+    bidId: string | null
+    requestId: string | null
+    reviewerId: string | null
+    revieweeId: string | null
+    type: $Enums.ReviewType | null
+    rating: number | null
+    comment: string | null
     createdAt: Date | null
-    updatedAt: Date | null
   }
 
-  export type NotificationChannelMaxAggregateOutputType = {
+  export type ReviewMaxAggregateOutputType = {
     id: string | null
-    userId: string | null
-    channelType: $Enums.NotifChannel | null
-    isEnabled: boolean | null
-    deviceToken: string | null
-    emailAddress: string | null
-    phoneNumber: string | null
-    lastUsedAt: Date | null
-    verifiedAt: Date | null
+    bidId: string | null
+    requestId: string | null
+    reviewerId: string | null
+    revieweeId: string | null
+    type: $Enums.ReviewType | null
+    rating: number | null
+    comment: string | null
     createdAt: Date | null
-    updatedAt: Date | null
   }
 
-  export type NotificationChannelCountAggregateOutputType = {
+  export type ReviewCountAggregateOutputType = {
     id: number
-    userId: number
-    channelType: number
-    isEnabled: number
-    deviceToken: number
-    emailAddress: number
-    phoneNumber: number
-    preferences: number
-    lastUsedAt: number
-    verifiedAt: number
+    bidId: number
+    requestId: number
+    reviewerId: number
+    revieweeId: number
+    type: number
+    rating: number
+    comment: number
     createdAt: number
-    updatedAt: number
     _all: number
   }
 
 
-  export type NotificationChannelMinAggregateInputType = {
-    id?: true
-    userId?: true
-    channelType?: true
-    isEnabled?: true
-    deviceToken?: true
-    emailAddress?: true
-    phoneNumber?: true
-    lastUsedAt?: true
-    verifiedAt?: true
-    createdAt?: true
-    updatedAt?: true
+  export type ReviewAvgAggregateInputType = {
+    rating?: true
   }
 
-  export type NotificationChannelMaxAggregateInputType = {
-    id?: true
-    userId?: true
-    channelType?: true
-    isEnabled?: true
-    deviceToken?: true
-    emailAddress?: true
-    phoneNumber?: true
-    lastUsedAt?: true
-    verifiedAt?: true
-    createdAt?: true
-    updatedAt?: true
+  export type ReviewSumAggregateInputType = {
+    rating?: true
   }
 
-  export type NotificationChannelCountAggregateInputType = {
+  export type ReviewMinAggregateInputType = {
     id?: true
-    userId?: true
-    channelType?: true
-    isEnabled?: true
-    deviceToken?: true
-    emailAddress?: true
-    phoneNumber?: true
-    preferences?: true
-    lastUsedAt?: true
-    verifiedAt?: true
+    bidId?: true
+    requestId?: true
+    reviewerId?: true
+    revieweeId?: true
+    type?: true
+    rating?: true
+    comment?: true
     createdAt?: true
-    updatedAt?: true
+  }
+
+  export type ReviewMaxAggregateInputType = {
+    id?: true
+    bidId?: true
+    requestId?: true
+    reviewerId?: true
+    revieweeId?: true
+    type?: true
+    rating?: true
+    comment?: true
+    createdAt?: true
+  }
+
+  export type ReviewCountAggregateInputType = {
+    id?: true
+    bidId?: true
+    requestId?: true
+    reviewerId?: true
+    revieweeId?: true
+    type?: true
+    rating?: true
+    comment?: true
+    createdAt?: true
     _all?: true
   }
 
-  export type NotificationChannelAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ReviewAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which NotificationChannel to aggregate.
+     * Filter which Review to aggregate.
      */
-    where?: NotificationChannelWhereInput
+    where?: ReviewWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of NotificationChannels to fetch.
+     * Determine the order of Reviews to fetch.
      */
-    orderBy?: NotificationChannelOrderByWithRelationInput | NotificationChannelOrderByWithRelationInput[]
+    orderBy?: ReviewOrderByWithRelationInput | ReviewOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
      */
-    cursor?: NotificationChannelWhereUniqueInput
+    cursor?: ReviewWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` NotificationChannels from the position of the cursor.
+     * Take `±n` Reviews from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` NotificationChannels.
+     * Skip the first `n` Reviews.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Count returned NotificationChannels
+     * Count returned Reviews
     **/
-    _count?: true | NotificationChannelCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: NotificationChannelMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: NotificationChannelMaxAggregateInputType
-  }
-
-  export type GetNotificationChannelAggregateType<T extends NotificationChannelAggregateArgs> = {
-        [P in keyof T & keyof AggregateNotificationChannel]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateNotificationChannel[P]>
-      : GetScalarType<T[P], AggregateNotificationChannel[P]>
-  }
-
-
-
-
-  export type NotificationChannelGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: NotificationChannelWhereInput
-    orderBy?: NotificationChannelOrderByWithAggregationInput | NotificationChannelOrderByWithAggregationInput[]
-    by: NotificationChannelScalarFieldEnum[] | NotificationChannelScalarFieldEnum
-    having?: NotificationChannelScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: NotificationChannelCountAggregateInputType | true
-    _min?: NotificationChannelMinAggregateInputType
-    _max?: NotificationChannelMaxAggregateInputType
-  }
-
-  export type NotificationChannelGroupByOutputType = {
-    id: string
-    userId: string
-    channelType: $Enums.NotifChannel
-    isEnabled: boolean
-    deviceToken: string | null
-    emailAddress: string | null
-    phoneNumber: string | null
-    preferences: JsonValue
-    lastUsedAt: Date | null
-    verifiedAt: Date | null
-    createdAt: Date
-    updatedAt: Date
-    _count: NotificationChannelCountAggregateOutputType | null
-    _min: NotificationChannelMinAggregateOutputType | null
-    _max: NotificationChannelMaxAggregateOutputType | null
-  }
-
-  type GetNotificationChannelGroupByPayload<T extends NotificationChannelGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<NotificationChannelGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof NotificationChannelGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], NotificationChannelGroupByOutputType[P]>
-            : GetScalarType<T[P], NotificationChannelGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type NotificationChannelSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    userId?: boolean
-    channelType?: boolean
-    isEnabled?: boolean
-    deviceToken?: boolean
-    emailAddress?: boolean
-    phoneNumber?: boolean
-    preferences?: boolean
-    lastUsedAt?: boolean
-    verifiedAt?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-  }, ExtArgs["result"]["notificationChannel"]>
-
-  export type NotificationChannelSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    userId?: boolean
-    channelType?: boolean
-    isEnabled?: boolean
-    deviceToken?: boolean
-    emailAddress?: boolean
-    phoneNumber?: boolean
-    preferences?: boolean
-    lastUsedAt?: boolean
-    verifiedAt?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-  }, ExtArgs["result"]["notificationChannel"]>
-
-  export type NotificationChannelSelectScalar = {
-    id?: boolean
-    userId?: boolean
-    channelType?: boolean
-    isEnabled?: boolean
-    deviceToken?: boolean
-    emailAddress?: boolean
-    phoneNumber?: boolean
-    preferences?: boolean
-    lastUsedAt?: boolean
-    verifiedAt?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-  }
-
-
-  export type $NotificationChannelPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "NotificationChannel"
-    objects: {}
-    scalars: $Extensions.GetPayloadResult<{
-      id: string
-      userId: string
-      channelType: $Enums.NotifChannel
-      isEnabled: boolean
-      deviceToken: string | null
-      emailAddress: string | null
-      phoneNumber: string | null
-      preferences: Prisma.JsonValue
-      lastUsedAt: Date | null
-      verifiedAt: Date | null
-      createdAt: Date
-      updatedAt: Date
-    }, ExtArgs["result"]["notificationChannel"]>
-    composites: {}
-  }
-
-  type NotificationChannelGetPayload<S extends boolean | null | undefined | NotificationChannelDefaultArgs> = $Result.GetResult<Prisma.$NotificationChannelPayload, S>
-
-  type NotificationChannelCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
-    Omit<NotificationChannelFindManyArgs, 'select' | 'include' | 'distinct'> & {
-      select?: NotificationChannelCountAggregateInputType | true
-    }
-
-  export interface NotificationChannelDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['NotificationChannel'], meta: { name: 'NotificationChannel' } }
-    /**
-     * Find zero or one NotificationChannel that matches the filter.
-     * @param {NotificationChannelFindUniqueArgs} args - Arguments to find a NotificationChannel
-     * @example
-     * // Get one NotificationChannel
-     * const notificationChannel = await prisma.notificationChannel.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends NotificationChannelFindUniqueArgs>(args: SelectSubset<T, NotificationChannelFindUniqueArgs<ExtArgs>>): Prisma__NotificationChannelClient<$Result.GetResult<Prisma.$NotificationChannelPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
-
-    /**
-     * Find one NotificationChannel that matches the filter or throw an error with `error.code='P2025'` 
-     * if no matches were found.
-     * @param {NotificationChannelFindUniqueOrThrowArgs} args - Arguments to find a NotificationChannel
-     * @example
-     * // Get one NotificationChannel
-     * const notificationChannel = await prisma.notificationChannel.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends NotificationChannelFindUniqueOrThrowArgs>(args: SelectSubset<T, NotificationChannelFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NotificationChannelClient<$Result.GetResult<Prisma.$NotificationChannelPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
-
-    /**
-     * Find the first NotificationChannel that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationChannelFindFirstArgs} args - Arguments to find a NotificationChannel
-     * @example
-     * // Get one NotificationChannel
-     * const notificationChannel = await prisma.notificationChannel.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends NotificationChannelFindFirstArgs>(args?: SelectSubset<T, NotificationChannelFindFirstArgs<ExtArgs>>): Prisma__NotificationChannelClient<$Result.GetResult<Prisma.$NotificationChannelPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
-
-    /**
-     * Find the first NotificationChannel that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationChannelFindFirstOrThrowArgs} args - Arguments to find a NotificationChannel
-     * @example
-     * // Get one NotificationChannel
-     * const notificationChannel = await prisma.notificationChannel.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends NotificationChannelFindFirstOrThrowArgs>(args?: SelectSubset<T, NotificationChannelFindFirstOrThrowArgs<ExtArgs>>): Prisma__NotificationChannelClient<$Result.GetResult<Prisma.$NotificationChannelPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
-
-    /**
-     * Find zero or more NotificationChannels that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationChannelFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all NotificationChannels
-     * const notificationChannels = await prisma.notificationChannel.findMany()
-     * 
-     * // Get first 10 NotificationChannels
-     * const notificationChannels = await prisma.notificationChannel.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const notificationChannelWithIdOnly = await prisma.notificationChannel.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends NotificationChannelFindManyArgs>(args?: SelectSubset<T, NotificationChannelFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationChannelPayload<ExtArgs>, T, "findMany">>
-
-    /**
-     * Create a NotificationChannel.
-     * @param {NotificationChannelCreateArgs} args - Arguments to create a NotificationChannel.
-     * @example
-     * // Create one NotificationChannel
-     * const NotificationChannel = await prisma.notificationChannel.create({
-     *   data: {
-     *     // ... data to create a NotificationChannel
-     *   }
-     * })
-     * 
-     */
-    create<T extends NotificationChannelCreateArgs>(args: SelectSubset<T, NotificationChannelCreateArgs<ExtArgs>>): Prisma__NotificationChannelClient<$Result.GetResult<Prisma.$NotificationChannelPayload<ExtArgs>, T, "create">, never, ExtArgs>
-
-    /**
-     * Create many NotificationChannels.
-     * @param {NotificationChannelCreateManyArgs} args - Arguments to create many NotificationChannels.
-     * @example
-     * // Create many NotificationChannels
-     * const notificationChannel = await prisma.notificationChannel.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends NotificationChannelCreateManyArgs>(args?: SelectSubset<T, NotificationChannelCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create many NotificationChannels and returns the data saved in the database.
-     * @param {NotificationChannelCreateManyAndReturnArgs} args - Arguments to create many NotificationChannels.
-     * @example
-     * // Create many NotificationChannels
-     * const notificationChannel = await prisma.notificationChannel.createManyAndReturn({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Create many NotificationChannels and only return the `id`
-     * const notificationChannelWithIdOnly = await prisma.notificationChannel.createManyAndReturn({ 
-     *   select: { id: true },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    createManyAndReturn<T extends NotificationChannelCreateManyAndReturnArgs>(args?: SelectSubset<T, NotificationChannelCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationChannelPayload<ExtArgs>, T, "createManyAndReturn">>
-
-    /**
-     * Delete a NotificationChannel.
-     * @param {NotificationChannelDeleteArgs} args - Arguments to delete one NotificationChannel.
-     * @example
-     * // Delete one NotificationChannel
-     * const NotificationChannel = await prisma.notificationChannel.delete({
-     *   where: {
-     *     // ... filter to delete one NotificationChannel
-     *   }
-     * })
-     * 
-     */
-    delete<T extends NotificationChannelDeleteArgs>(args: SelectSubset<T, NotificationChannelDeleteArgs<ExtArgs>>): Prisma__NotificationChannelClient<$Result.GetResult<Prisma.$NotificationChannelPayload<ExtArgs>, T, "delete">, never, ExtArgs>
-
-    /**
-     * Update one NotificationChannel.
-     * @param {NotificationChannelUpdateArgs} args - Arguments to update one NotificationChannel.
-     * @example
-     * // Update one NotificationChannel
-     * const notificationChannel = await prisma.notificationChannel.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends NotificationChannelUpdateArgs>(args: SelectSubset<T, NotificationChannelUpdateArgs<ExtArgs>>): Prisma__NotificationChannelClient<$Result.GetResult<Prisma.$NotificationChannelPayload<ExtArgs>, T, "update">, never, ExtArgs>
-
-    /**
-     * Delete zero or more NotificationChannels.
-     * @param {NotificationChannelDeleteManyArgs} args - Arguments to filter NotificationChannels to delete.
-     * @example
-     * // Delete a few NotificationChannels
-     * const { count } = await prisma.notificationChannel.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends NotificationChannelDeleteManyArgs>(args?: SelectSubset<T, NotificationChannelDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more NotificationChannels.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationChannelUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many NotificationChannels
-     * const notificationChannel = await prisma.notificationChannel.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends NotificationChannelUpdateManyArgs>(args: SelectSubset<T, NotificationChannelUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one NotificationChannel.
-     * @param {NotificationChannelUpsertArgs} args - Arguments to update or create a NotificationChannel.
-     * @example
-     * // Update or create a NotificationChannel
-     * const notificationChannel = await prisma.notificationChannel.upsert({
-     *   create: {
-     *     // ... data to create a NotificationChannel
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the NotificationChannel we want to update
-     *   }
-     * })
-     */
-    upsert<T extends NotificationChannelUpsertArgs>(args: SelectSubset<T, NotificationChannelUpsertArgs<ExtArgs>>): Prisma__NotificationChannelClient<$Result.GetResult<Prisma.$NotificationChannelPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
-
-
-    /**
-     * Count the number of NotificationChannels.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationChannelCountArgs} args - Arguments to filter NotificationChannels to count.
-     * @example
-     * // Count the number of NotificationChannels
-     * const count = await prisma.notificationChannel.count({
-     *   where: {
-     *     // ... the filter for the NotificationChannels we want to count
-     *   }
-     * })
-    **/
-    count<T extends NotificationChannelCountArgs>(
-      args?: Subset<T, NotificationChannelCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], NotificationChannelCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a NotificationChannel.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationChannelAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends NotificationChannelAggregateArgs>(args: Subset<T, NotificationChannelAggregateArgs>): Prisma.PrismaPromise<GetNotificationChannelAggregateType<T>>
-
-    /**
-     * Group by NotificationChannel.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationChannelGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends NotificationChannelGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: NotificationChannelGroupByArgs['orderBy'] }
-        : { orderBy?: NotificationChannelGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, NotificationChannelGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNotificationChannelGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the NotificationChannel model
-   */
-  readonly fields: NotificationChannelFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for NotificationChannel.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__NotificationChannelClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the NotificationChannel model
-   */ 
-  interface NotificationChannelFieldRefs {
-    readonly id: FieldRef<"NotificationChannel", 'String'>
-    readonly userId: FieldRef<"NotificationChannel", 'String'>
-    readonly channelType: FieldRef<"NotificationChannel", 'NotifChannel'>
-    readonly isEnabled: FieldRef<"NotificationChannel", 'Boolean'>
-    readonly deviceToken: FieldRef<"NotificationChannel", 'String'>
-    readonly emailAddress: FieldRef<"NotificationChannel", 'String'>
-    readonly phoneNumber: FieldRef<"NotificationChannel", 'String'>
-    readonly preferences: FieldRef<"NotificationChannel", 'Json'>
-    readonly lastUsedAt: FieldRef<"NotificationChannel", 'DateTime'>
-    readonly verifiedAt: FieldRef<"NotificationChannel", 'DateTime'>
-    readonly createdAt: FieldRef<"NotificationChannel", 'DateTime'>
-    readonly updatedAt: FieldRef<"NotificationChannel", 'DateTime'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * NotificationChannel findUnique
-   */
-  export type NotificationChannelFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationChannel
-     */
-    select?: NotificationChannelSelect<ExtArgs> | null
-    /**
-     * Filter, which NotificationChannel to fetch.
-     */
-    where: NotificationChannelWhereUniqueInput
-  }
-
-  /**
-   * NotificationChannel findUniqueOrThrow
-   */
-  export type NotificationChannelFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationChannel
-     */
-    select?: NotificationChannelSelect<ExtArgs> | null
-    /**
-     * Filter, which NotificationChannel to fetch.
-     */
-    where: NotificationChannelWhereUniqueInput
-  }
-
-  /**
-   * NotificationChannel findFirst
-   */
-  export type NotificationChannelFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationChannel
-     */
-    select?: NotificationChannelSelect<ExtArgs> | null
-    /**
-     * Filter, which NotificationChannel to fetch.
-     */
-    where?: NotificationChannelWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of NotificationChannels to fetch.
-     */
-    orderBy?: NotificationChannelOrderByWithRelationInput | NotificationChannelOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for NotificationChannels.
-     */
-    cursor?: NotificationChannelWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` NotificationChannels from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` NotificationChannels.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of NotificationChannels.
-     */
-    distinct?: NotificationChannelScalarFieldEnum | NotificationChannelScalarFieldEnum[]
-  }
-
-  /**
-   * NotificationChannel findFirstOrThrow
-   */
-  export type NotificationChannelFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationChannel
-     */
-    select?: NotificationChannelSelect<ExtArgs> | null
-    /**
-     * Filter, which NotificationChannel to fetch.
-     */
-    where?: NotificationChannelWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of NotificationChannels to fetch.
-     */
-    orderBy?: NotificationChannelOrderByWithRelationInput | NotificationChannelOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for NotificationChannels.
-     */
-    cursor?: NotificationChannelWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` NotificationChannels from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` NotificationChannels.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of NotificationChannels.
-     */
-    distinct?: NotificationChannelScalarFieldEnum | NotificationChannelScalarFieldEnum[]
-  }
-
-  /**
-   * NotificationChannel findMany
-   */
-  export type NotificationChannelFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationChannel
-     */
-    select?: NotificationChannelSelect<ExtArgs> | null
-    /**
-     * Filter, which NotificationChannels to fetch.
-     */
-    where?: NotificationChannelWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of NotificationChannels to fetch.
-     */
-    orderBy?: NotificationChannelOrderByWithRelationInput | NotificationChannelOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing NotificationChannels.
-     */
-    cursor?: NotificationChannelWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` NotificationChannels from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` NotificationChannels.
-     */
-    skip?: number
-    distinct?: NotificationChannelScalarFieldEnum | NotificationChannelScalarFieldEnum[]
-  }
-
-  /**
-   * NotificationChannel create
-   */
-  export type NotificationChannelCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationChannel
-     */
-    select?: NotificationChannelSelect<ExtArgs> | null
-    /**
-     * The data needed to create a NotificationChannel.
-     */
-    data: XOR<NotificationChannelCreateInput, NotificationChannelUncheckedCreateInput>
-  }
-
-  /**
-   * NotificationChannel createMany
-   */
-  export type NotificationChannelCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many NotificationChannels.
-     */
-    data: NotificationChannelCreateManyInput | NotificationChannelCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * NotificationChannel createManyAndReturn
-   */
-  export type NotificationChannelCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationChannel
-     */
-    select?: NotificationChannelSelectCreateManyAndReturn<ExtArgs> | null
-    /**
-     * The data used to create many NotificationChannels.
-     */
-    data: NotificationChannelCreateManyInput | NotificationChannelCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * NotificationChannel update
-   */
-  export type NotificationChannelUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationChannel
-     */
-    select?: NotificationChannelSelect<ExtArgs> | null
-    /**
-     * The data needed to update a NotificationChannel.
-     */
-    data: XOR<NotificationChannelUpdateInput, NotificationChannelUncheckedUpdateInput>
-    /**
-     * Choose, which NotificationChannel to update.
-     */
-    where: NotificationChannelWhereUniqueInput
-  }
-
-  /**
-   * NotificationChannel updateMany
-   */
-  export type NotificationChannelUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update NotificationChannels.
-     */
-    data: XOR<NotificationChannelUpdateManyMutationInput, NotificationChannelUncheckedUpdateManyInput>
-    /**
-     * Filter which NotificationChannels to update
-     */
-    where?: NotificationChannelWhereInput
-  }
-
-  /**
-   * NotificationChannel upsert
-   */
-  export type NotificationChannelUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationChannel
-     */
-    select?: NotificationChannelSelect<ExtArgs> | null
-    /**
-     * The filter to search for the NotificationChannel to update in case it exists.
-     */
-    where: NotificationChannelWhereUniqueInput
-    /**
-     * In case the NotificationChannel found by the `where` argument doesn't exist, create a new NotificationChannel with this data.
-     */
-    create: XOR<NotificationChannelCreateInput, NotificationChannelUncheckedCreateInput>
-    /**
-     * In case the NotificationChannel was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<NotificationChannelUpdateInput, NotificationChannelUncheckedUpdateInput>
-  }
-
-  /**
-   * NotificationChannel delete
-   */
-  export type NotificationChannelDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationChannel
-     */
-    select?: NotificationChannelSelect<ExtArgs> | null
-    /**
-     * Filter which NotificationChannel to delete.
-     */
-    where: NotificationChannelWhereUniqueInput
-  }
-
-  /**
-   * NotificationChannel deleteMany
-   */
-  export type NotificationChannelDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which NotificationChannels to delete
-     */
-    where?: NotificationChannelWhereInput
-  }
-
-  /**
-   * NotificationChannel without action
-   */
-  export type NotificationChannelDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationChannel
-     */
-    select?: NotificationChannelSelect<ExtArgs> | null
-  }
-
-
-  /**
-   * Model NotificationPreference
-   */
-
-  export type AggregateNotificationPreference = {
-    _count: NotificationPreferenceCountAggregateOutputType | null
-    _avg: NotificationPreferenceAvgAggregateOutputType | null
-    _sum: NotificationPreferenceSumAggregateOutputType | null
-    _min: NotificationPreferenceMinAggregateOutputType | null
-    _max: NotificationPreferenceMaxAggregateOutputType | null
-  }
-
-  export type NotificationPreferenceAvgAggregateOutputType = {
-    maxFrequencyMinutes: number | null
-  }
-
-  export type NotificationPreferenceSumAggregateOutputType = {
-    maxFrequencyMinutes: number | null
-  }
-
-  export type NotificationPreferenceMinAggregateOutputType = {
-    id: string | null
-    userId: string | null
-    notificationType: $Enums.NotificationType | null
-    channelType: $Enums.NotifChannel | null
-    isEnabled: boolean | null
-    quietHoursStart: string | null
-    quietHoursEnd: string | null
-    minPriority: $Enums.NotificationPriority | null
-    maxFrequencyMinutes: number | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type NotificationPreferenceMaxAggregateOutputType = {
-    id: string | null
-    userId: string | null
-    notificationType: $Enums.NotificationType | null
-    channelType: $Enums.NotifChannel | null
-    isEnabled: boolean | null
-    quietHoursStart: string | null
-    quietHoursEnd: string | null
-    minPriority: $Enums.NotificationPriority | null
-    maxFrequencyMinutes: number | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type NotificationPreferenceCountAggregateOutputType = {
-    id: number
-    userId: number
-    notificationType: number
-    channelType: number
-    isEnabled: number
-    quietHoursStart: number
-    quietHoursEnd: number
-    minPriority: number
-    maxFrequencyMinutes: number
-    preferences: number
-    createdAt: number
-    updatedAt: number
-    _all: number
-  }
-
-
-  export type NotificationPreferenceAvgAggregateInputType = {
-    maxFrequencyMinutes?: true
-  }
-
-  export type NotificationPreferenceSumAggregateInputType = {
-    maxFrequencyMinutes?: true
-  }
-
-  export type NotificationPreferenceMinAggregateInputType = {
-    id?: true
-    userId?: true
-    notificationType?: true
-    channelType?: true
-    isEnabled?: true
-    quietHoursStart?: true
-    quietHoursEnd?: true
-    minPriority?: true
-    maxFrequencyMinutes?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type NotificationPreferenceMaxAggregateInputType = {
-    id?: true
-    userId?: true
-    notificationType?: true
-    channelType?: true
-    isEnabled?: true
-    quietHoursStart?: true
-    quietHoursEnd?: true
-    minPriority?: true
-    maxFrequencyMinutes?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type NotificationPreferenceCountAggregateInputType = {
-    id?: true
-    userId?: true
-    notificationType?: true
-    channelType?: true
-    isEnabled?: true
-    quietHoursStart?: true
-    quietHoursEnd?: true
-    minPriority?: true
-    maxFrequencyMinutes?: true
-    preferences?: true
-    createdAt?: true
-    updatedAt?: true
-    _all?: true
-  }
-
-  export type NotificationPreferenceAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which NotificationPreference to aggregate.
-     */
-    where?: NotificationPreferenceWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of NotificationPreferences to fetch.
-     */
-    orderBy?: NotificationPreferenceOrderByWithRelationInput | NotificationPreferenceOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: NotificationPreferenceWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` NotificationPreferences from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` NotificationPreferences.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned NotificationPreferences
-    **/
-    _count?: true | NotificationPreferenceCountAggregateInputType
+    _count?: true | ReviewCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to average
     **/
-    _avg?: NotificationPreferenceAvgAggregateInputType
+    _avg?: ReviewAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to sum
     **/
-    _sum?: NotificationPreferenceSumAggregateInputType
+    _sum?: ReviewSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
-    _min?: NotificationPreferenceMinAggregateInputType
+    _min?: ReviewMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
-    _max?: NotificationPreferenceMaxAggregateInputType
+    _max?: ReviewMaxAggregateInputType
   }
 
-  export type GetNotificationPreferenceAggregateType<T extends NotificationPreferenceAggregateArgs> = {
-        [P in keyof T & keyof AggregateNotificationPreference]: P extends '_count' | 'count'
+  export type GetReviewAggregateType<T extends ReviewAggregateArgs> = {
+        [P in keyof T & keyof AggregateReview]: P extends '_count' | 'count'
       ? T[P] extends true
         ? number
-        : GetScalarType<T[P], AggregateNotificationPreference[P]>
-      : GetScalarType<T[P], AggregateNotificationPreference[P]>
+        : GetScalarType<T[P], AggregateReview[P]>
+      : GetScalarType<T[P], AggregateReview[P]>
   }
 
 
 
 
-  export type NotificationPreferenceGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: NotificationPreferenceWhereInput
-    orderBy?: NotificationPreferenceOrderByWithAggregationInput | NotificationPreferenceOrderByWithAggregationInput[]
-    by: NotificationPreferenceScalarFieldEnum[] | NotificationPreferenceScalarFieldEnum
-    having?: NotificationPreferenceScalarWhereWithAggregatesInput
+  export type ReviewGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ReviewWhereInput
+    orderBy?: ReviewOrderByWithAggregationInput | ReviewOrderByWithAggregationInput[]
+    by: ReviewScalarFieldEnum[] | ReviewScalarFieldEnum
+    having?: ReviewScalarWhereWithAggregatesInput
     take?: number
     skip?: number
-    _count?: NotificationPreferenceCountAggregateInputType | true
-    _avg?: NotificationPreferenceAvgAggregateInputType
-    _sum?: NotificationPreferenceSumAggregateInputType
-    _min?: NotificationPreferenceMinAggregateInputType
-    _max?: NotificationPreferenceMaxAggregateInputType
+    _count?: ReviewCountAggregateInputType | true
+    _avg?: ReviewAvgAggregateInputType
+    _sum?: ReviewSumAggregateInputType
+    _min?: ReviewMinAggregateInputType
+    _max?: ReviewMaxAggregateInputType
   }
 
-  export type NotificationPreferenceGroupByOutputType = {
+  export type ReviewGroupByOutputType = {
     id: string
-    userId: string
-    notificationType: $Enums.NotificationType
-    channelType: $Enums.NotifChannel
-    isEnabled: boolean
-    quietHoursStart: string | null
-    quietHoursEnd: string | null
-    minPriority: $Enums.NotificationPriority | null
-    maxFrequencyMinutes: number | null
-    preferences: JsonValue
+    bidId: string
+    requestId: string
+    reviewerId: string
+    revieweeId: string
+    type: $Enums.ReviewType
+    rating: number
+    comment: string | null
     createdAt: Date
-    updatedAt: Date
-    _count: NotificationPreferenceCountAggregateOutputType | null
-    _avg: NotificationPreferenceAvgAggregateOutputType | null
-    _sum: NotificationPreferenceSumAggregateOutputType | null
-    _min: NotificationPreferenceMinAggregateOutputType | null
-    _max: NotificationPreferenceMaxAggregateOutputType | null
+    _count: ReviewCountAggregateOutputType | null
+    _avg: ReviewAvgAggregateOutputType | null
+    _sum: ReviewSumAggregateOutputType | null
+    _min: ReviewMinAggregateOutputType | null
+    _max: ReviewMaxAggregateOutputType | null
   }
 
-  type GetNotificationPreferenceGroupByPayload<T extends NotificationPreferenceGroupByArgs> = Prisma.PrismaPromise<
+  type GetReviewGroupByPayload<T extends ReviewGroupByArgs> = Prisma.PrismaPromise<
     Array<
-      PickEnumerable<NotificationPreferenceGroupByOutputType, T['by']> &
+      PickEnumerable<ReviewGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof NotificationPreferenceGroupByOutputType))]: P extends '_count'
+          [P in ((keyof T) & (keyof ReviewGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
               ? number
-              : GetScalarType<T[P], NotificationPreferenceGroupByOutputType[P]>
-            : GetScalarType<T[P], NotificationPreferenceGroupByOutputType[P]>
+              : GetScalarType<T[P], ReviewGroupByOutputType[P]>
+            : GetScalarType<T[P], ReviewGroupByOutputType[P]>
         }
       >
     >
 
 
-  export type NotificationPreferenceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type ReviewSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    userId?: boolean
-    notificationType?: boolean
-    channelType?: boolean
-    isEnabled?: boolean
-    quietHoursStart?: boolean
-    quietHoursEnd?: boolean
-    minPriority?: boolean
-    maxFrequencyMinutes?: boolean
-    preferences?: boolean
+    bidId?: boolean
+    requestId?: boolean
+    reviewerId?: boolean
+    revieweeId?: boolean
+    type?: boolean
+    rating?: boolean
+    comment?: boolean
     createdAt?: boolean
-    updatedAt?: boolean
-  }, ExtArgs["result"]["notificationPreference"]>
+    bid?: boolean | BidDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["review"]>
 
-  export type NotificationPreferenceSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type ReviewSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    userId?: boolean
-    notificationType?: boolean
-    channelType?: boolean
-    isEnabled?: boolean
-    quietHoursStart?: boolean
-    quietHoursEnd?: boolean
-    minPriority?: boolean
-    maxFrequencyMinutes?: boolean
-    preferences?: boolean
+    bidId?: boolean
+    requestId?: boolean
+    reviewerId?: boolean
+    revieweeId?: boolean
+    type?: boolean
+    rating?: boolean
+    comment?: boolean
     createdAt?: boolean
-    updatedAt?: boolean
-  }, ExtArgs["result"]["notificationPreference"]>
+    bid?: boolean | BidDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["review"]>
 
-  export type NotificationPreferenceSelectScalar = {
+  export type ReviewSelectScalar = {
     id?: boolean
-    userId?: boolean
-    notificationType?: boolean
-    channelType?: boolean
-    isEnabled?: boolean
-    quietHoursStart?: boolean
-    quietHoursEnd?: boolean
-    minPriority?: boolean
-    maxFrequencyMinutes?: boolean
-    preferences?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-  }
-
-
-  export type $NotificationPreferencePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "NotificationPreference"
-    objects: {}
-    scalars: $Extensions.GetPayloadResult<{
-      id: string
-      userId: string
-      notificationType: $Enums.NotificationType
-      channelType: $Enums.NotifChannel
-      isEnabled: boolean
-      quietHoursStart: string | null
-      quietHoursEnd: string | null
-      minPriority: $Enums.NotificationPriority | null
-      maxFrequencyMinutes: number | null
-      preferences: Prisma.JsonValue
-      createdAt: Date
-      updatedAt: Date
-    }, ExtArgs["result"]["notificationPreference"]>
-    composites: {}
-  }
-
-  type NotificationPreferenceGetPayload<S extends boolean | null | undefined | NotificationPreferenceDefaultArgs> = $Result.GetResult<Prisma.$NotificationPreferencePayload, S>
-
-  type NotificationPreferenceCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
-    Omit<NotificationPreferenceFindManyArgs, 'select' | 'include' | 'distinct'> & {
-      select?: NotificationPreferenceCountAggregateInputType | true
-    }
-
-  export interface NotificationPreferenceDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['NotificationPreference'], meta: { name: 'NotificationPreference' } }
-    /**
-     * Find zero or one NotificationPreference that matches the filter.
-     * @param {NotificationPreferenceFindUniqueArgs} args - Arguments to find a NotificationPreference
-     * @example
-     * // Get one NotificationPreference
-     * const notificationPreference = await prisma.notificationPreference.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends NotificationPreferenceFindUniqueArgs>(args: SelectSubset<T, NotificationPreferenceFindUniqueArgs<ExtArgs>>): Prisma__NotificationPreferenceClient<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
-
-    /**
-     * Find one NotificationPreference that matches the filter or throw an error with `error.code='P2025'` 
-     * if no matches were found.
-     * @param {NotificationPreferenceFindUniqueOrThrowArgs} args - Arguments to find a NotificationPreference
-     * @example
-     * // Get one NotificationPreference
-     * const notificationPreference = await prisma.notificationPreference.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends NotificationPreferenceFindUniqueOrThrowArgs>(args: SelectSubset<T, NotificationPreferenceFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NotificationPreferenceClient<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
-
-    /**
-     * Find the first NotificationPreference that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationPreferenceFindFirstArgs} args - Arguments to find a NotificationPreference
-     * @example
-     * // Get one NotificationPreference
-     * const notificationPreference = await prisma.notificationPreference.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends NotificationPreferenceFindFirstArgs>(args?: SelectSubset<T, NotificationPreferenceFindFirstArgs<ExtArgs>>): Prisma__NotificationPreferenceClient<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
-
-    /**
-     * Find the first NotificationPreference that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationPreferenceFindFirstOrThrowArgs} args - Arguments to find a NotificationPreference
-     * @example
-     * // Get one NotificationPreference
-     * const notificationPreference = await prisma.notificationPreference.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends NotificationPreferenceFindFirstOrThrowArgs>(args?: SelectSubset<T, NotificationPreferenceFindFirstOrThrowArgs<ExtArgs>>): Prisma__NotificationPreferenceClient<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
-
-    /**
-     * Find zero or more NotificationPreferences that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationPreferenceFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all NotificationPreferences
-     * const notificationPreferences = await prisma.notificationPreference.findMany()
-     * 
-     * // Get first 10 NotificationPreferences
-     * const notificationPreferences = await prisma.notificationPreference.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const notificationPreferenceWithIdOnly = await prisma.notificationPreference.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends NotificationPreferenceFindManyArgs>(args?: SelectSubset<T, NotificationPreferenceFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "findMany">>
-
-    /**
-     * Create a NotificationPreference.
-     * @param {NotificationPreferenceCreateArgs} args - Arguments to create a NotificationPreference.
-     * @example
-     * // Create one NotificationPreference
-     * const NotificationPreference = await prisma.notificationPreference.create({
-     *   data: {
-     *     // ... data to create a NotificationPreference
-     *   }
-     * })
-     * 
-     */
-    create<T extends NotificationPreferenceCreateArgs>(args: SelectSubset<T, NotificationPreferenceCreateArgs<ExtArgs>>): Prisma__NotificationPreferenceClient<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "create">, never, ExtArgs>
-
-    /**
-     * Create many NotificationPreferences.
-     * @param {NotificationPreferenceCreateManyArgs} args - Arguments to create many NotificationPreferences.
-     * @example
-     * // Create many NotificationPreferences
-     * const notificationPreference = await prisma.notificationPreference.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends NotificationPreferenceCreateManyArgs>(args?: SelectSubset<T, NotificationPreferenceCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create many NotificationPreferences and returns the data saved in the database.
-     * @param {NotificationPreferenceCreateManyAndReturnArgs} args - Arguments to create many NotificationPreferences.
-     * @example
-     * // Create many NotificationPreferences
-     * const notificationPreference = await prisma.notificationPreference.createManyAndReturn({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Create many NotificationPreferences and only return the `id`
-     * const notificationPreferenceWithIdOnly = await prisma.notificationPreference.createManyAndReturn({ 
-     *   select: { id: true },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    createManyAndReturn<T extends NotificationPreferenceCreateManyAndReturnArgs>(args?: SelectSubset<T, NotificationPreferenceCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "createManyAndReturn">>
-
-    /**
-     * Delete a NotificationPreference.
-     * @param {NotificationPreferenceDeleteArgs} args - Arguments to delete one NotificationPreference.
-     * @example
-     * // Delete one NotificationPreference
-     * const NotificationPreference = await prisma.notificationPreference.delete({
-     *   where: {
-     *     // ... filter to delete one NotificationPreference
-     *   }
-     * })
-     * 
-     */
-    delete<T extends NotificationPreferenceDeleteArgs>(args: SelectSubset<T, NotificationPreferenceDeleteArgs<ExtArgs>>): Prisma__NotificationPreferenceClient<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "delete">, never, ExtArgs>
-
-    /**
-     * Update one NotificationPreference.
-     * @param {NotificationPreferenceUpdateArgs} args - Arguments to update one NotificationPreference.
-     * @example
-     * // Update one NotificationPreference
-     * const notificationPreference = await prisma.notificationPreference.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends NotificationPreferenceUpdateArgs>(args: SelectSubset<T, NotificationPreferenceUpdateArgs<ExtArgs>>): Prisma__NotificationPreferenceClient<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "update">, never, ExtArgs>
-
-    /**
-     * Delete zero or more NotificationPreferences.
-     * @param {NotificationPreferenceDeleteManyArgs} args - Arguments to filter NotificationPreferences to delete.
-     * @example
-     * // Delete a few NotificationPreferences
-     * const { count } = await prisma.notificationPreference.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends NotificationPreferenceDeleteManyArgs>(args?: SelectSubset<T, NotificationPreferenceDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more NotificationPreferences.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationPreferenceUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many NotificationPreferences
-     * const notificationPreference = await prisma.notificationPreference.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends NotificationPreferenceUpdateManyArgs>(args: SelectSubset<T, NotificationPreferenceUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one NotificationPreference.
-     * @param {NotificationPreferenceUpsertArgs} args - Arguments to update or create a NotificationPreference.
-     * @example
-     * // Update or create a NotificationPreference
-     * const notificationPreference = await prisma.notificationPreference.upsert({
-     *   create: {
-     *     // ... data to create a NotificationPreference
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the NotificationPreference we want to update
-     *   }
-     * })
-     */
-    upsert<T extends NotificationPreferenceUpsertArgs>(args: SelectSubset<T, NotificationPreferenceUpsertArgs<ExtArgs>>): Prisma__NotificationPreferenceClient<$Result.GetResult<Prisma.$NotificationPreferencePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
-
-
-    /**
-     * Count the number of NotificationPreferences.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationPreferenceCountArgs} args - Arguments to filter NotificationPreferences to count.
-     * @example
-     * // Count the number of NotificationPreferences
-     * const count = await prisma.notificationPreference.count({
-     *   where: {
-     *     // ... the filter for the NotificationPreferences we want to count
-     *   }
-     * })
-    **/
-    count<T extends NotificationPreferenceCountArgs>(
-      args?: Subset<T, NotificationPreferenceCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], NotificationPreferenceCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a NotificationPreference.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationPreferenceAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends NotificationPreferenceAggregateArgs>(args: Subset<T, NotificationPreferenceAggregateArgs>): Prisma.PrismaPromise<GetNotificationPreferenceAggregateType<T>>
-
-    /**
-     * Group by NotificationPreference.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationPreferenceGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends NotificationPreferenceGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: NotificationPreferenceGroupByArgs['orderBy'] }
-        : { orderBy?: NotificationPreferenceGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, NotificationPreferenceGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNotificationPreferenceGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the NotificationPreference model
-   */
-  readonly fields: NotificationPreferenceFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for NotificationPreference.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__NotificationPreferenceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the NotificationPreference model
-   */ 
-  interface NotificationPreferenceFieldRefs {
-    readonly id: FieldRef<"NotificationPreference", 'String'>
-    readonly userId: FieldRef<"NotificationPreference", 'String'>
-    readonly notificationType: FieldRef<"NotificationPreference", 'NotificationType'>
-    readonly channelType: FieldRef<"NotificationPreference", 'NotifChannel'>
-    readonly isEnabled: FieldRef<"NotificationPreference", 'Boolean'>
-    readonly quietHoursStart: FieldRef<"NotificationPreference", 'String'>
-    readonly quietHoursEnd: FieldRef<"NotificationPreference", 'String'>
-    readonly minPriority: FieldRef<"NotificationPreference", 'NotificationPriority'>
-    readonly maxFrequencyMinutes: FieldRef<"NotificationPreference", 'Int'>
-    readonly preferences: FieldRef<"NotificationPreference", 'Json'>
-    readonly createdAt: FieldRef<"NotificationPreference", 'DateTime'>
-    readonly updatedAt: FieldRef<"NotificationPreference", 'DateTime'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * NotificationPreference findUnique
-   */
-  export type NotificationPreferenceFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationPreference
-     */
-    select?: NotificationPreferenceSelect<ExtArgs> | null
-    /**
-     * Filter, which NotificationPreference to fetch.
-     */
-    where: NotificationPreferenceWhereUniqueInput
-  }
-
-  /**
-   * NotificationPreference findUniqueOrThrow
-   */
-  export type NotificationPreferenceFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationPreference
-     */
-    select?: NotificationPreferenceSelect<ExtArgs> | null
-    /**
-     * Filter, which NotificationPreference to fetch.
-     */
-    where: NotificationPreferenceWhereUniqueInput
-  }
-
-  /**
-   * NotificationPreference findFirst
-   */
-  export type NotificationPreferenceFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationPreference
-     */
-    select?: NotificationPreferenceSelect<ExtArgs> | null
-    /**
-     * Filter, which NotificationPreference to fetch.
-     */
-    where?: NotificationPreferenceWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of NotificationPreferences to fetch.
-     */
-    orderBy?: NotificationPreferenceOrderByWithRelationInput | NotificationPreferenceOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for NotificationPreferences.
-     */
-    cursor?: NotificationPreferenceWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` NotificationPreferences from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` NotificationPreferences.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of NotificationPreferences.
-     */
-    distinct?: NotificationPreferenceScalarFieldEnum | NotificationPreferenceScalarFieldEnum[]
-  }
-
-  /**
-   * NotificationPreference findFirstOrThrow
-   */
-  export type NotificationPreferenceFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationPreference
-     */
-    select?: NotificationPreferenceSelect<ExtArgs> | null
-    /**
-     * Filter, which NotificationPreference to fetch.
-     */
-    where?: NotificationPreferenceWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of NotificationPreferences to fetch.
-     */
-    orderBy?: NotificationPreferenceOrderByWithRelationInput | NotificationPreferenceOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for NotificationPreferences.
-     */
-    cursor?: NotificationPreferenceWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` NotificationPreferences from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` NotificationPreferences.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of NotificationPreferences.
-     */
-    distinct?: NotificationPreferenceScalarFieldEnum | NotificationPreferenceScalarFieldEnum[]
-  }
-
-  /**
-   * NotificationPreference findMany
-   */
-  export type NotificationPreferenceFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationPreference
-     */
-    select?: NotificationPreferenceSelect<ExtArgs> | null
-    /**
-     * Filter, which NotificationPreferences to fetch.
-     */
-    where?: NotificationPreferenceWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of NotificationPreferences to fetch.
-     */
-    orderBy?: NotificationPreferenceOrderByWithRelationInput | NotificationPreferenceOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing NotificationPreferences.
-     */
-    cursor?: NotificationPreferenceWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` NotificationPreferences from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` NotificationPreferences.
-     */
-    skip?: number
-    distinct?: NotificationPreferenceScalarFieldEnum | NotificationPreferenceScalarFieldEnum[]
-  }
-
-  /**
-   * NotificationPreference create
-   */
-  export type NotificationPreferenceCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationPreference
-     */
-    select?: NotificationPreferenceSelect<ExtArgs> | null
-    /**
-     * The data needed to create a NotificationPreference.
-     */
-    data: XOR<NotificationPreferenceCreateInput, NotificationPreferenceUncheckedCreateInput>
-  }
-
-  /**
-   * NotificationPreference createMany
-   */
-  export type NotificationPreferenceCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many NotificationPreferences.
-     */
-    data: NotificationPreferenceCreateManyInput | NotificationPreferenceCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * NotificationPreference createManyAndReturn
-   */
-  export type NotificationPreferenceCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationPreference
-     */
-    select?: NotificationPreferenceSelectCreateManyAndReturn<ExtArgs> | null
-    /**
-     * The data used to create many NotificationPreferences.
-     */
-    data: NotificationPreferenceCreateManyInput | NotificationPreferenceCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * NotificationPreference update
-   */
-  export type NotificationPreferenceUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationPreference
-     */
-    select?: NotificationPreferenceSelect<ExtArgs> | null
-    /**
-     * The data needed to update a NotificationPreference.
-     */
-    data: XOR<NotificationPreferenceUpdateInput, NotificationPreferenceUncheckedUpdateInput>
-    /**
-     * Choose, which NotificationPreference to update.
-     */
-    where: NotificationPreferenceWhereUniqueInput
-  }
-
-  /**
-   * NotificationPreference updateMany
-   */
-  export type NotificationPreferenceUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update NotificationPreferences.
-     */
-    data: XOR<NotificationPreferenceUpdateManyMutationInput, NotificationPreferenceUncheckedUpdateManyInput>
-    /**
-     * Filter which NotificationPreferences to update
-     */
-    where?: NotificationPreferenceWhereInput
-  }
-
-  /**
-   * NotificationPreference upsert
-   */
-  export type NotificationPreferenceUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationPreference
-     */
-    select?: NotificationPreferenceSelect<ExtArgs> | null
-    /**
-     * The filter to search for the NotificationPreference to update in case it exists.
-     */
-    where: NotificationPreferenceWhereUniqueInput
-    /**
-     * In case the NotificationPreference found by the `where` argument doesn't exist, create a new NotificationPreference with this data.
-     */
-    create: XOR<NotificationPreferenceCreateInput, NotificationPreferenceUncheckedCreateInput>
-    /**
-     * In case the NotificationPreference was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<NotificationPreferenceUpdateInput, NotificationPreferenceUncheckedUpdateInput>
-  }
-
-  /**
-   * NotificationPreference delete
-   */
-  export type NotificationPreferenceDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationPreference
-     */
-    select?: NotificationPreferenceSelect<ExtArgs> | null
-    /**
-     * Filter which NotificationPreference to delete.
-     */
-    where: NotificationPreferenceWhereUniqueInput
-  }
-
-  /**
-   * NotificationPreference deleteMany
-   */
-  export type NotificationPreferenceDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which NotificationPreferences to delete
-     */
-    where?: NotificationPreferenceWhereInput
-  }
-
-  /**
-   * NotificationPreference without action
-   */
-  export type NotificationPreferenceDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationPreference
-     */
-    select?: NotificationPreferenceSelect<ExtArgs> | null
-  }
-
-
-  /**
-   * Model NotificationDelivery
-   */
-
-  export type AggregateNotificationDelivery = {
-    _count: NotificationDeliveryCountAggregateOutputType | null
-    _avg: NotificationDeliveryAvgAggregateOutputType | null
-    _sum: NotificationDeliverySumAggregateOutputType | null
-    _min: NotificationDeliveryMinAggregateOutputType | null
-    _max: NotificationDeliveryMaxAggregateOutputType | null
-  }
-
-  export type NotificationDeliveryAvgAggregateOutputType = {
-    attemptCount: number | null
-  }
-
-  export type NotificationDeliverySumAggregateOutputType = {
-    attemptCount: number | null
-  }
-
-  export type NotificationDeliveryMinAggregateOutputType = {
-    id: string | null
-    notificationId: string | null
-    channelType: $Enums.NotifChannel | null
-    provider: string | null
-    recipient: string | null
-    status: $Enums.NotifDeliveryStatus | null
-    attemptCount: number | null
-    sentAt: Date | null
-    deliveredAt: Date | null
-    errorMessage: string | null
-    errorCode: string | null
-    createdAt: Date | null
-  }
-
-  export type NotificationDeliveryMaxAggregateOutputType = {
-    id: string | null
-    notificationId: string | null
-    channelType: $Enums.NotifChannel | null
-    provider: string | null
-    recipient: string | null
-    status: $Enums.NotifDeliveryStatus | null
-    attemptCount: number | null
-    sentAt: Date | null
-    deliveredAt: Date | null
-    errorMessage: string | null
-    errorCode: string | null
-    createdAt: Date | null
-  }
-
-  export type NotificationDeliveryCountAggregateOutputType = {
-    id: number
-    notificationId: number
-    channelType: number
-    provider: number
-    recipient: number
-    status: number
-    attemptCount: number
-    sentAt: number
-    deliveredAt: number
-    errorMessage: number
-    errorCode: number
-    metadata: number
-    createdAt: number
-    _all: number
-  }
-
-
-  export type NotificationDeliveryAvgAggregateInputType = {
-    attemptCount?: true
-  }
-
-  export type NotificationDeliverySumAggregateInputType = {
-    attemptCount?: true
-  }
-
-  export type NotificationDeliveryMinAggregateInputType = {
-    id?: true
-    notificationId?: true
-    channelType?: true
-    provider?: true
-    recipient?: true
-    status?: true
-    attemptCount?: true
-    sentAt?: true
-    deliveredAt?: true
-    errorMessage?: true
-    errorCode?: true
-    createdAt?: true
-  }
-
-  export type NotificationDeliveryMaxAggregateInputType = {
-    id?: true
-    notificationId?: true
-    channelType?: true
-    provider?: true
-    recipient?: true
-    status?: true
-    attemptCount?: true
-    sentAt?: true
-    deliveredAt?: true
-    errorMessage?: true
-    errorCode?: true
-    createdAt?: true
-  }
-
-  export type NotificationDeliveryCountAggregateInputType = {
-    id?: true
-    notificationId?: true
-    channelType?: true
-    provider?: true
-    recipient?: true
-    status?: true
-    attemptCount?: true
-    sentAt?: true
-    deliveredAt?: true
-    errorMessage?: true
-    errorCode?: true
-    metadata?: true
-    createdAt?: true
-    _all?: true
-  }
-
-  export type NotificationDeliveryAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which NotificationDelivery to aggregate.
-     */
-    where?: NotificationDeliveryWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of NotificationDeliveries to fetch.
-     */
-    orderBy?: NotificationDeliveryOrderByWithRelationInput | NotificationDeliveryOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: NotificationDeliveryWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` NotificationDeliveries from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` NotificationDeliveries.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned NotificationDeliveries
-    **/
-    _count?: true | NotificationDeliveryCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: NotificationDeliveryAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: NotificationDeliverySumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: NotificationDeliveryMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: NotificationDeliveryMaxAggregateInputType
-  }
-
-  export type GetNotificationDeliveryAggregateType<T extends NotificationDeliveryAggregateArgs> = {
-        [P in keyof T & keyof AggregateNotificationDelivery]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateNotificationDelivery[P]>
-      : GetScalarType<T[P], AggregateNotificationDelivery[P]>
-  }
-
-
-
-
-  export type NotificationDeliveryGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: NotificationDeliveryWhereInput
-    orderBy?: NotificationDeliveryOrderByWithAggregationInput | NotificationDeliveryOrderByWithAggregationInput[]
-    by: NotificationDeliveryScalarFieldEnum[] | NotificationDeliveryScalarFieldEnum
-    having?: NotificationDeliveryScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: NotificationDeliveryCountAggregateInputType | true
-    _avg?: NotificationDeliveryAvgAggregateInputType
-    _sum?: NotificationDeliverySumAggregateInputType
-    _min?: NotificationDeliveryMinAggregateInputType
-    _max?: NotificationDeliveryMaxAggregateInputType
-  }
-
-  export type NotificationDeliveryGroupByOutputType = {
-    id: string
-    notificationId: string
-    channelType: $Enums.NotifChannel
-    provider: string
-    recipient: string
-    status: $Enums.NotifDeliveryStatus
-    attemptCount: number
-    sentAt: Date | null
-    deliveredAt: Date | null
-    errorMessage: string | null
-    errorCode: string | null
-    metadata: JsonValue
-    createdAt: Date
-    _count: NotificationDeliveryCountAggregateOutputType | null
-    _avg: NotificationDeliveryAvgAggregateOutputType | null
-    _sum: NotificationDeliverySumAggregateOutputType | null
-    _min: NotificationDeliveryMinAggregateOutputType | null
-    _max: NotificationDeliveryMaxAggregateOutputType | null
-  }
-
-  type GetNotificationDeliveryGroupByPayload<T extends NotificationDeliveryGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<NotificationDeliveryGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof NotificationDeliveryGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], NotificationDeliveryGroupByOutputType[P]>
-            : GetScalarType<T[P], NotificationDeliveryGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type NotificationDeliverySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    notificationId?: boolean
-    channelType?: boolean
-    provider?: boolean
-    recipient?: boolean
-    status?: boolean
-    attemptCount?: boolean
-    sentAt?: boolean
-    deliveredAt?: boolean
-    errorMessage?: boolean
-    errorCode?: boolean
-    metadata?: boolean
-    createdAt?: boolean
-    notification?: boolean | NotificationDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["notificationDelivery"]>
-
-  export type NotificationDeliverySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    notificationId?: boolean
-    channelType?: boolean
-    provider?: boolean
-    recipient?: boolean
-    status?: boolean
-    attemptCount?: boolean
-    sentAt?: boolean
-    deliveredAt?: boolean
-    errorMessage?: boolean
-    errorCode?: boolean
-    metadata?: boolean
-    createdAt?: boolean
-    notification?: boolean | NotificationDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["notificationDelivery"]>
-
-  export type NotificationDeliverySelectScalar = {
-    id?: boolean
-    notificationId?: boolean
-    channelType?: boolean
-    provider?: boolean
-    recipient?: boolean
-    status?: boolean
-    attemptCount?: boolean
-    sentAt?: boolean
-    deliveredAt?: boolean
-    errorMessage?: boolean
-    errorCode?: boolean
-    metadata?: boolean
+    bidId?: boolean
+    requestId?: boolean
+    reviewerId?: boolean
+    revieweeId?: boolean
+    type?: boolean
+    rating?: boolean
+    comment?: boolean
     createdAt?: boolean
   }
 
-  export type NotificationDeliveryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    notification?: boolean | NotificationDefaultArgs<ExtArgs>
+  export type ReviewInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    bid?: boolean | BidDefaultArgs<ExtArgs>
   }
-  export type NotificationDeliveryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    notification?: boolean | NotificationDefaultArgs<ExtArgs>
+  export type ReviewIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    bid?: boolean | BidDefaultArgs<ExtArgs>
   }
 
-  export type $NotificationDeliveryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "NotificationDelivery"
+  export type $ReviewPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Review"
     objects: {
-      notification: Prisma.$NotificationPayload<ExtArgs>
+      bid: Prisma.$BidPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      notificationId: string
-      channelType: $Enums.NotifChannel
-      provider: string
-      recipient: string
-      status: $Enums.NotifDeliveryStatus
-      attemptCount: number
-      sentAt: Date | null
-      deliveredAt: Date | null
-      errorMessage: string | null
-      errorCode: string | null
-      metadata: Prisma.JsonValue
+      bidId: string
+      requestId: string
+      reviewerId: string
+      revieweeId: string
+      type: $Enums.ReviewType
+      rating: number
+      comment: string | null
       createdAt: Date
-    }, ExtArgs["result"]["notificationDelivery"]>
+    }, ExtArgs["result"]["review"]>
     composites: {}
   }
 
-  type NotificationDeliveryGetPayload<S extends boolean | null | undefined | NotificationDeliveryDefaultArgs> = $Result.GetResult<Prisma.$NotificationDeliveryPayload, S>
+  type ReviewGetPayload<S extends boolean | null | undefined | ReviewDefaultArgs> = $Result.GetResult<Prisma.$ReviewPayload, S>
 
-  type NotificationDeliveryCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
-    Omit<NotificationDeliveryFindManyArgs, 'select' | 'include' | 'distinct'> & {
-      select?: NotificationDeliveryCountAggregateInputType | true
+  type ReviewCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<ReviewFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: ReviewCountAggregateInputType | true
     }
 
-  export interface NotificationDeliveryDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['NotificationDelivery'], meta: { name: 'NotificationDelivery' } }
+  export interface ReviewDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Review'], meta: { name: 'Review' } }
     /**
-     * Find zero or one NotificationDelivery that matches the filter.
-     * @param {NotificationDeliveryFindUniqueArgs} args - Arguments to find a NotificationDelivery
+     * Find zero or one Review that matches the filter.
+     * @param {ReviewFindUniqueArgs} args - Arguments to find a Review
      * @example
-     * // Get one NotificationDelivery
-     * const notificationDelivery = await prisma.notificationDelivery.findUnique({
+     * // Get one Review
+     * const review = await prisma.review.findUnique({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUnique<T extends NotificationDeliveryFindUniqueArgs>(args: SelectSubset<T, NotificationDeliveryFindUniqueArgs<ExtArgs>>): Prisma__NotificationDeliveryClient<$Result.GetResult<Prisma.$NotificationDeliveryPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+    findUnique<T extends ReviewFindUniqueArgs>(args: SelectSubset<T, ReviewFindUniqueArgs<ExtArgs>>): Prisma__ReviewClient<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
 
     /**
-     * Find one NotificationDelivery that matches the filter or throw an error with `error.code='P2025'` 
+     * Find one Review that matches the filter or throw an error with `error.code='P2025'` 
      * if no matches were found.
-     * @param {NotificationDeliveryFindUniqueOrThrowArgs} args - Arguments to find a NotificationDelivery
+     * @param {ReviewFindUniqueOrThrowArgs} args - Arguments to find a Review
      * @example
-     * // Get one NotificationDelivery
-     * const notificationDelivery = await prisma.notificationDelivery.findUniqueOrThrow({
+     * // Get one Review
+     * const review = await prisma.review.findUniqueOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUniqueOrThrow<T extends NotificationDeliveryFindUniqueOrThrowArgs>(args: SelectSubset<T, NotificationDeliveryFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NotificationDeliveryClient<$Result.GetResult<Prisma.$NotificationDeliveryPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+    findUniqueOrThrow<T extends ReviewFindUniqueOrThrowArgs>(args: SelectSubset<T, ReviewFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ReviewClient<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
 
     /**
-     * Find the first NotificationDelivery that matches the filter.
+     * Find the first Review that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationDeliveryFindFirstArgs} args - Arguments to find a NotificationDelivery
+     * @param {ReviewFindFirstArgs} args - Arguments to find a Review
      * @example
-     * // Get one NotificationDelivery
-     * const notificationDelivery = await prisma.notificationDelivery.findFirst({
+     * // Get one Review
+     * const review = await prisma.review.findFirst({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirst<T extends NotificationDeliveryFindFirstArgs>(args?: SelectSubset<T, NotificationDeliveryFindFirstArgs<ExtArgs>>): Prisma__NotificationDeliveryClient<$Result.GetResult<Prisma.$NotificationDeliveryPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+    findFirst<T extends ReviewFindFirstArgs>(args?: SelectSubset<T, ReviewFindFirstArgs<ExtArgs>>): Prisma__ReviewClient<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
 
     /**
-     * Find the first NotificationDelivery that matches the filter or
+     * Find the first Review that matches the filter or
      * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationDeliveryFindFirstOrThrowArgs} args - Arguments to find a NotificationDelivery
+     * @param {ReviewFindFirstOrThrowArgs} args - Arguments to find a Review
      * @example
-     * // Get one NotificationDelivery
-     * const notificationDelivery = await prisma.notificationDelivery.findFirstOrThrow({
+     * // Get one Review
+     * const review = await prisma.review.findFirstOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirstOrThrow<T extends NotificationDeliveryFindFirstOrThrowArgs>(args?: SelectSubset<T, NotificationDeliveryFindFirstOrThrowArgs<ExtArgs>>): Prisma__NotificationDeliveryClient<$Result.GetResult<Prisma.$NotificationDeliveryPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+    findFirstOrThrow<T extends ReviewFindFirstOrThrowArgs>(args?: SelectSubset<T, ReviewFindFirstOrThrowArgs<ExtArgs>>): Prisma__ReviewClient<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
 
     /**
-     * Find zero or more NotificationDeliveries that matches the filter.
+     * Find zero or more Reviews that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationDeliveryFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @param {ReviewFindManyArgs} args - Arguments to filter and select certain fields only.
      * @example
-     * // Get all NotificationDeliveries
-     * const notificationDeliveries = await prisma.notificationDelivery.findMany()
+     * // Get all Reviews
+     * const reviews = await prisma.review.findMany()
      * 
-     * // Get first 10 NotificationDeliveries
-     * const notificationDeliveries = await prisma.notificationDelivery.findMany({ take: 10 })
+     * // Get first 10 Reviews
+     * const reviews = await prisma.review.findMany({ take: 10 })
      * 
      * // Only select the `id`
-     * const notificationDeliveryWithIdOnly = await prisma.notificationDelivery.findMany({ select: { id: true } })
+     * const reviewWithIdOnly = await prisma.review.findMany({ select: { id: true } })
      * 
      */
-    findMany<T extends NotificationDeliveryFindManyArgs>(args?: SelectSubset<T, NotificationDeliveryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationDeliveryPayload<ExtArgs>, T, "findMany">>
+    findMany<T extends ReviewFindManyArgs>(args?: SelectSubset<T, ReviewFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findMany">>
 
     /**
-     * Create a NotificationDelivery.
-     * @param {NotificationDeliveryCreateArgs} args - Arguments to create a NotificationDelivery.
+     * Create a Review.
+     * @param {ReviewCreateArgs} args - Arguments to create a Review.
      * @example
-     * // Create one NotificationDelivery
-     * const NotificationDelivery = await prisma.notificationDelivery.create({
+     * // Create one Review
+     * const Review = await prisma.review.create({
      *   data: {
-     *     // ... data to create a NotificationDelivery
+     *     // ... data to create a Review
      *   }
      * })
      * 
      */
-    create<T extends NotificationDeliveryCreateArgs>(args: SelectSubset<T, NotificationDeliveryCreateArgs<ExtArgs>>): Prisma__NotificationDeliveryClient<$Result.GetResult<Prisma.$NotificationDeliveryPayload<ExtArgs>, T, "create">, never, ExtArgs>
+    create<T extends ReviewCreateArgs>(args: SelectSubset<T, ReviewCreateArgs<ExtArgs>>): Prisma__ReviewClient<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "create">, never, ExtArgs>
 
     /**
-     * Create many NotificationDeliveries.
-     * @param {NotificationDeliveryCreateManyArgs} args - Arguments to create many NotificationDeliveries.
+     * Create many Reviews.
+     * @param {ReviewCreateManyArgs} args - Arguments to create many Reviews.
      * @example
-     * // Create many NotificationDeliveries
-     * const notificationDelivery = await prisma.notificationDelivery.createMany({
+     * // Create many Reviews
+     * const review = await prisma.review.createMany({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      *     
      */
-    createMany<T extends NotificationDeliveryCreateManyArgs>(args?: SelectSubset<T, NotificationDeliveryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    createMany<T extends ReviewCreateManyArgs>(args?: SelectSubset<T, ReviewCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Create many NotificationDeliveries and returns the data saved in the database.
-     * @param {NotificationDeliveryCreateManyAndReturnArgs} args - Arguments to create many NotificationDeliveries.
+     * Create many Reviews and returns the data saved in the database.
+     * @param {ReviewCreateManyAndReturnArgs} args - Arguments to create many Reviews.
      * @example
-     * // Create many NotificationDeliveries
-     * const notificationDelivery = await prisma.notificationDelivery.createManyAndReturn({
+     * // Create many Reviews
+     * const review = await prisma.review.createManyAndReturn({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      * 
-     * // Create many NotificationDeliveries and only return the `id`
-     * const notificationDeliveryWithIdOnly = await prisma.notificationDelivery.createManyAndReturn({ 
+     * // Create many Reviews and only return the `id`
+     * const reviewWithIdOnly = await prisma.review.createManyAndReturn({ 
      *   select: { id: true },
      *   data: [
      *     // ... provide data here
@@ -21318,28 +14053,28 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    createManyAndReturn<T extends NotificationDeliveryCreateManyAndReturnArgs>(args?: SelectSubset<T, NotificationDeliveryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationDeliveryPayload<ExtArgs>, T, "createManyAndReturn">>
+    createManyAndReturn<T extends ReviewCreateManyAndReturnArgs>(args?: SelectSubset<T, ReviewCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "createManyAndReturn">>
 
     /**
-     * Delete a NotificationDelivery.
-     * @param {NotificationDeliveryDeleteArgs} args - Arguments to delete one NotificationDelivery.
+     * Delete a Review.
+     * @param {ReviewDeleteArgs} args - Arguments to delete one Review.
      * @example
-     * // Delete one NotificationDelivery
-     * const NotificationDelivery = await prisma.notificationDelivery.delete({
+     * // Delete one Review
+     * const Review = await prisma.review.delete({
      *   where: {
-     *     // ... filter to delete one NotificationDelivery
+     *     // ... filter to delete one Review
      *   }
      * })
      * 
      */
-    delete<T extends NotificationDeliveryDeleteArgs>(args: SelectSubset<T, NotificationDeliveryDeleteArgs<ExtArgs>>): Prisma__NotificationDeliveryClient<$Result.GetResult<Prisma.$NotificationDeliveryPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+    delete<T extends ReviewDeleteArgs>(args: SelectSubset<T, ReviewDeleteArgs<ExtArgs>>): Prisma__ReviewClient<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "delete">, never, ExtArgs>
 
     /**
-     * Update one NotificationDelivery.
-     * @param {NotificationDeliveryUpdateArgs} args - Arguments to update one NotificationDelivery.
+     * Update one Review.
+     * @param {ReviewUpdateArgs} args - Arguments to update one Review.
      * @example
-     * // Update one NotificationDelivery
-     * const notificationDelivery = await prisma.notificationDelivery.update({
+     * // Update one Review
+     * const review = await prisma.review.update({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -21349,30 +14084,30 @@ export namespace Prisma {
      * })
      * 
      */
-    update<T extends NotificationDeliveryUpdateArgs>(args: SelectSubset<T, NotificationDeliveryUpdateArgs<ExtArgs>>): Prisma__NotificationDeliveryClient<$Result.GetResult<Prisma.$NotificationDeliveryPayload<ExtArgs>, T, "update">, never, ExtArgs>
+    update<T extends ReviewUpdateArgs>(args: SelectSubset<T, ReviewUpdateArgs<ExtArgs>>): Prisma__ReviewClient<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "update">, never, ExtArgs>
 
     /**
-     * Delete zero or more NotificationDeliveries.
-     * @param {NotificationDeliveryDeleteManyArgs} args - Arguments to filter NotificationDeliveries to delete.
+     * Delete zero or more Reviews.
+     * @param {ReviewDeleteManyArgs} args - Arguments to filter Reviews to delete.
      * @example
-     * // Delete a few NotificationDeliveries
-     * const { count } = await prisma.notificationDelivery.deleteMany({
+     * // Delete a few Reviews
+     * const { count } = await prisma.review.deleteMany({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      * 
      */
-    deleteMany<T extends NotificationDeliveryDeleteManyArgs>(args?: SelectSubset<T, NotificationDeliveryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    deleteMany<T extends ReviewDeleteManyArgs>(args?: SelectSubset<T, ReviewDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more NotificationDeliveries.
+     * Update zero or more Reviews.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationDeliveryUpdateManyArgs} args - Arguments to update one or more rows.
+     * @param {ReviewUpdateManyArgs} args - Arguments to update one or more rows.
      * @example
-     * // Update many NotificationDeliveries
-     * const notificationDelivery = await prisma.notificationDelivery.updateMany({
+     * // Update many Reviews
+     * const review = await prisma.review.updateMany({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -21382,56 +14117,56 @@ export namespace Prisma {
      * })
      * 
      */
-    updateMany<T extends NotificationDeliveryUpdateManyArgs>(args: SelectSubset<T, NotificationDeliveryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    updateMany<T extends ReviewUpdateManyArgs>(args: SelectSubset<T, ReviewUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Create or update one NotificationDelivery.
-     * @param {NotificationDeliveryUpsertArgs} args - Arguments to update or create a NotificationDelivery.
+     * Create or update one Review.
+     * @param {ReviewUpsertArgs} args - Arguments to update or create a Review.
      * @example
-     * // Update or create a NotificationDelivery
-     * const notificationDelivery = await prisma.notificationDelivery.upsert({
+     * // Update or create a Review
+     * const review = await prisma.review.upsert({
      *   create: {
-     *     // ... data to create a NotificationDelivery
+     *     // ... data to create a Review
      *   },
      *   update: {
      *     // ... in case it already exists, update
      *   },
      *   where: {
-     *     // ... the filter for the NotificationDelivery we want to update
+     *     // ... the filter for the Review we want to update
      *   }
      * })
      */
-    upsert<T extends NotificationDeliveryUpsertArgs>(args: SelectSubset<T, NotificationDeliveryUpsertArgs<ExtArgs>>): Prisma__NotificationDeliveryClient<$Result.GetResult<Prisma.$NotificationDeliveryPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+    upsert<T extends ReviewUpsertArgs>(args: SelectSubset<T, ReviewUpsertArgs<ExtArgs>>): Prisma__ReviewClient<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
 
 
     /**
-     * Count the number of NotificationDeliveries.
+     * Count the number of Reviews.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationDeliveryCountArgs} args - Arguments to filter NotificationDeliveries to count.
+     * @param {ReviewCountArgs} args - Arguments to filter Reviews to count.
      * @example
-     * // Count the number of NotificationDeliveries
-     * const count = await prisma.notificationDelivery.count({
+     * // Count the number of Reviews
+     * const count = await prisma.review.count({
      *   where: {
-     *     // ... the filter for the NotificationDeliveries we want to count
+     *     // ... the filter for the Reviews we want to count
      *   }
      * })
     **/
-    count<T extends NotificationDeliveryCountArgs>(
-      args?: Subset<T, NotificationDeliveryCountArgs>,
+    count<T extends ReviewCountArgs>(
+      args?: Subset<T, ReviewCountArgs>,
     ): Prisma.PrismaPromise<
       T extends $Utils.Record<'select', any>
         ? T['select'] extends true
           ? number
-          : GetScalarType<T['select'], NotificationDeliveryCountAggregateOutputType>
+          : GetScalarType<T['select'], ReviewCountAggregateOutputType>
         : number
     >
 
     /**
-     * Allows you to perform aggregations operations on a NotificationDelivery.
+     * Allows you to perform aggregations operations on a Review.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationDeliveryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @param {ReviewAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
      * @example
      * // Ordered by age ascending
      * // Where email contains prisma.io
@@ -21451,13 +14186,13 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends NotificationDeliveryAggregateArgs>(args: Subset<T, NotificationDeliveryAggregateArgs>): Prisma.PrismaPromise<GetNotificationDeliveryAggregateType<T>>
+    aggregate<T extends ReviewAggregateArgs>(args: Subset<T, ReviewAggregateArgs>): Prisma.PrismaPromise<GetReviewAggregateType<T>>
 
     /**
-     * Group by NotificationDelivery.
+     * Group by Review.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationDeliveryGroupByArgs} args - Group by arguments.
+     * @param {ReviewGroupByArgs} args - Group by arguments.
      * @example
      * // Group by city, order by createdAt, get count
      * const result = await prisma.user.groupBy({
@@ -21472,14 +14207,14 @@ export namespace Prisma {
      * 
     **/
     groupBy<
-      T extends NotificationDeliveryGroupByArgs,
+      T extends ReviewGroupByArgs,
       HasSelectOrTake extends Or<
         Extends<'skip', Keys<T>>,
         Extends<'take', Keys<T>>
       >,
       OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: NotificationDeliveryGroupByArgs['orderBy'] }
-        : { orderBy?: NotificationDeliveryGroupByArgs['orderBy'] },
+        ? { orderBy: ReviewGroupByArgs['orderBy'] }
+        : { orderBy?: ReviewGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -21528,22 +14263,22 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, NotificationDeliveryGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNotificationDeliveryGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, ReviewGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetReviewGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
   /**
-   * Fields of the NotificationDelivery model
+   * Fields of the Review model
    */
-  readonly fields: NotificationDeliveryFieldRefs;
+  readonly fields: ReviewFieldRefs;
   }
 
   /**
-   * The delegate class that acts as a "Promise-like" for NotificationDelivery.
+   * The delegate class that acts as a "Promise-like" for Review.
    * Why is this prefixed with `Prisma__`?
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__NotificationDeliveryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+  export interface Prisma__ReviewClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    notification<T extends NotificationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, NotificationDefaultArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    bid<T extends BidDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BidDefaultArgs<ExtArgs>>): Prisma__BidClient<$Result.GetResult<Prisma.$BidPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -21570,3418 +14305,347 @@ export namespace Prisma {
 
 
   /**
-   * Fields of the NotificationDelivery model
+   * Fields of the Review model
    */ 
-  interface NotificationDeliveryFieldRefs {
-    readonly id: FieldRef<"NotificationDelivery", 'String'>
-    readonly notificationId: FieldRef<"NotificationDelivery", 'String'>
-    readonly channelType: FieldRef<"NotificationDelivery", 'NotifChannel'>
-    readonly provider: FieldRef<"NotificationDelivery", 'String'>
-    readonly recipient: FieldRef<"NotificationDelivery", 'String'>
-    readonly status: FieldRef<"NotificationDelivery", 'NotifDeliveryStatus'>
-    readonly attemptCount: FieldRef<"NotificationDelivery", 'Int'>
-    readonly sentAt: FieldRef<"NotificationDelivery", 'DateTime'>
-    readonly deliveredAt: FieldRef<"NotificationDelivery", 'DateTime'>
-    readonly errorMessage: FieldRef<"NotificationDelivery", 'String'>
-    readonly errorCode: FieldRef<"NotificationDelivery", 'String'>
-    readonly metadata: FieldRef<"NotificationDelivery", 'Json'>
-    readonly createdAt: FieldRef<"NotificationDelivery", 'DateTime'>
+  interface ReviewFieldRefs {
+    readonly id: FieldRef<"Review", 'String'>
+    readonly bidId: FieldRef<"Review", 'String'>
+    readonly requestId: FieldRef<"Review", 'String'>
+    readonly reviewerId: FieldRef<"Review", 'String'>
+    readonly revieweeId: FieldRef<"Review", 'String'>
+    readonly type: FieldRef<"Review", 'ReviewType'>
+    readonly rating: FieldRef<"Review", 'Int'>
+    readonly comment: FieldRef<"Review", 'String'>
+    readonly createdAt: FieldRef<"Review", 'DateTime'>
   }
     
 
   // Custom InputTypes
   /**
-   * NotificationDelivery findUnique
+   * Review findUnique
    */
-  export type NotificationDeliveryFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ReviewFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the NotificationDelivery
+     * Select specific fields to fetch from the Review
      */
-    select?: NotificationDeliverySelect<ExtArgs> | null
+    select?: ReviewSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: NotificationDeliveryInclude<ExtArgs> | null
+    include?: ReviewInclude<ExtArgs> | null
     /**
-     * Filter, which NotificationDelivery to fetch.
+     * Filter, which Review to fetch.
      */
-    where: NotificationDeliveryWhereUniqueInput
+    where: ReviewWhereUniqueInput
   }
 
   /**
-   * NotificationDelivery findUniqueOrThrow
+   * Review findUniqueOrThrow
    */
-  export type NotificationDeliveryFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ReviewFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the NotificationDelivery
+     * Select specific fields to fetch from the Review
      */
-    select?: NotificationDeliverySelect<ExtArgs> | null
+    select?: ReviewSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: NotificationDeliveryInclude<ExtArgs> | null
+    include?: ReviewInclude<ExtArgs> | null
     /**
-     * Filter, which NotificationDelivery to fetch.
+     * Filter, which Review to fetch.
      */
-    where: NotificationDeliveryWhereUniqueInput
+    where: ReviewWhereUniqueInput
   }
 
   /**
-   * NotificationDelivery findFirst
+   * Review findFirst
    */
-  export type NotificationDeliveryFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ReviewFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the NotificationDelivery
+     * Select specific fields to fetch from the Review
      */
-    select?: NotificationDeliverySelect<ExtArgs> | null
+    select?: ReviewSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: NotificationDeliveryInclude<ExtArgs> | null
+    include?: ReviewInclude<ExtArgs> | null
     /**
-     * Filter, which NotificationDelivery to fetch.
+     * Filter, which Review to fetch.
      */
-    where?: NotificationDeliveryWhereInput
+    where?: ReviewWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of NotificationDeliveries to fetch.
+     * Determine the order of Reviews to fetch.
      */
-    orderBy?: NotificationDeliveryOrderByWithRelationInput | NotificationDeliveryOrderByWithRelationInput[]
+    orderBy?: ReviewOrderByWithRelationInput | ReviewOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for NotificationDeliveries.
+     * Sets the position for searching for Reviews.
      */
-    cursor?: NotificationDeliveryWhereUniqueInput
+    cursor?: ReviewWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` NotificationDeliveries from the position of the cursor.
+     * Take `±n` Reviews from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` NotificationDeliveries.
+     * Skip the first `n` Reviews.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of NotificationDeliveries.
+     * Filter by unique combinations of Reviews.
      */
-    distinct?: NotificationDeliveryScalarFieldEnum | NotificationDeliveryScalarFieldEnum[]
+    distinct?: ReviewScalarFieldEnum | ReviewScalarFieldEnum[]
   }
 
   /**
-   * NotificationDelivery findFirstOrThrow
+   * Review findFirstOrThrow
    */
-  export type NotificationDeliveryFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ReviewFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the NotificationDelivery
+     * Select specific fields to fetch from the Review
      */
-    select?: NotificationDeliverySelect<ExtArgs> | null
+    select?: ReviewSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: NotificationDeliveryInclude<ExtArgs> | null
+    include?: ReviewInclude<ExtArgs> | null
     /**
-     * Filter, which NotificationDelivery to fetch.
+     * Filter, which Review to fetch.
      */
-    where?: NotificationDeliveryWhereInput
+    where?: ReviewWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of NotificationDeliveries to fetch.
+     * Determine the order of Reviews to fetch.
      */
-    orderBy?: NotificationDeliveryOrderByWithRelationInput | NotificationDeliveryOrderByWithRelationInput[]
+    orderBy?: ReviewOrderByWithRelationInput | ReviewOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for NotificationDeliveries.
+     * Sets the position for searching for Reviews.
      */
-    cursor?: NotificationDeliveryWhereUniqueInput
+    cursor?: ReviewWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` NotificationDeliveries from the position of the cursor.
+     * Take `±n` Reviews from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` NotificationDeliveries.
+     * Skip the first `n` Reviews.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of NotificationDeliveries.
+     * Filter by unique combinations of Reviews.
      */
-    distinct?: NotificationDeliveryScalarFieldEnum | NotificationDeliveryScalarFieldEnum[]
+    distinct?: ReviewScalarFieldEnum | ReviewScalarFieldEnum[]
   }
 
   /**
-   * NotificationDelivery findMany
+   * Review findMany
    */
-  export type NotificationDeliveryFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ReviewFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the NotificationDelivery
+     * Select specific fields to fetch from the Review
      */
-    select?: NotificationDeliverySelect<ExtArgs> | null
+    select?: ReviewSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: NotificationDeliveryInclude<ExtArgs> | null
+    include?: ReviewInclude<ExtArgs> | null
     /**
-     * Filter, which NotificationDeliveries to fetch.
+     * Filter, which Reviews to fetch.
      */
-    where?: NotificationDeliveryWhereInput
+    where?: ReviewWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of NotificationDeliveries to fetch.
+     * Determine the order of Reviews to fetch.
      */
-    orderBy?: NotificationDeliveryOrderByWithRelationInput | NotificationDeliveryOrderByWithRelationInput[]
+    orderBy?: ReviewOrderByWithRelationInput | ReviewOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for listing NotificationDeliveries.
+     * Sets the position for listing Reviews.
      */
-    cursor?: NotificationDeliveryWhereUniqueInput
+    cursor?: ReviewWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` NotificationDeliveries from the position of the cursor.
+     * Take `±n` Reviews from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` NotificationDeliveries.
+     * Skip the first `n` Reviews.
      */
     skip?: number
-    distinct?: NotificationDeliveryScalarFieldEnum | NotificationDeliveryScalarFieldEnum[]
+    distinct?: ReviewScalarFieldEnum | ReviewScalarFieldEnum[]
   }
 
   /**
-   * NotificationDelivery create
+   * Review create
    */
-  export type NotificationDeliveryCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ReviewCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the NotificationDelivery
+     * Select specific fields to fetch from the Review
      */
-    select?: NotificationDeliverySelect<ExtArgs> | null
+    select?: ReviewSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: NotificationDeliveryInclude<ExtArgs> | null
+    include?: ReviewInclude<ExtArgs> | null
     /**
-     * The data needed to create a NotificationDelivery.
+     * The data needed to create a Review.
      */
-    data: XOR<NotificationDeliveryCreateInput, NotificationDeliveryUncheckedCreateInput>
+    data: XOR<ReviewCreateInput, ReviewUncheckedCreateInput>
   }
 
   /**
-   * NotificationDelivery createMany
+   * Review createMany
    */
-  export type NotificationDeliveryCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ReviewCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to create many NotificationDeliveries.
+     * The data used to create many Reviews.
      */
-    data: NotificationDeliveryCreateManyInput | NotificationDeliveryCreateManyInput[]
+    data: ReviewCreateManyInput | ReviewCreateManyInput[]
     skipDuplicates?: boolean
   }
 
   /**
-   * NotificationDelivery createManyAndReturn
+   * Review createManyAndReturn
    */
-  export type NotificationDeliveryCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ReviewCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the NotificationDelivery
+     * Select specific fields to fetch from the Review
      */
-    select?: NotificationDeliverySelectCreateManyAndReturn<ExtArgs> | null
+    select?: ReviewSelectCreateManyAndReturn<ExtArgs> | null
     /**
-     * The data used to create many NotificationDeliveries.
+     * The data used to create many Reviews.
      */
-    data: NotificationDeliveryCreateManyInput | NotificationDeliveryCreateManyInput[]
+    data: ReviewCreateManyInput | ReviewCreateManyInput[]
     skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: NotificationDeliveryIncludeCreateManyAndReturn<ExtArgs> | null
+    include?: ReviewIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
-   * NotificationDelivery update
+   * Review update
    */
-  export type NotificationDeliveryUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ReviewUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the NotificationDelivery
+     * Select specific fields to fetch from the Review
      */
-    select?: NotificationDeliverySelect<ExtArgs> | null
+    select?: ReviewSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: NotificationDeliveryInclude<ExtArgs> | null
+    include?: ReviewInclude<ExtArgs> | null
     /**
-     * The data needed to update a NotificationDelivery.
+     * The data needed to update a Review.
      */
-    data: XOR<NotificationDeliveryUpdateInput, NotificationDeliveryUncheckedUpdateInput>
+    data: XOR<ReviewUpdateInput, ReviewUncheckedUpdateInput>
     /**
-     * Choose, which NotificationDelivery to update.
+     * Choose, which Review to update.
      */
-    where: NotificationDeliveryWhereUniqueInput
+    where: ReviewWhereUniqueInput
   }
 
   /**
-   * NotificationDelivery updateMany
+   * Review updateMany
    */
-  export type NotificationDeliveryUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ReviewUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to update NotificationDeliveries.
+     * The data used to update Reviews.
      */
-    data: XOR<NotificationDeliveryUpdateManyMutationInput, NotificationDeliveryUncheckedUpdateManyInput>
+    data: XOR<ReviewUpdateManyMutationInput, ReviewUncheckedUpdateManyInput>
     /**
-     * Filter which NotificationDeliveries to update
+     * Filter which Reviews to update
      */
-    where?: NotificationDeliveryWhereInput
+    where?: ReviewWhereInput
   }
 
   /**
-   * NotificationDelivery upsert
+   * Review upsert
    */
-  export type NotificationDeliveryUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ReviewUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the NotificationDelivery
+     * Select specific fields to fetch from the Review
      */
-    select?: NotificationDeliverySelect<ExtArgs> | null
+    select?: ReviewSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: NotificationDeliveryInclude<ExtArgs> | null
+    include?: ReviewInclude<ExtArgs> | null
     /**
-     * The filter to search for the NotificationDelivery to update in case it exists.
+     * The filter to search for the Review to update in case it exists.
      */
-    where: NotificationDeliveryWhereUniqueInput
+    where: ReviewWhereUniqueInput
     /**
-     * In case the NotificationDelivery found by the `where` argument doesn't exist, create a new NotificationDelivery with this data.
+     * In case the Review found by the `where` argument doesn't exist, create a new Review with this data.
      */
-    create: XOR<NotificationDeliveryCreateInput, NotificationDeliveryUncheckedCreateInput>
+    create: XOR<ReviewCreateInput, ReviewUncheckedCreateInput>
     /**
-     * In case the NotificationDelivery was found with the provided `where` argument, update it with this data.
+     * In case the Review was found with the provided `where` argument, update it with this data.
      */
-    update: XOR<NotificationDeliveryUpdateInput, NotificationDeliveryUncheckedUpdateInput>
+    update: XOR<ReviewUpdateInput, ReviewUncheckedUpdateInput>
   }
 
   /**
-   * NotificationDelivery delete
+   * Review delete
    */
-  export type NotificationDeliveryDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ReviewDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the NotificationDelivery
+     * Select specific fields to fetch from the Review
      */
-    select?: NotificationDeliverySelect<ExtArgs> | null
+    select?: ReviewSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: NotificationDeliveryInclude<ExtArgs> | null
+    include?: ReviewInclude<ExtArgs> | null
     /**
-     * Filter which NotificationDelivery to delete.
+     * Filter which Review to delete.
      */
-    where: NotificationDeliveryWhereUniqueInput
+    where: ReviewWhereUniqueInput
   }
 
   /**
-   * NotificationDelivery deleteMany
+   * Review deleteMany
    */
-  export type NotificationDeliveryDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ReviewDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which NotificationDeliveries to delete
+     * Filter which Reviews to delete
      */
-    where?: NotificationDeliveryWhereInput
+    where?: ReviewWhereInput
   }
 
   /**
-   * NotificationDelivery without action
+   * Review without action
    */
-  export type NotificationDeliveryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ReviewDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the NotificationDelivery
+     * Select specific fields to fetch from the Review
      */
-    select?: NotificationDeliverySelect<ExtArgs> | null
+    select?: ReviewSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: NotificationDeliveryInclude<ExtArgs> | null
-  }
-
-
-  /**
-   * Model NotificationRead
-   */
-
-  export type AggregateNotificationRead = {
-    _count: NotificationReadCountAggregateOutputType | null
-    _min: NotificationReadMinAggregateOutputType | null
-    _max: NotificationReadMaxAggregateOutputType | null
-  }
-
-  export type NotificationReadMinAggregateOutputType = {
-    id: string | null
-    notificationId: string | null
-    userId: string | null
-    readAt: Date | null
-    deviceFingerprint: string | null
-    ipAddress: string | null
-    userAgent: string | null
-    createdAt: Date | null
-  }
-
-  export type NotificationReadMaxAggregateOutputType = {
-    id: string | null
-    notificationId: string | null
-    userId: string | null
-    readAt: Date | null
-    deviceFingerprint: string | null
-    ipAddress: string | null
-    userAgent: string | null
-    createdAt: Date | null
-  }
-
-  export type NotificationReadCountAggregateOutputType = {
-    id: number
-    notificationId: number
-    userId: number
-    readAt: number
-    deviceFingerprint: number
-    ipAddress: number
-    userAgent: number
-    createdAt: number
-    _all: number
-  }
-
-
-  export type NotificationReadMinAggregateInputType = {
-    id?: true
-    notificationId?: true
-    userId?: true
-    readAt?: true
-    deviceFingerprint?: true
-    ipAddress?: true
-    userAgent?: true
-    createdAt?: true
-  }
-
-  export type NotificationReadMaxAggregateInputType = {
-    id?: true
-    notificationId?: true
-    userId?: true
-    readAt?: true
-    deviceFingerprint?: true
-    ipAddress?: true
-    userAgent?: true
-    createdAt?: true
-  }
-
-  export type NotificationReadCountAggregateInputType = {
-    id?: true
-    notificationId?: true
-    userId?: true
-    readAt?: true
-    deviceFingerprint?: true
-    ipAddress?: true
-    userAgent?: true
-    createdAt?: true
-    _all?: true
-  }
-
-  export type NotificationReadAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which NotificationRead to aggregate.
-     */
-    where?: NotificationReadWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of NotificationReads to fetch.
-     */
-    orderBy?: NotificationReadOrderByWithRelationInput | NotificationReadOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: NotificationReadWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` NotificationReads from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` NotificationReads.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned NotificationReads
-    **/
-    _count?: true | NotificationReadCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: NotificationReadMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: NotificationReadMaxAggregateInputType
-  }
-
-  export type GetNotificationReadAggregateType<T extends NotificationReadAggregateArgs> = {
-        [P in keyof T & keyof AggregateNotificationRead]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateNotificationRead[P]>
-      : GetScalarType<T[P], AggregateNotificationRead[P]>
-  }
-
-
-
-
-  export type NotificationReadGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: NotificationReadWhereInput
-    orderBy?: NotificationReadOrderByWithAggregationInput | NotificationReadOrderByWithAggregationInput[]
-    by: NotificationReadScalarFieldEnum[] | NotificationReadScalarFieldEnum
-    having?: NotificationReadScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: NotificationReadCountAggregateInputType | true
-    _min?: NotificationReadMinAggregateInputType
-    _max?: NotificationReadMaxAggregateInputType
-  }
-
-  export type NotificationReadGroupByOutputType = {
-    id: string
-    notificationId: string
-    userId: string
-    readAt: Date
-    deviceFingerprint: string | null
-    ipAddress: string | null
-    userAgent: string | null
-    createdAt: Date
-    _count: NotificationReadCountAggregateOutputType | null
-    _min: NotificationReadMinAggregateOutputType | null
-    _max: NotificationReadMaxAggregateOutputType | null
-  }
-
-  type GetNotificationReadGroupByPayload<T extends NotificationReadGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<NotificationReadGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof NotificationReadGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], NotificationReadGroupByOutputType[P]>
-            : GetScalarType<T[P], NotificationReadGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type NotificationReadSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    notificationId?: boolean
-    userId?: boolean
-    readAt?: boolean
-    deviceFingerprint?: boolean
-    ipAddress?: boolean
-    userAgent?: boolean
-    createdAt?: boolean
-    notification?: boolean | NotificationDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["notificationRead"]>
-
-  export type NotificationReadSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    notificationId?: boolean
-    userId?: boolean
-    readAt?: boolean
-    deviceFingerprint?: boolean
-    ipAddress?: boolean
-    userAgent?: boolean
-    createdAt?: boolean
-    notification?: boolean | NotificationDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["notificationRead"]>
-
-  export type NotificationReadSelectScalar = {
-    id?: boolean
-    notificationId?: boolean
-    userId?: boolean
-    readAt?: boolean
-    deviceFingerprint?: boolean
-    ipAddress?: boolean
-    userAgent?: boolean
-    createdAt?: boolean
-  }
-
-  export type NotificationReadInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    notification?: boolean | NotificationDefaultArgs<ExtArgs>
-  }
-  export type NotificationReadIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    notification?: boolean | NotificationDefaultArgs<ExtArgs>
-  }
-
-  export type $NotificationReadPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "NotificationRead"
-    objects: {
-      notification: Prisma.$NotificationPayload<ExtArgs>
-    }
-    scalars: $Extensions.GetPayloadResult<{
-      id: string
-      notificationId: string
-      userId: string
-      readAt: Date
-      deviceFingerprint: string | null
-      ipAddress: string | null
-      userAgent: string | null
-      createdAt: Date
-    }, ExtArgs["result"]["notificationRead"]>
-    composites: {}
-  }
-
-  type NotificationReadGetPayload<S extends boolean | null | undefined | NotificationReadDefaultArgs> = $Result.GetResult<Prisma.$NotificationReadPayload, S>
-
-  type NotificationReadCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
-    Omit<NotificationReadFindManyArgs, 'select' | 'include' | 'distinct'> & {
-      select?: NotificationReadCountAggregateInputType | true
-    }
-
-  export interface NotificationReadDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['NotificationRead'], meta: { name: 'NotificationRead' } }
-    /**
-     * Find zero or one NotificationRead that matches the filter.
-     * @param {NotificationReadFindUniqueArgs} args - Arguments to find a NotificationRead
-     * @example
-     * // Get one NotificationRead
-     * const notificationRead = await prisma.notificationRead.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends NotificationReadFindUniqueArgs>(args: SelectSubset<T, NotificationReadFindUniqueArgs<ExtArgs>>): Prisma__NotificationReadClient<$Result.GetResult<Prisma.$NotificationReadPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
-
-    /**
-     * Find one NotificationRead that matches the filter or throw an error with `error.code='P2025'` 
-     * if no matches were found.
-     * @param {NotificationReadFindUniqueOrThrowArgs} args - Arguments to find a NotificationRead
-     * @example
-     * // Get one NotificationRead
-     * const notificationRead = await prisma.notificationRead.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends NotificationReadFindUniqueOrThrowArgs>(args: SelectSubset<T, NotificationReadFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NotificationReadClient<$Result.GetResult<Prisma.$NotificationReadPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
-
-    /**
-     * Find the first NotificationRead that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationReadFindFirstArgs} args - Arguments to find a NotificationRead
-     * @example
-     * // Get one NotificationRead
-     * const notificationRead = await prisma.notificationRead.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends NotificationReadFindFirstArgs>(args?: SelectSubset<T, NotificationReadFindFirstArgs<ExtArgs>>): Prisma__NotificationReadClient<$Result.GetResult<Prisma.$NotificationReadPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
-
-    /**
-     * Find the first NotificationRead that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationReadFindFirstOrThrowArgs} args - Arguments to find a NotificationRead
-     * @example
-     * // Get one NotificationRead
-     * const notificationRead = await prisma.notificationRead.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends NotificationReadFindFirstOrThrowArgs>(args?: SelectSubset<T, NotificationReadFindFirstOrThrowArgs<ExtArgs>>): Prisma__NotificationReadClient<$Result.GetResult<Prisma.$NotificationReadPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
-
-    /**
-     * Find zero or more NotificationReads that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationReadFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all NotificationReads
-     * const notificationReads = await prisma.notificationRead.findMany()
-     * 
-     * // Get first 10 NotificationReads
-     * const notificationReads = await prisma.notificationRead.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const notificationReadWithIdOnly = await prisma.notificationRead.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends NotificationReadFindManyArgs>(args?: SelectSubset<T, NotificationReadFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationReadPayload<ExtArgs>, T, "findMany">>
-
-    /**
-     * Create a NotificationRead.
-     * @param {NotificationReadCreateArgs} args - Arguments to create a NotificationRead.
-     * @example
-     * // Create one NotificationRead
-     * const NotificationRead = await prisma.notificationRead.create({
-     *   data: {
-     *     // ... data to create a NotificationRead
-     *   }
-     * })
-     * 
-     */
-    create<T extends NotificationReadCreateArgs>(args: SelectSubset<T, NotificationReadCreateArgs<ExtArgs>>): Prisma__NotificationReadClient<$Result.GetResult<Prisma.$NotificationReadPayload<ExtArgs>, T, "create">, never, ExtArgs>
-
-    /**
-     * Create many NotificationReads.
-     * @param {NotificationReadCreateManyArgs} args - Arguments to create many NotificationReads.
-     * @example
-     * // Create many NotificationReads
-     * const notificationRead = await prisma.notificationRead.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends NotificationReadCreateManyArgs>(args?: SelectSubset<T, NotificationReadCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create many NotificationReads and returns the data saved in the database.
-     * @param {NotificationReadCreateManyAndReturnArgs} args - Arguments to create many NotificationReads.
-     * @example
-     * // Create many NotificationReads
-     * const notificationRead = await prisma.notificationRead.createManyAndReturn({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Create many NotificationReads and only return the `id`
-     * const notificationReadWithIdOnly = await prisma.notificationRead.createManyAndReturn({ 
-     *   select: { id: true },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    createManyAndReturn<T extends NotificationReadCreateManyAndReturnArgs>(args?: SelectSubset<T, NotificationReadCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationReadPayload<ExtArgs>, T, "createManyAndReturn">>
-
-    /**
-     * Delete a NotificationRead.
-     * @param {NotificationReadDeleteArgs} args - Arguments to delete one NotificationRead.
-     * @example
-     * // Delete one NotificationRead
-     * const NotificationRead = await prisma.notificationRead.delete({
-     *   where: {
-     *     // ... filter to delete one NotificationRead
-     *   }
-     * })
-     * 
-     */
-    delete<T extends NotificationReadDeleteArgs>(args: SelectSubset<T, NotificationReadDeleteArgs<ExtArgs>>): Prisma__NotificationReadClient<$Result.GetResult<Prisma.$NotificationReadPayload<ExtArgs>, T, "delete">, never, ExtArgs>
-
-    /**
-     * Update one NotificationRead.
-     * @param {NotificationReadUpdateArgs} args - Arguments to update one NotificationRead.
-     * @example
-     * // Update one NotificationRead
-     * const notificationRead = await prisma.notificationRead.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends NotificationReadUpdateArgs>(args: SelectSubset<T, NotificationReadUpdateArgs<ExtArgs>>): Prisma__NotificationReadClient<$Result.GetResult<Prisma.$NotificationReadPayload<ExtArgs>, T, "update">, never, ExtArgs>
-
-    /**
-     * Delete zero or more NotificationReads.
-     * @param {NotificationReadDeleteManyArgs} args - Arguments to filter NotificationReads to delete.
-     * @example
-     * // Delete a few NotificationReads
-     * const { count } = await prisma.notificationRead.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends NotificationReadDeleteManyArgs>(args?: SelectSubset<T, NotificationReadDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more NotificationReads.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationReadUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many NotificationReads
-     * const notificationRead = await prisma.notificationRead.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends NotificationReadUpdateManyArgs>(args: SelectSubset<T, NotificationReadUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one NotificationRead.
-     * @param {NotificationReadUpsertArgs} args - Arguments to update or create a NotificationRead.
-     * @example
-     * // Update or create a NotificationRead
-     * const notificationRead = await prisma.notificationRead.upsert({
-     *   create: {
-     *     // ... data to create a NotificationRead
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the NotificationRead we want to update
-     *   }
-     * })
-     */
-    upsert<T extends NotificationReadUpsertArgs>(args: SelectSubset<T, NotificationReadUpsertArgs<ExtArgs>>): Prisma__NotificationReadClient<$Result.GetResult<Prisma.$NotificationReadPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
-
-
-    /**
-     * Count the number of NotificationReads.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationReadCountArgs} args - Arguments to filter NotificationReads to count.
-     * @example
-     * // Count the number of NotificationReads
-     * const count = await prisma.notificationRead.count({
-     *   where: {
-     *     // ... the filter for the NotificationReads we want to count
-     *   }
-     * })
-    **/
-    count<T extends NotificationReadCountArgs>(
-      args?: Subset<T, NotificationReadCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], NotificationReadCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a NotificationRead.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationReadAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends NotificationReadAggregateArgs>(args: Subset<T, NotificationReadAggregateArgs>): Prisma.PrismaPromise<GetNotificationReadAggregateType<T>>
-
-    /**
-     * Group by NotificationRead.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationReadGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends NotificationReadGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: NotificationReadGroupByArgs['orderBy'] }
-        : { orderBy?: NotificationReadGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, NotificationReadGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNotificationReadGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the NotificationRead model
-   */
-  readonly fields: NotificationReadFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for NotificationRead.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__NotificationReadClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    notification<T extends NotificationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, NotificationDefaultArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the NotificationRead model
-   */ 
-  interface NotificationReadFieldRefs {
-    readonly id: FieldRef<"NotificationRead", 'String'>
-    readonly notificationId: FieldRef<"NotificationRead", 'String'>
-    readonly userId: FieldRef<"NotificationRead", 'String'>
-    readonly readAt: FieldRef<"NotificationRead", 'DateTime'>
-    readonly deviceFingerprint: FieldRef<"NotificationRead", 'String'>
-    readonly ipAddress: FieldRef<"NotificationRead", 'String'>
-    readonly userAgent: FieldRef<"NotificationRead", 'String'>
-    readonly createdAt: FieldRef<"NotificationRead", 'DateTime'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * NotificationRead findUnique
-   */
-  export type NotificationReadFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationRead
-     */
-    select?: NotificationReadSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationReadInclude<ExtArgs> | null
-    /**
-     * Filter, which NotificationRead to fetch.
-     */
-    where: NotificationReadWhereUniqueInput
-  }
-
-  /**
-   * NotificationRead findUniqueOrThrow
-   */
-  export type NotificationReadFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationRead
-     */
-    select?: NotificationReadSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationReadInclude<ExtArgs> | null
-    /**
-     * Filter, which NotificationRead to fetch.
-     */
-    where: NotificationReadWhereUniqueInput
-  }
-
-  /**
-   * NotificationRead findFirst
-   */
-  export type NotificationReadFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationRead
-     */
-    select?: NotificationReadSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationReadInclude<ExtArgs> | null
-    /**
-     * Filter, which NotificationRead to fetch.
-     */
-    where?: NotificationReadWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of NotificationReads to fetch.
-     */
-    orderBy?: NotificationReadOrderByWithRelationInput | NotificationReadOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for NotificationReads.
-     */
-    cursor?: NotificationReadWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` NotificationReads from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` NotificationReads.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of NotificationReads.
-     */
-    distinct?: NotificationReadScalarFieldEnum | NotificationReadScalarFieldEnum[]
-  }
-
-  /**
-   * NotificationRead findFirstOrThrow
-   */
-  export type NotificationReadFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationRead
-     */
-    select?: NotificationReadSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationReadInclude<ExtArgs> | null
-    /**
-     * Filter, which NotificationRead to fetch.
-     */
-    where?: NotificationReadWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of NotificationReads to fetch.
-     */
-    orderBy?: NotificationReadOrderByWithRelationInput | NotificationReadOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for NotificationReads.
-     */
-    cursor?: NotificationReadWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` NotificationReads from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` NotificationReads.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of NotificationReads.
-     */
-    distinct?: NotificationReadScalarFieldEnum | NotificationReadScalarFieldEnum[]
-  }
-
-  /**
-   * NotificationRead findMany
-   */
-  export type NotificationReadFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationRead
-     */
-    select?: NotificationReadSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationReadInclude<ExtArgs> | null
-    /**
-     * Filter, which NotificationReads to fetch.
-     */
-    where?: NotificationReadWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of NotificationReads to fetch.
-     */
-    orderBy?: NotificationReadOrderByWithRelationInput | NotificationReadOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing NotificationReads.
-     */
-    cursor?: NotificationReadWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` NotificationReads from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` NotificationReads.
-     */
-    skip?: number
-    distinct?: NotificationReadScalarFieldEnum | NotificationReadScalarFieldEnum[]
-  }
-
-  /**
-   * NotificationRead create
-   */
-  export type NotificationReadCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationRead
-     */
-    select?: NotificationReadSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationReadInclude<ExtArgs> | null
-    /**
-     * The data needed to create a NotificationRead.
-     */
-    data: XOR<NotificationReadCreateInput, NotificationReadUncheckedCreateInput>
-  }
-
-  /**
-   * NotificationRead createMany
-   */
-  export type NotificationReadCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many NotificationReads.
-     */
-    data: NotificationReadCreateManyInput | NotificationReadCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * NotificationRead createManyAndReturn
-   */
-  export type NotificationReadCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationRead
-     */
-    select?: NotificationReadSelectCreateManyAndReturn<ExtArgs> | null
-    /**
-     * The data used to create many NotificationReads.
-     */
-    data: NotificationReadCreateManyInput | NotificationReadCreateManyInput[]
-    skipDuplicates?: boolean
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationReadIncludeCreateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * NotificationRead update
-   */
-  export type NotificationReadUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationRead
-     */
-    select?: NotificationReadSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationReadInclude<ExtArgs> | null
-    /**
-     * The data needed to update a NotificationRead.
-     */
-    data: XOR<NotificationReadUpdateInput, NotificationReadUncheckedUpdateInput>
-    /**
-     * Choose, which NotificationRead to update.
-     */
-    where: NotificationReadWhereUniqueInput
-  }
-
-  /**
-   * NotificationRead updateMany
-   */
-  export type NotificationReadUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update NotificationReads.
-     */
-    data: XOR<NotificationReadUpdateManyMutationInput, NotificationReadUncheckedUpdateManyInput>
-    /**
-     * Filter which NotificationReads to update
-     */
-    where?: NotificationReadWhereInput
-  }
-
-  /**
-   * NotificationRead upsert
-   */
-  export type NotificationReadUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationRead
-     */
-    select?: NotificationReadSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationReadInclude<ExtArgs> | null
-    /**
-     * The filter to search for the NotificationRead to update in case it exists.
-     */
-    where: NotificationReadWhereUniqueInput
-    /**
-     * In case the NotificationRead found by the `where` argument doesn't exist, create a new NotificationRead with this data.
-     */
-    create: XOR<NotificationReadCreateInput, NotificationReadUncheckedCreateInput>
-    /**
-     * In case the NotificationRead was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<NotificationReadUpdateInput, NotificationReadUncheckedUpdateInput>
-  }
-
-  /**
-   * NotificationRead delete
-   */
-  export type NotificationReadDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationRead
-     */
-    select?: NotificationReadSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationReadInclude<ExtArgs> | null
-    /**
-     * Filter which NotificationRead to delete.
-     */
-    where: NotificationReadWhereUniqueInput
-  }
-
-  /**
-   * NotificationRead deleteMany
-   */
-  export type NotificationReadDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which NotificationReads to delete
-     */
-    where?: NotificationReadWhereInput
-  }
-
-  /**
-   * NotificationRead without action
-   */
-  export type NotificationReadDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationRead
-     */
-    select?: NotificationReadSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationReadInclude<ExtArgs> | null
-  }
-
-
-  /**
-   * Model NotificationStat
-   */
-
-  export type AggregateNotificationStat = {
-    _count: NotificationStatCountAggregateOutputType | null
-    _avg: NotificationStatAvgAggregateOutputType | null
-    _sum: NotificationStatSumAggregateOutputType | null
-    _min: NotificationStatMinAggregateOutputType | null
-    _max: NotificationStatMaxAggregateOutputType | null
-  }
-
-  export type NotificationStatAvgAggregateOutputType = {
-    deliveryTimeMs: number | null
-  }
-
-  export type NotificationStatSumAggregateOutputType = {
-    deliveryTimeMs: number | null
-  }
-
-  export type NotificationStatMinAggregateOutputType = {
-    id: string | null
-    notificationId: string | null
-    userId: string | null
-    eventType: $Enums.NotifAnalyticsEvent | null
-    channelType: $Enums.NotifChannel | null
-    provider: string | null
-    deliveryTimeMs: number | null
-    success: boolean | null
-    errorCode: string | null
-    createdAt: Date | null
-  }
-
-  export type NotificationStatMaxAggregateOutputType = {
-    id: string | null
-    notificationId: string | null
-    userId: string | null
-    eventType: $Enums.NotifAnalyticsEvent | null
-    channelType: $Enums.NotifChannel | null
-    provider: string | null
-    deliveryTimeMs: number | null
-    success: boolean | null
-    errorCode: string | null
-    createdAt: Date | null
-  }
-
-  export type NotificationStatCountAggregateOutputType = {
-    id: number
-    notificationId: number
-    userId: number
-    eventType: number
-    channelType: number
-    provider: number
-    deliveryTimeMs: number
-    success: number
-    errorCode: number
-    metadata: number
-    createdAt: number
-    _all: number
-  }
-
-
-  export type NotificationStatAvgAggregateInputType = {
-    deliveryTimeMs?: true
-  }
-
-  export type NotificationStatSumAggregateInputType = {
-    deliveryTimeMs?: true
-  }
-
-  export type NotificationStatMinAggregateInputType = {
-    id?: true
-    notificationId?: true
-    userId?: true
-    eventType?: true
-    channelType?: true
-    provider?: true
-    deliveryTimeMs?: true
-    success?: true
-    errorCode?: true
-    createdAt?: true
-  }
-
-  export type NotificationStatMaxAggregateInputType = {
-    id?: true
-    notificationId?: true
-    userId?: true
-    eventType?: true
-    channelType?: true
-    provider?: true
-    deliveryTimeMs?: true
-    success?: true
-    errorCode?: true
-    createdAt?: true
-  }
-
-  export type NotificationStatCountAggregateInputType = {
-    id?: true
-    notificationId?: true
-    userId?: true
-    eventType?: true
-    channelType?: true
-    provider?: true
-    deliveryTimeMs?: true
-    success?: true
-    errorCode?: true
-    metadata?: true
-    createdAt?: true
-    _all?: true
-  }
-
-  export type NotificationStatAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which NotificationStat to aggregate.
-     */
-    where?: NotificationStatWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of NotificationStats to fetch.
-     */
-    orderBy?: NotificationStatOrderByWithRelationInput | NotificationStatOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: NotificationStatWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` NotificationStats from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` NotificationStats.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned NotificationStats
-    **/
-    _count?: true | NotificationStatCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: NotificationStatAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: NotificationStatSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: NotificationStatMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: NotificationStatMaxAggregateInputType
-  }
-
-  export type GetNotificationStatAggregateType<T extends NotificationStatAggregateArgs> = {
-        [P in keyof T & keyof AggregateNotificationStat]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateNotificationStat[P]>
-      : GetScalarType<T[P], AggregateNotificationStat[P]>
-  }
-
-
-
-
-  export type NotificationStatGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: NotificationStatWhereInput
-    orderBy?: NotificationStatOrderByWithAggregationInput | NotificationStatOrderByWithAggregationInput[]
-    by: NotificationStatScalarFieldEnum[] | NotificationStatScalarFieldEnum
-    having?: NotificationStatScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: NotificationStatCountAggregateInputType | true
-    _avg?: NotificationStatAvgAggregateInputType
-    _sum?: NotificationStatSumAggregateInputType
-    _min?: NotificationStatMinAggregateInputType
-    _max?: NotificationStatMaxAggregateInputType
-  }
-
-  export type NotificationStatGroupByOutputType = {
-    id: string
-    notificationId: string | null
-    userId: string | null
-    eventType: $Enums.NotifAnalyticsEvent
-    channelType: $Enums.NotifChannel
-    provider: string | null
-    deliveryTimeMs: number | null
-    success: boolean
-    errorCode: string | null
-    metadata: JsonValue
-    createdAt: Date
-    _count: NotificationStatCountAggregateOutputType | null
-    _avg: NotificationStatAvgAggregateOutputType | null
-    _sum: NotificationStatSumAggregateOutputType | null
-    _min: NotificationStatMinAggregateOutputType | null
-    _max: NotificationStatMaxAggregateOutputType | null
-  }
-
-  type GetNotificationStatGroupByPayload<T extends NotificationStatGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<NotificationStatGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof NotificationStatGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], NotificationStatGroupByOutputType[P]>
-            : GetScalarType<T[P], NotificationStatGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type NotificationStatSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    notificationId?: boolean
-    userId?: boolean
-    eventType?: boolean
-    channelType?: boolean
-    provider?: boolean
-    deliveryTimeMs?: boolean
-    success?: boolean
-    errorCode?: boolean
-    metadata?: boolean
-    createdAt?: boolean
-    notification?: boolean | NotificationStat$notificationArgs<ExtArgs>
-  }, ExtArgs["result"]["notificationStat"]>
-
-  export type NotificationStatSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    notificationId?: boolean
-    userId?: boolean
-    eventType?: boolean
-    channelType?: boolean
-    provider?: boolean
-    deliveryTimeMs?: boolean
-    success?: boolean
-    errorCode?: boolean
-    metadata?: boolean
-    createdAt?: boolean
-    notification?: boolean | NotificationStat$notificationArgs<ExtArgs>
-  }, ExtArgs["result"]["notificationStat"]>
-
-  export type NotificationStatSelectScalar = {
-    id?: boolean
-    notificationId?: boolean
-    userId?: boolean
-    eventType?: boolean
-    channelType?: boolean
-    provider?: boolean
-    deliveryTimeMs?: boolean
-    success?: boolean
-    errorCode?: boolean
-    metadata?: boolean
-    createdAt?: boolean
-  }
-
-  export type NotificationStatInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    notification?: boolean | NotificationStat$notificationArgs<ExtArgs>
-  }
-  export type NotificationStatIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    notification?: boolean | NotificationStat$notificationArgs<ExtArgs>
-  }
-
-  export type $NotificationStatPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "NotificationStat"
-    objects: {
-      notification: Prisma.$NotificationPayload<ExtArgs> | null
-    }
-    scalars: $Extensions.GetPayloadResult<{
-      id: string
-      notificationId: string | null
-      userId: string | null
-      eventType: $Enums.NotifAnalyticsEvent
-      channelType: $Enums.NotifChannel
-      provider: string | null
-      deliveryTimeMs: number | null
-      success: boolean
-      errorCode: string | null
-      metadata: Prisma.JsonValue
-      createdAt: Date
-    }, ExtArgs["result"]["notificationStat"]>
-    composites: {}
-  }
-
-  type NotificationStatGetPayload<S extends boolean | null | undefined | NotificationStatDefaultArgs> = $Result.GetResult<Prisma.$NotificationStatPayload, S>
-
-  type NotificationStatCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
-    Omit<NotificationStatFindManyArgs, 'select' | 'include' | 'distinct'> & {
-      select?: NotificationStatCountAggregateInputType | true
-    }
-
-  export interface NotificationStatDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['NotificationStat'], meta: { name: 'NotificationStat' } }
-    /**
-     * Find zero or one NotificationStat that matches the filter.
-     * @param {NotificationStatFindUniqueArgs} args - Arguments to find a NotificationStat
-     * @example
-     * // Get one NotificationStat
-     * const notificationStat = await prisma.notificationStat.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends NotificationStatFindUniqueArgs>(args: SelectSubset<T, NotificationStatFindUniqueArgs<ExtArgs>>): Prisma__NotificationStatClient<$Result.GetResult<Prisma.$NotificationStatPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
-
-    /**
-     * Find one NotificationStat that matches the filter or throw an error with `error.code='P2025'` 
-     * if no matches were found.
-     * @param {NotificationStatFindUniqueOrThrowArgs} args - Arguments to find a NotificationStat
-     * @example
-     * // Get one NotificationStat
-     * const notificationStat = await prisma.notificationStat.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends NotificationStatFindUniqueOrThrowArgs>(args: SelectSubset<T, NotificationStatFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NotificationStatClient<$Result.GetResult<Prisma.$NotificationStatPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
-
-    /**
-     * Find the first NotificationStat that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationStatFindFirstArgs} args - Arguments to find a NotificationStat
-     * @example
-     * // Get one NotificationStat
-     * const notificationStat = await prisma.notificationStat.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends NotificationStatFindFirstArgs>(args?: SelectSubset<T, NotificationStatFindFirstArgs<ExtArgs>>): Prisma__NotificationStatClient<$Result.GetResult<Prisma.$NotificationStatPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
-
-    /**
-     * Find the first NotificationStat that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationStatFindFirstOrThrowArgs} args - Arguments to find a NotificationStat
-     * @example
-     * // Get one NotificationStat
-     * const notificationStat = await prisma.notificationStat.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends NotificationStatFindFirstOrThrowArgs>(args?: SelectSubset<T, NotificationStatFindFirstOrThrowArgs<ExtArgs>>): Prisma__NotificationStatClient<$Result.GetResult<Prisma.$NotificationStatPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
-
-    /**
-     * Find zero or more NotificationStats that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationStatFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all NotificationStats
-     * const notificationStats = await prisma.notificationStat.findMany()
-     * 
-     * // Get first 10 NotificationStats
-     * const notificationStats = await prisma.notificationStat.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const notificationStatWithIdOnly = await prisma.notificationStat.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends NotificationStatFindManyArgs>(args?: SelectSubset<T, NotificationStatFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationStatPayload<ExtArgs>, T, "findMany">>
-
-    /**
-     * Create a NotificationStat.
-     * @param {NotificationStatCreateArgs} args - Arguments to create a NotificationStat.
-     * @example
-     * // Create one NotificationStat
-     * const NotificationStat = await prisma.notificationStat.create({
-     *   data: {
-     *     // ... data to create a NotificationStat
-     *   }
-     * })
-     * 
-     */
-    create<T extends NotificationStatCreateArgs>(args: SelectSubset<T, NotificationStatCreateArgs<ExtArgs>>): Prisma__NotificationStatClient<$Result.GetResult<Prisma.$NotificationStatPayload<ExtArgs>, T, "create">, never, ExtArgs>
-
-    /**
-     * Create many NotificationStats.
-     * @param {NotificationStatCreateManyArgs} args - Arguments to create many NotificationStats.
-     * @example
-     * // Create many NotificationStats
-     * const notificationStat = await prisma.notificationStat.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends NotificationStatCreateManyArgs>(args?: SelectSubset<T, NotificationStatCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create many NotificationStats and returns the data saved in the database.
-     * @param {NotificationStatCreateManyAndReturnArgs} args - Arguments to create many NotificationStats.
-     * @example
-     * // Create many NotificationStats
-     * const notificationStat = await prisma.notificationStat.createManyAndReturn({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Create many NotificationStats and only return the `id`
-     * const notificationStatWithIdOnly = await prisma.notificationStat.createManyAndReturn({ 
-     *   select: { id: true },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    createManyAndReturn<T extends NotificationStatCreateManyAndReturnArgs>(args?: SelectSubset<T, NotificationStatCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationStatPayload<ExtArgs>, T, "createManyAndReturn">>
-
-    /**
-     * Delete a NotificationStat.
-     * @param {NotificationStatDeleteArgs} args - Arguments to delete one NotificationStat.
-     * @example
-     * // Delete one NotificationStat
-     * const NotificationStat = await prisma.notificationStat.delete({
-     *   where: {
-     *     // ... filter to delete one NotificationStat
-     *   }
-     * })
-     * 
-     */
-    delete<T extends NotificationStatDeleteArgs>(args: SelectSubset<T, NotificationStatDeleteArgs<ExtArgs>>): Prisma__NotificationStatClient<$Result.GetResult<Prisma.$NotificationStatPayload<ExtArgs>, T, "delete">, never, ExtArgs>
-
-    /**
-     * Update one NotificationStat.
-     * @param {NotificationStatUpdateArgs} args - Arguments to update one NotificationStat.
-     * @example
-     * // Update one NotificationStat
-     * const notificationStat = await prisma.notificationStat.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends NotificationStatUpdateArgs>(args: SelectSubset<T, NotificationStatUpdateArgs<ExtArgs>>): Prisma__NotificationStatClient<$Result.GetResult<Prisma.$NotificationStatPayload<ExtArgs>, T, "update">, never, ExtArgs>
-
-    /**
-     * Delete zero or more NotificationStats.
-     * @param {NotificationStatDeleteManyArgs} args - Arguments to filter NotificationStats to delete.
-     * @example
-     * // Delete a few NotificationStats
-     * const { count } = await prisma.notificationStat.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends NotificationStatDeleteManyArgs>(args?: SelectSubset<T, NotificationStatDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more NotificationStats.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationStatUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many NotificationStats
-     * const notificationStat = await prisma.notificationStat.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends NotificationStatUpdateManyArgs>(args: SelectSubset<T, NotificationStatUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one NotificationStat.
-     * @param {NotificationStatUpsertArgs} args - Arguments to update or create a NotificationStat.
-     * @example
-     * // Update or create a NotificationStat
-     * const notificationStat = await prisma.notificationStat.upsert({
-     *   create: {
-     *     // ... data to create a NotificationStat
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the NotificationStat we want to update
-     *   }
-     * })
-     */
-    upsert<T extends NotificationStatUpsertArgs>(args: SelectSubset<T, NotificationStatUpsertArgs<ExtArgs>>): Prisma__NotificationStatClient<$Result.GetResult<Prisma.$NotificationStatPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
-
-
-    /**
-     * Count the number of NotificationStats.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationStatCountArgs} args - Arguments to filter NotificationStats to count.
-     * @example
-     * // Count the number of NotificationStats
-     * const count = await prisma.notificationStat.count({
-     *   where: {
-     *     // ... the filter for the NotificationStats we want to count
-     *   }
-     * })
-    **/
-    count<T extends NotificationStatCountArgs>(
-      args?: Subset<T, NotificationStatCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], NotificationStatCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a NotificationStat.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationStatAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends NotificationStatAggregateArgs>(args: Subset<T, NotificationStatAggregateArgs>): Prisma.PrismaPromise<GetNotificationStatAggregateType<T>>
-
-    /**
-     * Group by NotificationStat.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {NotificationStatGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends NotificationStatGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: NotificationStatGroupByArgs['orderBy'] }
-        : { orderBy?: NotificationStatGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, NotificationStatGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNotificationStatGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the NotificationStat model
-   */
-  readonly fields: NotificationStatFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for NotificationStat.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__NotificationStatClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    notification<T extends NotificationStat$notificationArgs<ExtArgs> = {}>(args?: Subset<T, NotificationStat$notificationArgs<ExtArgs>>): Prisma__NotificationClient<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the NotificationStat model
-   */ 
-  interface NotificationStatFieldRefs {
-    readonly id: FieldRef<"NotificationStat", 'String'>
-    readonly notificationId: FieldRef<"NotificationStat", 'String'>
-    readonly userId: FieldRef<"NotificationStat", 'String'>
-    readonly eventType: FieldRef<"NotificationStat", 'NotifAnalyticsEvent'>
-    readonly channelType: FieldRef<"NotificationStat", 'NotifChannel'>
-    readonly provider: FieldRef<"NotificationStat", 'String'>
-    readonly deliveryTimeMs: FieldRef<"NotificationStat", 'Int'>
-    readonly success: FieldRef<"NotificationStat", 'Boolean'>
-    readonly errorCode: FieldRef<"NotificationStat", 'String'>
-    readonly metadata: FieldRef<"NotificationStat", 'Json'>
-    readonly createdAt: FieldRef<"NotificationStat", 'DateTime'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * NotificationStat findUnique
-   */
-  export type NotificationStatFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationStat
-     */
-    select?: NotificationStatSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationStatInclude<ExtArgs> | null
-    /**
-     * Filter, which NotificationStat to fetch.
-     */
-    where: NotificationStatWhereUniqueInput
-  }
-
-  /**
-   * NotificationStat findUniqueOrThrow
-   */
-  export type NotificationStatFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationStat
-     */
-    select?: NotificationStatSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationStatInclude<ExtArgs> | null
-    /**
-     * Filter, which NotificationStat to fetch.
-     */
-    where: NotificationStatWhereUniqueInput
-  }
-
-  /**
-   * NotificationStat findFirst
-   */
-  export type NotificationStatFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationStat
-     */
-    select?: NotificationStatSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationStatInclude<ExtArgs> | null
-    /**
-     * Filter, which NotificationStat to fetch.
-     */
-    where?: NotificationStatWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of NotificationStats to fetch.
-     */
-    orderBy?: NotificationStatOrderByWithRelationInput | NotificationStatOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for NotificationStats.
-     */
-    cursor?: NotificationStatWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` NotificationStats from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` NotificationStats.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of NotificationStats.
-     */
-    distinct?: NotificationStatScalarFieldEnum | NotificationStatScalarFieldEnum[]
-  }
-
-  /**
-   * NotificationStat findFirstOrThrow
-   */
-  export type NotificationStatFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationStat
-     */
-    select?: NotificationStatSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationStatInclude<ExtArgs> | null
-    /**
-     * Filter, which NotificationStat to fetch.
-     */
-    where?: NotificationStatWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of NotificationStats to fetch.
-     */
-    orderBy?: NotificationStatOrderByWithRelationInput | NotificationStatOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for NotificationStats.
-     */
-    cursor?: NotificationStatWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` NotificationStats from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` NotificationStats.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of NotificationStats.
-     */
-    distinct?: NotificationStatScalarFieldEnum | NotificationStatScalarFieldEnum[]
-  }
-
-  /**
-   * NotificationStat findMany
-   */
-  export type NotificationStatFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationStat
-     */
-    select?: NotificationStatSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationStatInclude<ExtArgs> | null
-    /**
-     * Filter, which NotificationStats to fetch.
-     */
-    where?: NotificationStatWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of NotificationStats to fetch.
-     */
-    orderBy?: NotificationStatOrderByWithRelationInput | NotificationStatOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing NotificationStats.
-     */
-    cursor?: NotificationStatWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` NotificationStats from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` NotificationStats.
-     */
-    skip?: number
-    distinct?: NotificationStatScalarFieldEnum | NotificationStatScalarFieldEnum[]
-  }
-
-  /**
-   * NotificationStat create
-   */
-  export type NotificationStatCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationStat
-     */
-    select?: NotificationStatSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationStatInclude<ExtArgs> | null
-    /**
-     * The data needed to create a NotificationStat.
-     */
-    data: XOR<NotificationStatCreateInput, NotificationStatUncheckedCreateInput>
-  }
-
-  /**
-   * NotificationStat createMany
-   */
-  export type NotificationStatCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many NotificationStats.
-     */
-    data: NotificationStatCreateManyInput | NotificationStatCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * NotificationStat createManyAndReturn
-   */
-  export type NotificationStatCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationStat
-     */
-    select?: NotificationStatSelectCreateManyAndReturn<ExtArgs> | null
-    /**
-     * The data used to create many NotificationStats.
-     */
-    data: NotificationStatCreateManyInput | NotificationStatCreateManyInput[]
-    skipDuplicates?: boolean
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationStatIncludeCreateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * NotificationStat update
-   */
-  export type NotificationStatUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationStat
-     */
-    select?: NotificationStatSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationStatInclude<ExtArgs> | null
-    /**
-     * The data needed to update a NotificationStat.
-     */
-    data: XOR<NotificationStatUpdateInput, NotificationStatUncheckedUpdateInput>
-    /**
-     * Choose, which NotificationStat to update.
-     */
-    where: NotificationStatWhereUniqueInput
-  }
-
-  /**
-   * NotificationStat updateMany
-   */
-  export type NotificationStatUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update NotificationStats.
-     */
-    data: XOR<NotificationStatUpdateManyMutationInput, NotificationStatUncheckedUpdateManyInput>
-    /**
-     * Filter which NotificationStats to update
-     */
-    where?: NotificationStatWhereInput
-  }
-
-  /**
-   * NotificationStat upsert
-   */
-  export type NotificationStatUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationStat
-     */
-    select?: NotificationStatSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationStatInclude<ExtArgs> | null
-    /**
-     * The filter to search for the NotificationStat to update in case it exists.
-     */
-    where: NotificationStatWhereUniqueInput
-    /**
-     * In case the NotificationStat found by the `where` argument doesn't exist, create a new NotificationStat with this data.
-     */
-    create: XOR<NotificationStatCreateInput, NotificationStatUncheckedCreateInput>
-    /**
-     * In case the NotificationStat was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<NotificationStatUpdateInput, NotificationStatUncheckedUpdateInput>
-  }
-
-  /**
-   * NotificationStat delete
-   */
-  export type NotificationStatDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationStat
-     */
-    select?: NotificationStatSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationStatInclude<ExtArgs> | null
-    /**
-     * Filter which NotificationStat to delete.
-     */
-    where: NotificationStatWhereUniqueInput
-  }
-
-  /**
-   * NotificationStat deleteMany
-   */
-  export type NotificationStatDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which NotificationStats to delete
-     */
-    where?: NotificationStatWhereInput
-  }
-
-  /**
-   * NotificationStat.notification
-   */
-  export type NotificationStat$notificationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Notification
-     */
-    select?: NotificationSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
-    where?: NotificationWhereInput
-  }
-
-  /**
-   * NotificationStat without action
-   */
-  export type NotificationStatDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the NotificationStat
-     */
-    select?: NotificationStatSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationStatInclude<ExtArgs> | null
-  }
-
-
-  /**
-   * Model BidTemplate
-   */
-
-  export type AggregateBidTemplate = {
-    _count: BidTemplateCountAggregateOutputType | null
-    _avg: BidTemplateAvgAggregateOutputType | null
-    _sum: BidTemplateSumAggregateOutputType | null
-    _min: BidTemplateMinAggregateOutputType | null
-    _max: BidTemplateMaxAggregateOutputType | null
-  }
-
-  export type BidTemplateAvgAggregateOutputType = {
-    amountPercentage: Decimal | null
-    fixedAmount: Decimal | null
-    deliveryDays: number | null
-    usageCount: number | null
-    successCount: number | null
-  }
-
-  export type BidTemplateSumAggregateOutputType = {
-    amountPercentage: Decimal | null
-    fixedAmount: Decimal | null
-    deliveryDays: number | null
-    usageCount: number | null
-    successCount: number | null
-  }
-
-  export type BidTemplateMinAggregateOutputType = {
-    id: string | null
-    merchantId: string | null
-    name: string | null
-    description: string | null
-    amountType: $Enums.AmountType | null
-    amountPercentage: Decimal | null
-    fixedAmount: Decimal | null
-    deliveryDays: number | null
-    deliveryNotes: string | null
-    specialTerms: string | null
-    isActive: boolean | null
-    usageCount: number | null
-    successCount: number | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type BidTemplateMaxAggregateOutputType = {
-    id: string | null
-    merchantId: string | null
-    name: string | null
-    description: string | null
-    amountType: $Enums.AmountType | null
-    amountPercentage: Decimal | null
-    fixedAmount: Decimal | null
-    deliveryDays: number | null
-    deliveryNotes: string | null
-    specialTerms: string | null
-    isActive: boolean | null
-    usageCount: number | null
-    successCount: number | null
-    createdAt: Date | null
-    updatedAt: Date | null
-  }
-
-  export type BidTemplateCountAggregateOutputType = {
-    id: number
-    merchantId: number
-    name: number
-    description: number
-    amountType: number
-    amountPercentage: number
-    fixedAmount: number
-    deliveryDays: number
-    deliveryNotes: number
-    specialTerms: number
-    isActive: number
-    usageCount: number
-    successCount: number
-    createdAt: number
-    updatedAt: number
-    _all: number
-  }
-
-
-  export type BidTemplateAvgAggregateInputType = {
-    amountPercentage?: true
-    fixedAmount?: true
-    deliveryDays?: true
-    usageCount?: true
-    successCount?: true
-  }
-
-  export type BidTemplateSumAggregateInputType = {
-    amountPercentage?: true
-    fixedAmount?: true
-    deliveryDays?: true
-    usageCount?: true
-    successCount?: true
-  }
-
-  export type BidTemplateMinAggregateInputType = {
-    id?: true
-    merchantId?: true
-    name?: true
-    description?: true
-    amountType?: true
-    amountPercentage?: true
-    fixedAmount?: true
-    deliveryDays?: true
-    deliveryNotes?: true
-    specialTerms?: true
-    isActive?: true
-    usageCount?: true
-    successCount?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type BidTemplateMaxAggregateInputType = {
-    id?: true
-    merchantId?: true
-    name?: true
-    description?: true
-    amountType?: true
-    amountPercentage?: true
-    fixedAmount?: true
-    deliveryDays?: true
-    deliveryNotes?: true
-    specialTerms?: true
-    isActive?: true
-    usageCount?: true
-    successCount?: true
-    createdAt?: true
-    updatedAt?: true
-  }
-
-  export type BidTemplateCountAggregateInputType = {
-    id?: true
-    merchantId?: true
-    name?: true
-    description?: true
-    amountType?: true
-    amountPercentage?: true
-    fixedAmount?: true
-    deliveryDays?: true
-    deliveryNotes?: true
-    specialTerms?: true
-    isActive?: true
-    usageCount?: true
-    successCount?: true
-    createdAt?: true
-    updatedAt?: true
-    _all?: true
-  }
-
-  export type BidTemplateAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which BidTemplate to aggregate.
-     */
-    where?: BidTemplateWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of BidTemplates to fetch.
-     */
-    orderBy?: BidTemplateOrderByWithRelationInput | BidTemplateOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: BidTemplateWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` BidTemplates from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` BidTemplates.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned BidTemplates
-    **/
-    _count?: true | BidTemplateCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: BidTemplateAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: BidTemplateSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: BidTemplateMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: BidTemplateMaxAggregateInputType
-  }
-
-  export type GetBidTemplateAggregateType<T extends BidTemplateAggregateArgs> = {
-        [P in keyof T & keyof AggregateBidTemplate]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateBidTemplate[P]>
-      : GetScalarType<T[P], AggregateBidTemplate[P]>
-  }
-
-
-
-
-  export type BidTemplateGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: BidTemplateWhereInput
-    orderBy?: BidTemplateOrderByWithAggregationInput | BidTemplateOrderByWithAggregationInput[]
-    by: BidTemplateScalarFieldEnum[] | BidTemplateScalarFieldEnum
-    having?: BidTemplateScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: BidTemplateCountAggregateInputType | true
-    _avg?: BidTemplateAvgAggregateInputType
-    _sum?: BidTemplateSumAggregateInputType
-    _min?: BidTemplateMinAggregateInputType
-    _max?: BidTemplateMaxAggregateInputType
-  }
-
-  export type BidTemplateGroupByOutputType = {
-    id: string
-    merchantId: string
-    name: string
-    description: string | null
-    amountType: $Enums.AmountType
-    amountPercentage: Decimal | null
-    fixedAmount: Decimal | null
-    deliveryDays: number | null
-    deliveryNotes: string | null
-    specialTerms: string | null
-    isActive: boolean
-    usageCount: number
-    successCount: number
-    createdAt: Date
-    updatedAt: Date
-    _count: BidTemplateCountAggregateOutputType | null
-    _avg: BidTemplateAvgAggregateOutputType | null
-    _sum: BidTemplateSumAggregateOutputType | null
-    _min: BidTemplateMinAggregateOutputType | null
-    _max: BidTemplateMaxAggregateOutputType | null
-  }
-
-  type GetBidTemplateGroupByPayload<T extends BidTemplateGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<BidTemplateGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof BidTemplateGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], BidTemplateGroupByOutputType[P]>
-            : GetScalarType<T[P], BidTemplateGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type BidTemplateSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    merchantId?: boolean
-    name?: boolean
-    description?: boolean
-    amountType?: boolean
-    amountPercentage?: boolean
-    fixedAmount?: boolean
-    deliveryDays?: boolean
-    deliveryNotes?: boolean
-    specialTerms?: boolean
-    isActive?: boolean
-    usageCount?: boolean
-    successCount?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-  }, ExtArgs["result"]["bidTemplate"]>
-
-  export type BidTemplateSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    merchantId?: boolean
-    name?: boolean
-    description?: boolean
-    amountType?: boolean
-    amountPercentage?: boolean
-    fixedAmount?: boolean
-    deliveryDays?: boolean
-    deliveryNotes?: boolean
-    specialTerms?: boolean
-    isActive?: boolean
-    usageCount?: boolean
-    successCount?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-  }, ExtArgs["result"]["bidTemplate"]>
-
-  export type BidTemplateSelectScalar = {
-    id?: boolean
-    merchantId?: boolean
-    name?: boolean
-    description?: boolean
-    amountType?: boolean
-    amountPercentage?: boolean
-    fixedAmount?: boolean
-    deliveryDays?: boolean
-    deliveryNotes?: boolean
-    specialTerms?: boolean
-    isActive?: boolean
-    usageCount?: boolean
-    successCount?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-  }
-
-
-  export type $BidTemplatePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "BidTemplate"
-    objects: {}
-    scalars: $Extensions.GetPayloadResult<{
-      id: string
-      merchantId: string
-      name: string
-      description: string | null
-      amountType: $Enums.AmountType
-      amountPercentage: Prisma.Decimal | null
-      fixedAmount: Prisma.Decimal | null
-      deliveryDays: number | null
-      deliveryNotes: string | null
-      specialTerms: string | null
-      isActive: boolean
-      usageCount: number
-      successCount: number
-      createdAt: Date
-      updatedAt: Date
-    }, ExtArgs["result"]["bidTemplate"]>
-    composites: {}
-  }
-
-  type BidTemplateGetPayload<S extends boolean | null | undefined | BidTemplateDefaultArgs> = $Result.GetResult<Prisma.$BidTemplatePayload, S>
-
-  type BidTemplateCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
-    Omit<BidTemplateFindManyArgs, 'select' | 'include' | 'distinct'> & {
-      select?: BidTemplateCountAggregateInputType | true
-    }
-
-  export interface BidTemplateDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['BidTemplate'], meta: { name: 'BidTemplate' } }
-    /**
-     * Find zero or one BidTemplate that matches the filter.
-     * @param {BidTemplateFindUniqueArgs} args - Arguments to find a BidTemplate
-     * @example
-     * // Get one BidTemplate
-     * const bidTemplate = await prisma.bidTemplate.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends BidTemplateFindUniqueArgs>(args: SelectSubset<T, BidTemplateFindUniqueArgs<ExtArgs>>): Prisma__BidTemplateClient<$Result.GetResult<Prisma.$BidTemplatePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
-
-    /**
-     * Find one BidTemplate that matches the filter or throw an error with `error.code='P2025'` 
-     * if no matches were found.
-     * @param {BidTemplateFindUniqueOrThrowArgs} args - Arguments to find a BidTemplate
-     * @example
-     * // Get one BidTemplate
-     * const bidTemplate = await prisma.bidTemplate.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends BidTemplateFindUniqueOrThrowArgs>(args: SelectSubset<T, BidTemplateFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BidTemplateClient<$Result.GetResult<Prisma.$BidTemplatePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
-
-    /**
-     * Find the first BidTemplate that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {BidTemplateFindFirstArgs} args - Arguments to find a BidTemplate
-     * @example
-     * // Get one BidTemplate
-     * const bidTemplate = await prisma.bidTemplate.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends BidTemplateFindFirstArgs>(args?: SelectSubset<T, BidTemplateFindFirstArgs<ExtArgs>>): Prisma__BidTemplateClient<$Result.GetResult<Prisma.$BidTemplatePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
-
-    /**
-     * Find the first BidTemplate that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {BidTemplateFindFirstOrThrowArgs} args - Arguments to find a BidTemplate
-     * @example
-     * // Get one BidTemplate
-     * const bidTemplate = await prisma.bidTemplate.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends BidTemplateFindFirstOrThrowArgs>(args?: SelectSubset<T, BidTemplateFindFirstOrThrowArgs<ExtArgs>>): Prisma__BidTemplateClient<$Result.GetResult<Prisma.$BidTemplatePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
-
-    /**
-     * Find zero or more BidTemplates that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {BidTemplateFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all BidTemplates
-     * const bidTemplates = await prisma.bidTemplate.findMany()
-     * 
-     * // Get first 10 BidTemplates
-     * const bidTemplates = await prisma.bidTemplate.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const bidTemplateWithIdOnly = await prisma.bidTemplate.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends BidTemplateFindManyArgs>(args?: SelectSubset<T, BidTemplateFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BidTemplatePayload<ExtArgs>, T, "findMany">>
-
-    /**
-     * Create a BidTemplate.
-     * @param {BidTemplateCreateArgs} args - Arguments to create a BidTemplate.
-     * @example
-     * // Create one BidTemplate
-     * const BidTemplate = await prisma.bidTemplate.create({
-     *   data: {
-     *     // ... data to create a BidTemplate
-     *   }
-     * })
-     * 
-     */
-    create<T extends BidTemplateCreateArgs>(args: SelectSubset<T, BidTemplateCreateArgs<ExtArgs>>): Prisma__BidTemplateClient<$Result.GetResult<Prisma.$BidTemplatePayload<ExtArgs>, T, "create">, never, ExtArgs>
-
-    /**
-     * Create many BidTemplates.
-     * @param {BidTemplateCreateManyArgs} args - Arguments to create many BidTemplates.
-     * @example
-     * // Create many BidTemplates
-     * const bidTemplate = await prisma.bidTemplate.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends BidTemplateCreateManyArgs>(args?: SelectSubset<T, BidTemplateCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create many BidTemplates and returns the data saved in the database.
-     * @param {BidTemplateCreateManyAndReturnArgs} args - Arguments to create many BidTemplates.
-     * @example
-     * // Create many BidTemplates
-     * const bidTemplate = await prisma.bidTemplate.createManyAndReturn({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Create many BidTemplates and only return the `id`
-     * const bidTemplateWithIdOnly = await prisma.bidTemplate.createManyAndReturn({ 
-     *   select: { id: true },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    createManyAndReturn<T extends BidTemplateCreateManyAndReturnArgs>(args?: SelectSubset<T, BidTemplateCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BidTemplatePayload<ExtArgs>, T, "createManyAndReturn">>
-
-    /**
-     * Delete a BidTemplate.
-     * @param {BidTemplateDeleteArgs} args - Arguments to delete one BidTemplate.
-     * @example
-     * // Delete one BidTemplate
-     * const BidTemplate = await prisma.bidTemplate.delete({
-     *   where: {
-     *     // ... filter to delete one BidTemplate
-     *   }
-     * })
-     * 
-     */
-    delete<T extends BidTemplateDeleteArgs>(args: SelectSubset<T, BidTemplateDeleteArgs<ExtArgs>>): Prisma__BidTemplateClient<$Result.GetResult<Prisma.$BidTemplatePayload<ExtArgs>, T, "delete">, never, ExtArgs>
-
-    /**
-     * Update one BidTemplate.
-     * @param {BidTemplateUpdateArgs} args - Arguments to update one BidTemplate.
-     * @example
-     * // Update one BidTemplate
-     * const bidTemplate = await prisma.bidTemplate.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends BidTemplateUpdateArgs>(args: SelectSubset<T, BidTemplateUpdateArgs<ExtArgs>>): Prisma__BidTemplateClient<$Result.GetResult<Prisma.$BidTemplatePayload<ExtArgs>, T, "update">, never, ExtArgs>
-
-    /**
-     * Delete zero or more BidTemplates.
-     * @param {BidTemplateDeleteManyArgs} args - Arguments to filter BidTemplates to delete.
-     * @example
-     * // Delete a few BidTemplates
-     * const { count } = await prisma.bidTemplate.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends BidTemplateDeleteManyArgs>(args?: SelectSubset<T, BidTemplateDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more BidTemplates.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {BidTemplateUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many BidTemplates
-     * const bidTemplate = await prisma.bidTemplate.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends BidTemplateUpdateManyArgs>(args: SelectSubset<T, BidTemplateUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one BidTemplate.
-     * @param {BidTemplateUpsertArgs} args - Arguments to update or create a BidTemplate.
-     * @example
-     * // Update or create a BidTemplate
-     * const bidTemplate = await prisma.bidTemplate.upsert({
-     *   create: {
-     *     // ... data to create a BidTemplate
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the BidTemplate we want to update
-     *   }
-     * })
-     */
-    upsert<T extends BidTemplateUpsertArgs>(args: SelectSubset<T, BidTemplateUpsertArgs<ExtArgs>>): Prisma__BidTemplateClient<$Result.GetResult<Prisma.$BidTemplatePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
-
-
-    /**
-     * Count the number of BidTemplates.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {BidTemplateCountArgs} args - Arguments to filter BidTemplates to count.
-     * @example
-     * // Count the number of BidTemplates
-     * const count = await prisma.bidTemplate.count({
-     *   where: {
-     *     // ... the filter for the BidTemplates we want to count
-     *   }
-     * })
-    **/
-    count<T extends BidTemplateCountArgs>(
-      args?: Subset<T, BidTemplateCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], BidTemplateCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a BidTemplate.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {BidTemplateAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends BidTemplateAggregateArgs>(args: Subset<T, BidTemplateAggregateArgs>): Prisma.PrismaPromise<GetBidTemplateAggregateType<T>>
-
-    /**
-     * Group by BidTemplate.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {BidTemplateGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends BidTemplateGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: BidTemplateGroupByArgs['orderBy'] }
-        : { orderBy?: BidTemplateGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, BidTemplateGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBidTemplateGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the BidTemplate model
-   */
-  readonly fields: BidTemplateFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for BidTemplate.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__BidTemplateClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the BidTemplate model
-   */ 
-  interface BidTemplateFieldRefs {
-    readonly id: FieldRef<"BidTemplate", 'String'>
-    readonly merchantId: FieldRef<"BidTemplate", 'String'>
-    readonly name: FieldRef<"BidTemplate", 'String'>
-    readonly description: FieldRef<"BidTemplate", 'String'>
-    readonly amountType: FieldRef<"BidTemplate", 'AmountType'>
-    readonly amountPercentage: FieldRef<"BidTemplate", 'Decimal'>
-    readonly fixedAmount: FieldRef<"BidTemplate", 'Decimal'>
-    readonly deliveryDays: FieldRef<"BidTemplate", 'Int'>
-    readonly deliveryNotes: FieldRef<"BidTemplate", 'String'>
-    readonly specialTerms: FieldRef<"BidTemplate", 'String'>
-    readonly isActive: FieldRef<"BidTemplate", 'Boolean'>
-    readonly usageCount: FieldRef<"BidTemplate", 'Int'>
-    readonly successCount: FieldRef<"BidTemplate", 'Int'>
-    readonly createdAt: FieldRef<"BidTemplate", 'DateTime'>
-    readonly updatedAt: FieldRef<"BidTemplate", 'DateTime'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * BidTemplate findUnique
-   */
-  export type BidTemplateFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the BidTemplate
-     */
-    select?: BidTemplateSelect<ExtArgs> | null
-    /**
-     * Filter, which BidTemplate to fetch.
-     */
-    where: BidTemplateWhereUniqueInput
-  }
-
-  /**
-   * BidTemplate findUniqueOrThrow
-   */
-  export type BidTemplateFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the BidTemplate
-     */
-    select?: BidTemplateSelect<ExtArgs> | null
-    /**
-     * Filter, which BidTemplate to fetch.
-     */
-    where: BidTemplateWhereUniqueInput
-  }
-
-  /**
-   * BidTemplate findFirst
-   */
-  export type BidTemplateFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the BidTemplate
-     */
-    select?: BidTemplateSelect<ExtArgs> | null
-    /**
-     * Filter, which BidTemplate to fetch.
-     */
-    where?: BidTemplateWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of BidTemplates to fetch.
-     */
-    orderBy?: BidTemplateOrderByWithRelationInput | BidTemplateOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for BidTemplates.
-     */
-    cursor?: BidTemplateWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` BidTemplates from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` BidTemplates.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of BidTemplates.
-     */
-    distinct?: BidTemplateScalarFieldEnum | BidTemplateScalarFieldEnum[]
-  }
-
-  /**
-   * BidTemplate findFirstOrThrow
-   */
-  export type BidTemplateFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the BidTemplate
-     */
-    select?: BidTemplateSelect<ExtArgs> | null
-    /**
-     * Filter, which BidTemplate to fetch.
-     */
-    where?: BidTemplateWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of BidTemplates to fetch.
-     */
-    orderBy?: BidTemplateOrderByWithRelationInput | BidTemplateOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for BidTemplates.
-     */
-    cursor?: BidTemplateWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` BidTemplates from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` BidTemplates.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of BidTemplates.
-     */
-    distinct?: BidTemplateScalarFieldEnum | BidTemplateScalarFieldEnum[]
-  }
-
-  /**
-   * BidTemplate findMany
-   */
-  export type BidTemplateFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the BidTemplate
-     */
-    select?: BidTemplateSelect<ExtArgs> | null
-    /**
-     * Filter, which BidTemplates to fetch.
-     */
-    where?: BidTemplateWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of BidTemplates to fetch.
-     */
-    orderBy?: BidTemplateOrderByWithRelationInput | BidTemplateOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing BidTemplates.
-     */
-    cursor?: BidTemplateWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` BidTemplates from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` BidTemplates.
-     */
-    skip?: number
-    distinct?: BidTemplateScalarFieldEnum | BidTemplateScalarFieldEnum[]
-  }
-
-  /**
-   * BidTemplate create
-   */
-  export type BidTemplateCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the BidTemplate
-     */
-    select?: BidTemplateSelect<ExtArgs> | null
-    /**
-     * The data needed to create a BidTemplate.
-     */
-    data: XOR<BidTemplateCreateInput, BidTemplateUncheckedCreateInput>
-  }
-
-  /**
-   * BidTemplate createMany
-   */
-  export type BidTemplateCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many BidTemplates.
-     */
-    data: BidTemplateCreateManyInput | BidTemplateCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * BidTemplate createManyAndReturn
-   */
-  export type BidTemplateCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the BidTemplate
-     */
-    select?: BidTemplateSelectCreateManyAndReturn<ExtArgs> | null
-    /**
-     * The data used to create many BidTemplates.
-     */
-    data: BidTemplateCreateManyInput | BidTemplateCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * BidTemplate update
-   */
-  export type BidTemplateUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the BidTemplate
-     */
-    select?: BidTemplateSelect<ExtArgs> | null
-    /**
-     * The data needed to update a BidTemplate.
-     */
-    data: XOR<BidTemplateUpdateInput, BidTemplateUncheckedUpdateInput>
-    /**
-     * Choose, which BidTemplate to update.
-     */
-    where: BidTemplateWhereUniqueInput
-  }
-
-  /**
-   * BidTemplate updateMany
-   */
-  export type BidTemplateUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update BidTemplates.
-     */
-    data: XOR<BidTemplateUpdateManyMutationInput, BidTemplateUncheckedUpdateManyInput>
-    /**
-     * Filter which BidTemplates to update
-     */
-    where?: BidTemplateWhereInput
-  }
-
-  /**
-   * BidTemplate upsert
-   */
-  export type BidTemplateUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the BidTemplate
-     */
-    select?: BidTemplateSelect<ExtArgs> | null
-    /**
-     * The filter to search for the BidTemplate to update in case it exists.
-     */
-    where: BidTemplateWhereUniqueInput
-    /**
-     * In case the BidTemplate found by the `where` argument doesn't exist, create a new BidTemplate with this data.
-     */
-    create: XOR<BidTemplateCreateInput, BidTemplateUncheckedCreateInput>
-    /**
-     * In case the BidTemplate was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<BidTemplateUpdateInput, BidTemplateUncheckedUpdateInput>
-  }
-
-  /**
-   * BidTemplate delete
-   */
-  export type BidTemplateDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the BidTemplate
-     */
-    select?: BidTemplateSelect<ExtArgs> | null
-    /**
-     * Filter which BidTemplate to delete.
-     */
-    where: BidTemplateWhereUniqueInput
-  }
-
-  /**
-   * BidTemplate deleteMany
-   */
-  export type BidTemplateDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which BidTemplates to delete
-     */
-    where?: BidTemplateWhereInput
-  }
-
-  /**
-   * BidTemplate without action
-   */
-  export type BidTemplateDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the BidTemplate
-     */
-    select?: BidTemplateSelect<ExtArgs> | null
+    include?: ReviewInclude<ExtArgs> | null
   }
 
 
@@ -25112,52 +14776,6 @@ export namespace Prisma {
   export type RequestImageScalarFieldEnum = (typeof RequestImageScalarFieldEnum)[keyof typeof RequestImageScalarFieldEnum]
 
 
-  export const RequestDraftScalarFieldEnum: {
-    id: 'id',
-    buyerId: 'buyerId',
-    categoryId: 'categoryId',
-    title: 'title',
-    description: 'description',
-    budgetMin: 'budgetMin',
-    budgetMax: 'budgetMax',
-    locationLat: 'locationLat',
-    locationLng: 'locationLng',
-    locationAddress: 'locationAddress',
-    autoSaveData: 'autoSaveData',
-    expiresAt: 'expiresAt',
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
-  };
-
-  export type RequestDraftScalarFieldEnum = (typeof RequestDraftScalarFieldEnum)[keyof typeof RequestDraftScalarFieldEnum]
-
-
-  export const RequestExtensionScalarFieldEnum: {
-    id: 'id',
-    requestId: 'requestId',
-    originalExpiresAt: 'originalExpiresAt',
-    newExpiresAt: 'newExpiresAt',
-    extensionReason: 'extensionReason',
-    extendedBy: 'extendedBy',
-    createdAt: 'createdAt'
-  };
-
-  export type RequestExtensionScalarFieldEnum = (typeof RequestExtensionScalarFieldEnum)[keyof typeof RequestExtensionScalarFieldEnum]
-
-
-  export const RequestSearchIndexScalarFieldEnum: {
-    id: 'id',
-    requestId: 'requestId',
-    searchVector: 'searchVector',
-    categoryPath: 'categoryPath',
-    locationText: 'locationText',
-    budgetRange: 'budgetRange',
-    createdAt: 'createdAt'
-  };
-
-  export type RequestSearchIndexScalarFieldEnum = (typeof RequestSearchIndexScalarFieldEnum)[keyof typeof RequestSearchIndexScalarFieldEnum]
-
-
   export const SavedSearchScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
@@ -25190,7 +14808,10 @@ export namespace Prisma {
     expiresAt: 'expiresAt',
     acceptedAt: 'acceptedAt',
     rejectedAt: 'rejectedAt',
-    withdrawnAt: 'withdrawnAt'
+    withdrawnAt: 'withdrawnAt',
+    chatRoomId: 'chatRoomId',
+    fulfillmentStatus: 'fulfillmentStatus',
+    fulfillmentUpdatedAt: 'fulfillmentUpdatedAt'
   };
 
   export type BidScalarFieldEnum = (typeof BidScalarFieldEnum)[keyof typeof BidScalarFieldEnum]
@@ -25214,41 +14835,17 @@ export namespace Prisma {
   export type ChatRoomScalarFieldEnum = (typeof ChatRoomScalarFieldEnum)[keyof typeof ChatRoomScalarFieldEnum]
 
 
-  export const ChatParticipantScalarFieldEnum: {
+  export const ChatRoomParticipantScalarFieldEnum: {
     id: 'id',
     roomId: 'roomId',
     userId: 'userId',
     role: 'role',
-    joinedAt: 'joinedAt',
     lastReadAt: 'lastReadAt',
-    isMuted: 'isMuted',
-    isBanned: 'isBanned',
-    bannedUntil: 'bannedUntil',
-    bannedBy: 'bannedBy',
-    bannedReason: 'bannedReason',
+    joinedAt: 'joinedAt',
     leftAt: 'leftAt'
   };
 
-  export type ChatParticipantScalarFieldEnum = (typeof ChatParticipantScalarFieldEnum)[keyof typeof ChatParticipantScalarFieldEnum]
-
-
-  export const NotificationTemplateScalarFieldEnum: {
-    id: 'id',
-    name: 'name',
-    type: 'type',
-    channel: 'channel',
-    subjectTemplate: 'subjectTemplate',
-    contentTemplate: 'contentTemplate',
-    variables: 'variables',
-    defaultLocale: 'defaultLocale',
-    isActive: 'isActive',
-    version: 'version',
-    createdBy: 'createdBy',
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
-  };
-
-  export type NotificationTemplateScalarFieldEnum = (typeof NotificationTemplateScalarFieldEnum)[keyof typeof NotificationTemplateScalarFieldEnum]
+  export type ChatRoomParticipantScalarFieldEnum = (typeof ChatRoomParticipantScalarFieldEnum)[keyof typeof ChatRoomParticipantScalarFieldEnum]
 
 
   export const NotificationScalarFieldEnum: {
@@ -25256,130 +14853,28 @@ export namespace Prisma {
     userId: 'userId',
     type: 'type',
     title: 'title',
-    content: 'content',
-    channel: 'channel',
-    priority: 'priority',
-    status: 'status',
-    templateId: 'templateId',
-    templateVariables: 'templateVariables',
-    metadata: 'metadata',
-    scheduledAt: 'scheduledAt',
-    sentAt: 'sentAt',
-    deliveredAt: 'deliveredAt',
-    readAt: 'readAt',
-    expiresAt: 'expiresAt',
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    body: 'body',
+    data: 'data',
+    isRead: 'isRead',
+    createdAt: 'createdAt'
   };
 
   export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
 
 
-  export const NotificationChannelScalarFieldEnum: {
+  export const ReviewScalarFieldEnum: {
     id: 'id',
-    userId: 'userId',
-    channelType: 'channelType',
-    isEnabled: 'isEnabled',
-    deviceToken: 'deviceToken',
-    emailAddress: 'emailAddress',
-    phoneNumber: 'phoneNumber',
-    preferences: 'preferences',
-    lastUsedAt: 'lastUsedAt',
-    verifiedAt: 'verifiedAt',
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
-  };
-
-  export type NotificationChannelScalarFieldEnum = (typeof NotificationChannelScalarFieldEnum)[keyof typeof NotificationChannelScalarFieldEnum]
-
-
-  export const NotificationPreferenceScalarFieldEnum: {
-    id: 'id',
-    userId: 'userId',
-    notificationType: 'notificationType',
-    channelType: 'channelType',
-    isEnabled: 'isEnabled',
-    quietHoursStart: 'quietHoursStart',
-    quietHoursEnd: 'quietHoursEnd',
-    minPriority: 'minPriority',
-    maxFrequencyMinutes: 'maxFrequencyMinutes',
-    preferences: 'preferences',
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
-  };
-
-  export type NotificationPreferenceScalarFieldEnum = (typeof NotificationPreferenceScalarFieldEnum)[keyof typeof NotificationPreferenceScalarFieldEnum]
-
-
-  export const NotificationDeliveryScalarFieldEnum: {
-    id: 'id',
-    notificationId: 'notificationId',
-    channelType: 'channelType',
-    provider: 'provider',
-    recipient: 'recipient',
-    status: 'status',
-    attemptCount: 'attemptCount',
-    sentAt: 'sentAt',
-    deliveredAt: 'deliveredAt',
-    errorMessage: 'errorMessage',
-    errorCode: 'errorCode',
-    metadata: 'metadata',
+    bidId: 'bidId',
+    requestId: 'requestId',
+    reviewerId: 'reviewerId',
+    revieweeId: 'revieweeId',
+    type: 'type',
+    rating: 'rating',
+    comment: 'comment',
     createdAt: 'createdAt'
   };
 
-  export type NotificationDeliveryScalarFieldEnum = (typeof NotificationDeliveryScalarFieldEnum)[keyof typeof NotificationDeliveryScalarFieldEnum]
-
-
-  export const NotificationReadScalarFieldEnum: {
-    id: 'id',
-    notificationId: 'notificationId',
-    userId: 'userId',
-    readAt: 'readAt',
-    deviceFingerprint: 'deviceFingerprint',
-    ipAddress: 'ipAddress',
-    userAgent: 'userAgent',
-    createdAt: 'createdAt'
-  };
-
-  export type NotificationReadScalarFieldEnum = (typeof NotificationReadScalarFieldEnum)[keyof typeof NotificationReadScalarFieldEnum]
-
-
-  export const NotificationStatScalarFieldEnum: {
-    id: 'id',
-    notificationId: 'notificationId',
-    userId: 'userId',
-    eventType: 'eventType',
-    channelType: 'channelType',
-    provider: 'provider',
-    deliveryTimeMs: 'deliveryTimeMs',
-    success: 'success',
-    errorCode: 'errorCode',
-    metadata: 'metadata',
-    createdAt: 'createdAt'
-  };
-
-  export type NotificationStatScalarFieldEnum = (typeof NotificationStatScalarFieldEnum)[keyof typeof NotificationStatScalarFieldEnum]
-
-
-  export const BidTemplateScalarFieldEnum: {
-    id: 'id',
-    merchantId: 'merchantId',
-    name: 'name',
-    description: 'description',
-    amountType: 'amountType',
-    amountPercentage: 'amountPercentage',
-    fixedAmount: 'fixedAmount',
-    deliveryDays: 'deliveryDays',
-    deliveryNotes: 'deliveryNotes',
-    specialTerms: 'specialTerms',
-    isActive: 'isActive',
-    usageCount: 'usageCount',
-    successCount: 'successCount',
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
-  };
-
-  export type BidTemplateScalarFieldEnum = (typeof BidTemplateScalarFieldEnum)[keyof typeof BidTemplateScalarFieldEnum]
+  export type ReviewScalarFieldEnum = (typeof ReviewScalarFieldEnum)[keyof typeof ReviewScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -25596,6 +15091,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'FulfillmentStatus'
+   */
+  export type EnumFulfillmentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FulfillmentStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'FulfillmentStatus[]'
+   */
+  export type ListEnumFulfillmentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FulfillmentStatus[]'>
+    
+
+
+  /**
    * Reference to a field of type 'RoomType'
    */
   export type EnumRoomTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RoomType'>
@@ -25606,20 +15115,6 @@ export namespace Prisma {
    * Reference to a field of type 'RoomType[]'
    */
   export type ListEnumRoomTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RoomType[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'ParticipantRole'
-   */
-  export type EnumParticipantRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ParticipantRole'>
-    
-
-
-  /**
-   * Reference to a field of type 'ParticipantRole[]'
-   */
-  export type ListEnumParticipantRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ParticipantRole[]'>
     
 
 
@@ -25638,86 +15133,16 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'NotifChannel'
+   * Reference to a field of type 'ReviewType'
    */
-  export type EnumNotifChannelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotifChannel'>
+  export type EnumReviewTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReviewType'>
     
 
 
   /**
-   * Reference to a field of type 'NotifChannel[]'
+   * Reference to a field of type 'ReviewType[]'
    */
-  export type ListEnumNotifChannelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotifChannel[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'NotificationPriority'
-   */
-  export type EnumNotificationPriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationPriority'>
-    
-
-
-  /**
-   * Reference to a field of type 'NotificationPriority[]'
-   */
-  export type ListEnumNotificationPriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationPriority[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'NotificationStatus'
-   */
-  export type EnumNotificationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationStatus'>
-    
-
-
-  /**
-   * Reference to a field of type 'NotificationStatus[]'
-   */
-  export type ListEnumNotificationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationStatus[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'NotifDeliveryStatus'
-   */
-  export type EnumNotifDeliveryStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotifDeliveryStatus'>
-    
-
-
-  /**
-   * Reference to a field of type 'NotifDeliveryStatus[]'
-   */
-  export type ListEnumNotifDeliveryStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotifDeliveryStatus[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'NotifAnalyticsEvent'
-   */
-  export type EnumNotifAnalyticsEventFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotifAnalyticsEvent'>
-    
-
-
-  /**
-   * Reference to a field of type 'NotifAnalyticsEvent[]'
-   */
-  export type ListEnumNotifAnalyticsEventFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotifAnalyticsEvent[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'AmountType'
-   */
-  export type EnumAmountTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AmountType'>
-    
-
-
-  /**
-   * Reference to a field of type 'AmountType[]'
-   */
-  export type ListEnumAmountTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AmountType[]'>
+  export type ListEnumReviewTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReviewType[]'>
     
 
 
@@ -26027,7 +15452,6 @@ export namespace Prisma {
     parent?: XOR<RequestCategoryNullableRelationFilter, RequestCategoryWhereInput> | null
     children?: RequestCategoryListRelationFilter
     requests?: RequestListRelationFilter
-    drafts?: RequestDraftListRelationFilter
   }
 
   export type RequestCategoryOrderByWithRelationInput = {
@@ -26044,7 +15468,6 @@ export namespace Prisma {
     parent?: RequestCategoryOrderByWithRelationInput
     children?: RequestCategoryOrderByRelationAggregateInput
     requests?: RequestOrderByRelationAggregateInput
-    drafts?: RequestDraftOrderByRelationAggregateInput
   }
 
   export type RequestCategoryWhereUniqueInput = Prisma.AtLeast<{
@@ -26064,7 +15487,6 @@ export namespace Prisma {
     parent?: XOR<RequestCategoryNullableRelationFilter, RequestCategoryWhereInput> | null
     children?: RequestCategoryListRelationFilter
     requests?: RequestListRelationFilter
-    drafts?: RequestDraftListRelationFilter
   }, "id" | "slug">
 
   export type RequestCategoryOrderByWithAggregationInput = {
@@ -26107,7 +15529,7 @@ export namespace Prisma {
     NOT?: RequestWhereInput | RequestWhereInput[]
     id?: UuidFilter<"Request"> | string
     buyerId?: UuidFilter<"Request"> | string
-    categoryId?: UuidFilter<"Request"> | string
+    categoryId?: UuidNullableFilter<"Request"> | string | null
     title?: StringFilter<"Request"> | string
     description?: StringFilter<"Request"> | string
     budgetMin?: DecimalNullableFilter<"Request"> | Decimal | DecimalJsLike | number | string | null
@@ -26125,16 +15547,14 @@ export namespace Prisma {
     publishedAt?: DateTimeNullableFilter<"Request"> | Date | string | null
     createdAt?: DateTimeFilter<"Request"> | Date | string
     updatedAt?: DateTimeFilter<"Request"> | Date | string
-    category?: XOR<RequestCategoryRelationFilter, RequestCategoryWhereInput>
+    category?: XOR<RequestCategoryNullableRelationFilter, RequestCategoryWhereInput> | null
     images?: RequestImageListRelationFilter
-    extensions?: RequestExtensionListRelationFilter
-    searchIndex?: XOR<RequestSearchIndexNullableRelationFilter, RequestSearchIndexWhereInput> | null
   }
 
   export type RequestOrderByWithRelationInput = {
     id?: SortOrder
     buyerId?: SortOrder
-    categoryId?: SortOrder
+    categoryId?: SortOrderInput | SortOrder
     title?: SortOrder
     description?: SortOrder
     budgetMin?: SortOrderInput | SortOrder
@@ -26154,8 +15574,6 @@ export namespace Prisma {
     updatedAt?: SortOrder
     category?: RequestCategoryOrderByWithRelationInput
     images?: RequestImageOrderByRelationAggregateInput
-    extensions?: RequestExtensionOrderByRelationAggregateInput
-    searchIndex?: RequestSearchIndexOrderByWithRelationInput
   }
 
   export type RequestWhereUniqueInput = Prisma.AtLeast<{
@@ -26164,7 +15582,7 @@ export namespace Prisma {
     OR?: RequestWhereInput[]
     NOT?: RequestWhereInput | RequestWhereInput[]
     buyerId?: UuidFilter<"Request"> | string
-    categoryId?: UuidFilter<"Request"> | string
+    categoryId?: UuidNullableFilter<"Request"> | string | null
     title?: StringFilter<"Request"> | string
     description?: StringFilter<"Request"> | string
     budgetMin?: DecimalNullableFilter<"Request"> | Decimal | DecimalJsLike | number | string | null
@@ -26182,16 +15600,14 @@ export namespace Prisma {
     publishedAt?: DateTimeNullableFilter<"Request"> | Date | string | null
     createdAt?: DateTimeFilter<"Request"> | Date | string
     updatedAt?: DateTimeFilter<"Request"> | Date | string
-    category?: XOR<RequestCategoryRelationFilter, RequestCategoryWhereInput>
+    category?: XOR<RequestCategoryNullableRelationFilter, RequestCategoryWhereInput> | null
     images?: RequestImageListRelationFilter
-    extensions?: RequestExtensionListRelationFilter
-    searchIndex?: XOR<RequestSearchIndexNullableRelationFilter, RequestSearchIndexWhereInput> | null
   }, "id">
 
   export type RequestOrderByWithAggregationInput = {
     id?: SortOrder
     buyerId?: SortOrder
-    categoryId?: SortOrder
+    categoryId?: SortOrderInput | SortOrder
     title?: SortOrder
     description?: SortOrder
     budgetMin?: SortOrderInput | SortOrder
@@ -26222,7 +15638,7 @@ export namespace Prisma {
     NOT?: RequestScalarWhereWithAggregatesInput | RequestScalarWhereWithAggregatesInput[]
     id?: UuidWithAggregatesFilter<"Request"> | string
     buyerId?: UuidWithAggregatesFilter<"Request"> | string
-    categoryId?: UuidWithAggregatesFilter<"Request"> | string
+    categoryId?: UuidNullableWithAggregatesFilter<"Request"> | string | null
     title?: StringWithAggregatesFilter<"Request"> | string
     description?: StringWithAggregatesFilter<"Request"> | string
     budgetMin?: DecimalNullableWithAggregatesFilter<"Request"> | Decimal | DecimalJsLike | number | string | null
@@ -26334,238 +15750,6 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"RequestImage"> | Date | string
   }
 
-  export type RequestDraftWhereInput = {
-    AND?: RequestDraftWhereInput | RequestDraftWhereInput[]
-    OR?: RequestDraftWhereInput[]
-    NOT?: RequestDraftWhereInput | RequestDraftWhereInput[]
-    id?: UuidFilter<"RequestDraft"> | string
-    buyerId?: UuidFilter<"RequestDraft"> | string
-    categoryId?: UuidNullableFilter<"RequestDraft"> | string | null
-    title?: StringNullableFilter<"RequestDraft"> | string | null
-    description?: StringNullableFilter<"RequestDraft"> | string | null
-    budgetMin?: DecimalNullableFilter<"RequestDraft"> | Decimal | DecimalJsLike | number | string | null
-    budgetMax?: DecimalNullableFilter<"RequestDraft"> | Decimal | DecimalJsLike | number | string | null
-    locationLat?: DecimalNullableFilter<"RequestDraft"> | Decimal | DecimalJsLike | number | string | null
-    locationLng?: DecimalNullableFilter<"RequestDraft"> | Decimal | DecimalJsLike | number | string | null
-    locationAddress?: StringNullableFilter<"RequestDraft"> | string | null
-    autoSaveData?: JsonFilter<"RequestDraft">
-    expiresAt?: DateTimeFilter<"RequestDraft"> | Date | string
-    createdAt?: DateTimeFilter<"RequestDraft"> | Date | string
-    updatedAt?: DateTimeFilter<"RequestDraft"> | Date | string
-    category?: XOR<RequestCategoryNullableRelationFilter, RequestCategoryWhereInput> | null
-  }
-
-  export type RequestDraftOrderByWithRelationInput = {
-    id?: SortOrder
-    buyerId?: SortOrder
-    categoryId?: SortOrderInput | SortOrder
-    title?: SortOrderInput | SortOrder
-    description?: SortOrderInput | SortOrder
-    budgetMin?: SortOrderInput | SortOrder
-    budgetMax?: SortOrderInput | SortOrder
-    locationLat?: SortOrderInput | SortOrder
-    locationLng?: SortOrderInput | SortOrder
-    locationAddress?: SortOrderInput | SortOrder
-    autoSaveData?: SortOrder
-    expiresAt?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    category?: RequestCategoryOrderByWithRelationInput
-  }
-
-  export type RequestDraftWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
-    AND?: RequestDraftWhereInput | RequestDraftWhereInput[]
-    OR?: RequestDraftWhereInput[]
-    NOT?: RequestDraftWhereInput | RequestDraftWhereInput[]
-    buyerId?: UuidFilter<"RequestDraft"> | string
-    categoryId?: UuidNullableFilter<"RequestDraft"> | string | null
-    title?: StringNullableFilter<"RequestDraft"> | string | null
-    description?: StringNullableFilter<"RequestDraft"> | string | null
-    budgetMin?: DecimalNullableFilter<"RequestDraft"> | Decimal | DecimalJsLike | number | string | null
-    budgetMax?: DecimalNullableFilter<"RequestDraft"> | Decimal | DecimalJsLike | number | string | null
-    locationLat?: DecimalNullableFilter<"RequestDraft"> | Decimal | DecimalJsLike | number | string | null
-    locationLng?: DecimalNullableFilter<"RequestDraft"> | Decimal | DecimalJsLike | number | string | null
-    locationAddress?: StringNullableFilter<"RequestDraft"> | string | null
-    autoSaveData?: JsonFilter<"RequestDraft">
-    expiresAt?: DateTimeFilter<"RequestDraft"> | Date | string
-    createdAt?: DateTimeFilter<"RequestDraft"> | Date | string
-    updatedAt?: DateTimeFilter<"RequestDraft"> | Date | string
-    category?: XOR<RequestCategoryNullableRelationFilter, RequestCategoryWhereInput> | null
-  }, "id">
-
-  export type RequestDraftOrderByWithAggregationInput = {
-    id?: SortOrder
-    buyerId?: SortOrder
-    categoryId?: SortOrderInput | SortOrder
-    title?: SortOrderInput | SortOrder
-    description?: SortOrderInput | SortOrder
-    budgetMin?: SortOrderInput | SortOrder
-    budgetMax?: SortOrderInput | SortOrder
-    locationLat?: SortOrderInput | SortOrder
-    locationLng?: SortOrderInput | SortOrder
-    locationAddress?: SortOrderInput | SortOrder
-    autoSaveData?: SortOrder
-    expiresAt?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    _count?: RequestDraftCountOrderByAggregateInput
-    _avg?: RequestDraftAvgOrderByAggregateInput
-    _max?: RequestDraftMaxOrderByAggregateInput
-    _min?: RequestDraftMinOrderByAggregateInput
-    _sum?: RequestDraftSumOrderByAggregateInput
-  }
-
-  export type RequestDraftScalarWhereWithAggregatesInput = {
-    AND?: RequestDraftScalarWhereWithAggregatesInput | RequestDraftScalarWhereWithAggregatesInput[]
-    OR?: RequestDraftScalarWhereWithAggregatesInput[]
-    NOT?: RequestDraftScalarWhereWithAggregatesInput | RequestDraftScalarWhereWithAggregatesInput[]
-    id?: UuidWithAggregatesFilter<"RequestDraft"> | string
-    buyerId?: UuidWithAggregatesFilter<"RequestDraft"> | string
-    categoryId?: UuidNullableWithAggregatesFilter<"RequestDraft"> | string | null
-    title?: StringNullableWithAggregatesFilter<"RequestDraft"> | string | null
-    description?: StringNullableWithAggregatesFilter<"RequestDraft"> | string | null
-    budgetMin?: DecimalNullableWithAggregatesFilter<"RequestDraft"> | Decimal | DecimalJsLike | number | string | null
-    budgetMax?: DecimalNullableWithAggregatesFilter<"RequestDraft"> | Decimal | DecimalJsLike | number | string | null
-    locationLat?: DecimalNullableWithAggregatesFilter<"RequestDraft"> | Decimal | DecimalJsLike | number | string | null
-    locationLng?: DecimalNullableWithAggregatesFilter<"RequestDraft"> | Decimal | DecimalJsLike | number | string | null
-    locationAddress?: StringNullableWithAggregatesFilter<"RequestDraft"> | string | null
-    autoSaveData?: JsonWithAggregatesFilter<"RequestDraft">
-    expiresAt?: DateTimeWithAggregatesFilter<"RequestDraft"> | Date | string
-    createdAt?: DateTimeWithAggregatesFilter<"RequestDraft"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"RequestDraft"> | Date | string
-  }
-
-  export type RequestExtensionWhereInput = {
-    AND?: RequestExtensionWhereInput | RequestExtensionWhereInput[]
-    OR?: RequestExtensionWhereInput[]
-    NOT?: RequestExtensionWhereInput | RequestExtensionWhereInput[]
-    id?: UuidFilter<"RequestExtension"> | string
-    requestId?: UuidFilter<"RequestExtension"> | string
-    originalExpiresAt?: DateTimeFilter<"RequestExtension"> | Date | string
-    newExpiresAt?: DateTimeFilter<"RequestExtension"> | Date | string
-    extensionReason?: StringNullableFilter<"RequestExtension"> | string | null
-    extendedBy?: UuidNullableFilter<"RequestExtension"> | string | null
-    createdAt?: DateTimeFilter<"RequestExtension"> | Date | string
-    request?: XOR<RequestRelationFilter, RequestWhereInput>
-  }
-
-  export type RequestExtensionOrderByWithRelationInput = {
-    id?: SortOrder
-    requestId?: SortOrder
-    originalExpiresAt?: SortOrder
-    newExpiresAt?: SortOrder
-    extensionReason?: SortOrderInput | SortOrder
-    extendedBy?: SortOrderInput | SortOrder
-    createdAt?: SortOrder
-    request?: RequestOrderByWithRelationInput
-  }
-
-  export type RequestExtensionWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
-    AND?: RequestExtensionWhereInput | RequestExtensionWhereInput[]
-    OR?: RequestExtensionWhereInput[]
-    NOT?: RequestExtensionWhereInput | RequestExtensionWhereInput[]
-    requestId?: UuidFilter<"RequestExtension"> | string
-    originalExpiresAt?: DateTimeFilter<"RequestExtension"> | Date | string
-    newExpiresAt?: DateTimeFilter<"RequestExtension"> | Date | string
-    extensionReason?: StringNullableFilter<"RequestExtension"> | string | null
-    extendedBy?: UuidNullableFilter<"RequestExtension"> | string | null
-    createdAt?: DateTimeFilter<"RequestExtension"> | Date | string
-    request?: XOR<RequestRelationFilter, RequestWhereInput>
-  }, "id">
-
-  export type RequestExtensionOrderByWithAggregationInput = {
-    id?: SortOrder
-    requestId?: SortOrder
-    originalExpiresAt?: SortOrder
-    newExpiresAt?: SortOrder
-    extensionReason?: SortOrderInput | SortOrder
-    extendedBy?: SortOrderInput | SortOrder
-    createdAt?: SortOrder
-    _count?: RequestExtensionCountOrderByAggregateInput
-    _max?: RequestExtensionMaxOrderByAggregateInput
-    _min?: RequestExtensionMinOrderByAggregateInput
-  }
-
-  export type RequestExtensionScalarWhereWithAggregatesInput = {
-    AND?: RequestExtensionScalarWhereWithAggregatesInput | RequestExtensionScalarWhereWithAggregatesInput[]
-    OR?: RequestExtensionScalarWhereWithAggregatesInput[]
-    NOT?: RequestExtensionScalarWhereWithAggregatesInput | RequestExtensionScalarWhereWithAggregatesInput[]
-    id?: UuidWithAggregatesFilter<"RequestExtension"> | string
-    requestId?: UuidWithAggregatesFilter<"RequestExtension"> | string
-    originalExpiresAt?: DateTimeWithAggregatesFilter<"RequestExtension"> | Date | string
-    newExpiresAt?: DateTimeWithAggregatesFilter<"RequestExtension"> | Date | string
-    extensionReason?: StringNullableWithAggregatesFilter<"RequestExtension"> | string | null
-    extendedBy?: UuidNullableWithAggregatesFilter<"RequestExtension"> | string | null
-    createdAt?: DateTimeWithAggregatesFilter<"RequestExtension"> | Date | string
-  }
-
-  export type RequestSearchIndexWhereInput = {
-    AND?: RequestSearchIndexWhereInput | RequestSearchIndexWhereInput[]
-    OR?: RequestSearchIndexWhereInput[]
-    NOT?: RequestSearchIndexWhereInput | RequestSearchIndexWhereInput[]
-    id?: UuidFilter<"RequestSearchIndex"> | string
-    requestId?: UuidFilter<"RequestSearchIndex"> | string
-    searchVector?: StringNullableFilter<"RequestSearchIndex"> | string | null
-    categoryPath?: StringNullableFilter<"RequestSearchIndex"> | string | null
-    locationText?: StringNullableFilter<"RequestSearchIndex"> | string | null
-    budgetRange?: StringNullableFilter<"RequestSearchIndex"> | string | null
-    createdAt?: DateTimeFilter<"RequestSearchIndex"> | Date | string
-    request?: XOR<RequestRelationFilter, RequestWhereInput>
-  }
-
-  export type RequestSearchIndexOrderByWithRelationInput = {
-    id?: SortOrder
-    requestId?: SortOrder
-    searchVector?: SortOrderInput | SortOrder
-    categoryPath?: SortOrderInput | SortOrder
-    locationText?: SortOrderInput | SortOrder
-    budgetRange?: SortOrderInput | SortOrder
-    createdAt?: SortOrder
-    request?: RequestOrderByWithRelationInput
-  }
-
-  export type RequestSearchIndexWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
-    requestId?: string
-    AND?: RequestSearchIndexWhereInput | RequestSearchIndexWhereInput[]
-    OR?: RequestSearchIndexWhereInput[]
-    NOT?: RequestSearchIndexWhereInput | RequestSearchIndexWhereInput[]
-    searchVector?: StringNullableFilter<"RequestSearchIndex"> | string | null
-    categoryPath?: StringNullableFilter<"RequestSearchIndex"> | string | null
-    locationText?: StringNullableFilter<"RequestSearchIndex"> | string | null
-    budgetRange?: StringNullableFilter<"RequestSearchIndex"> | string | null
-    createdAt?: DateTimeFilter<"RequestSearchIndex"> | Date | string
-    request?: XOR<RequestRelationFilter, RequestWhereInput>
-  }, "id" | "requestId">
-
-  export type RequestSearchIndexOrderByWithAggregationInput = {
-    id?: SortOrder
-    requestId?: SortOrder
-    searchVector?: SortOrderInput | SortOrder
-    categoryPath?: SortOrderInput | SortOrder
-    locationText?: SortOrderInput | SortOrder
-    budgetRange?: SortOrderInput | SortOrder
-    createdAt?: SortOrder
-    _count?: RequestSearchIndexCountOrderByAggregateInput
-    _max?: RequestSearchIndexMaxOrderByAggregateInput
-    _min?: RequestSearchIndexMinOrderByAggregateInput
-  }
-
-  export type RequestSearchIndexScalarWhereWithAggregatesInput = {
-    AND?: RequestSearchIndexScalarWhereWithAggregatesInput | RequestSearchIndexScalarWhereWithAggregatesInput[]
-    OR?: RequestSearchIndexScalarWhereWithAggregatesInput[]
-    NOT?: RequestSearchIndexScalarWhereWithAggregatesInput | RequestSearchIndexScalarWhereWithAggregatesInput[]
-    id?: UuidWithAggregatesFilter<"RequestSearchIndex"> | string
-    requestId?: UuidWithAggregatesFilter<"RequestSearchIndex"> | string
-    searchVector?: StringNullableWithAggregatesFilter<"RequestSearchIndex"> | string | null
-    categoryPath?: StringNullableWithAggregatesFilter<"RequestSearchIndex"> | string | null
-    locationText?: StringNullableWithAggregatesFilter<"RequestSearchIndex"> | string | null
-    budgetRange?: StringNullableWithAggregatesFilter<"RequestSearchIndex"> | string | null
-    createdAt?: DateTimeWithAggregatesFilter<"RequestSearchIndex"> | Date | string
-  }
-
   export type SavedSearchWhereInput = {
     AND?: SavedSearchWhereInput | SavedSearchWhereInput[]
     OR?: SavedSearchWhereInput[]
@@ -26651,6 +15835,10 @@ export namespace Prisma {
     acceptedAt?: DateTimeNullableFilter<"Bid"> | Date | string | null
     rejectedAt?: DateTimeNullableFilter<"Bid"> | Date | string | null
     withdrawnAt?: DateTimeNullableFilter<"Bid"> | Date | string | null
+    chatRoomId?: UuidNullableFilter<"Bid"> | string | null
+    fulfillmentStatus?: EnumFulfillmentStatusNullableFilter<"Bid"> | $Enums.FulfillmentStatus | null
+    fulfillmentUpdatedAt?: DateTimeNullableFilter<"Bid"> | Date | string | null
+    reviews?: ReviewListRelationFilter
   }
 
   export type BidOrderByWithRelationInput = {
@@ -26673,6 +15861,10 @@ export namespace Prisma {
     acceptedAt?: SortOrderInput | SortOrder
     rejectedAt?: SortOrderInput | SortOrder
     withdrawnAt?: SortOrderInput | SortOrder
+    chatRoomId?: SortOrderInput | SortOrder
+    fulfillmentStatus?: SortOrderInput | SortOrder
+    fulfillmentUpdatedAt?: SortOrderInput | SortOrder
+    reviews?: ReviewOrderByRelationAggregateInput
   }
 
   export type BidWhereUniqueInput = Prisma.AtLeast<{
@@ -26699,6 +15891,10 @@ export namespace Prisma {
     acceptedAt?: DateTimeNullableFilter<"Bid"> | Date | string | null
     rejectedAt?: DateTimeNullableFilter<"Bid"> | Date | string | null
     withdrawnAt?: DateTimeNullableFilter<"Bid"> | Date | string | null
+    chatRoomId?: UuidNullableFilter<"Bid"> | string | null
+    fulfillmentStatus?: EnumFulfillmentStatusNullableFilter<"Bid"> | $Enums.FulfillmentStatus | null
+    fulfillmentUpdatedAt?: DateTimeNullableFilter<"Bid"> | Date | string | null
+    reviews?: ReviewListRelationFilter
   }, "id" | "requestId_merchantId">
 
   export type BidOrderByWithAggregationInput = {
@@ -26721,6 +15917,9 @@ export namespace Prisma {
     acceptedAt?: SortOrderInput | SortOrder
     rejectedAt?: SortOrderInput | SortOrder
     withdrawnAt?: SortOrderInput | SortOrder
+    chatRoomId?: SortOrderInput | SortOrder
+    fulfillmentStatus?: SortOrderInput | SortOrder
+    fulfillmentUpdatedAt?: SortOrderInput | SortOrder
     _count?: BidCountOrderByAggregateInput
     _avg?: BidAvgOrderByAggregateInput
     _max?: BidMaxOrderByAggregateInput
@@ -26751,6 +15950,9 @@ export namespace Prisma {
     acceptedAt?: DateTimeNullableWithAggregatesFilter<"Bid"> | Date | string | null
     rejectedAt?: DateTimeNullableWithAggregatesFilter<"Bid"> | Date | string | null
     withdrawnAt?: DateTimeNullableWithAggregatesFilter<"Bid"> | Date | string | null
+    chatRoomId?: UuidNullableWithAggregatesFilter<"Bid"> | string | null
+    fulfillmentStatus?: EnumFulfillmentStatusNullableWithAggregatesFilter<"Bid"> | $Enums.FulfillmentStatus | null
+    fulfillmentUpdatedAt?: DateTimeNullableWithAggregatesFilter<"Bid"> | Date | string | null
   }
 
   export type ChatRoomWhereInput = {
@@ -26769,7 +15971,7 @@ export namespace Prisma {
     lastMessageAt?: DateTimeNullableFilter<"ChatRoom"> | Date | string | null
     createdAt?: DateTimeFilter<"ChatRoom"> | Date | string
     updatedAt?: DateTimeFilter<"ChatRoom"> | Date | string
-    participants?: ChatParticipantListRelationFilter
+    participants?: ChatRoomParticipantListRelationFilter
   }
 
   export type ChatRoomOrderByWithRelationInput = {
@@ -26785,7 +15987,7 @@ export namespace Prisma {
     lastMessageAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    participants?: ChatParticipantOrderByRelationAggregateInput
+    participants?: ChatRoomParticipantOrderByRelationAggregateInput
   }
 
   export type ChatRoomWhereUniqueInput = Prisma.AtLeast<{
@@ -26804,7 +16006,7 @@ export namespace Prisma {
     lastMessageAt?: DateTimeNullableFilter<"ChatRoom"> | Date | string | null
     createdAt?: DateTimeFilter<"ChatRoom"> | Date | string
     updatedAt?: DateTimeFilter<"ChatRoom"> | Date | string
-    participants?: ChatParticipantListRelationFilter
+    participants?: ChatRoomParticipantListRelationFilter
   }, "id">
 
   export type ChatRoomOrderByWithAggregationInput = {
@@ -26845,192 +16047,70 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"ChatRoom"> | Date | string
   }
 
-  export type ChatParticipantWhereInput = {
-    AND?: ChatParticipantWhereInput | ChatParticipantWhereInput[]
-    OR?: ChatParticipantWhereInput[]
-    NOT?: ChatParticipantWhereInput | ChatParticipantWhereInput[]
-    id?: UuidFilter<"ChatParticipant"> | string
-    roomId?: UuidFilter<"ChatParticipant"> | string
-    userId?: UuidFilter<"ChatParticipant"> | string
-    role?: EnumParticipantRoleFilter<"ChatParticipant"> | $Enums.ParticipantRole
-    joinedAt?: DateTimeFilter<"ChatParticipant"> | Date | string
-    lastReadAt?: DateTimeNullableFilter<"ChatParticipant"> | Date | string | null
-    isMuted?: BoolFilter<"ChatParticipant"> | boolean
-    isBanned?: BoolFilter<"ChatParticipant"> | boolean
-    bannedUntil?: DateTimeNullableFilter<"ChatParticipant"> | Date | string | null
-    bannedBy?: UuidNullableFilter<"ChatParticipant"> | string | null
-    bannedReason?: StringNullableFilter<"ChatParticipant"> | string | null
-    leftAt?: DateTimeNullableFilter<"ChatParticipant"> | Date | string | null
+  export type ChatRoomParticipantWhereInput = {
+    AND?: ChatRoomParticipantWhereInput | ChatRoomParticipantWhereInput[]
+    OR?: ChatRoomParticipantWhereInput[]
+    NOT?: ChatRoomParticipantWhereInput | ChatRoomParticipantWhereInput[]
+    id?: UuidFilter<"ChatRoomParticipant"> | string
+    roomId?: UuidFilter<"ChatRoomParticipant"> | string
+    userId?: UuidFilter<"ChatRoomParticipant"> | string
+    role?: StringFilter<"ChatRoomParticipant"> | string
+    lastReadAt?: DateTimeNullableFilter<"ChatRoomParticipant"> | Date | string | null
+    joinedAt?: DateTimeFilter<"ChatRoomParticipant"> | Date | string
+    leftAt?: DateTimeNullableFilter<"ChatRoomParticipant"> | Date | string | null
     room?: XOR<ChatRoomRelationFilter, ChatRoomWhereInput>
   }
 
-  export type ChatParticipantOrderByWithRelationInput = {
+  export type ChatRoomParticipantOrderByWithRelationInput = {
     id?: SortOrder
     roomId?: SortOrder
     userId?: SortOrder
     role?: SortOrder
-    joinedAt?: SortOrder
     lastReadAt?: SortOrderInput | SortOrder
-    isMuted?: SortOrder
-    isBanned?: SortOrder
-    bannedUntil?: SortOrderInput | SortOrder
-    bannedBy?: SortOrderInput | SortOrder
-    bannedReason?: SortOrderInput | SortOrder
+    joinedAt?: SortOrder
     leftAt?: SortOrderInput | SortOrder
     room?: ChatRoomOrderByWithRelationInput
   }
 
-  export type ChatParticipantWhereUniqueInput = Prisma.AtLeast<{
+  export type ChatRoomParticipantWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    roomId_userId?: ChatParticipantRoomIdUserIdCompoundUniqueInput
-    AND?: ChatParticipantWhereInput | ChatParticipantWhereInput[]
-    OR?: ChatParticipantWhereInput[]
-    NOT?: ChatParticipantWhereInput | ChatParticipantWhereInput[]
-    roomId?: UuidFilter<"ChatParticipant"> | string
-    userId?: UuidFilter<"ChatParticipant"> | string
-    role?: EnumParticipantRoleFilter<"ChatParticipant"> | $Enums.ParticipantRole
-    joinedAt?: DateTimeFilter<"ChatParticipant"> | Date | string
-    lastReadAt?: DateTimeNullableFilter<"ChatParticipant"> | Date | string | null
-    isMuted?: BoolFilter<"ChatParticipant"> | boolean
-    isBanned?: BoolFilter<"ChatParticipant"> | boolean
-    bannedUntil?: DateTimeNullableFilter<"ChatParticipant"> | Date | string | null
-    bannedBy?: UuidNullableFilter<"ChatParticipant"> | string | null
-    bannedReason?: StringNullableFilter<"ChatParticipant"> | string | null
-    leftAt?: DateTimeNullableFilter<"ChatParticipant"> | Date | string | null
+    roomId_userId?: ChatRoomParticipantRoomIdUserIdCompoundUniqueInput
+    AND?: ChatRoomParticipantWhereInput | ChatRoomParticipantWhereInput[]
+    OR?: ChatRoomParticipantWhereInput[]
+    NOT?: ChatRoomParticipantWhereInput | ChatRoomParticipantWhereInput[]
+    roomId?: UuidFilter<"ChatRoomParticipant"> | string
+    userId?: UuidFilter<"ChatRoomParticipant"> | string
+    role?: StringFilter<"ChatRoomParticipant"> | string
+    lastReadAt?: DateTimeNullableFilter<"ChatRoomParticipant"> | Date | string | null
+    joinedAt?: DateTimeFilter<"ChatRoomParticipant"> | Date | string
+    leftAt?: DateTimeNullableFilter<"ChatRoomParticipant"> | Date | string | null
     room?: XOR<ChatRoomRelationFilter, ChatRoomWhereInput>
   }, "id" | "roomId_userId">
 
-  export type ChatParticipantOrderByWithAggregationInput = {
+  export type ChatRoomParticipantOrderByWithAggregationInput = {
     id?: SortOrder
     roomId?: SortOrder
     userId?: SortOrder
     role?: SortOrder
-    joinedAt?: SortOrder
     lastReadAt?: SortOrderInput | SortOrder
-    isMuted?: SortOrder
-    isBanned?: SortOrder
-    bannedUntil?: SortOrderInput | SortOrder
-    bannedBy?: SortOrderInput | SortOrder
-    bannedReason?: SortOrderInput | SortOrder
+    joinedAt?: SortOrder
     leftAt?: SortOrderInput | SortOrder
-    _count?: ChatParticipantCountOrderByAggregateInput
-    _max?: ChatParticipantMaxOrderByAggregateInput
-    _min?: ChatParticipantMinOrderByAggregateInput
+    _count?: ChatRoomParticipantCountOrderByAggregateInput
+    _max?: ChatRoomParticipantMaxOrderByAggregateInput
+    _min?: ChatRoomParticipantMinOrderByAggregateInput
   }
 
-  export type ChatParticipantScalarWhereWithAggregatesInput = {
-    AND?: ChatParticipantScalarWhereWithAggregatesInput | ChatParticipantScalarWhereWithAggregatesInput[]
-    OR?: ChatParticipantScalarWhereWithAggregatesInput[]
-    NOT?: ChatParticipantScalarWhereWithAggregatesInput | ChatParticipantScalarWhereWithAggregatesInput[]
-    id?: UuidWithAggregatesFilter<"ChatParticipant"> | string
-    roomId?: UuidWithAggregatesFilter<"ChatParticipant"> | string
-    userId?: UuidWithAggregatesFilter<"ChatParticipant"> | string
-    role?: EnumParticipantRoleWithAggregatesFilter<"ChatParticipant"> | $Enums.ParticipantRole
-    joinedAt?: DateTimeWithAggregatesFilter<"ChatParticipant"> | Date | string
-    lastReadAt?: DateTimeNullableWithAggregatesFilter<"ChatParticipant"> | Date | string | null
-    isMuted?: BoolWithAggregatesFilter<"ChatParticipant"> | boolean
-    isBanned?: BoolWithAggregatesFilter<"ChatParticipant"> | boolean
-    bannedUntil?: DateTimeNullableWithAggregatesFilter<"ChatParticipant"> | Date | string | null
-    bannedBy?: UuidNullableWithAggregatesFilter<"ChatParticipant"> | string | null
-    bannedReason?: StringNullableWithAggregatesFilter<"ChatParticipant"> | string | null
-    leftAt?: DateTimeNullableWithAggregatesFilter<"ChatParticipant"> | Date | string | null
-  }
-
-  export type NotificationTemplateWhereInput = {
-    AND?: NotificationTemplateWhereInput | NotificationTemplateWhereInput[]
-    OR?: NotificationTemplateWhereInput[]
-    NOT?: NotificationTemplateWhereInput | NotificationTemplateWhereInput[]
-    id?: UuidFilter<"NotificationTemplate"> | string
-    name?: StringFilter<"NotificationTemplate"> | string
-    type?: EnumNotificationTypeFilter<"NotificationTemplate"> | $Enums.NotificationType
-    channel?: EnumNotifChannelFilter<"NotificationTemplate"> | $Enums.NotifChannel
-    subjectTemplate?: StringNullableFilter<"NotificationTemplate"> | string | null
-    contentTemplate?: StringFilter<"NotificationTemplate"> | string
-    variables?: JsonFilter<"NotificationTemplate">
-    defaultLocale?: StringFilter<"NotificationTemplate"> | string
-    isActive?: BoolFilter<"NotificationTemplate"> | boolean
-    version?: IntFilter<"NotificationTemplate"> | number
-    createdBy?: UuidNullableFilter<"NotificationTemplate"> | string | null
-    createdAt?: DateTimeFilter<"NotificationTemplate"> | Date | string
-    updatedAt?: DateTimeFilter<"NotificationTemplate"> | Date | string
-    notifications?: NotificationListRelationFilter
-  }
-
-  export type NotificationTemplateOrderByWithRelationInput = {
-    id?: SortOrder
-    name?: SortOrder
-    type?: SortOrder
-    channel?: SortOrder
-    subjectTemplate?: SortOrderInput | SortOrder
-    contentTemplate?: SortOrder
-    variables?: SortOrder
-    defaultLocale?: SortOrder
-    isActive?: SortOrder
-    version?: SortOrder
-    createdBy?: SortOrderInput | SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    notifications?: NotificationOrderByRelationAggregateInput
-  }
-
-  export type NotificationTemplateWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
-    AND?: NotificationTemplateWhereInput | NotificationTemplateWhereInput[]
-    OR?: NotificationTemplateWhereInput[]
-    NOT?: NotificationTemplateWhereInput | NotificationTemplateWhereInput[]
-    name?: StringFilter<"NotificationTemplate"> | string
-    type?: EnumNotificationTypeFilter<"NotificationTemplate"> | $Enums.NotificationType
-    channel?: EnumNotifChannelFilter<"NotificationTemplate"> | $Enums.NotifChannel
-    subjectTemplate?: StringNullableFilter<"NotificationTemplate"> | string | null
-    contentTemplate?: StringFilter<"NotificationTemplate"> | string
-    variables?: JsonFilter<"NotificationTemplate">
-    defaultLocale?: StringFilter<"NotificationTemplate"> | string
-    isActive?: BoolFilter<"NotificationTemplate"> | boolean
-    version?: IntFilter<"NotificationTemplate"> | number
-    createdBy?: UuidNullableFilter<"NotificationTemplate"> | string | null
-    createdAt?: DateTimeFilter<"NotificationTemplate"> | Date | string
-    updatedAt?: DateTimeFilter<"NotificationTemplate"> | Date | string
-    notifications?: NotificationListRelationFilter
-  }, "id">
-
-  export type NotificationTemplateOrderByWithAggregationInput = {
-    id?: SortOrder
-    name?: SortOrder
-    type?: SortOrder
-    channel?: SortOrder
-    subjectTemplate?: SortOrderInput | SortOrder
-    contentTemplate?: SortOrder
-    variables?: SortOrder
-    defaultLocale?: SortOrder
-    isActive?: SortOrder
-    version?: SortOrder
-    createdBy?: SortOrderInput | SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    _count?: NotificationTemplateCountOrderByAggregateInput
-    _avg?: NotificationTemplateAvgOrderByAggregateInput
-    _max?: NotificationTemplateMaxOrderByAggregateInput
-    _min?: NotificationTemplateMinOrderByAggregateInput
-    _sum?: NotificationTemplateSumOrderByAggregateInput
-  }
-
-  export type NotificationTemplateScalarWhereWithAggregatesInput = {
-    AND?: NotificationTemplateScalarWhereWithAggregatesInput | NotificationTemplateScalarWhereWithAggregatesInput[]
-    OR?: NotificationTemplateScalarWhereWithAggregatesInput[]
-    NOT?: NotificationTemplateScalarWhereWithAggregatesInput | NotificationTemplateScalarWhereWithAggregatesInput[]
-    id?: UuidWithAggregatesFilter<"NotificationTemplate"> | string
-    name?: StringWithAggregatesFilter<"NotificationTemplate"> | string
-    type?: EnumNotificationTypeWithAggregatesFilter<"NotificationTemplate"> | $Enums.NotificationType
-    channel?: EnumNotifChannelWithAggregatesFilter<"NotificationTemplate"> | $Enums.NotifChannel
-    subjectTemplate?: StringNullableWithAggregatesFilter<"NotificationTemplate"> | string | null
-    contentTemplate?: StringWithAggregatesFilter<"NotificationTemplate"> | string
-    variables?: JsonWithAggregatesFilter<"NotificationTemplate">
-    defaultLocale?: StringWithAggregatesFilter<"NotificationTemplate"> | string
-    isActive?: BoolWithAggregatesFilter<"NotificationTemplate"> | boolean
-    version?: IntWithAggregatesFilter<"NotificationTemplate"> | number
-    createdBy?: UuidNullableWithAggregatesFilter<"NotificationTemplate"> | string | null
-    createdAt?: DateTimeWithAggregatesFilter<"NotificationTemplate"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"NotificationTemplate"> | Date | string
+  export type ChatRoomParticipantScalarWhereWithAggregatesInput = {
+    AND?: ChatRoomParticipantScalarWhereWithAggregatesInput | ChatRoomParticipantScalarWhereWithAggregatesInput[]
+    OR?: ChatRoomParticipantScalarWhereWithAggregatesInput[]
+    NOT?: ChatRoomParticipantScalarWhereWithAggregatesInput | ChatRoomParticipantScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"ChatRoomParticipant"> | string
+    roomId?: UuidWithAggregatesFilter<"ChatRoomParticipant"> | string
+    userId?: UuidWithAggregatesFilter<"ChatRoomParticipant"> | string
+    role?: StringWithAggregatesFilter<"ChatRoomParticipant"> | string
+    lastReadAt?: DateTimeNullableWithAggregatesFilter<"ChatRoomParticipant"> | Date | string | null
+    joinedAt?: DateTimeWithAggregatesFilter<"ChatRoomParticipant"> | Date | string
+    leftAt?: DateTimeNullableWithAggregatesFilter<"ChatRoomParticipant"> | Date | string | null
   }
 
   export type NotificationWhereInput = {
@@ -27041,24 +16121,10 @@ export namespace Prisma {
     userId?: UuidFilter<"Notification"> | string
     type?: EnumNotificationTypeFilter<"Notification"> | $Enums.NotificationType
     title?: StringFilter<"Notification"> | string
-    content?: StringFilter<"Notification"> | string
-    channel?: EnumNotifChannelFilter<"Notification"> | $Enums.NotifChannel
-    priority?: EnumNotificationPriorityFilter<"Notification"> | $Enums.NotificationPriority
-    status?: EnumNotificationStatusFilter<"Notification"> | $Enums.NotificationStatus
-    templateId?: UuidNullableFilter<"Notification"> | string | null
-    templateVariables?: JsonFilter<"Notification">
-    metadata?: JsonFilter<"Notification">
-    scheduledAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
-    sentAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
-    deliveredAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
-    readAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
-    expiresAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
+    body?: StringFilter<"Notification"> | string
+    data?: JsonFilter<"Notification">
+    isRead?: BoolFilter<"Notification"> | boolean
     createdAt?: DateTimeFilter<"Notification"> | Date | string
-    updatedAt?: DateTimeFilter<"Notification"> | Date | string
-    template?: XOR<NotificationTemplateNullableRelationFilter, NotificationTemplateWhereInput> | null
-    deliveries?: NotificationDeliveryListRelationFilter
-    reads?: NotificationReadListRelationFilter
-    analytics?: NotificationStatListRelationFilter
   }
 
   export type NotificationOrderByWithRelationInput = {
@@ -27066,24 +16132,10 @@ export namespace Prisma {
     userId?: SortOrder
     type?: SortOrder
     title?: SortOrder
-    content?: SortOrder
-    channel?: SortOrder
-    priority?: SortOrder
-    status?: SortOrder
-    templateId?: SortOrderInput | SortOrder
-    templateVariables?: SortOrder
-    metadata?: SortOrder
-    scheduledAt?: SortOrderInput | SortOrder
-    sentAt?: SortOrderInput | SortOrder
-    deliveredAt?: SortOrderInput | SortOrder
-    readAt?: SortOrderInput | SortOrder
-    expiresAt?: SortOrderInput | SortOrder
+    body?: SortOrder
+    data?: SortOrder
+    isRead?: SortOrder
     createdAt?: SortOrder
-    updatedAt?: SortOrder
-    template?: NotificationTemplateOrderByWithRelationInput
-    deliveries?: NotificationDeliveryOrderByRelationAggregateInput
-    reads?: NotificationReadOrderByRelationAggregateInput
-    analytics?: NotificationStatOrderByRelationAggregateInput
   }
 
   export type NotificationWhereUniqueInput = Prisma.AtLeast<{
@@ -27094,24 +16146,10 @@ export namespace Prisma {
     userId?: UuidFilter<"Notification"> | string
     type?: EnumNotificationTypeFilter<"Notification"> | $Enums.NotificationType
     title?: StringFilter<"Notification"> | string
-    content?: StringFilter<"Notification"> | string
-    channel?: EnumNotifChannelFilter<"Notification"> | $Enums.NotifChannel
-    priority?: EnumNotificationPriorityFilter<"Notification"> | $Enums.NotificationPriority
-    status?: EnumNotificationStatusFilter<"Notification"> | $Enums.NotificationStatus
-    templateId?: UuidNullableFilter<"Notification"> | string | null
-    templateVariables?: JsonFilter<"Notification">
-    metadata?: JsonFilter<"Notification">
-    scheduledAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
-    sentAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
-    deliveredAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
-    readAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
-    expiresAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
+    body?: StringFilter<"Notification"> | string
+    data?: JsonFilter<"Notification">
+    isRead?: BoolFilter<"Notification"> | boolean
     createdAt?: DateTimeFilter<"Notification"> | Date | string
-    updatedAt?: DateTimeFilter<"Notification"> | Date | string
-    template?: XOR<NotificationTemplateNullableRelationFilter, NotificationTemplateWhereInput> | null
-    deliveries?: NotificationDeliveryListRelationFilter
-    reads?: NotificationReadListRelationFilter
-    analytics?: NotificationStatListRelationFilter
   }, "id">
 
   export type NotificationOrderByWithAggregationInput = {
@@ -27119,20 +16157,10 @@ export namespace Prisma {
     userId?: SortOrder
     type?: SortOrder
     title?: SortOrder
-    content?: SortOrder
-    channel?: SortOrder
-    priority?: SortOrder
-    status?: SortOrder
-    templateId?: SortOrderInput | SortOrder
-    templateVariables?: SortOrder
-    metadata?: SortOrder
-    scheduledAt?: SortOrderInput | SortOrder
-    sentAt?: SortOrderInput | SortOrder
-    deliveredAt?: SortOrderInput | SortOrder
-    readAt?: SortOrderInput | SortOrder
-    expiresAt?: SortOrderInput | SortOrder
+    body?: SortOrder
+    data?: SortOrder
+    isRead?: SortOrder
     createdAt?: SortOrder
-    updatedAt?: SortOrder
     _count?: NotificationCountOrderByAggregateInput
     _max?: NotificationMaxOrderByAggregateInput
     _min?: NotificationMinOrderByAggregateInput
@@ -27146,557 +16174,88 @@ export namespace Prisma {
     userId?: UuidWithAggregatesFilter<"Notification"> | string
     type?: EnumNotificationTypeWithAggregatesFilter<"Notification"> | $Enums.NotificationType
     title?: StringWithAggregatesFilter<"Notification"> | string
-    content?: StringWithAggregatesFilter<"Notification"> | string
-    channel?: EnumNotifChannelWithAggregatesFilter<"Notification"> | $Enums.NotifChannel
-    priority?: EnumNotificationPriorityWithAggregatesFilter<"Notification"> | $Enums.NotificationPriority
-    status?: EnumNotificationStatusWithAggregatesFilter<"Notification"> | $Enums.NotificationStatus
-    templateId?: UuidNullableWithAggregatesFilter<"Notification"> | string | null
-    templateVariables?: JsonWithAggregatesFilter<"Notification">
-    metadata?: JsonWithAggregatesFilter<"Notification">
-    scheduledAt?: DateTimeNullableWithAggregatesFilter<"Notification"> | Date | string | null
-    sentAt?: DateTimeNullableWithAggregatesFilter<"Notification"> | Date | string | null
-    deliveredAt?: DateTimeNullableWithAggregatesFilter<"Notification"> | Date | string | null
-    readAt?: DateTimeNullableWithAggregatesFilter<"Notification"> | Date | string | null
-    expiresAt?: DateTimeNullableWithAggregatesFilter<"Notification"> | Date | string | null
+    body?: StringWithAggregatesFilter<"Notification"> | string
+    data?: JsonWithAggregatesFilter<"Notification">
+    isRead?: BoolWithAggregatesFilter<"Notification"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Notification"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"Notification"> | Date | string
   }
 
-  export type NotificationChannelWhereInput = {
-    AND?: NotificationChannelWhereInput | NotificationChannelWhereInput[]
-    OR?: NotificationChannelWhereInput[]
-    NOT?: NotificationChannelWhereInput | NotificationChannelWhereInput[]
-    id?: UuidFilter<"NotificationChannel"> | string
-    userId?: UuidFilter<"NotificationChannel"> | string
-    channelType?: EnumNotifChannelFilter<"NotificationChannel"> | $Enums.NotifChannel
-    isEnabled?: BoolFilter<"NotificationChannel"> | boolean
-    deviceToken?: StringNullableFilter<"NotificationChannel"> | string | null
-    emailAddress?: StringNullableFilter<"NotificationChannel"> | string | null
-    phoneNumber?: StringNullableFilter<"NotificationChannel"> | string | null
-    preferences?: JsonFilter<"NotificationChannel">
-    lastUsedAt?: DateTimeNullableFilter<"NotificationChannel"> | Date | string | null
-    verifiedAt?: DateTimeNullableFilter<"NotificationChannel"> | Date | string | null
-    createdAt?: DateTimeFilter<"NotificationChannel"> | Date | string
-    updatedAt?: DateTimeFilter<"NotificationChannel"> | Date | string
+  export type ReviewWhereInput = {
+    AND?: ReviewWhereInput | ReviewWhereInput[]
+    OR?: ReviewWhereInput[]
+    NOT?: ReviewWhereInput | ReviewWhereInput[]
+    id?: UuidFilter<"Review"> | string
+    bidId?: UuidFilter<"Review"> | string
+    requestId?: UuidFilter<"Review"> | string
+    reviewerId?: UuidFilter<"Review"> | string
+    revieweeId?: UuidFilter<"Review"> | string
+    type?: EnumReviewTypeFilter<"Review"> | $Enums.ReviewType
+    rating?: IntFilter<"Review"> | number
+    comment?: StringNullableFilter<"Review"> | string | null
+    createdAt?: DateTimeFilter<"Review"> | Date | string
+    bid?: XOR<BidRelationFilter, BidWhereInput>
   }
 
-  export type NotificationChannelOrderByWithRelationInput = {
+  export type ReviewOrderByWithRelationInput = {
     id?: SortOrder
-    userId?: SortOrder
-    channelType?: SortOrder
-    isEnabled?: SortOrder
-    deviceToken?: SortOrderInput | SortOrder
-    emailAddress?: SortOrderInput | SortOrder
-    phoneNumber?: SortOrderInput | SortOrder
-    preferences?: SortOrder
-    lastUsedAt?: SortOrderInput | SortOrder
-    verifiedAt?: SortOrderInput | SortOrder
+    bidId?: SortOrder
+    requestId?: SortOrder
+    reviewerId?: SortOrder
+    revieweeId?: SortOrder
+    type?: SortOrder
+    rating?: SortOrder
+    comment?: SortOrderInput | SortOrder
     createdAt?: SortOrder
-    updatedAt?: SortOrder
+    bid?: BidOrderByWithRelationInput
   }
 
-  export type NotificationChannelWhereUniqueInput = Prisma.AtLeast<{
+  export type ReviewWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    userId_channelType?: NotificationChannelUserIdChannelTypeCompoundUniqueInput
-    AND?: NotificationChannelWhereInput | NotificationChannelWhereInput[]
-    OR?: NotificationChannelWhereInput[]
-    NOT?: NotificationChannelWhereInput | NotificationChannelWhereInput[]
-    userId?: UuidFilter<"NotificationChannel"> | string
-    channelType?: EnumNotifChannelFilter<"NotificationChannel"> | $Enums.NotifChannel
-    isEnabled?: BoolFilter<"NotificationChannel"> | boolean
-    deviceToken?: StringNullableFilter<"NotificationChannel"> | string | null
-    emailAddress?: StringNullableFilter<"NotificationChannel"> | string | null
-    phoneNumber?: StringNullableFilter<"NotificationChannel"> | string | null
-    preferences?: JsonFilter<"NotificationChannel">
-    lastUsedAt?: DateTimeNullableFilter<"NotificationChannel"> | Date | string | null
-    verifiedAt?: DateTimeNullableFilter<"NotificationChannel"> | Date | string | null
-    createdAt?: DateTimeFilter<"NotificationChannel"> | Date | string
-    updatedAt?: DateTimeFilter<"NotificationChannel"> | Date | string
-  }, "id" | "userId_channelType">
+    bidId_reviewerId?: ReviewBidIdReviewerIdCompoundUniqueInput
+    AND?: ReviewWhereInput | ReviewWhereInput[]
+    OR?: ReviewWhereInput[]
+    NOT?: ReviewWhereInput | ReviewWhereInput[]
+    bidId?: UuidFilter<"Review"> | string
+    requestId?: UuidFilter<"Review"> | string
+    reviewerId?: UuidFilter<"Review"> | string
+    revieweeId?: UuidFilter<"Review"> | string
+    type?: EnumReviewTypeFilter<"Review"> | $Enums.ReviewType
+    rating?: IntFilter<"Review"> | number
+    comment?: StringNullableFilter<"Review"> | string | null
+    createdAt?: DateTimeFilter<"Review"> | Date | string
+    bid?: XOR<BidRelationFilter, BidWhereInput>
+  }, "id" | "bidId_reviewerId">
 
-  export type NotificationChannelOrderByWithAggregationInput = {
+  export type ReviewOrderByWithAggregationInput = {
     id?: SortOrder
-    userId?: SortOrder
-    channelType?: SortOrder
-    isEnabled?: SortOrder
-    deviceToken?: SortOrderInput | SortOrder
-    emailAddress?: SortOrderInput | SortOrder
-    phoneNumber?: SortOrderInput | SortOrder
-    preferences?: SortOrder
-    lastUsedAt?: SortOrderInput | SortOrder
-    verifiedAt?: SortOrderInput | SortOrder
+    bidId?: SortOrder
+    requestId?: SortOrder
+    reviewerId?: SortOrder
+    revieweeId?: SortOrder
+    type?: SortOrder
+    rating?: SortOrder
+    comment?: SortOrderInput | SortOrder
     createdAt?: SortOrder
-    updatedAt?: SortOrder
-    _count?: NotificationChannelCountOrderByAggregateInput
-    _max?: NotificationChannelMaxOrderByAggregateInput
-    _min?: NotificationChannelMinOrderByAggregateInput
+    _count?: ReviewCountOrderByAggregateInput
+    _avg?: ReviewAvgOrderByAggregateInput
+    _max?: ReviewMaxOrderByAggregateInput
+    _min?: ReviewMinOrderByAggregateInput
+    _sum?: ReviewSumOrderByAggregateInput
   }
 
-  export type NotificationChannelScalarWhereWithAggregatesInput = {
-    AND?: NotificationChannelScalarWhereWithAggregatesInput | NotificationChannelScalarWhereWithAggregatesInput[]
-    OR?: NotificationChannelScalarWhereWithAggregatesInput[]
-    NOT?: NotificationChannelScalarWhereWithAggregatesInput | NotificationChannelScalarWhereWithAggregatesInput[]
-    id?: UuidWithAggregatesFilter<"NotificationChannel"> | string
-    userId?: UuidWithAggregatesFilter<"NotificationChannel"> | string
-    channelType?: EnumNotifChannelWithAggregatesFilter<"NotificationChannel"> | $Enums.NotifChannel
-    isEnabled?: BoolWithAggregatesFilter<"NotificationChannel"> | boolean
-    deviceToken?: StringNullableWithAggregatesFilter<"NotificationChannel"> | string | null
-    emailAddress?: StringNullableWithAggregatesFilter<"NotificationChannel"> | string | null
-    phoneNumber?: StringNullableWithAggregatesFilter<"NotificationChannel"> | string | null
-    preferences?: JsonWithAggregatesFilter<"NotificationChannel">
-    lastUsedAt?: DateTimeNullableWithAggregatesFilter<"NotificationChannel"> | Date | string | null
-    verifiedAt?: DateTimeNullableWithAggregatesFilter<"NotificationChannel"> | Date | string | null
-    createdAt?: DateTimeWithAggregatesFilter<"NotificationChannel"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"NotificationChannel"> | Date | string
-  }
-
-  export type NotificationPreferenceWhereInput = {
-    AND?: NotificationPreferenceWhereInput | NotificationPreferenceWhereInput[]
-    OR?: NotificationPreferenceWhereInput[]
-    NOT?: NotificationPreferenceWhereInput | NotificationPreferenceWhereInput[]
-    id?: UuidFilter<"NotificationPreference"> | string
-    userId?: UuidFilter<"NotificationPreference"> | string
-    notificationType?: EnumNotificationTypeFilter<"NotificationPreference"> | $Enums.NotificationType
-    channelType?: EnumNotifChannelFilter<"NotificationPreference"> | $Enums.NotifChannel
-    isEnabled?: BoolFilter<"NotificationPreference"> | boolean
-    quietHoursStart?: StringNullableFilter<"NotificationPreference"> | string | null
-    quietHoursEnd?: StringNullableFilter<"NotificationPreference"> | string | null
-    minPriority?: EnumNotificationPriorityNullableFilter<"NotificationPreference"> | $Enums.NotificationPriority | null
-    maxFrequencyMinutes?: IntNullableFilter<"NotificationPreference"> | number | null
-    preferences?: JsonFilter<"NotificationPreference">
-    createdAt?: DateTimeFilter<"NotificationPreference"> | Date | string
-    updatedAt?: DateTimeFilter<"NotificationPreference"> | Date | string
-  }
-
-  export type NotificationPreferenceOrderByWithRelationInput = {
-    id?: SortOrder
-    userId?: SortOrder
-    notificationType?: SortOrder
-    channelType?: SortOrder
-    isEnabled?: SortOrder
-    quietHoursStart?: SortOrderInput | SortOrder
-    quietHoursEnd?: SortOrderInput | SortOrder
-    minPriority?: SortOrderInput | SortOrder
-    maxFrequencyMinutes?: SortOrderInput | SortOrder
-    preferences?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type NotificationPreferenceWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
-    userId_notificationType_channelType?: NotificationPreferenceUserIdNotificationTypeChannelTypeCompoundUniqueInput
-    AND?: NotificationPreferenceWhereInput | NotificationPreferenceWhereInput[]
-    OR?: NotificationPreferenceWhereInput[]
-    NOT?: NotificationPreferenceWhereInput | NotificationPreferenceWhereInput[]
-    userId?: UuidFilter<"NotificationPreference"> | string
-    notificationType?: EnumNotificationTypeFilter<"NotificationPreference"> | $Enums.NotificationType
-    channelType?: EnumNotifChannelFilter<"NotificationPreference"> | $Enums.NotifChannel
-    isEnabled?: BoolFilter<"NotificationPreference"> | boolean
-    quietHoursStart?: StringNullableFilter<"NotificationPreference"> | string | null
-    quietHoursEnd?: StringNullableFilter<"NotificationPreference"> | string | null
-    minPriority?: EnumNotificationPriorityNullableFilter<"NotificationPreference"> | $Enums.NotificationPriority | null
-    maxFrequencyMinutes?: IntNullableFilter<"NotificationPreference"> | number | null
-    preferences?: JsonFilter<"NotificationPreference">
-    createdAt?: DateTimeFilter<"NotificationPreference"> | Date | string
-    updatedAt?: DateTimeFilter<"NotificationPreference"> | Date | string
-  }, "id" | "userId_notificationType_channelType">
-
-  export type NotificationPreferenceOrderByWithAggregationInput = {
-    id?: SortOrder
-    userId?: SortOrder
-    notificationType?: SortOrder
-    channelType?: SortOrder
-    isEnabled?: SortOrder
-    quietHoursStart?: SortOrderInput | SortOrder
-    quietHoursEnd?: SortOrderInput | SortOrder
-    minPriority?: SortOrderInput | SortOrder
-    maxFrequencyMinutes?: SortOrderInput | SortOrder
-    preferences?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    _count?: NotificationPreferenceCountOrderByAggregateInput
-    _avg?: NotificationPreferenceAvgOrderByAggregateInput
-    _max?: NotificationPreferenceMaxOrderByAggregateInput
-    _min?: NotificationPreferenceMinOrderByAggregateInput
-    _sum?: NotificationPreferenceSumOrderByAggregateInput
-  }
-
-  export type NotificationPreferenceScalarWhereWithAggregatesInput = {
-    AND?: NotificationPreferenceScalarWhereWithAggregatesInput | NotificationPreferenceScalarWhereWithAggregatesInput[]
-    OR?: NotificationPreferenceScalarWhereWithAggregatesInput[]
-    NOT?: NotificationPreferenceScalarWhereWithAggregatesInput | NotificationPreferenceScalarWhereWithAggregatesInput[]
-    id?: UuidWithAggregatesFilter<"NotificationPreference"> | string
-    userId?: UuidWithAggregatesFilter<"NotificationPreference"> | string
-    notificationType?: EnumNotificationTypeWithAggregatesFilter<"NotificationPreference"> | $Enums.NotificationType
-    channelType?: EnumNotifChannelWithAggregatesFilter<"NotificationPreference"> | $Enums.NotifChannel
-    isEnabled?: BoolWithAggregatesFilter<"NotificationPreference"> | boolean
-    quietHoursStart?: StringNullableWithAggregatesFilter<"NotificationPreference"> | string | null
-    quietHoursEnd?: StringNullableWithAggregatesFilter<"NotificationPreference"> | string | null
-    minPriority?: EnumNotificationPriorityNullableWithAggregatesFilter<"NotificationPreference"> | $Enums.NotificationPriority | null
-    maxFrequencyMinutes?: IntNullableWithAggregatesFilter<"NotificationPreference"> | number | null
-    preferences?: JsonWithAggregatesFilter<"NotificationPreference">
-    createdAt?: DateTimeWithAggregatesFilter<"NotificationPreference"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"NotificationPreference"> | Date | string
-  }
-
-  export type NotificationDeliveryWhereInput = {
-    AND?: NotificationDeliveryWhereInput | NotificationDeliveryWhereInput[]
-    OR?: NotificationDeliveryWhereInput[]
-    NOT?: NotificationDeliveryWhereInput | NotificationDeliveryWhereInput[]
-    id?: UuidFilter<"NotificationDelivery"> | string
-    notificationId?: UuidFilter<"NotificationDelivery"> | string
-    channelType?: EnumNotifChannelFilter<"NotificationDelivery"> | $Enums.NotifChannel
-    provider?: StringFilter<"NotificationDelivery"> | string
-    recipient?: StringFilter<"NotificationDelivery"> | string
-    status?: EnumNotifDeliveryStatusFilter<"NotificationDelivery"> | $Enums.NotifDeliveryStatus
-    attemptCount?: IntFilter<"NotificationDelivery"> | number
-    sentAt?: DateTimeNullableFilter<"NotificationDelivery"> | Date | string | null
-    deliveredAt?: DateTimeNullableFilter<"NotificationDelivery"> | Date | string | null
-    errorMessage?: StringNullableFilter<"NotificationDelivery"> | string | null
-    errorCode?: StringNullableFilter<"NotificationDelivery"> | string | null
-    metadata?: JsonFilter<"NotificationDelivery">
-    createdAt?: DateTimeFilter<"NotificationDelivery"> | Date | string
-    notification?: XOR<NotificationRelationFilter, NotificationWhereInput>
-  }
-
-  export type NotificationDeliveryOrderByWithRelationInput = {
-    id?: SortOrder
-    notificationId?: SortOrder
-    channelType?: SortOrder
-    provider?: SortOrder
-    recipient?: SortOrder
-    status?: SortOrder
-    attemptCount?: SortOrder
-    sentAt?: SortOrderInput | SortOrder
-    deliveredAt?: SortOrderInput | SortOrder
-    errorMessage?: SortOrderInput | SortOrder
-    errorCode?: SortOrderInput | SortOrder
-    metadata?: SortOrder
-    createdAt?: SortOrder
-    notification?: NotificationOrderByWithRelationInput
-  }
-
-  export type NotificationDeliveryWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
-    AND?: NotificationDeliveryWhereInput | NotificationDeliveryWhereInput[]
-    OR?: NotificationDeliveryWhereInput[]
-    NOT?: NotificationDeliveryWhereInput | NotificationDeliveryWhereInput[]
-    notificationId?: UuidFilter<"NotificationDelivery"> | string
-    channelType?: EnumNotifChannelFilter<"NotificationDelivery"> | $Enums.NotifChannel
-    provider?: StringFilter<"NotificationDelivery"> | string
-    recipient?: StringFilter<"NotificationDelivery"> | string
-    status?: EnumNotifDeliveryStatusFilter<"NotificationDelivery"> | $Enums.NotifDeliveryStatus
-    attemptCount?: IntFilter<"NotificationDelivery"> | number
-    sentAt?: DateTimeNullableFilter<"NotificationDelivery"> | Date | string | null
-    deliveredAt?: DateTimeNullableFilter<"NotificationDelivery"> | Date | string | null
-    errorMessage?: StringNullableFilter<"NotificationDelivery"> | string | null
-    errorCode?: StringNullableFilter<"NotificationDelivery"> | string | null
-    metadata?: JsonFilter<"NotificationDelivery">
-    createdAt?: DateTimeFilter<"NotificationDelivery"> | Date | string
-    notification?: XOR<NotificationRelationFilter, NotificationWhereInput>
-  }, "id">
-
-  export type NotificationDeliveryOrderByWithAggregationInput = {
-    id?: SortOrder
-    notificationId?: SortOrder
-    channelType?: SortOrder
-    provider?: SortOrder
-    recipient?: SortOrder
-    status?: SortOrder
-    attemptCount?: SortOrder
-    sentAt?: SortOrderInput | SortOrder
-    deliveredAt?: SortOrderInput | SortOrder
-    errorMessage?: SortOrderInput | SortOrder
-    errorCode?: SortOrderInput | SortOrder
-    metadata?: SortOrder
-    createdAt?: SortOrder
-    _count?: NotificationDeliveryCountOrderByAggregateInput
-    _avg?: NotificationDeliveryAvgOrderByAggregateInput
-    _max?: NotificationDeliveryMaxOrderByAggregateInput
-    _min?: NotificationDeliveryMinOrderByAggregateInput
-    _sum?: NotificationDeliverySumOrderByAggregateInput
-  }
-
-  export type NotificationDeliveryScalarWhereWithAggregatesInput = {
-    AND?: NotificationDeliveryScalarWhereWithAggregatesInput | NotificationDeliveryScalarWhereWithAggregatesInput[]
-    OR?: NotificationDeliveryScalarWhereWithAggregatesInput[]
-    NOT?: NotificationDeliveryScalarWhereWithAggregatesInput | NotificationDeliveryScalarWhereWithAggregatesInput[]
-    id?: UuidWithAggregatesFilter<"NotificationDelivery"> | string
-    notificationId?: UuidWithAggregatesFilter<"NotificationDelivery"> | string
-    channelType?: EnumNotifChannelWithAggregatesFilter<"NotificationDelivery"> | $Enums.NotifChannel
-    provider?: StringWithAggregatesFilter<"NotificationDelivery"> | string
-    recipient?: StringWithAggregatesFilter<"NotificationDelivery"> | string
-    status?: EnumNotifDeliveryStatusWithAggregatesFilter<"NotificationDelivery"> | $Enums.NotifDeliveryStatus
-    attemptCount?: IntWithAggregatesFilter<"NotificationDelivery"> | number
-    sentAt?: DateTimeNullableWithAggregatesFilter<"NotificationDelivery"> | Date | string | null
-    deliveredAt?: DateTimeNullableWithAggregatesFilter<"NotificationDelivery"> | Date | string | null
-    errorMessage?: StringNullableWithAggregatesFilter<"NotificationDelivery"> | string | null
-    errorCode?: StringNullableWithAggregatesFilter<"NotificationDelivery"> | string | null
-    metadata?: JsonWithAggregatesFilter<"NotificationDelivery">
-    createdAt?: DateTimeWithAggregatesFilter<"NotificationDelivery"> | Date | string
-  }
-
-  export type NotificationReadWhereInput = {
-    AND?: NotificationReadWhereInput | NotificationReadWhereInput[]
-    OR?: NotificationReadWhereInput[]
-    NOT?: NotificationReadWhereInput | NotificationReadWhereInput[]
-    id?: UuidFilter<"NotificationRead"> | string
-    notificationId?: UuidFilter<"NotificationRead"> | string
-    userId?: UuidFilter<"NotificationRead"> | string
-    readAt?: DateTimeFilter<"NotificationRead"> | Date | string
-    deviceFingerprint?: StringNullableFilter<"NotificationRead"> | string | null
-    ipAddress?: StringNullableFilter<"NotificationRead"> | string | null
-    userAgent?: StringNullableFilter<"NotificationRead"> | string | null
-    createdAt?: DateTimeFilter<"NotificationRead"> | Date | string
-    notification?: XOR<NotificationRelationFilter, NotificationWhereInput>
-  }
-
-  export type NotificationReadOrderByWithRelationInput = {
-    id?: SortOrder
-    notificationId?: SortOrder
-    userId?: SortOrder
-    readAt?: SortOrder
-    deviceFingerprint?: SortOrderInput | SortOrder
-    ipAddress?: SortOrderInput | SortOrder
-    userAgent?: SortOrderInput | SortOrder
-    createdAt?: SortOrder
-    notification?: NotificationOrderByWithRelationInput
-  }
-
-  export type NotificationReadWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
-    notificationId_userId?: NotificationReadNotificationIdUserIdCompoundUniqueInput
-    AND?: NotificationReadWhereInput | NotificationReadWhereInput[]
-    OR?: NotificationReadWhereInput[]
-    NOT?: NotificationReadWhereInput | NotificationReadWhereInput[]
-    notificationId?: UuidFilter<"NotificationRead"> | string
-    userId?: UuidFilter<"NotificationRead"> | string
-    readAt?: DateTimeFilter<"NotificationRead"> | Date | string
-    deviceFingerprint?: StringNullableFilter<"NotificationRead"> | string | null
-    ipAddress?: StringNullableFilter<"NotificationRead"> | string | null
-    userAgent?: StringNullableFilter<"NotificationRead"> | string | null
-    createdAt?: DateTimeFilter<"NotificationRead"> | Date | string
-    notification?: XOR<NotificationRelationFilter, NotificationWhereInput>
-  }, "id" | "notificationId_userId">
-
-  export type NotificationReadOrderByWithAggregationInput = {
-    id?: SortOrder
-    notificationId?: SortOrder
-    userId?: SortOrder
-    readAt?: SortOrder
-    deviceFingerprint?: SortOrderInput | SortOrder
-    ipAddress?: SortOrderInput | SortOrder
-    userAgent?: SortOrderInput | SortOrder
-    createdAt?: SortOrder
-    _count?: NotificationReadCountOrderByAggregateInput
-    _max?: NotificationReadMaxOrderByAggregateInput
-    _min?: NotificationReadMinOrderByAggregateInput
-  }
-
-  export type NotificationReadScalarWhereWithAggregatesInput = {
-    AND?: NotificationReadScalarWhereWithAggregatesInput | NotificationReadScalarWhereWithAggregatesInput[]
-    OR?: NotificationReadScalarWhereWithAggregatesInput[]
-    NOT?: NotificationReadScalarWhereWithAggregatesInput | NotificationReadScalarWhereWithAggregatesInput[]
-    id?: UuidWithAggregatesFilter<"NotificationRead"> | string
-    notificationId?: UuidWithAggregatesFilter<"NotificationRead"> | string
-    userId?: UuidWithAggregatesFilter<"NotificationRead"> | string
-    readAt?: DateTimeWithAggregatesFilter<"NotificationRead"> | Date | string
-    deviceFingerprint?: StringNullableWithAggregatesFilter<"NotificationRead"> | string | null
-    ipAddress?: StringNullableWithAggregatesFilter<"NotificationRead"> | string | null
-    userAgent?: StringNullableWithAggregatesFilter<"NotificationRead"> | string | null
-    createdAt?: DateTimeWithAggregatesFilter<"NotificationRead"> | Date | string
-  }
-
-  export type NotificationStatWhereInput = {
-    AND?: NotificationStatWhereInput | NotificationStatWhereInput[]
-    OR?: NotificationStatWhereInput[]
-    NOT?: NotificationStatWhereInput | NotificationStatWhereInput[]
-    id?: UuidFilter<"NotificationStat"> | string
-    notificationId?: UuidNullableFilter<"NotificationStat"> | string | null
-    userId?: UuidNullableFilter<"NotificationStat"> | string | null
-    eventType?: EnumNotifAnalyticsEventFilter<"NotificationStat"> | $Enums.NotifAnalyticsEvent
-    channelType?: EnumNotifChannelFilter<"NotificationStat"> | $Enums.NotifChannel
-    provider?: StringNullableFilter<"NotificationStat"> | string | null
-    deliveryTimeMs?: IntNullableFilter<"NotificationStat"> | number | null
-    success?: BoolFilter<"NotificationStat"> | boolean
-    errorCode?: StringNullableFilter<"NotificationStat"> | string | null
-    metadata?: JsonFilter<"NotificationStat">
-    createdAt?: DateTimeFilter<"NotificationStat"> | Date | string
-    notification?: XOR<NotificationNullableRelationFilter, NotificationWhereInput> | null
-  }
-
-  export type NotificationStatOrderByWithRelationInput = {
-    id?: SortOrder
-    notificationId?: SortOrderInput | SortOrder
-    userId?: SortOrderInput | SortOrder
-    eventType?: SortOrder
-    channelType?: SortOrder
-    provider?: SortOrderInput | SortOrder
-    deliveryTimeMs?: SortOrderInput | SortOrder
-    success?: SortOrder
-    errorCode?: SortOrderInput | SortOrder
-    metadata?: SortOrder
-    createdAt?: SortOrder
-    notification?: NotificationOrderByWithRelationInput
-  }
-
-  export type NotificationStatWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
-    AND?: NotificationStatWhereInput | NotificationStatWhereInput[]
-    OR?: NotificationStatWhereInput[]
-    NOT?: NotificationStatWhereInput | NotificationStatWhereInput[]
-    notificationId?: UuidNullableFilter<"NotificationStat"> | string | null
-    userId?: UuidNullableFilter<"NotificationStat"> | string | null
-    eventType?: EnumNotifAnalyticsEventFilter<"NotificationStat"> | $Enums.NotifAnalyticsEvent
-    channelType?: EnumNotifChannelFilter<"NotificationStat"> | $Enums.NotifChannel
-    provider?: StringNullableFilter<"NotificationStat"> | string | null
-    deliveryTimeMs?: IntNullableFilter<"NotificationStat"> | number | null
-    success?: BoolFilter<"NotificationStat"> | boolean
-    errorCode?: StringNullableFilter<"NotificationStat"> | string | null
-    metadata?: JsonFilter<"NotificationStat">
-    createdAt?: DateTimeFilter<"NotificationStat"> | Date | string
-    notification?: XOR<NotificationNullableRelationFilter, NotificationWhereInput> | null
-  }, "id">
-
-  export type NotificationStatOrderByWithAggregationInput = {
-    id?: SortOrder
-    notificationId?: SortOrderInput | SortOrder
-    userId?: SortOrderInput | SortOrder
-    eventType?: SortOrder
-    channelType?: SortOrder
-    provider?: SortOrderInput | SortOrder
-    deliveryTimeMs?: SortOrderInput | SortOrder
-    success?: SortOrder
-    errorCode?: SortOrderInput | SortOrder
-    metadata?: SortOrder
-    createdAt?: SortOrder
-    _count?: NotificationStatCountOrderByAggregateInput
-    _avg?: NotificationStatAvgOrderByAggregateInput
-    _max?: NotificationStatMaxOrderByAggregateInput
-    _min?: NotificationStatMinOrderByAggregateInput
-    _sum?: NotificationStatSumOrderByAggregateInput
-  }
-
-  export type NotificationStatScalarWhereWithAggregatesInput = {
-    AND?: NotificationStatScalarWhereWithAggregatesInput | NotificationStatScalarWhereWithAggregatesInput[]
-    OR?: NotificationStatScalarWhereWithAggregatesInput[]
-    NOT?: NotificationStatScalarWhereWithAggregatesInput | NotificationStatScalarWhereWithAggregatesInput[]
-    id?: UuidWithAggregatesFilter<"NotificationStat"> | string
-    notificationId?: UuidNullableWithAggregatesFilter<"NotificationStat"> | string | null
-    userId?: UuidNullableWithAggregatesFilter<"NotificationStat"> | string | null
-    eventType?: EnumNotifAnalyticsEventWithAggregatesFilter<"NotificationStat"> | $Enums.NotifAnalyticsEvent
-    channelType?: EnumNotifChannelWithAggregatesFilter<"NotificationStat"> | $Enums.NotifChannel
-    provider?: StringNullableWithAggregatesFilter<"NotificationStat"> | string | null
-    deliveryTimeMs?: IntNullableWithAggregatesFilter<"NotificationStat"> | number | null
-    success?: BoolWithAggregatesFilter<"NotificationStat"> | boolean
-    errorCode?: StringNullableWithAggregatesFilter<"NotificationStat"> | string | null
-    metadata?: JsonWithAggregatesFilter<"NotificationStat">
-    createdAt?: DateTimeWithAggregatesFilter<"NotificationStat"> | Date | string
-  }
-
-  export type BidTemplateWhereInput = {
-    AND?: BidTemplateWhereInput | BidTemplateWhereInput[]
-    OR?: BidTemplateWhereInput[]
-    NOT?: BidTemplateWhereInput | BidTemplateWhereInput[]
-    id?: UuidFilter<"BidTemplate"> | string
-    merchantId?: UuidFilter<"BidTemplate"> | string
-    name?: StringFilter<"BidTemplate"> | string
-    description?: StringNullableFilter<"BidTemplate"> | string | null
-    amountType?: EnumAmountTypeFilter<"BidTemplate"> | $Enums.AmountType
-    amountPercentage?: DecimalNullableFilter<"BidTemplate"> | Decimal | DecimalJsLike | number | string | null
-    fixedAmount?: DecimalNullableFilter<"BidTemplate"> | Decimal | DecimalJsLike | number | string | null
-    deliveryDays?: IntNullableFilter<"BidTemplate"> | number | null
-    deliveryNotes?: StringNullableFilter<"BidTemplate"> | string | null
-    specialTerms?: StringNullableFilter<"BidTemplate"> | string | null
-    isActive?: BoolFilter<"BidTemplate"> | boolean
-    usageCount?: IntFilter<"BidTemplate"> | number
-    successCount?: IntFilter<"BidTemplate"> | number
-    createdAt?: DateTimeFilter<"BidTemplate"> | Date | string
-    updatedAt?: DateTimeFilter<"BidTemplate"> | Date | string
-  }
-
-  export type BidTemplateOrderByWithRelationInput = {
-    id?: SortOrder
-    merchantId?: SortOrder
-    name?: SortOrder
-    description?: SortOrderInput | SortOrder
-    amountType?: SortOrder
-    amountPercentage?: SortOrderInput | SortOrder
-    fixedAmount?: SortOrderInput | SortOrder
-    deliveryDays?: SortOrderInput | SortOrder
-    deliveryNotes?: SortOrderInput | SortOrder
-    specialTerms?: SortOrderInput | SortOrder
-    isActive?: SortOrder
-    usageCount?: SortOrder
-    successCount?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type BidTemplateWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
-    AND?: BidTemplateWhereInput | BidTemplateWhereInput[]
-    OR?: BidTemplateWhereInput[]
-    NOT?: BidTemplateWhereInput | BidTemplateWhereInput[]
-    merchantId?: UuidFilter<"BidTemplate"> | string
-    name?: StringFilter<"BidTemplate"> | string
-    description?: StringNullableFilter<"BidTemplate"> | string | null
-    amountType?: EnumAmountTypeFilter<"BidTemplate"> | $Enums.AmountType
-    amountPercentage?: DecimalNullableFilter<"BidTemplate"> | Decimal | DecimalJsLike | number | string | null
-    fixedAmount?: DecimalNullableFilter<"BidTemplate"> | Decimal | DecimalJsLike | number | string | null
-    deliveryDays?: IntNullableFilter<"BidTemplate"> | number | null
-    deliveryNotes?: StringNullableFilter<"BidTemplate"> | string | null
-    specialTerms?: StringNullableFilter<"BidTemplate"> | string | null
-    isActive?: BoolFilter<"BidTemplate"> | boolean
-    usageCount?: IntFilter<"BidTemplate"> | number
-    successCount?: IntFilter<"BidTemplate"> | number
-    createdAt?: DateTimeFilter<"BidTemplate"> | Date | string
-    updatedAt?: DateTimeFilter<"BidTemplate"> | Date | string
-  }, "id">
-
-  export type BidTemplateOrderByWithAggregationInput = {
-    id?: SortOrder
-    merchantId?: SortOrder
-    name?: SortOrder
-    description?: SortOrderInput | SortOrder
-    amountType?: SortOrder
-    amountPercentage?: SortOrderInput | SortOrder
-    fixedAmount?: SortOrderInput | SortOrder
-    deliveryDays?: SortOrderInput | SortOrder
-    deliveryNotes?: SortOrderInput | SortOrder
-    specialTerms?: SortOrderInput | SortOrder
-    isActive?: SortOrder
-    usageCount?: SortOrder
-    successCount?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    _count?: BidTemplateCountOrderByAggregateInput
-    _avg?: BidTemplateAvgOrderByAggregateInput
-    _max?: BidTemplateMaxOrderByAggregateInput
-    _min?: BidTemplateMinOrderByAggregateInput
-    _sum?: BidTemplateSumOrderByAggregateInput
-  }
-
-  export type BidTemplateScalarWhereWithAggregatesInput = {
-    AND?: BidTemplateScalarWhereWithAggregatesInput | BidTemplateScalarWhereWithAggregatesInput[]
-    OR?: BidTemplateScalarWhereWithAggregatesInput[]
-    NOT?: BidTemplateScalarWhereWithAggregatesInput | BidTemplateScalarWhereWithAggregatesInput[]
-    id?: UuidWithAggregatesFilter<"BidTemplate"> | string
-    merchantId?: UuidWithAggregatesFilter<"BidTemplate"> | string
-    name?: StringWithAggregatesFilter<"BidTemplate"> | string
-    description?: StringNullableWithAggregatesFilter<"BidTemplate"> | string | null
-    amountType?: EnumAmountTypeWithAggregatesFilter<"BidTemplate"> | $Enums.AmountType
-    amountPercentage?: DecimalNullableWithAggregatesFilter<"BidTemplate"> | Decimal | DecimalJsLike | number | string | null
-    fixedAmount?: DecimalNullableWithAggregatesFilter<"BidTemplate"> | Decimal | DecimalJsLike | number | string | null
-    deliveryDays?: IntNullableWithAggregatesFilter<"BidTemplate"> | number | null
-    deliveryNotes?: StringNullableWithAggregatesFilter<"BidTemplate"> | string | null
-    specialTerms?: StringNullableWithAggregatesFilter<"BidTemplate"> | string | null
-    isActive?: BoolWithAggregatesFilter<"BidTemplate"> | boolean
-    usageCount?: IntWithAggregatesFilter<"BidTemplate"> | number
-    successCount?: IntWithAggregatesFilter<"BidTemplate"> | number
-    createdAt?: DateTimeWithAggregatesFilter<"BidTemplate"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"BidTemplate"> | Date | string
+  export type ReviewScalarWhereWithAggregatesInput = {
+    AND?: ReviewScalarWhereWithAggregatesInput | ReviewScalarWhereWithAggregatesInput[]
+    OR?: ReviewScalarWhereWithAggregatesInput[]
+    NOT?: ReviewScalarWhereWithAggregatesInput | ReviewScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"Review"> | string
+    bidId?: UuidWithAggregatesFilter<"Review"> | string
+    requestId?: UuidWithAggregatesFilter<"Review"> | string
+    reviewerId?: UuidWithAggregatesFilter<"Review"> | string
+    revieweeId?: UuidWithAggregatesFilter<"Review"> | string
+    type?: EnumReviewTypeWithAggregatesFilter<"Review"> | $Enums.ReviewType
+    rating?: IntWithAggregatesFilter<"Review"> | number
+    comment?: StringNullableWithAggregatesFilter<"Review"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"Review"> | Date | string
   }
 
   export type UserCreateInput = {
@@ -28026,7 +16585,6 @@ export namespace Prisma {
     parent?: RequestCategoryCreateNestedOneWithoutChildrenInput
     children?: RequestCategoryCreateNestedManyWithoutParentInput
     requests?: RequestCreateNestedManyWithoutCategoryInput
-    drafts?: RequestDraftCreateNestedManyWithoutCategoryInput
   }
 
   export type RequestCategoryUncheckedCreateInput = {
@@ -28042,7 +16600,6 @@ export namespace Prisma {
     updatedAt?: Date | string
     children?: RequestCategoryUncheckedCreateNestedManyWithoutParentInput
     requests?: RequestUncheckedCreateNestedManyWithoutCategoryInput
-    drafts?: RequestDraftUncheckedCreateNestedManyWithoutCategoryInput
   }
 
   export type RequestCategoryUpdateInput = {
@@ -28058,7 +16615,6 @@ export namespace Prisma {
     parent?: RequestCategoryUpdateOneWithoutChildrenNestedInput
     children?: RequestCategoryUpdateManyWithoutParentNestedInput
     requests?: RequestUpdateManyWithoutCategoryNestedInput
-    drafts?: RequestDraftUpdateManyWithoutCategoryNestedInput
   }
 
   export type RequestCategoryUncheckedUpdateInput = {
@@ -28074,7 +16630,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     children?: RequestCategoryUncheckedUpdateManyWithoutParentNestedInput
     requests?: RequestUncheckedUpdateManyWithoutCategoryNestedInput
-    drafts?: RequestDraftUncheckedUpdateManyWithoutCategoryNestedInput
   }
 
   export type RequestCategoryCreateManyInput = {
@@ -28135,16 +16690,14 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    category: RequestCategoryCreateNestedOneWithoutRequestsInput
+    category?: RequestCategoryCreateNestedOneWithoutRequestsInput
     images?: RequestImageCreateNestedManyWithoutRequestInput
-    extensions?: RequestExtensionCreateNestedManyWithoutRequestInput
-    searchIndex?: RequestSearchIndexCreateNestedOneWithoutRequestInput
   }
 
   export type RequestUncheckedCreateInput = {
     id?: string
     buyerId: string
-    categoryId: string
+    categoryId?: string | null
     title: string
     description: string
     budgetMin?: Decimal | DecimalJsLike | number | string | null
@@ -28163,8 +16716,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     images?: RequestImageUncheckedCreateNestedManyWithoutRequestInput
-    extensions?: RequestExtensionUncheckedCreateNestedManyWithoutRequestInput
-    searchIndex?: RequestSearchIndexUncheckedCreateNestedOneWithoutRequestInput
   }
 
   export type RequestUpdateInput = {
@@ -28187,16 +16738,14 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    category?: RequestCategoryUpdateOneRequiredWithoutRequestsNestedInput
+    category?: RequestCategoryUpdateOneWithoutRequestsNestedInput
     images?: RequestImageUpdateManyWithoutRequestNestedInput
-    extensions?: RequestExtensionUpdateManyWithoutRequestNestedInput
-    searchIndex?: RequestSearchIndexUpdateOneWithoutRequestNestedInput
   }
 
   export type RequestUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     buyerId?: StringFieldUpdateOperationsInput | string
-    categoryId?: StringFieldUpdateOperationsInput | string
+    categoryId?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     budgetMin?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -28215,14 +16764,12 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     images?: RequestImageUncheckedUpdateManyWithoutRequestNestedInput
-    extensions?: RequestExtensionUncheckedUpdateManyWithoutRequestNestedInput
-    searchIndex?: RequestSearchIndexUncheckedUpdateOneWithoutRequestNestedInput
   }
 
   export type RequestCreateManyInput = {
     id?: string
     buyerId: string
-    categoryId: string
+    categoryId?: string | null
     title: string
     description: string
     budgetMin?: Decimal | DecimalJsLike | number | string | null
@@ -28267,7 +16814,7 @@ export namespace Prisma {
   export type RequestUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     buyerId?: StringFieldUpdateOperationsInput | string
-    categoryId?: StringFieldUpdateOperationsInput | string
+    categoryId?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     budgetMin?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -28391,262 +16938,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type RequestDraftCreateInput = {
-    id?: string
-    buyerId: string
-    title?: string | null
-    description?: string | null
-    budgetMin?: Decimal | DecimalJsLike | number | string | null
-    budgetMax?: Decimal | DecimalJsLike | number | string | null
-    locationLat?: Decimal | DecimalJsLike | number | string | null
-    locationLng?: Decimal | DecimalJsLike | number | string | null
-    locationAddress?: string | null
-    autoSaveData?: JsonNullValueInput | InputJsonValue
-    expiresAt: Date | string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    category?: RequestCategoryCreateNestedOneWithoutDraftsInput
-  }
-
-  export type RequestDraftUncheckedCreateInput = {
-    id?: string
-    buyerId: string
-    categoryId?: string | null
-    title?: string | null
-    description?: string | null
-    budgetMin?: Decimal | DecimalJsLike | number | string | null
-    budgetMax?: Decimal | DecimalJsLike | number | string | null
-    locationLat?: Decimal | DecimalJsLike | number | string | null
-    locationLng?: Decimal | DecimalJsLike | number | string | null
-    locationAddress?: string | null
-    autoSaveData?: JsonNullValueInput | InputJsonValue
-    expiresAt: Date | string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type RequestDraftUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    buyerId?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    budgetMin?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    budgetMax?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationLat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationLng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    autoSaveData?: JsonNullValueInput | InputJsonValue
-    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    category?: RequestCategoryUpdateOneWithoutDraftsNestedInput
-  }
-
-  export type RequestDraftUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    buyerId?: StringFieldUpdateOperationsInput | string
-    categoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    title?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    budgetMin?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    budgetMax?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationLat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationLng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    autoSaveData?: JsonNullValueInput | InputJsonValue
-    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type RequestDraftCreateManyInput = {
-    id?: string
-    buyerId: string
-    categoryId?: string | null
-    title?: string | null
-    description?: string | null
-    budgetMin?: Decimal | DecimalJsLike | number | string | null
-    budgetMax?: Decimal | DecimalJsLike | number | string | null
-    locationLat?: Decimal | DecimalJsLike | number | string | null
-    locationLng?: Decimal | DecimalJsLike | number | string | null
-    locationAddress?: string | null
-    autoSaveData?: JsonNullValueInput | InputJsonValue
-    expiresAt: Date | string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type RequestDraftUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    buyerId?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    budgetMin?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    budgetMax?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationLat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationLng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    autoSaveData?: JsonNullValueInput | InputJsonValue
-    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type RequestDraftUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    buyerId?: StringFieldUpdateOperationsInput | string
-    categoryId?: NullableStringFieldUpdateOperationsInput | string | null
-    title?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    budgetMin?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    budgetMax?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationLat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationLng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    autoSaveData?: JsonNullValueInput | InputJsonValue
-    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type RequestExtensionCreateInput = {
-    id?: string
-    originalExpiresAt: Date | string
-    newExpiresAt: Date | string
-    extensionReason?: string | null
-    extendedBy?: string | null
-    createdAt?: Date | string
-    request: RequestCreateNestedOneWithoutExtensionsInput
-  }
-
-  export type RequestExtensionUncheckedCreateInput = {
-    id?: string
-    requestId: string
-    originalExpiresAt: Date | string
-    newExpiresAt: Date | string
-    extensionReason?: string | null
-    extendedBy?: string | null
-    createdAt?: Date | string
-  }
-
-  export type RequestExtensionUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    originalExpiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    newExpiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
-    extendedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    request?: RequestUpdateOneRequiredWithoutExtensionsNestedInput
-  }
-
-  export type RequestExtensionUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    requestId?: StringFieldUpdateOperationsInput | string
-    originalExpiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    newExpiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
-    extendedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type RequestExtensionCreateManyInput = {
-    id?: string
-    requestId: string
-    originalExpiresAt: Date | string
-    newExpiresAt: Date | string
-    extensionReason?: string | null
-    extendedBy?: string | null
-    createdAt?: Date | string
-  }
-
-  export type RequestExtensionUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    originalExpiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    newExpiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
-    extendedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type RequestExtensionUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    requestId?: StringFieldUpdateOperationsInput | string
-    originalExpiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    newExpiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
-    extendedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type RequestSearchIndexCreateInput = {
-    id?: string
-    searchVector?: string | null
-    categoryPath?: string | null
-    locationText?: string | null
-    budgetRange?: string | null
-    createdAt?: Date | string
-    request: RequestCreateNestedOneWithoutSearchIndexInput
-  }
-
-  export type RequestSearchIndexUncheckedCreateInput = {
-    id?: string
-    requestId: string
-    searchVector?: string | null
-    categoryPath?: string | null
-    locationText?: string | null
-    budgetRange?: string | null
-    createdAt?: Date | string
-  }
-
-  export type RequestSearchIndexUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    searchVector?: NullableStringFieldUpdateOperationsInput | string | null
-    categoryPath?: NullableStringFieldUpdateOperationsInput | string | null
-    locationText?: NullableStringFieldUpdateOperationsInput | string | null
-    budgetRange?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    request?: RequestUpdateOneRequiredWithoutSearchIndexNestedInput
-  }
-
-  export type RequestSearchIndexUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    requestId?: StringFieldUpdateOperationsInput | string
-    searchVector?: NullableStringFieldUpdateOperationsInput | string | null
-    categoryPath?: NullableStringFieldUpdateOperationsInput | string | null
-    locationText?: NullableStringFieldUpdateOperationsInput | string | null
-    budgetRange?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type RequestSearchIndexCreateManyInput = {
-    id?: string
-    requestId: string
-    searchVector?: string | null
-    categoryPath?: string | null
-    locationText?: string | null
-    budgetRange?: string | null
-    createdAt?: Date | string
-  }
-
-  export type RequestSearchIndexUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    searchVector?: NullableStringFieldUpdateOperationsInput | string | null
-    categoryPath?: NullableStringFieldUpdateOperationsInput | string | null
-    locationText?: NullableStringFieldUpdateOperationsInput | string | null
-    budgetRange?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type RequestSearchIndexUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    requestId?: StringFieldUpdateOperationsInput | string
-    searchVector?: NullableStringFieldUpdateOperationsInput | string | null
-    categoryPath?: NullableStringFieldUpdateOperationsInput | string | null
-    locationText?: NullableStringFieldUpdateOperationsInput | string | null
-    budgetRange?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
   export type SavedSearchCreateInput = {
     id?: string
     userId: string
@@ -28737,6 +17028,10 @@ export namespace Prisma {
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     withdrawnAt?: Date | string | null
+    chatRoomId?: string | null
+    fulfillmentStatus?: $Enums.FulfillmentStatus | null
+    fulfillmentUpdatedAt?: Date | string | null
+    reviews?: ReviewCreateNestedManyWithoutBidInput
   }
 
   export type BidUncheckedCreateInput = {
@@ -28759,6 +17054,10 @@ export namespace Prisma {
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     withdrawnAt?: Date | string | null
+    chatRoomId?: string | null
+    fulfillmentStatus?: $Enums.FulfillmentStatus | null
+    fulfillmentUpdatedAt?: Date | string | null
+    reviews?: ReviewUncheckedCreateNestedManyWithoutBidInput
   }
 
   export type BidUpdateInput = {
@@ -28781,6 +17080,10 @@ export namespace Prisma {
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     withdrawnAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    chatRoomId?: NullableStringFieldUpdateOperationsInput | string | null
+    fulfillmentStatus?: NullableEnumFulfillmentStatusFieldUpdateOperationsInput | $Enums.FulfillmentStatus | null
+    fulfillmentUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviews?: ReviewUpdateManyWithoutBidNestedInput
   }
 
   export type BidUncheckedUpdateInput = {
@@ -28803,6 +17106,10 @@ export namespace Prisma {
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     withdrawnAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    chatRoomId?: NullableStringFieldUpdateOperationsInput | string | null
+    fulfillmentStatus?: NullableEnumFulfillmentStatusFieldUpdateOperationsInput | $Enums.FulfillmentStatus | null
+    fulfillmentUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviews?: ReviewUncheckedUpdateManyWithoutBidNestedInput
   }
 
   export type BidCreateManyInput = {
@@ -28825,6 +17132,9 @@ export namespace Prisma {
     acceptedAt?: Date | string | null
     rejectedAt?: Date | string | null
     withdrawnAt?: Date | string | null
+    chatRoomId?: string | null
+    fulfillmentStatus?: $Enums.FulfillmentStatus | null
+    fulfillmentUpdatedAt?: Date | string | null
   }
 
   export type BidUpdateManyMutationInput = {
@@ -28847,6 +17157,9 @@ export namespace Prisma {
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     withdrawnAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    chatRoomId?: NullableStringFieldUpdateOperationsInput | string | null
+    fulfillmentStatus?: NullableEnumFulfillmentStatusFieldUpdateOperationsInput | $Enums.FulfillmentStatus | null
+    fulfillmentUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type BidUncheckedUpdateManyInput = {
@@ -28869,6 +17182,9 @@ export namespace Prisma {
     acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     withdrawnAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    chatRoomId?: NullableStringFieldUpdateOperationsInput | string | null
+    fulfillmentStatus?: NullableEnumFulfillmentStatusFieldUpdateOperationsInput | $Enums.FulfillmentStatus | null
+    fulfillmentUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ChatRoomCreateInput = {
@@ -28884,7 +17200,7 @@ export namespace Prisma {
     lastMessageAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    participants?: ChatParticipantCreateNestedManyWithoutRoomInput
+    participants?: ChatRoomParticipantCreateNestedManyWithoutRoomInput
   }
 
   export type ChatRoomUncheckedCreateInput = {
@@ -28900,7 +17216,7 @@ export namespace Prisma {
     lastMessageAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    participants?: ChatParticipantUncheckedCreateNestedManyWithoutRoomInput
+    participants?: ChatRoomParticipantUncheckedCreateNestedManyWithoutRoomInput
   }
 
   export type ChatRoomUpdateInput = {
@@ -28916,7 +17232,7 @@ export namespace Prisma {
     lastMessageAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    participants?: ChatParticipantUpdateManyWithoutRoomNestedInput
+    participants?: ChatRoomParticipantUpdateManyWithoutRoomNestedInput
   }
 
   export type ChatRoomUncheckedUpdateInput = {
@@ -28932,7 +17248,7 @@ export namespace Prisma {
     lastMessageAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    participants?: ChatParticipantUncheckedUpdateManyWithoutRoomNestedInput
+    participants?: ChatRoomParticipantUncheckedUpdateManyWithoutRoomNestedInput
   }
 
   export type ChatRoomCreateManyInput = {
@@ -28980,224 +17296,73 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type ChatParticipantCreateInput = {
+  export type ChatRoomParticipantCreateInput = {
     id?: string
     userId: string
-    role?: $Enums.ParticipantRole
-    joinedAt?: Date | string
+    role?: string
     lastReadAt?: Date | string | null
-    isMuted?: boolean
-    isBanned?: boolean
-    bannedUntil?: Date | string | null
-    bannedBy?: string | null
-    bannedReason?: string | null
+    joinedAt?: Date | string
     leftAt?: Date | string | null
     room: ChatRoomCreateNestedOneWithoutParticipantsInput
   }
 
-  export type ChatParticipantUncheckedCreateInput = {
+  export type ChatRoomParticipantUncheckedCreateInput = {
     id?: string
     roomId: string
     userId: string
-    role?: $Enums.ParticipantRole
-    joinedAt?: Date | string
+    role?: string
     lastReadAt?: Date | string | null
-    isMuted?: boolean
-    isBanned?: boolean
-    bannedUntil?: Date | string | null
-    bannedBy?: string | null
-    bannedReason?: string | null
+    joinedAt?: Date | string
     leftAt?: Date | string | null
   }
 
-  export type ChatParticipantUpdateInput = {
+  export type ChatRoomParticipantUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    role?: EnumParticipantRoleFieldUpdateOperationsInput | $Enums.ParticipantRole
-    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: StringFieldUpdateOperationsInput | string
     lastReadAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    isMuted?: BoolFieldUpdateOperationsInput | boolean
-    isBanned?: BoolFieldUpdateOperationsInput | boolean
-    bannedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    bannedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    bannedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     leftAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     room?: ChatRoomUpdateOneRequiredWithoutParticipantsNestedInput
   }
 
-  export type ChatParticipantUncheckedUpdateInput = {
+  export type ChatRoomParticipantUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     roomId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    role?: EnumParticipantRoleFieldUpdateOperationsInput | $Enums.ParticipantRole
-    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: StringFieldUpdateOperationsInput | string
     lastReadAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    isMuted?: BoolFieldUpdateOperationsInput | boolean
-    isBanned?: BoolFieldUpdateOperationsInput | boolean
-    bannedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    bannedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    bannedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     leftAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
-  export type ChatParticipantCreateManyInput = {
+  export type ChatRoomParticipantCreateManyInput = {
     id?: string
     roomId: string
     userId: string
-    role?: $Enums.ParticipantRole
-    joinedAt?: Date | string
+    role?: string
     lastReadAt?: Date | string | null
-    isMuted?: boolean
-    isBanned?: boolean
-    bannedUntil?: Date | string | null
-    bannedBy?: string | null
-    bannedReason?: string | null
+    joinedAt?: Date | string
     leftAt?: Date | string | null
   }
 
-  export type ChatParticipantUpdateManyMutationInput = {
+  export type ChatRoomParticipantUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    role?: EnumParticipantRoleFieldUpdateOperationsInput | $Enums.ParticipantRole
-    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: StringFieldUpdateOperationsInput | string
     lastReadAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    isMuted?: BoolFieldUpdateOperationsInput | boolean
-    isBanned?: BoolFieldUpdateOperationsInput | boolean
-    bannedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    bannedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    bannedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     leftAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
-  export type ChatParticipantUncheckedUpdateManyInput = {
+  export type ChatRoomParticipantUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     roomId?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    role?: EnumParticipantRoleFieldUpdateOperationsInput | $Enums.ParticipantRole
-    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: StringFieldUpdateOperationsInput | string
     lastReadAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    isMuted?: BoolFieldUpdateOperationsInput | boolean
-    isBanned?: BoolFieldUpdateOperationsInput | boolean
-    bannedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    bannedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    bannedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     leftAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  }
-
-  export type NotificationTemplateCreateInput = {
-    id?: string
-    name: string
-    type: $Enums.NotificationType
-    channel: $Enums.NotifChannel
-    subjectTemplate?: string | null
-    contentTemplate: string
-    variables?: JsonNullValueInput | InputJsonValue
-    defaultLocale?: string
-    isActive?: boolean
-    version?: number
-    createdBy?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    notifications?: NotificationCreateNestedManyWithoutTemplateInput
-  }
-
-  export type NotificationTemplateUncheckedCreateInput = {
-    id?: string
-    name: string
-    type: $Enums.NotificationType
-    channel: $Enums.NotifChannel
-    subjectTemplate?: string | null
-    contentTemplate: string
-    variables?: JsonNullValueInput | InputJsonValue
-    defaultLocale?: string
-    isActive?: boolean
-    version?: number
-    createdBy?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    notifications?: NotificationUncheckedCreateNestedManyWithoutTemplateInput
-  }
-
-  export type NotificationTemplateUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
-    channel?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    subjectTemplate?: NullableStringFieldUpdateOperationsInput | string | null
-    contentTemplate?: StringFieldUpdateOperationsInput | string
-    variables?: JsonNullValueInput | InputJsonValue
-    defaultLocale?: StringFieldUpdateOperationsInput | string
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    version?: IntFieldUpdateOperationsInput | number
-    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    notifications?: NotificationUpdateManyWithoutTemplateNestedInput
-  }
-
-  export type NotificationTemplateUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
-    channel?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    subjectTemplate?: NullableStringFieldUpdateOperationsInput | string | null
-    contentTemplate?: StringFieldUpdateOperationsInput | string
-    variables?: JsonNullValueInput | InputJsonValue
-    defaultLocale?: StringFieldUpdateOperationsInput | string
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    version?: IntFieldUpdateOperationsInput | number
-    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    notifications?: NotificationUncheckedUpdateManyWithoutTemplateNestedInput
-  }
-
-  export type NotificationTemplateCreateManyInput = {
-    id?: string
-    name: string
-    type: $Enums.NotificationType
-    channel: $Enums.NotifChannel
-    subjectTemplate?: string | null
-    contentTemplate: string
-    variables?: JsonNullValueInput | InputJsonValue
-    defaultLocale?: string
-    isActive?: boolean
-    version?: number
-    createdBy?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type NotificationTemplateUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
-    channel?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    subjectTemplate?: NullableStringFieldUpdateOperationsInput | string | null
-    contentTemplate?: StringFieldUpdateOperationsInput | string
-    variables?: JsonNullValueInput | InputJsonValue
-    defaultLocale?: StringFieldUpdateOperationsInput | string
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    version?: IntFieldUpdateOperationsInput | number
-    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationTemplateUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
-    channel?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    subjectTemplate?: NullableStringFieldUpdateOperationsInput | string | null
-    contentTemplate?: StringFieldUpdateOperationsInput | string
-    variables?: JsonNullValueInput | InputJsonValue
-    defaultLocale?: StringFieldUpdateOperationsInput | string
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    version?: IntFieldUpdateOperationsInput | number
-    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type NotificationCreateInput = {
@@ -29205,23 +17370,10 @@ export namespace Prisma {
     userId: string
     type: $Enums.NotificationType
     title: string
-    content: string
-    channel?: $Enums.NotifChannel
-    priority?: $Enums.NotificationPriority
-    status?: $Enums.NotificationStatus
-    templateVariables?: JsonNullValueInput | InputJsonValue
-    metadata?: JsonNullValueInput | InputJsonValue
-    scheduledAt?: Date | string | null
-    sentAt?: Date | string | null
-    deliveredAt?: Date | string | null
-    readAt?: Date | string | null
-    expiresAt?: Date | string | null
+    body: string
+    data?: JsonNullValueInput | InputJsonValue
+    isRead?: boolean
     createdAt?: Date | string
-    updatedAt?: Date | string
-    template?: NotificationTemplateCreateNestedOneWithoutNotificationsInput
-    deliveries?: NotificationDeliveryCreateNestedManyWithoutNotificationInput
-    reads?: NotificationReadCreateNestedManyWithoutNotificationInput
-    analytics?: NotificationStatCreateNestedManyWithoutNotificationInput
   }
 
   export type NotificationUncheckedCreateInput = {
@@ -29229,23 +17381,10 @@ export namespace Prisma {
     userId: string
     type: $Enums.NotificationType
     title: string
-    content: string
-    channel?: $Enums.NotifChannel
-    priority?: $Enums.NotificationPriority
-    status?: $Enums.NotificationStatus
-    templateId?: string | null
-    templateVariables?: JsonNullValueInput | InputJsonValue
-    metadata?: JsonNullValueInput | InputJsonValue
-    scheduledAt?: Date | string | null
-    sentAt?: Date | string | null
-    deliveredAt?: Date | string | null
-    readAt?: Date | string | null
-    expiresAt?: Date | string | null
+    body: string
+    data?: JsonNullValueInput | InputJsonValue
+    isRead?: boolean
     createdAt?: Date | string
-    updatedAt?: Date | string
-    deliveries?: NotificationDeliveryUncheckedCreateNestedManyWithoutNotificationInput
-    reads?: NotificationReadUncheckedCreateNestedManyWithoutNotificationInput
-    analytics?: NotificationStatUncheckedCreateNestedManyWithoutNotificationInput
   }
 
   export type NotificationUpdateInput = {
@@ -29253,23 +17392,10 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
     title?: StringFieldUpdateOperationsInput | string
-    content?: StringFieldUpdateOperationsInput | string
-    channel?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    priority?: EnumNotificationPriorityFieldUpdateOperationsInput | $Enums.NotificationPriority
-    status?: EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
-    templateVariables?: JsonNullValueInput | InputJsonValue
-    metadata?: JsonNullValueInput | InputJsonValue
-    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    data?: JsonNullValueInput | InputJsonValue
+    isRead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    template?: NotificationTemplateUpdateOneWithoutNotificationsNestedInput
-    deliveries?: NotificationDeliveryUpdateManyWithoutNotificationNestedInput
-    reads?: NotificationReadUpdateManyWithoutNotificationNestedInput
-    analytics?: NotificationStatUpdateManyWithoutNotificationNestedInput
   }
 
   export type NotificationUncheckedUpdateInput = {
@@ -29277,23 +17403,10 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
     title?: StringFieldUpdateOperationsInput | string
-    content?: StringFieldUpdateOperationsInput | string
-    channel?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    priority?: EnumNotificationPriorityFieldUpdateOperationsInput | $Enums.NotificationPriority
-    status?: EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
-    templateId?: NullableStringFieldUpdateOperationsInput | string | null
-    templateVariables?: JsonNullValueInput | InputJsonValue
-    metadata?: JsonNullValueInput | InputJsonValue
-    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    data?: JsonNullValueInput | InputJsonValue
+    isRead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    deliveries?: NotificationDeliveryUncheckedUpdateManyWithoutNotificationNestedInput
-    reads?: NotificationReadUncheckedUpdateManyWithoutNotificationNestedInput
-    analytics?: NotificationStatUncheckedUpdateManyWithoutNotificationNestedInput
   }
 
   export type NotificationCreateManyInput = {
@@ -29301,20 +17414,10 @@ export namespace Prisma {
     userId: string
     type: $Enums.NotificationType
     title: string
-    content: string
-    channel?: $Enums.NotifChannel
-    priority?: $Enums.NotificationPriority
-    status?: $Enums.NotificationStatus
-    templateId?: string | null
-    templateVariables?: JsonNullValueInput | InputJsonValue
-    metadata?: JsonNullValueInput | InputJsonValue
-    scheduledAt?: Date | string | null
-    sentAt?: Date | string | null
-    deliveredAt?: Date | string | null
-    readAt?: Date | string | null
-    expiresAt?: Date | string | null
+    body: string
+    data?: JsonNullValueInput | InputJsonValue
+    isRead?: boolean
     createdAt?: Date | string
-    updatedAt?: Date | string
   }
 
   export type NotificationUpdateManyMutationInput = {
@@ -29322,19 +17425,10 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
     title?: StringFieldUpdateOperationsInput | string
-    content?: StringFieldUpdateOperationsInput | string
-    channel?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    priority?: EnumNotificationPriorityFieldUpdateOperationsInput | $Enums.NotificationPriority
-    status?: EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
-    templateVariables?: JsonNullValueInput | InputJsonValue
-    metadata?: JsonNullValueInput | InputJsonValue
-    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    data?: JsonNullValueInput | InputJsonValue
+    isRead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type NotificationUncheckedUpdateManyInput = {
@@ -29342,640 +17436,93 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
     title?: StringFieldUpdateOperationsInput | string
-    content?: StringFieldUpdateOperationsInput | string
-    channel?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    priority?: EnumNotificationPriorityFieldUpdateOperationsInput | $Enums.NotificationPriority
-    status?: EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
-    templateId?: NullableStringFieldUpdateOperationsInput | string | null
-    templateVariables?: JsonNullValueInput | InputJsonValue
-    metadata?: JsonNullValueInput | InputJsonValue
-    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    body?: StringFieldUpdateOperationsInput | string
+    data?: JsonNullValueInput | InputJsonValue
+    isRead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type NotificationChannelCreateInput = {
+  export type ReviewCreateInput = {
     id?: string
-    userId: string
-    channelType: $Enums.NotifChannel
-    isEnabled?: boolean
-    deviceToken?: string | null
-    emailAddress?: string | null
-    phoneNumber?: string | null
-    preferences?: JsonNullValueInput | InputJsonValue
-    lastUsedAt?: Date | string | null
-    verifiedAt?: Date | string | null
+    requestId: string
+    reviewerId: string
+    revieweeId: string
+    type: $Enums.ReviewType
+    rating: number
+    comment?: string | null
     createdAt?: Date | string
-    updatedAt?: Date | string
+    bid: BidCreateNestedOneWithoutReviewsInput
   }
 
-  export type NotificationChannelUncheckedCreateInput = {
+  export type ReviewUncheckedCreateInput = {
     id?: string
-    userId: string
-    channelType: $Enums.NotifChannel
-    isEnabled?: boolean
-    deviceToken?: string | null
-    emailAddress?: string | null
-    phoneNumber?: string | null
-    preferences?: JsonNullValueInput | InputJsonValue
-    lastUsedAt?: Date | string | null
-    verifiedAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type NotificationChannelUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    channelType?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    isEnabled?: BoolFieldUpdateOperationsInput | boolean
-    deviceToken?: NullableStringFieldUpdateOperationsInput | string | null
-    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    preferences?: JsonNullValueInput | InputJsonValue
-    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationChannelUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    channelType?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    isEnabled?: BoolFieldUpdateOperationsInput | boolean
-    deviceToken?: NullableStringFieldUpdateOperationsInput | string | null
-    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    preferences?: JsonNullValueInput | InputJsonValue
-    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationChannelCreateManyInput = {
-    id?: string
-    userId: string
-    channelType: $Enums.NotifChannel
-    isEnabled?: boolean
-    deviceToken?: string | null
-    emailAddress?: string | null
-    phoneNumber?: string | null
-    preferences?: JsonNullValueInput | InputJsonValue
-    lastUsedAt?: Date | string | null
-    verifiedAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type NotificationChannelUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    channelType?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    isEnabled?: BoolFieldUpdateOperationsInput | boolean
-    deviceToken?: NullableStringFieldUpdateOperationsInput | string | null
-    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    preferences?: JsonNullValueInput | InputJsonValue
-    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationChannelUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    channelType?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    isEnabled?: BoolFieldUpdateOperationsInput | boolean
-    deviceToken?: NullableStringFieldUpdateOperationsInput | string | null
-    emailAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    phoneNumber?: NullableStringFieldUpdateOperationsInput | string | null
-    preferences?: JsonNullValueInput | InputJsonValue
-    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationPreferenceCreateInput = {
-    id?: string
-    userId: string
-    notificationType: $Enums.NotificationType
-    channelType: $Enums.NotifChannel
-    isEnabled?: boolean
-    quietHoursStart?: string | null
-    quietHoursEnd?: string | null
-    minPriority?: $Enums.NotificationPriority | null
-    maxFrequencyMinutes?: number | null
-    preferences?: JsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type NotificationPreferenceUncheckedCreateInput = {
-    id?: string
-    userId: string
-    notificationType: $Enums.NotificationType
-    channelType: $Enums.NotifChannel
-    isEnabled?: boolean
-    quietHoursStart?: string | null
-    quietHoursEnd?: string | null
-    minPriority?: $Enums.NotificationPriority | null
-    maxFrequencyMinutes?: number | null
-    preferences?: JsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type NotificationPreferenceUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    notificationType?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
-    channelType?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    isEnabled?: BoolFieldUpdateOperationsInput | boolean
-    quietHoursStart?: NullableStringFieldUpdateOperationsInput | string | null
-    quietHoursEnd?: NullableStringFieldUpdateOperationsInput | string | null
-    minPriority?: NullableEnumNotificationPriorityFieldUpdateOperationsInput | $Enums.NotificationPriority | null
-    maxFrequencyMinutes?: NullableIntFieldUpdateOperationsInput | number | null
-    preferences?: JsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationPreferenceUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    notificationType?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
-    channelType?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    isEnabled?: BoolFieldUpdateOperationsInput | boolean
-    quietHoursStart?: NullableStringFieldUpdateOperationsInput | string | null
-    quietHoursEnd?: NullableStringFieldUpdateOperationsInput | string | null
-    minPriority?: NullableEnumNotificationPriorityFieldUpdateOperationsInput | $Enums.NotificationPriority | null
-    maxFrequencyMinutes?: NullableIntFieldUpdateOperationsInput | number | null
-    preferences?: JsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationPreferenceCreateManyInput = {
-    id?: string
-    userId: string
-    notificationType: $Enums.NotificationType
-    channelType: $Enums.NotifChannel
-    isEnabled?: boolean
-    quietHoursStart?: string | null
-    quietHoursEnd?: string | null
-    minPriority?: $Enums.NotificationPriority | null
-    maxFrequencyMinutes?: number | null
-    preferences?: JsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type NotificationPreferenceUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    notificationType?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
-    channelType?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    isEnabled?: BoolFieldUpdateOperationsInput | boolean
-    quietHoursStart?: NullableStringFieldUpdateOperationsInput | string | null
-    quietHoursEnd?: NullableStringFieldUpdateOperationsInput | string | null
-    minPriority?: NullableEnumNotificationPriorityFieldUpdateOperationsInput | $Enums.NotificationPriority | null
-    maxFrequencyMinutes?: NullableIntFieldUpdateOperationsInput | number | null
-    preferences?: JsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationPreferenceUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    notificationType?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
-    channelType?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    isEnabled?: BoolFieldUpdateOperationsInput | boolean
-    quietHoursStart?: NullableStringFieldUpdateOperationsInput | string | null
-    quietHoursEnd?: NullableStringFieldUpdateOperationsInput | string | null
-    minPriority?: NullableEnumNotificationPriorityFieldUpdateOperationsInput | $Enums.NotificationPriority | null
-    maxFrequencyMinutes?: NullableIntFieldUpdateOperationsInput | number | null
-    preferences?: JsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationDeliveryCreateInput = {
-    id?: string
-    channelType: $Enums.NotifChannel
-    provider: string
-    recipient: string
-    status?: $Enums.NotifDeliveryStatus
-    attemptCount?: number
-    sentAt?: Date | string | null
-    deliveredAt?: Date | string | null
-    errorMessage?: string | null
-    errorCode?: string | null
-    metadata?: JsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-    notification: NotificationCreateNestedOneWithoutDeliveriesInput
-  }
-
-  export type NotificationDeliveryUncheckedCreateInput = {
-    id?: string
-    notificationId: string
-    channelType: $Enums.NotifChannel
-    provider: string
-    recipient: string
-    status?: $Enums.NotifDeliveryStatus
-    attemptCount?: number
-    sentAt?: Date | string | null
-    deliveredAt?: Date | string | null
-    errorMessage?: string | null
-    errorCode?: string | null
-    metadata?: JsonNullValueInput | InputJsonValue
+    bidId: string
+    requestId: string
+    reviewerId: string
+    revieweeId: string
+    type: $Enums.ReviewType
+    rating: number
+    comment?: string | null
     createdAt?: Date | string
   }
 
-  export type NotificationDeliveryUpdateInput = {
+  export type ReviewUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    channelType?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    provider?: StringFieldUpdateOperationsInput | string
-    recipient?: StringFieldUpdateOperationsInput | string
-    status?: EnumNotifDeliveryStatusFieldUpdateOperationsInput | $Enums.NotifDeliveryStatus
-    attemptCount?: IntFieldUpdateOperationsInput | number
-    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
-    errorCode?: NullableStringFieldUpdateOperationsInput | string | null
-    metadata?: JsonNullValueInput | InputJsonValue
+    requestId?: StringFieldUpdateOperationsInput | string
+    reviewerId?: StringFieldUpdateOperationsInput | string
+    revieweeId?: StringFieldUpdateOperationsInput | string
+    type?: EnumReviewTypeFieldUpdateOperationsInput | $Enums.ReviewType
+    rating?: IntFieldUpdateOperationsInput | number
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    notification?: NotificationUpdateOneRequiredWithoutDeliveriesNestedInput
+    bid?: BidUpdateOneRequiredWithoutReviewsNestedInput
   }
 
-  export type NotificationDeliveryUncheckedUpdateInput = {
+  export type ReviewUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    notificationId?: StringFieldUpdateOperationsInput | string
-    channelType?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    provider?: StringFieldUpdateOperationsInput | string
-    recipient?: StringFieldUpdateOperationsInput | string
-    status?: EnumNotifDeliveryStatusFieldUpdateOperationsInput | $Enums.NotifDeliveryStatus
-    attemptCount?: IntFieldUpdateOperationsInput | number
-    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
-    errorCode?: NullableStringFieldUpdateOperationsInput | string | null
-    metadata?: JsonNullValueInput | InputJsonValue
+    bidId?: StringFieldUpdateOperationsInput | string
+    requestId?: StringFieldUpdateOperationsInput | string
+    reviewerId?: StringFieldUpdateOperationsInput | string
+    revieweeId?: StringFieldUpdateOperationsInput | string
+    type?: EnumReviewTypeFieldUpdateOperationsInput | $Enums.ReviewType
+    rating?: IntFieldUpdateOperationsInput | number
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type NotificationDeliveryCreateManyInput = {
+  export type ReviewCreateManyInput = {
     id?: string
-    notificationId: string
-    channelType: $Enums.NotifChannel
-    provider: string
-    recipient: string
-    status?: $Enums.NotifDeliveryStatus
-    attemptCount?: number
-    sentAt?: Date | string | null
-    deliveredAt?: Date | string | null
-    errorMessage?: string | null
-    errorCode?: string | null
-    metadata?: JsonNullValueInput | InputJsonValue
+    bidId: string
+    requestId: string
+    reviewerId: string
+    revieweeId: string
+    type: $Enums.ReviewType
+    rating: number
+    comment?: string | null
     createdAt?: Date | string
   }
 
-  export type NotificationDeliveryUpdateManyMutationInput = {
+  export type ReviewUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    channelType?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    provider?: StringFieldUpdateOperationsInput | string
-    recipient?: StringFieldUpdateOperationsInput | string
-    status?: EnumNotifDeliveryStatusFieldUpdateOperationsInput | $Enums.NotifDeliveryStatus
-    attemptCount?: IntFieldUpdateOperationsInput | number
-    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
-    errorCode?: NullableStringFieldUpdateOperationsInput | string | null
-    metadata?: JsonNullValueInput | InputJsonValue
+    requestId?: StringFieldUpdateOperationsInput | string
+    reviewerId?: StringFieldUpdateOperationsInput | string
+    revieweeId?: StringFieldUpdateOperationsInput | string
+    type?: EnumReviewTypeFieldUpdateOperationsInput | $Enums.ReviewType
+    rating?: IntFieldUpdateOperationsInput | number
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type NotificationDeliveryUncheckedUpdateManyInput = {
+  export type ReviewUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    notificationId?: StringFieldUpdateOperationsInput | string
-    channelType?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    provider?: StringFieldUpdateOperationsInput | string
-    recipient?: StringFieldUpdateOperationsInput | string
-    status?: EnumNotifDeliveryStatusFieldUpdateOperationsInput | $Enums.NotifDeliveryStatus
-    attemptCount?: IntFieldUpdateOperationsInput | number
-    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
-    errorCode?: NullableStringFieldUpdateOperationsInput | string | null
-    metadata?: JsonNullValueInput | InputJsonValue
+    bidId?: StringFieldUpdateOperationsInput | string
+    requestId?: StringFieldUpdateOperationsInput | string
+    reviewerId?: StringFieldUpdateOperationsInput | string
+    revieweeId?: StringFieldUpdateOperationsInput | string
+    type?: EnumReviewTypeFieldUpdateOperationsInput | $Enums.ReviewType
+    rating?: IntFieldUpdateOperationsInput | number
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationReadCreateInput = {
-    id?: string
-    userId: string
-    readAt?: Date | string
-    deviceFingerprint?: string | null
-    ipAddress?: string | null
-    userAgent?: string | null
-    createdAt?: Date | string
-    notification: NotificationCreateNestedOneWithoutReadsInput
-  }
-
-  export type NotificationReadUncheckedCreateInput = {
-    id?: string
-    notificationId: string
-    userId: string
-    readAt?: Date | string
-    deviceFingerprint?: string | null
-    ipAddress?: string | null
-    userAgent?: string | null
-    createdAt?: Date | string
-  }
-
-  export type NotificationReadUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    readAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    deviceFingerprint?: NullableStringFieldUpdateOperationsInput | string | null
-    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    notification?: NotificationUpdateOneRequiredWithoutReadsNestedInput
-  }
-
-  export type NotificationReadUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    notificationId?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    readAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    deviceFingerprint?: NullableStringFieldUpdateOperationsInput | string | null
-    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationReadCreateManyInput = {
-    id?: string
-    notificationId: string
-    userId: string
-    readAt?: Date | string
-    deviceFingerprint?: string | null
-    ipAddress?: string | null
-    userAgent?: string | null
-    createdAt?: Date | string
-  }
-
-  export type NotificationReadUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    readAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    deviceFingerprint?: NullableStringFieldUpdateOperationsInput | string | null
-    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationReadUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    notificationId?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    readAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    deviceFingerprint?: NullableStringFieldUpdateOperationsInput | string | null
-    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationStatCreateInput = {
-    id?: string
-    userId?: string | null
-    eventType: $Enums.NotifAnalyticsEvent
-    channelType: $Enums.NotifChannel
-    provider?: string | null
-    deliveryTimeMs?: number | null
-    success: boolean
-    errorCode?: string | null
-    metadata?: JsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-    notification?: NotificationCreateNestedOneWithoutAnalyticsInput
-  }
-
-  export type NotificationStatUncheckedCreateInput = {
-    id?: string
-    notificationId?: string | null
-    userId?: string | null
-    eventType: $Enums.NotifAnalyticsEvent
-    channelType: $Enums.NotifChannel
-    provider?: string | null
-    deliveryTimeMs?: number | null
-    success: boolean
-    errorCode?: string | null
-    metadata?: JsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-  }
-
-  export type NotificationStatUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: NullableStringFieldUpdateOperationsInput | string | null
-    eventType?: EnumNotifAnalyticsEventFieldUpdateOperationsInput | $Enums.NotifAnalyticsEvent
-    channelType?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    provider?: NullableStringFieldUpdateOperationsInput | string | null
-    deliveryTimeMs?: NullableIntFieldUpdateOperationsInput | number | null
-    success?: BoolFieldUpdateOperationsInput | boolean
-    errorCode?: NullableStringFieldUpdateOperationsInput | string | null
-    metadata?: JsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    notification?: NotificationUpdateOneWithoutAnalyticsNestedInput
-  }
-
-  export type NotificationStatUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    notificationId?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: NullableStringFieldUpdateOperationsInput | string | null
-    eventType?: EnumNotifAnalyticsEventFieldUpdateOperationsInput | $Enums.NotifAnalyticsEvent
-    channelType?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    provider?: NullableStringFieldUpdateOperationsInput | string | null
-    deliveryTimeMs?: NullableIntFieldUpdateOperationsInput | number | null
-    success?: BoolFieldUpdateOperationsInput | boolean
-    errorCode?: NullableStringFieldUpdateOperationsInput | string | null
-    metadata?: JsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationStatCreateManyInput = {
-    id?: string
-    notificationId?: string | null
-    userId?: string | null
-    eventType: $Enums.NotifAnalyticsEvent
-    channelType: $Enums.NotifChannel
-    provider?: string | null
-    deliveryTimeMs?: number | null
-    success: boolean
-    errorCode?: string | null
-    metadata?: JsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-  }
-
-  export type NotificationStatUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: NullableStringFieldUpdateOperationsInput | string | null
-    eventType?: EnumNotifAnalyticsEventFieldUpdateOperationsInput | $Enums.NotifAnalyticsEvent
-    channelType?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    provider?: NullableStringFieldUpdateOperationsInput | string | null
-    deliveryTimeMs?: NullableIntFieldUpdateOperationsInput | number | null
-    success?: BoolFieldUpdateOperationsInput | boolean
-    errorCode?: NullableStringFieldUpdateOperationsInput | string | null
-    metadata?: JsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationStatUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    notificationId?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: NullableStringFieldUpdateOperationsInput | string | null
-    eventType?: EnumNotifAnalyticsEventFieldUpdateOperationsInput | $Enums.NotifAnalyticsEvent
-    channelType?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    provider?: NullableStringFieldUpdateOperationsInput | string | null
-    deliveryTimeMs?: NullableIntFieldUpdateOperationsInput | number | null
-    success?: BoolFieldUpdateOperationsInput | boolean
-    errorCode?: NullableStringFieldUpdateOperationsInput | string | null
-    metadata?: JsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type BidTemplateCreateInput = {
-    id?: string
-    merchantId: string
-    name: string
-    description?: string | null
-    amountType?: $Enums.AmountType
-    amountPercentage?: Decimal | DecimalJsLike | number | string | null
-    fixedAmount?: Decimal | DecimalJsLike | number | string | null
-    deliveryDays?: number | null
-    deliveryNotes?: string | null
-    specialTerms?: string | null
-    isActive?: boolean
-    usageCount?: number
-    successCount?: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type BidTemplateUncheckedCreateInput = {
-    id?: string
-    merchantId: string
-    name: string
-    description?: string | null
-    amountType?: $Enums.AmountType
-    amountPercentage?: Decimal | DecimalJsLike | number | string | null
-    fixedAmount?: Decimal | DecimalJsLike | number | string | null
-    deliveryDays?: number | null
-    deliveryNotes?: string | null
-    specialTerms?: string | null
-    isActive?: boolean
-    usageCount?: number
-    successCount?: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type BidTemplateUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    merchantId?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    amountType?: EnumAmountTypeFieldUpdateOperationsInput | $Enums.AmountType
-    amountPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    fixedAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    deliveryDays?: NullableIntFieldUpdateOperationsInput | number | null
-    deliveryNotes?: NullableStringFieldUpdateOperationsInput | string | null
-    specialTerms?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    usageCount?: IntFieldUpdateOperationsInput | number
-    successCount?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type BidTemplateUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    merchantId?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    amountType?: EnumAmountTypeFieldUpdateOperationsInput | $Enums.AmountType
-    amountPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    fixedAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    deliveryDays?: NullableIntFieldUpdateOperationsInput | number | null
-    deliveryNotes?: NullableStringFieldUpdateOperationsInput | string | null
-    specialTerms?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    usageCount?: IntFieldUpdateOperationsInput | number
-    successCount?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type BidTemplateCreateManyInput = {
-    id?: string
-    merchantId: string
-    name: string
-    description?: string | null
-    amountType?: $Enums.AmountType
-    amountPercentage?: Decimal | DecimalJsLike | number | string | null
-    fixedAmount?: Decimal | DecimalJsLike | number | string | null
-    deliveryDays?: number | null
-    deliveryNotes?: string | null
-    specialTerms?: string | null
-    isActive?: boolean
-    usageCount?: number
-    successCount?: number
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type BidTemplateUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    merchantId?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    amountType?: EnumAmountTypeFieldUpdateOperationsInput | $Enums.AmountType
-    amountPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    fixedAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    deliveryDays?: NullableIntFieldUpdateOperationsInput | number | null
-    deliveryNotes?: NullableStringFieldUpdateOperationsInput | string | null
-    specialTerms?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    usageCount?: IntFieldUpdateOperationsInput | number
-    successCount?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type BidTemplateUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    merchantId?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    amountType?: EnumAmountTypeFieldUpdateOperationsInput | $Enums.AmountType
-    amountPercentage?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    fixedAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    deliveryDays?: NullableIntFieldUpdateOperationsInput | number | null
-    deliveryNotes?: NullableStringFieldUpdateOperationsInput | string | null
-    specialTerms?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    usageCount?: IntFieldUpdateOperationsInput | number
-    successCount?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UuidFilter<$PrismaModel = never> = {
@@ -30505,21 +18052,11 @@ export namespace Prisma {
     none?: RequestWhereInput
   }
 
-  export type RequestDraftListRelationFilter = {
-    every?: RequestDraftWhereInput
-    some?: RequestDraftWhereInput
-    none?: RequestDraftWhereInput
-  }
-
   export type RequestCategoryOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
   export type RequestOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type RequestDraftOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -30592,33 +18129,13 @@ export namespace Prisma {
     not?: NestedEnumRequestStatusFilter<$PrismaModel> | $Enums.RequestStatus
   }
 
-  export type RequestCategoryRelationFilter = {
-    is?: RequestCategoryWhereInput
-    isNot?: RequestCategoryWhereInput
-  }
-
   export type RequestImageListRelationFilter = {
     every?: RequestImageWhereInput
     some?: RequestImageWhereInput
     none?: RequestImageWhereInput
   }
 
-  export type RequestExtensionListRelationFilter = {
-    every?: RequestExtensionWhereInput
-    some?: RequestExtensionWhereInput
-    none?: RequestExtensionWhereInput
-  }
-
-  export type RequestSearchIndexNullableRelationFilter = {
-    is?: RequestSearchIndexWhereInput | null
-    isNot?: RequestSearchIndexWhereInput | null
-  }
-
   export type RequestImageOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type RequestExtensionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -30839,129 +18356,6 @@ export namespace Prisma {
     _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
-  export type RequestDraftCountOrderByAggregateInput = {
-    id?: SortOrder
-    buyerId?: SortOrder
-    categoryId?: SortOrder
-    title?: SortOrder
-    description?: SortOrder
-    budgetMin?: SortOrder
-    budgetMax?: SortOrder
-    locationLat?: SortOrder
-    locationLng?: SortOrder
-    locationAddress?: SortOrder
-    autoSaveData?: SortOrder
-    expiresAt?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type RequestDraftAvgOrderByAggregateInput = {
-    budgetMin?: SortOrder
-    budgetMax?: SortOrder
-    locationLat?: SortOrder
-    locationLng?: SortOrder
-  }
-
-  export type RequestDraftMaxOrderByAggregateInput = {
-    id?: SortOrder
-    buyerId?: SortOrder
-    categoryId?: SortOrder
-    title?: SortOrder
-    description?: SortOrder
-    budgetMin?: SortOrder
-    budgetMax?: SortOrder
-    locationLat?: SortOrder
-    locationLng?: SortOrder
-    locationAddress?: SortOrder
-    expiresAt?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type RequestDraftMinOrderByAggregateInput = {
-    id?: SortOrder
-    buyerId?: SortOrder
-    categoryId?: SortOrder
-    title?: SortOrder
-    description?: SortOrder
-    budgetMin?: SortOrder
-    budgetMax?: SortOrder
-    locationLat?: SortOrder
-    locationLng?: SortOrder
-    locationAddress?: SortOrder
-    expiresAt?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type RequestDraftSumOrderByAggregateInput = {
-    budgetMin?: SortOrder
-    budgetMax?: SortOrder
-    locationLat?: SortOrder
-    locationLng?: SortOrder
-  }
-
-  export type RequestExtensionCountOrderByAggregateInput = {
-    id?: SortOrder
-    requestId?: SortOrder
-    originalExpiresAt?: SortOrder
-    newExpiresAt?: SortOrder
-    extensionReason?: SortOrder
-    extendedBy?: SortOrder
-    createdAt?: SortOrder
-  }
-
-  export type RequestExtensionMaxOrderByAggregateInput = {
-    id?: SortOrder
-    requestId?: SortOrder
-    originalExpiresAt?: SortOrder
-    newExpiresAt?: SortOrder
-    extensionReason?: SortOrder
-    extendedBy?: SortOrder
-    createdAt?: SortOrder
-  }
-
-  export type RequestExtensionMinOrderByAggregateInput = {
-    id?: SortOrder
-    requestId?: SortOrder
-    originalExpiresAt?: SortOrder
-    newExpiresAt?: SortOrder
-    extensionReason?: SortOrder
-    extendedBy?: SortOrder
-    createdAt?: SortOrder
-  }
-
-  export type RequestSearchIndexCountOrderByAggregateInput = {
-    id?: SortOrder
-    requestId?: SortOrder
-    searchVector?: SortOrder
-    categoryPath?: SortOrder
-    locationText?: SortOrder
-    budgetRange?: SortOrder
-    createdAt?: SortOrder
-  }
-
-  export type RequestSearchIndexMaxOrderByAggregateInput = {
-    id?: SortOrder
-    requestId?: SortOrder
-    searchVector?: SortOrder
-    categoryPath?: SortOrder
-    locationText?: SortOrder
-    budgetRange?: SortOrder
-    createdAt?: SortOrder
-  }
-
-  export type RequestSearchIndexMinOrderByAggregateInput = {
-    id?: SortOrder
-    requestId?: SortOrder
-    searchVector?: SortOrder
-    categoryPath?: SortOrder
-    locationText?: SortOrder
-    budgetRange?: SortOrder
-    createdAt?: SortOrder
-  }
-
   export type SavedSearchCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
@@ -31008,6 +18402,23 @@ export namespace Prisma {
     not?: NestedEnumBidStatusFilter<$PrismaModel> | $Enums.BidStatus
   }
 
+  export type EnumFulfillmentStatusNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.FulfillmentStatus | EnumFulfillmentStatusFieldRefInput<$PrismaModel> | null
+    in?: $Enums.FulfillmentStatus[] | ListEnumFulfillmentStatusFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.FulfillmentStatus[] | ListEnumFulfillmentStatusFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumFulfillmentStatusNullableFilter<$PrismaModel> | $Enums.FulfillmentStatus | null
+  }
+
+  export type ReviewListRelationFilter = {
+    every?: ReviewWhereInput
+    some?: ReviewWhereInput
+    none?: ReviewWhereInput
+  }
+
+  export type ReviewOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type BidRequestIdMerchantIdCompoundUniqueInput = {
     requestId: string
     merchantId: string
@@ -31033,6 +18444,9 @@ export namespace Prisma {
     acceptedAt?: SortOrder
     rejectedAt?: SortOrder
     withdrawnAt?: SortOrder
+    chatRoomId?: SortOrder
+    fulfillmentStatus?: SortOrder
+    fulfillmentUpdatedAt?: SortOrder
   }
 
   export type BidAvgOrderByAggregateInput = {
@@ -31062,6 +18476,9 @@ export namespace Prisma {
     acceptedAt?: SortOrder
     rejectedAt?: SortOrder
     withdrawnAt?: SortOrder
+    chatRoomId?: SortOrder
+    fulfillmentStatus?: SortOrder
+    fulfillmentUpdatedAt?: SortOrder
   }
 
   export type BidMinOrderByAggregateInput = {
@@ -31084,6 +18501,9 @@ export namespace Prisma {
     acceptedAt?: SortOrder
     rejectedAt?: SortOrder
     withdrawnAt?: SortOrder
+    chatRoomId?: SortOrder
+    fulfillmentStatus?: SortOrder
+    fulfillmentUpdatedAt?: SortOrder
   }
 
   export type BidSumOrderByAggregateInput = {
@@ -31119,6 +18539,16 @@ export namespace Prisma {
     _max?: NestedEnumBidStatusFilter<$PrismaModel>
   }
 
+  export type EnumFulfillmentStatusNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.FulfillmentStatus | EnumFulfillmentStatusFieldRefInput<$PrismaModel> | null
+    in?: $Enums.FulfillmentStatus[] | ListEnumFulfillmentStatusFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.FulfillmentStatus[] | ListEnumFulfillmentStatusFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumFulfillmentStatusNullableWithAggregatesFilter<$PrismaModel> | $Enums.FulfillmentStatus | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumFulfillmentStatusNullableFilter<$PrismaModel>
+    _max?: NestedEnumFulfillmentStatusNullableFilter<$PrismaModel>
+  }
+
   export type EnumRoomTypeFilter<$PrismaModel = never> = {
     equals?: $Enums.RoomType | EnumRoomTypeFieldRefInput<$PrismaModel>
     in?: $Enums.RoomType[] | ListEnumRoomTypeFieldRefInput<$PrismaModel>
@@ -31126,13 +18556,13 @@ export namespace Prisma {
     not?: NestedEnumRoomTypeFilter<$PrismaModel> | $Enums.RoomType
   }
 
-  export type ChatParticipantListRelationFilter = {
-    every?: ChatParticipantWhereInput
-    some?: ChatParticipantWhereInput
-    none?: ChatParticipantWhereInput
+  export type ChatRoomParticipantListRelationFilter = {
+    every?: ChatRoomParticipantWhereInput
+    some?: ChatRoomParticipantWhereInput
+    none?: ChatRoomParticipantWhereInput
   }
 
-  export type ChatParticipantOrderByRelationAggregateInput = {
+  export type ChatRoomParticipantOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -31199,76 +18629,44 @@ export namespace Prisma {
     _max?: NestedEnumRoomTypeFilter<$PrismaModel>
   }
 
-  export type EnumParticipantRoleFilter<$PrismaModel = never> = {
-    equals?: $Enums.ParticipantRole | EnumParticipantRoleFieldRefInput<$PrismaModel>
-    in?: $Enums.ParticipantRole[] | ListEnumParticipantRoleFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ParticipantRole[] | ListEnumParticipantRoleFieldRefInput<$PrismaModel>
-    not?: NestedEnumParticipantRoleFilter<$PrismaModel> | $Enums.ParticipantRole
-  }
-
   export type ChatRoomRelationFilter = {
     is?: ChatRoomWhereInput
     isNot?: ChatRoomWhereInput
   }
 
-  export type ChatParticipantRoomIdUserIdCompoundUniqueInput = {
+  export type ChatRoomParticipantRoomIdUserIdCompoundUniqueInput = {
     roomId: string
     userId: string
   }
 
-  export type ChatParticipantCountOrderByAggregateInput = {
+  export type ChatRoomParticipantCountOrderByAggregateInput = {
     id?: SortOrder
     roomId?: SortOrder
     userId?: SortOrder
     role?: SortOrder
-    joinedAt?: SortOrder
     lastReadAt?: SortOrder
-    isMuted?: SortOrder
-    isBanned?: SortOrder
-    bannedUntil?: SortOrder
-    bannedBy?: SortOrder
-    bannedReason?: SortOrder
+    joinedAt?: SortOrder
     leftAt?: SortOrder
   }
 
-  export type ChatParticipantMaxOrderByAggregateInput = {
+  export type ChatRoomParticipantMaxOrderByAggregateInput = {
     id?: SortOrder
     roomId?: SortOrder
     userId?: SortOrder
     role?: SortOrder
-    joinedAt?: SortOrder
     lastReadAt?: SortOrder
-    isMuted?: SortOrder
-    isBanned?: SortOrder
-    bannedUntil?: SortOrder
-    bannedBy?: SortOrder
-    bannedReason?: SortOrder
+    joinedAt?: SortOrder
     leftAt?: SortOrder
   }
 
-  export type ChatParticipantMinOrderByAggregateInput = {
+  export type ChatRoomParticipantMinOrderByAggregateInput = {
     id?: SortOrder
     roomId?: SortOrder
     userId?: SortOrder
     role?: SortOrder
-    joinedAt?: SortOrder
     lastReadAt?: SortOrder
-    isMuted?: SortOrder
-    isBanned?: SortOrder
-    bannedUntil?: SortOrder
-    bannedBy?: SortOrder
-    bannedReason?: SortOrder
+    joinedAt?: SortOrder
     leftAt?: SortOrder
-  }
-
-  export type EnumParticipantRoleWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.ParticipantRole | EnumParticipantRoleFieldRefInput<$PrismaModel>
-    in?: $Enums.ParticipantRole[] | ListEnumParticipantRoleFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ParticipantRole[] | ListEnumParticipantRoleFieldRefInput<$PrismaModel>
-    not?: NestedEnumParticipantRoleWithAggregatesFilter<$PrismaModel> | $Enums.ParticipantRole
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumParticipantRoleFilter<$PrismaModel>
-    _max?: NestedEnumParticipantRoleFilter<$PrismaModel>
   }
 
   export type EnumNotificationTypeFilter<$PrismaModel = never> = {
@@ -31278,75 +18676,35 @@ export namespace Prisma {
     not?: NestedEnumNotificationTypeFilter<$PrismaModel> | $Enums.NotificationType
   }
 
-  export type EnumNotifChannelFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotifChannel | EnumNotifChannelFieldRefInput<$PrismaModel>
-    in?: $Enums.NotifChannel[] | ListEnumNotifChannelFieldRefInput<$PrismaModel>
-    notIn?: $Enums.NotifChannel[] | ListEnumNotifChannelFieldRefInput<$PrismaModel>
-    not?: NestedEnumNotifChannelFilter<$PrismaModel> | $Enums.NotifChannel
-  }
-
-  export type NotificationListRelationFilter = {
-    every?: NotificationWhereInput
-    some?: NotificationWhereInput
-    none?: NotificationWhereInput
-  }
-
-  export type NotificationOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type NotificationTemplateCountOrderByAggregateInput = {
+  export type NotificationCountOrderByAggregateInput = {
     id?: SortOrder
-    name?: SortOrder
+    userId?: SortOrder
     type?: SortOrder
-    channel?: SortOrder
-    subjectTemplate?: SortOrder
-    contentTemplate?: SortOrder
-    variables?: SortOrder
-    defaultLocale?: SortOrder
-    isActive?: SortOrder
-    version?: SortOrder
-    createdBy?: SortOrder
+    title?: SortOrder
+    body?: SortOrder
+    data?: SortOrder
+    isRead?: SortOrder
     createdAt?: SortOrder
-    updatedAt?: SortOrder
   }
 
-  export type NotificationTemplateAvgOrderByAggregateInput = {
-    version?: SortOrder
-  }
-
-  export type NotificationTemplateMaxOrderByAggregateInput = {
+  export type NotificationMaxOrderByAggregateInput = {
     id?: SortOrder
-    name?: SortOrder
+    userId?: SortOrder
     type?: SortOrder
-    channel?: SortOrder
-    subjectTemplate?: SortOrder
-    contentTemplate?: SortOrder
-    defaultLocale?: SortOrder
-    isActive?: SortOrder
-    version?: SortOrder
-    createdBy?: SortOrder
+    title?: SortOrder
+    body?: SortOrder
+    isRead?: SortOrder
     createdAt?: SortOrder
-    updatedAt?: SortOrder
   }
 
-  export type NotificationTemplateMinOrderByAggregateInput = {
+  export type NotificationMinOrderByAggregateInput = {
     id?: SortOrder
-    name?: SortOrder
+    userId?: SortOrder
     type?: SortOrder
-    channel?: SortOrder
-    subjectTemplate?: SortOrder
-    contentTemplate?: SortOrder
-    defaultLocale?: SortOrder
-    isActive?: SortOrder
-    version?: SortOrder
-    createdBy?: SortOrder
+    title?: SortOrder
+    body?: SortOrder
+    isRead?: SortOrder
     createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type NotificationTemplateSumOrderByAggregateInput = {
-    version?: SortOrder
   }
 
   export type EnumNotificationTypeWithAggregatesFilter<$PrismaModel = never> = {
@@ -31359,535 +18717,75 @@ export namespace Prisma {
     _max?: NestedEnumNotificationTypeFilter<$PrismaModel>
   }
 
-  export type EnumNotifChannelWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotifChannel | EnumNotifChannelFieldRefInput<$PrismaModel>
-    in?: $Enums.NotifChannel[] | ListEnumNotifChannelFieldRefInput<$PrismaModel>
-    notIn?: $Enums.NotifChannel[] | ListEnumNotifChannelFieldRefInput<$PrismaModel>
-    not?: NestedEnumNotifChannelWithAggregatesFilter<$PrismaModel> | $Enums.NotifChannel
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumNotifChannelFilter<$PrismaModel>
-    _max?: NestedEnumNotifChannelFilter<$PrismaModel>
+  export type EnumReviewTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReviewType | EnumReviewTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ReviewType[] | ListEnumReviewTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReviewType[] | ListEnumReviewTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumReviewTypeFilter<$PrismaModel> | $Enums.ReviewType
   }
 
-  export type EnumNotificationPriorityFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotificationPriority | EnumNotificationPriorityFieldRefInput<$PrismaModel>
-    in?: $Enums.NotificationPriority[] | ListEnumNotificationPriorityFieldRefInput<$PrismaModel>
-    notIn?: $Enums.NotificationPriority[] | ListEnumNotificationPriorityFieldRefInput<$PrismaModel>
-    not?: NestedEnumNotificationPriorityFilter<$PrismaModel> | $Enums.NotificationPriority
+  export type BidRelationFilter = {
+    is?: BidWhereInput
+    isNot?: BidWhereInput
   }
 
-  export type EnumNotificationStatusFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotificationStatus | EnumNotificationStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.NotificationStatus[] | ListEnumNotificationStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.NotificationStatus[] | ListEnumNotificationStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumNotificationStatusFilter<$PrismaModel> | $Enums.NotificationStatus
+  export type ReviewBidIdReviewerIdCompoundUniqueInput = {
+    bidId: string
+    reviewerId: string
   }
 
-  export type NotificationTemplateNullableRelationFilter = {
-    is?: NotificationTemplateWhereInput | null
-    isNot?: NotificationTemplateWhereInput | null
-  }
-
-  export type NotificationDeliveryListRelationFilter = {
-    every?: NotificationDeliveryWhereInput
-    some?: NotificationDeliveryWhereInput
-    none?: NotificationDeliveryWhereInput
-  }
-
-  export type NotificationReadListRelationFilter = {
-    every?: NotificationReadWhereInput
-    some?: NotificationReadWhereInput
-    none?: NotificationReadWhereInput
-  }
-
-  export type NotificationStatListRelationFilter = {
-    every?: NotificationStatWhereInput
-    some?: NotificationStatWhereInput
-    none?: NotificationStatWhereInput
-  }
-
-  export type NotificationDeliveryOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type NotificationReadOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type NotificationStatOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type NotificationCountOrderByAggregateInput = {
+  export type ReviewCountOrderByAggregateInput = {
     id?: SortOrder
-    userId?: SortOrder
+    bidId?: SortOrder
+    requestId?: SortOrder
+    reviewerId?: SortOrder
+    revieweeId?: SortOrder
     type?: SortOrder
-    title?: SortOrder
-    content?: SortOrder
-    channel?: SortOrder
-    priority?: SortOrder
-    status?: SortOrder
-    templateId?: SortOrder
-    templateVariables?: SortOrder
-    metadata?: SortOrder
-    scheduledAt?: SortOrder
-    sentAt?: SortOrder
-    deliveredAt?: SortOrder
-    readAt?: SortOrder
-    expiresAt?: SortOrder
+    rating?: SortOrder
+    comment?: SortOrder
     createdAt?: SortOrder
-    updatedAt?: SortOrder
   }
 
-  export type NotificationMaxOrderByAggregateInput = {
+  export type ReviewAvgOrderByAggregateInput = {
+    rating?: SortOrder
+  }
+
+  export type ReviewMaxOrderByAggregateInput = {
     id?: SortOrder
-    userId?: SortOrder
+    bidId?: SortOrder
+    requestId?: SortOrder
+    reviewerId?: SortOrder
+    revieweeId?: SortOrder
     type?: SortOrder
-    title?: SortOrder
-    content?: SortOrder
-    channel?: SortOrder
-    priority?: SortOrder
-    status?: SortOrder
-    templateId?: SortOrder
-    scheduledAt?: SortOrder
-    sentAt?: SortOrder
-    deliveredAt?: SortOrder
-    readAt?: SortOrder
-    expiresAt?: SortOrder
+    rating?: SortOrder
+    comment?: SortOrder
     createdAt?: SortOrder
-    updatedAt?: SortOrder
   }
 
-  export type NotificationMinOrderByAggregateInput = {
+  export type ReviewMinOrderByAggregateInput = {
     id?: SortOrder
-    userId?: SortOrder
+    bidId?: SortOrder
+    requestId?: SortOrder
+    reviewerId?: SortOrder
+    revieweeId?: SortOrder
     type?: SortOrder
-    title?: SortOrder
-    content?: SortOrder
-    channel?: SortOrder
-    priority?: SortOrder
-    status?: SortOrder
-    templateId?: SortOrder
-    scheduledAt?: SortOrder
-    sentAt?: SortOrder
-    deliveredAt?: SortOrder
-    readAt?: SortOrder
-    expiresAt?: SortOrder
+    rating?: SortOrder
+    comment?: SortOrder
     createdAt?: SortOrder
-    updatedAt?: SortOrder
   }
 
-  export type EnumNotificationPriorityWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotificationPriority | EnumNotificationPriorityFieldRefInput<$PrismaModel>
-    in?: $Enums.NotificationPriority[] | ListEnumNotificationPriorityFieldRefInput<$PrismaModel>
-    notIn?: $Enums.NotificationPriority[] | ListEnumNotificationPriorityFieldRefInput<$PrismaModel>
-    not?: NestedEnumNotificationPriorityWithAggregatesFilter<$PrismaModel> | $Enums.NotificationPriority
+  export type ReviewSumOrderByAggregateInput = {
+    rating?: SortOrder
+  }
+
+  export type EnumReviewTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReviewType | EnumReviewTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ReviewType[] | ListEnumReviewTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReviewType[] | ListEnumReviewTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumReviewTypeWithAggregatesFilter<$PrismaModel> | $Enums.ReviewType
     _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumNotificationPriorityFilter<$PrismaModel>
-    _max?: NestedEnumNotificationPriorityFilter<$PrismaModel>
-  }
-
-  export type EnumNotificationStatusWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotificationStatus | EnumNotificationStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.NotificationStatus[] | ListEnumNotificationStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.NotificationStatus[] | ListEnumNotificationStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumNotificationStatusWithAggregatesFilter<$PrismaModel> | $Enums.NotificationStatus
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumNotificationStatusFilter<$PrismaModel>
-    _max?: NestedEnumNotificationStatusFilter<$PrismaModel>
-  }
-
-  export type NotificationChannelUserIdChannelTypeCompoundUniqueInput = {
-    userId: string
-    channelType: $Enums.NotifChannel
-  }
-
-  export type NotificationChannelCountOrderByAggregateInput = {
-    id?: SortOrder
-    userId?: SortOrder
-    channelType?: SortOrder
-    isEnabled?: SortOrder
-    deviceToken?: SortOrder
-    emailAddress?: SortOrder
-    phoneNumber?: SortOrder
-    preferences?: SortOrder
-    lastUsedAt?: SortOrder
-    verifiedAt?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type NotificationChannelMaxOrderByAggregateInput = {
-    id?: SortOrder
-    userId?: SortOrder
-    channelType?: SortOrder
-    isEnabled?: SortOrder
-    deviceToken?: SortOrder
-    emailAddress?: SortOrder
-    phoneNumber?: SortOrder
-    lastUsedAt?: SortOrder
-    verifiedAt?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type NotificationChannelMinOrderByAggregateInput = {
-    id?: SortOrder
-    userId?: SortOrder
-    channelType?: SortOrder
-    isEnabled?: SortOrder
-    deviceToken?: SortOrder
-    emailAddress?: SortOrder
-    phoneNumber?: SortOrder
-    lastUsedAt?: SortOrder
-    verifiedAt?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type EnumNotificationPriorityNullableFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotificationPriority | EnumNotificationPriorityFieldRefInput<$PrismaModel> | null
-    in?: $Enums.NotificationPriority[] | ListEnumNotificationPriorityFieldRefInput<$PrismaModel> | null
-    notIn?: $Enums.NotificationPriority[] | ListEnumNotificationPriorityFieldRefInput<$PrismaModel> | null
-    not?: NestedEnumNotificationPriorityNullableFilter<$PrismaModel> | $Enums.NotificationPriority | null
-  }
-
-  export type NotificationPreferenceUserIdNotificationTypeChannelTypeCompoundUniqueInput = {
-    userId: string
-    notificationType: $Enums.NotificationType
-    channelType: $Enums.NotifChannel
-  }
-
-  export type NotificationPreferenceCountOrderByAggregateInput = {
-    id?: SortOrder
-    userId?: SortOrder
-    notificationType?: SortOrder
-    channelType?: SortOrder
-    isEnabled?: SortOrder
-    quietHoursStart?: SortOrder
-    quietHoursEnd?: SortOrder
-    minPriority?: SortOrder
-    maxFrequencyMinutes?: SortOrder
-    preferences?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type NotificationPreferenceAvgOrderByAggregateInput = {
-    maxFrequencyMinutes?: SortOrder
-  }
-
-  export type NotificationPreferenceMaxOrderByAggregateInput = {
-    id?: SortOrder
-    userId?: SortOrder
-    notificationType?: SortOrder
-    channelType?: SortOrder
-    isEnabled?: SortOrder
-    quietHoursStart?: SortOrder
-    quietHoursEnd?: SortOrder
-    minPriority?: SortOrder
-    maxFrequencyMinutes?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type NotificationPreferenceMinOrderByAggregateInput = {
-    id?: SortOrder
-    userId?: SortOrder
-    notificationType?: SortOrder
-    channelType?: SortOrder
-    isEnabled?: SortOrder
-    quietHoursStart?: SortOrder
-    quietHoursEnd?: SortOrder
-    minPriority?: SortOrder
-    maxFrequencyMinutes?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type NotificationPreferenceSumOrderByAggregateInput = {
-    maxFrequencyMinutes?: SortOrder
-  }
-
-  export type EnumNotificationPriorityNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotificationPriority | EnumNotificationPriorityFieldRefInput<$PrismaModel> | null
-    in?: $Enums.NotificationPriority[] | ListEnumNotificationPriorityFieldRefInput<$PrismaModel> | null
-    notIn?: $Enums.NotificationPriority[] | ListEnumNotificationPriorityFieldRefInput<$PrismaModel> | null
-    not?: NestedEnumNotificationPriorityNullableWithAggregatesFilter<$PrismaModel> | $Enums.NotificationPriority | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedEnumNotificationPriorityNullableFilter<$PrismaModel>
-    _max?: NestedEnumNotificationPriorityNullableFilter<$PrismaModel>
-  }
-
-  export type EnumNotifDeliveryStatusFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotifDeliveryStatus | EnumNotifDeliveryStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.NotifDeliveryStatus[] | ListEnumNotifDeliveryStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.NotifDeliveryStatus[] | ListEnumNotifDeliveryStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumNotifDeliveryStatusFilter<$PrismaModel> | $Enums.NotifDeliveryStatus
-  }
-
-  export type NotificationRelationFilter = {
-    is?: NotificationWhereInput
-    isNot?: NotificationWhereInput
-  }
-
-  export type NotificationDeliveryCountOrderByAggregateInput = {
-    id?: SortOrder
-    notificationId?: SortOrder
-    channelType?: SortOrder
-    provider?: SortOrder
-    recipient?: SortOrder
-    status?: SortOrder
-    attemptCount?: SortOrder
-    sentAt?: SortOrder
-    deliveredAt?: SortOrder
-    errorMessage?: SortOrder
-    errorCode?: SortOrder
-    metadata?: SortOrder
-    createdAt?: SortOrder
-  }
-
-  export type NotificationDeliveryAvgOrderByAggregateInput = {
-    attemptCount?: SortOrder
-  }
-
-  export type NotificationDeliveryMaxOrderByAggregateInput = {
-    id?: SortOrder
-    notificationId?: SortOrder
-    channelType?: SortOrder
-    provider?: SortOrder
-    recipient?: SortOrder
-    status?: SortOrder
-    attemptCount?: SortOrder
-    sentAt?: SortOrder
-    deliveredAt?: SortOrder
-    errorMessage?: SortOrder
-    errorCode?: SortOrder
-    createdAt?: SortOrder
-  }
-
-  export type NotificationDeliveryMinOrderByAggregateInput = {
-    id?: SortOrder
-    notificationId?: SortOrder
-    channelType?: SortOrder
-    provider?: SortOrder
-    recipient?: SortOrder
-    status?: SortOrder
-    attemptCount?: SortOrder
-    sentAt?: SortOrder
-    deliveredAt?: SortOrder
-    errorMessage?: SortOrder
-    errorCode?: SortOrder
-    createdAt?: SortOrder
-  }
-
-  export type NotificationDeliverySumOrderByAggregateInput = {
-    attemptCount?: SortOrder
-  }
-
-  export type EnumNotifDeliveryStatusWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotifDeliveryStatus | EnumNotifDeliveryStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.NotifDeliveryStatus[] | ListEnumNotifDeliveryStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.NotifDeliveryStatus[] | ListEnumNotifDeliveryStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumNotifDeliveryStatusWithAggregatesFilter<$PrismaModel> | $Enums.NotifDeliveryStatus
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumNotifDeliveryStatusFilter<$PrismaModel>
-    _max?: NestedEnumNotifDeliveryStatusFilter<$PrismaModel>
-  }
-
-  export type NotificationReadNotificationIdUserIdCompoundUniqueInput = {
-    notificationId: string
-    userId: string
-  }
-
-  export type NotificationReadCountOrderByAggregateInput = {
-    id?: SortOrder
-    notificationId?: SortOrder
-    userId?: SortOrder
-    readAt?: SortOrder
-    deviceFingerprint?: SortOrder
-    ipAddress?: SortOrder
-    userAgent?: SortOrder
-    createdAt?: SortOrder
-  }
-
-  export type NotificationReadMaxOrderByAggregateInput = {
-    id?: SortOrder
-    notificationId?: SortOrder
-    userId?: SortOrder
-    readAt?: SortOrder
-    deviceFingerprint?: SortOrder
-    ipAddress?: SortOrder
-    userAgent?: SortOrder
-    createdAt?: SortOrder
-  }
-
-  export type NotificationReadMinOrderByAggregateInput = {
-    id?: SortOrder
-    notificationId?: SortOrder
-    userId?: SortOrder
-    readAt?: SortOrder
-    deviceFingerprint?: SortOrder
-    ipAddress?: SortOrder
-    userAgent?: SortOrder
-    createdAt?: SortOrder
-  }
-
-  export type EnumNotifAnalyticsEventFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotifAnalyticsEvent | EnumNotifAnalyticsEventFieldRefInput<$PrismaModel>
-    in?: $Enums.NotifAnalyticsEvent[] | ListEnumNotifAnalyticsEventFieldRefInput<$PrismaModel>
-    notIn?: $Enums.NotifAnalyticsEvent[] | ListEnumNotifAnalyticsEventFieldRefInput<$PrismaModel>
-    not?: NestedEnumNotifAnalyticsEventFilter<$PrismaModel> | $Enums.NotifAnalyticsEvent
-  }
-
-  export type NotificationNullableRelationFilter = {
-    is?: NotificationWhereInput | null
-    isNot?: NotificationWhereInput | null
-  }
-
-  export type NotificationStatCountOrderByAggregateInput = {
-    id?: SortOrder
-    notificationId?: SortOrder
-    userId?: SortOrder
-    eventType?: SortOrder
-    channelType?: SortOrder
-    provider?: SortOrder
-    deliveryTimeMs?: SortOrder
-    success?: SortOrder
-    errorCode?: SortOrder
-    metadata?: SortOrder
-    createdAt?: SortOrder
-  }
-
-  export type NotificationStatAvgOrderByAggregateInput = {
-    deliveryTimeMs?: SortOrder
-  }
-
-  export type NotificationStatMaxOrderByAggregateInput = {
-    id?: SortOrder
-    notificationId?: SortOrder
-    userId?: SortOrder
-    eventType?: SortOrder
-    channelType?: SortOrder
-    provider?: SortOrder
-    deliveryTimeMs?: SortOrder
-    success?: SortOrder
-    errorCode?: SortOrder
-    createdAt?: SortOrder
-  }
-
-  export type NotificationStatMinOrderByAggregateInput = {
-    id?: SortOrder
-    notificationId?: SortOrder
-    userId?: SortOrder
-    eventType?: SortOrder
-    channelType?: SortOrder
-    provider?: SortOrder
-    deliveryTimeMs?: SortOrder
-    success?: SortOrder
-    errorCode?: SortOrder
-    createdAt?: SortOrder
-  }
-
-  export type NotificationStatSumOrderByAggregateInput = {
-    deliveryTimeMs?: SortOrder
-  }
-
-  export type EnumNotifAnalyticsEventWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotifAnalyticsEvent | EnumNotifAnalyticsEventFieldRefInput<$PrismaModel>
-    in?: $Enums.NotifAnalyticsEvent[] | ListEnumNotifAnalyticsEventFieldRefInput<$PrismaModel>
-    notIn?: $Enums.NotifAnalyticsEvent[] | ListEnumNotifAnalyticsEventFieldRefInput<$PrismaModel>
-    not?: NestedEnumNotifAnalyticsEventWithAggregatesFilter<$PrismaModel> | $Enums.NotifAnalyticsEvent
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumNotifAnalyticsEventFilter<$PrismaModel>
-    _max?: NestedEnumNotifAnalyticsEventFilter<$PrismaModel>
-  }
-
-  export type EnumAmountTypeFilter<$PrismaModel = never> = {
-    equals?: $Enums.AmountType | EnumAmountTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.AmountType[] | ListEnumAmountTypeFieldRefInput<$PrismaModel>
-    notIn?: $Enums.AmountType[] | ListEnumAmountTypeFieldRefInput<$PrismaModel>
-    not?: NestedEnumAmountTypeFilter<$PrismaModel> | $Enums.AmountType
-  }
-
-  export type BidTemplateCountOrderByAggregateInput = {
-    id?: SortOrder
-    merchantId?: SortOrder
-    name?: SortOrder
-    description?: SortOrder
-    amountType?: SortOrder
-    amountPercentage?: SortOrder
-    fixedAmount?: SortOrder
-    deliveryDays?: SortOrder
-    deliveryNotes?: SortOrder
-    specialTerms?: SortOrder
-    isActive?: SortOrder
-    usageCount?: SortOrder
-    successCount?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type BidTemplateAvgOrderByAggregateInput = {
-    amountPercentage?: SortOrder
-    fixedAmount?: SortOrder
-    deliveryDays?: SortOrder
-    usageCount?: SortOrder
-    successCount?: SortOrder
-  }
-
-  export type BidTemplateMaxOrderByAggregateInput = {
-    id?: SortOrder
-    merchantId?: SortOrder
-    name?: SortOrder
-    description?: SortOrder
-    amountType?: SortOrder
-    amountPercentage?: SortOrder
-    fixedAmount?: SortOrder
-    deliveryDays?: SortOrder
-    deliveryNotes?: SortOrder
-    specialTerms?: SortOrder
-    isActive?: SortOrder
-    usageCount?: SortOrder
-    successCount?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type BidTemplateMinOrderByAggregateInput = {
-    id?: SortOrder
-    merchantId?: SortOrder
-    name?: SortOrder
-    description?: SortOrder
-    amountType?: SortOrder
-    amountPercentage?: SortOrder
-    fixedAmount?: SortOrder
-    deliveryDays?: SortOrder
-    deliveryNotes?: SortOrder
-    specialTerms?: SortOrder
-    isActive?: SortOrder
-    usageCount?: SortOrder
-    successCount?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type BidTemplateSumOrderByAggregateInput = {
-    amountPercentage?: SortOrder
-    fixedAmount?: SortOrder
-    deliveryDays?: SortOrder
-    usageCount?: SortOrder
-    successCount?: SortOrder
-  }
-
-  export type EnumAmountTypeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.AmountType | EnumAmountTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.AmountType[] | ListEnumAmountTypeFieldRefInput<$PrismaModel>
-    notIn?: $Enums.AmountType[] | ListEnumAmountTypeFieldRefInput<$PrismaModel>
-    not?: NestedEnumAmountTypeWithAggregatesFilter<$PrismaModel> | $Enums.AmountType
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumAmountTypeFilter<$PrismaModel>
-    _max?: NestedEnumAmountTypeFilter<$PrismaModel>
+    _min?: NestedEnumReviewTypeFilter<$PrismaModel>
+    _max?: NestedEnumReviewTypeFilter<$PrismaModel>
   }
 
   export type UserProfileCreateNestedOneWithoutUserInput = {
@@ -32064,13 +18962,6 @@ export namespace Prisma {
     connect?: RequestWhereUniqueInput | RequestWhereUniqueInput[]
   }
 
-  export type RequestDraftCreateNestedManyWithoutCategoryInput = {
-    create?: XOR<RequestDraftCreateWithoutCategoryInput, RequestDraftUncheckedCreateWithoutCategoryInput> | RequestDraftCreateWithoutCategoryInput[] | RequestDraftUncheckedCreateWithoutCategoryInput[]
-    connectOrCreate?: RequestDraftCreateOrConnectWithoutCategoryInput | RequestDraftCreateOrConnectWithoutCategoryInput[]
-    createMany?: RequestDraftCreateManyCategoryInputEnvelope
-    connect?: RequestDraftWhereUniqueInput | RequestDraftWhereUniqueInput[]
-  }
-
   export type RequestCategoryUncheckedCreateNestedManyWithoutParentInput = {
     create?: XOR<RequestCategoryCreateWithoutParentInput, RequestCategoryUncheckedCreateWithoutParentInput> | RequestCategoryCreateWithoutParentInput[] | RequestCategoryUncheckedCreateWithoutParentInput[]
     connectOrCreate?: RequestCategoryCreateOrConnectWithoutParentInput | RequestCategoryCreateOrConnectWithoutParentInput[]
@@ -32083,13 +18974,6 @@ export namespace Prisma {
     connectOrCreate?: RequestCreateOrConnectWithoutCategoryInput | RequestCreateOrConnectWithoutCategoryInput[]
     createMany?: RequestCreateManyCategoryInputEnvelope
     connect?: RequestWhereUniqueInput | RequestWhereUniqueInput[]
-  }
-
-  export type RequestDraftUncheckedCreateNestedManyWithoutCategoryInput = {
-    create?: XOR<RequestDraftCreateWithoutCategoryInput, RequestDraftUncheckedCreateWithoutCategoryInput> | RequestDraftCreateWithoutCategoryInput[] | RequestDraftUncheckedCreateWithoutCategoryInput[]
-    connectOrCreate?: RequestDraftCreateOrConnectWithoutCategoryInput | RequestDraftCreateOrConnectWithoutCategoryInput[]
-    createMany?: RequestDraftCreateManyCategoryInputEnvelope
-    connect?: RequestDraftWhereUniqueInput | RequestDraftWhereUniqueInput[]
   }
 
   export type RequestCategoryUpdateOneWithoutChildrenNestedInput = {
@@ -32130,20 +19014,6 @@ export namespace Prisma {
     deleteMany?: RequestScalarWhereInput | RequestScalarWhereInput[]
   }
 
-  export type RequestDraftUpdateManyWithoutCategoryNestedInput = {
-    create?: XOR<RequestDraftCreateWithoutCategoryInput, RequestDraftUncheckedCreateWithoutCategoryInput> | RequestDraftCreateWithoutCategoryInput[] | RequestDraftUncheckedCreateWithoutCategoryInput[]
-    connectOrCreate?: RequestDraftCreateOrConnectWithoutCategoryInput | RequestDraftCreateOrConnectWithoutCategoryInput[]
-    upsert?: RequestDraftUpsertWithWhereUniqueWithoutCategoryInput | RequestDraftUpsertWithWhereUniqueWithoutCategoryInput[]
-    createMany?: RequestDraftCreateManyCategoryInputEnvelope
-    set?: RequestDraftWhereUniqueInput | RequestDraftWhereUniqueInput[]
-    disconnect?: RequestDraftWhereUniqueInput | RequestDraftWhereUniqueInput[]
-    delete?: RequestDraftWhereUniqueInput | RequestDraftWhereUniqueInput[]
-    connect?: RequestDraftWhereUniqueInput | RequestDraftWhereUniqueInput[]
-    update?: RequestDraftUpdateWithWhereUniqueWithoutCategoryInput | RequestDraftUpdateWithWhereUniqueWithoutCategoryInput[]
-    updateMany?: RequestDraftUpdateManyWithWhereWithoutCategoryInput | RequestDraftUpdateManyWithWhereWithoutCategoryInput[]
-    deleteMany?: RequestDraftScalarWhereInput | RequestDraftScalarWhereInput[]
-  }
-
   export type RequestCategoryUncheckedUpdateManyWithoutParentNestedInput = {
     create?: XOR<RequestCategoryCreateWithoutParentInput, RequestCategoryUncheckedCreateWithoutParentInput> | RequestCategoryCreateWithoutParentInput[] | RequestCategoryUncheckedCreateWithoutParentInput[]
     connectOrCreate?: RequestCategoryCreateOrConnectWithoutParentInput | RequestCategoryCreateOrConnectWithoutParentInput[]
@@ -32172,20 +19042,6 @@ export namespace Prisma {
     deleteMany?: RequestScalarWhereInput | RequestScalarWhereInput[]
   }
 
-  export type RequestDraftUncheckedUpdateManyWithoutCategoryNestedInput = {
-    create?: XOR<RequestDraftCreateWithoutCategoryInput, RequestDraftUncheckedCreateWithoutCategoryInput> | RequestDraftCreateWithoutCategoryInput[] | RequestDraftUncheckedCreateWithoutCategoryInput[]
-    connectOrCreate?: RequestDraftCreateOrConnectWithoutCategoryInput | RequestDraftCreateOrConnectWithoutCategoryInput[]
-    upsert?: RequestDraftUpsertWithWhereUniqueWithoutCategoryInput | RequestDraftUpsertWithWhereUniqueWithoutCategoryInput[]
-    createMany?: RequestDraftCreateManyCategoryInputEnvelope
-    set?: RequestDraftWhereUniqueInput | RequestDraftWhereUniqueInput[]
-    disconnect?: RequestDraftWhereUniqueInput | RequestDraftWhereUniqueInput[]
-    delete?: RequestDraftWhereUniqueInput | RequestDraftWhereUniqueInput[]
-    connect?: RequestDraftWhereUniqueInput | RequestDraftWhereUniqueInput[]
-    update?: RequestDraftUpdateWithWhereUniqueWithoutCategoryInput | RequestDraftUpdateWithWhereUniqueWithoutCategoryInput[]
-    updateMany?: RequestDraftUpdateManyWithWhereWithoutCategoryInput | RequestDraftUpdateManyWithWhereWithoutCategoryInput[]
-    deleteMany?: RequestDraftScalarWhereInput | RequestDraftScalarWhereInput[]
-  }
-
   export type RequestCategoryCreateNestedOneWithoutRequestsInput = {
     create?: XOR<RequestCategoryCreateWithoutRequestsInput, RequestCategoryUncheckedCreateWithoutRequestsInput>
     connectOrCreate?: RequestCategoryCreateOrConnectWithoutRequestsInput
@@ -32199,19 +19055,6 @@ export namespace Prisma {
     connect?: RequestImageWhereUniqueInput | RequestImageWhereUniqueInput[]
   }
 
-  export type RequestExtensionCreateNestedManyWithoutRequestInput = {
-    create?: XOR<RequestExtensionCreateWithoutRequestInput, RequestExtensionUncheckedCreateWithoutRequestInput> | RequestExtensionCreateWithoutRequestInput[] | RequestExtensionUncheckedCreateWithoutRequestInput[]
-    connectOrCreate?: RequestExtensionCreateOrConnectWithoutRequestInput | RequestExtensionCreateOrConnectWithoutRequestInput[]
-    createMany?: RequestExtensionCreateManyRequestInputEnvelope
-    connect?: RequestExtensionWhereUniqueInput | RequestExtensionWhereUniqueInput[]
-  }
-
-  export type RequestSearchIndexCreateNestedOneWithoutRequestInput = {
-    create?: XOR<RequestSearchIndexCreateWithoutRequestInput, RequestSearchIndexUncheckedCreateWithoutRequestInput>
-    connectOrCreate?: RequestSearchIndexCreateOrConnectWithoutRequestInput
-    connect?: RequestSearchIndexWhereUniqueInput
-  }
-
   export type RequestImageUncheckedCreateNestedManyWithoutRequestInput = {
     create?: XOR<RequestImageCreateWithoutRequestInput, RequestImageUncheckedCreateWithoutRequestInput> | RequestImageCreateWithoutRequestInput[] | RequestImageUncheckedCreateWithoutRequestInput[]
     connectOrCreate?: RequestImageCreateOrConnectWithoutRequestInput | RequestImageCreateOrConnectWithoutRequestInput[]
@@ -32219,27 +19062,16 @@ export namespace Prisma {
     connect?: RequestImageWhereUniqueInput | RequestImageWhereUniqueInput[]
   }
 
-  export type RequestExtensionUncheckedCreateNestedManyWithoutRequestInput = {
-    create?: XOR<RequestExtensionCreateWithoutRequestInput, RequestExtensionUncheckedCreateWithoutRequestInput> | RequestExtensionCreateWithoutRequestInput[] | RequestExtensionUncheckedCreateWithoutRequestInput[]
-    connectOrCreate?: RequestExtensionCreateOrConnectWithoutRequestInput | RequestExtensionCreateOrConnectWithoutRequestInput[]
-    createMany?: RequestExtensionCreateManyRequestInputEnvelope
-    connect?: RequestExtensionWhereUniqueInput | RequestExtensionWhereUniqueInput[]
-  }
-
-  export type RequestSearchIndexUncheckedCreateNestedOneWithoutRequestInput = {
-    create?: XOR<RequestSearchIndexCreateWithoutRequestInput, RequestSearchIndexUncheckedCreateWithoutRequestInput>
-    connectOrCreate?: RequestSearchIndexCreateOrConnectWithoutRequestInput
-    connect?: RequestSearchIndexWhereUniqueInput
-  }
-
   export type EnumRequestStatusFieldUpdateOperationsInput = {
     set?: $Enums.RequestStatus
   }
 
-  export type RequestCategoryUpdateOneRequiredWithoutRequestsNestedInput = {
+  export type RequestCategoryUpdateOneWithoutRequestsNestedInput = {
     create?: XOR<RequestCategoryCreateWithoutRequestsInput, RequestCategoryUncheckedCreateWithoutRequestsInput>
     connectOrCreate?: RequestCategoryCreateOrConnectWithoutRequestsInput
     upsert?: RequestCategoryUpsertWithoutRequestsInput
+    disconnect?: RequestCategoryWhereInput | boolean
+    delete?: RequestCategoryWhereInput | boolean
     connect?: RequestCategoryWhereUniqueInput
     update?: XOR<XOR<RequestCategoryUpdateToOneWithWhereWithoutRequestsInput, RequestCategoryUpdateWithoutRequestsInput>, RequestCategoryUncheckedUpdateWithoutRequestsInput>
   }
@@ -32258,30 +19090,6 @@ export namespace Prisma {
     deleteMany?: RequestImageScalarWhereInput | RequestImageScalarWhereInput[]
   }
 
-  export type RequestExtensionUpdateManyWithoutRequestNestedInput = {
-    create?: XOR<RequestExtensionCreateWithoutRequestInput, RequestExtensionUncheckedCreateWithoutRequestInput> | RequestExtensionCreateWithoutRequestInput[] | RequestExtensionUncheckedCreateWithoutRequestInput[]
-    connectOrCreate?: RequestExtensionCreateOrConnectWithoutRequestInput | RequestExtensionCreateOrConnectWithoutRequestInput[]
-    upsert?: RequestExtensionUpsertWithWhereUniqueWithoutRequestInput | RequestExtensionUpsertWithWhereUniqueWithoutRequestInput[]
-    createMany?: RequestExtensionCreateManyRequestInputEnvelope
-    set?: RequestExtensionWhereUniqueInput | RequestExtensionWhereUniqueInput[]
-    disconnect?: RequestExtensionWhereUniqueInput | RequestExtensionWhereUniqueInput[]
-    delete?: RequestExtensionWhereUniqueInput | RequestExtensionWhereUniqueInput[]
-    connect?: RequestExtensionWhereUniqueInput | RequestExtensionWhereUniqueInput[]
-    update?: RequestExtensionUpdateWithWhereUniqueWithoutRequestInput | RequestExtensionUpdateWithWhereUniqueWithoutRequestInput[]
-    updateMany?: RequestExtensionUpdateManyWithWhereWithoutRequestInput | RequestExtensionUpdateManyWithWhereWithoutRequestInput[]
-    deleteMany?: RequestExtensionScalarWhereInput | RequestExtensionScalarWhereInput[]
-  }
-
-  export type RequestSearchIndexUpdateOneWithoutRequestNestedInput = {
-    create?: XOR<RequestSearchIndexCreateWithoutRequestInput, RequestSearchIndexUncheckedCreateWithoutRequestInput>
-    connectOrCreate?: RequestSearchIndexCreateOrConnectWithoutRequestInput
-    upsert?: RequestSearchIndexUpsertWithoutRequestInput
-    disconnect?: RequestSearchIndexWhereInput | boolean
-    delete?: RequestSearchIndexWhereInput | boolean
-    connect?: RequestSearchIndexWhereUniqueInput
-    update?: XOR<XOR<RequestSearchIndexUpdateToOneWithWhereWithoutRequestInput, RequestSearchIndexUpdateWithoutRequestInput>, RequestSearchIndexUncheckedUpdateWithoutRequestInput>
-  }
-
   export type RequestImageUncheckedUpdateManyWithoutRequestNestedInput = {
     create?: XOR<RequestImageCreateWithoutRequestInput, RequestImageUncheckedCreateWithoutRequestInput> | RequestImageCreateWithoutRequestInput[] | RequestImageUncheckedCreateWithoutRequestInput[]
     connectOrCreate?: RequestImageCreateOrConnectWithoutRequestInput | RequestImageCreateOrConnectWithoutRequestInput[]
@@ -32294,30 +19102,6 @@ export namespace Prisma {
     update?: RequestImageUpdateWithWhereUniqueWithoutRequestInput | RequestImageUpdateWithWhereUniqueWithoutRequestInput[]
     updateMany?: RequestImageUpdateManyWithWhereWithoutRequestInput | RequestImageUpdateManyWithWhereWithoutRequestInput[]
     deleteMany?: RequestImageScalarWhereInput | RequestImageScalarWhereInput[]
-  }
-
-  export type RequestExtensionUncheckedUpdateManyWithoutRequestNestedInput = {
-    create?: XOR<RequestExtensionCreateWithoutRequestInput, RequestExtensionUncheckedCreateWithoutRequestInput> | RequestExtensionCreateWithoutRequestInput[] | RequestExtensionUncheckedCreateWithoutRequestInput[]
-    connectOrCreate?: RequestExtensionCreateOrConnectWithoutRequestInput | RequestExtensionCreateOrConnectWithoutRequestInput[]
-    upsert?: RequestExtensionUpsertWithWhereUniqueWithoutRequestInput | RequestExtensionUpsertWithWhereUniqueWithoutRequestInput[]
-    createMany?: RequestExtensionCreateManyRequestInputEnvelope
-    set?: RequestExtensionWhereUniqueInput | RequestExtensionWhereUniqueInput[]
-    disconnect?: RequestExtensionWhereUniqueInput | RequestExtensionWhereUniqueInput[]
-    delete?: RequestExtensionWhereUniqueInput | RequestExtensionWhereUniqueInput[]
-    connect?: RequestExtensionWhereUniqueInput | RequestExtensionWhereUniqueInput[]
-    update?: RequestExtensionUpdateWithWhereUniqueWithoutRequestInput | RequestExtensionUpdateWithWhereUniqueWithoutRequestInput[]
-    updateMany?: RequestExtensionUpdateManyWithWhereWithoutRequestInput | RequestExtensionUpdateManyWithWhereWithoutRequestInput[]
-    deleteMany?: RequestExtensionScalarWhereInput | RequestExtensionScalarWhereInput[]
-  }
-
-  export type RequestSearchIndexUncheckedUpdateOneWithoutRequestNestedInput = {
-    create?: XOR<RequestSearchIndexCreateWithoutRequestInput, RequestSearchIndexUncheckedCreateWithoutRequestInput>
-    connectOrCreate?: RequestSearchIndexCreateOrConnectWithoutRequestInput
-    upsert?: RequestSearchIndexUpsertWithoutRequestInput
-    disconnect?: RequestSearchIndexWhereInput | boolean
-    delete?: RequestSearchIndexWhereInput | boolean
-    connect?: RequestSearchIndexWhereUniqueInput
-    update?: XOR<XOR<RequestSearchIndexUpdateToOneWithWhereWithoutRequestInput, RequestSearchIndexUpdateWithoutRequestInput>, RequestSearchIndexUncheckedUpdateWithoutRequestInput>
   }
 
   export type RequestCreateNestedOneWithoutImagesInput = {
@@ -32350,48 +19134,18 @@ export namespace Prisma {
     update?: XOR<XOR<RequestUpdateToOneWithWhereWithoutImagesInput, RequestUpdateWithoutImagesInput>, RequestUncheckedUpdateWithoutImagesInput>
   }
 
-  export type RequestCategoryCreateNestedOneWithoutDraftsInput = {
-    create?: XOR<RequestCategoryCreateWithoutDraftsInput, RequestCategoryUncheckedCreateWithoutDraftsInput>
-    connectOrCreate?: RequestCategoryCreateOrConnectWithoutDraftsInput
-    connect?: RequestCategoryWhereUniqueInput
+  export type ReviewCreateNestedManyWithoutBidInput = {
+    create?: XOR<ReviewCreateWithoutBidInput, ReviewUncheckedCreateWithoutBidInput> | ReviewCreateWithoutBidInput[] | ReviewUncheckedCreateWithoutBidInput[]
+    connectOrCreate?: ReviewCreateOrConnectWithoutBidInput | ReviewCreateOrConnectWithoutBidInput[]
+    createMany?: ReviewCreateManyBidInputEnvelope
+    connect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
   }
 
-  export type RequestCategoryUpdateOneWithoutDraftsNestedInput = {
-    create?: XOR<RequestCategoryCreateWithoutDraftsInput, RequestCategoryUncheckedCreateWithoutDraftsInput>
-    connectOrCreate?: RequestCategoryCreateOrConnectWithoutDraftsInput
-    upsert?: RequestCategoryUpsertWithoutDraftsInput
-    disconnect?: RequestCategoryWhereInput | boolean
-    delete?: RequestCategoryWhereInput | boolean
-    connect?: RequestCategoryWhereUniqueInput
-    update?: XOR<XOR<RequestCategoryUpdateToOneWithWhereWithoutDraftsInput, RequestCategoryUpdateWithoutDraftsInput>, RequestCategoryUncheckedUpdateWithoutDraftsInput>
-  }
-
-  export type RequestCreateNestedOneWithoutExtensionsInput = {
-    create?: XOR<RequestCreateWithoutExtensionsInput, RequestUncheckedCreateWithoutExtensionsInput>
-    connectOrCreate?: RequestCreateOrConnectWithoutExtensionsInput
-    connect?: RequestWhereUniqueInput
-  }
-
-  export type RequestUpdateOneRequiredWithoutExtensionsNestedInput = {
-    create?: XOR<RequestCreateWithoutExtensionsInput, RequestUncheckedCreateWithoutExtensionsInput>
-    connectOrCreate?: RequestCreateOrConnectWithoutExtensionsInput
-    upsert?: RequestUpsertWithoutExtensionsInput
-    connect?: RequestWhereUniqueInput
-    update?: XOR<XOR<RequestUpdateToOneWithWhereWithoutExtensionsInput, RequestUpdateWithoutExtensionsInput>, RequestUncheckedUpdateWithoutExtensionsInput>
-  }
-
-  export type RequestCreateNestedOneWithoutSearchIndexInput = {
-    create?: XOR<RequestCreateWithoutSearchIndexInput, RequestUncheckedCreateWithoutSearchIndexInput>
-    connectOrCreate?: RequestCreateOrConnectWithoutSearchIndexInput
-    connect?: RequestWhereUniqueInput
-  }
-
-  export type RequestUpdateOneRequiredWithoutSearchIndexNestedInput = {
-    create?: XOR<RequestCreateWithoutSearchIndexInput, RequestUncheckedCreateWithoutSearchIndexInput>
-    connectOrCreate?: RequestCreateOrConnectWithoutSearchIndexInput
-    upsert?: RequestUpsertWithoutSearchIndexInput
-    connect?: RequestWhereUniqueInput
-    update?: XOR<XOR<RequestUpdateToOneWithWhereWithoutSearchIndexInput, RequestUpdateWithoutSearchIndexInput>, RequestUncheckedUpdateWithoutSearchIndexInput>
+  export type ReviewUncheckedCreateNestedManyWithoutBidInput = {
+    create?: XOR<ReviewCreateWithoutBidInput, ReviewUncheckedCreateWithoutBidInput> | ReviewCreateWithoutBidInput[] | ReviewUncheckedCreateWithoutBidInput[]
+    connectOrCreate?: ReviewCreateOrConnectWithoutBidInput | ReviewCreateOrConnectWithoutBidInput[]
+    createMany?: ReviewCreateManyBidInputEnvelope
+    connect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
   }
 
   export type DecimalFieldUpdateOperationsInput = {
@@ -32406,60 +19160,88 @@ export namespace Prisma {
     set?: $Enums.BidStatus
   }
 
-  export type ChatParticipantCreateNestedManyWithoutRoomInput = {
-    create?: XOR<ChatParticipantCreateWithoutRoomInput, ChatParticipantUncheckedCreateWithoutRoomInput> | ChatParticipantCreateWithoutRoomInput[] | ChatParticipantUncheckedCreateWithoutRoomInput[]
-    connectOrCreate?: ChatParticipantCreateOrConnectWithoutRoomInput | ChatParticipantCreateOrConnectWithoutRoomInput[]
-    createMany?: ChatParticipantCreateManyRoomInputEnvelope
-    connect?: ChatParticipantWhereUniqueInput | ChatParticipantWhereUniqueInput[]
+  export type NullableEnumFulfillmentStatusFieldUpdateOperationsInput = {
+    set?: $Enums.FulfillmentStatus | null
   }
 
-  export type ChatParticipantUncheckedCreateNestedManyWithoutRoomInput = {
-    create?: XOR<ChatParticipantCreateWithoutRoomInput, ChatParticipantUncheckedCreateWithoutRoomInput> | ChatParticipantCreateWithoutRoomInput[] | ChatParticipantUncheckedCreateWithoutRoomInput[]
-    connectOrCreate?: ChatParticipantCreateOrConnectWithoutRoomInput | ChatParticipantCreateOrConnectWithoutRoomInput[]
-    createMany?: ChatParticipantCreateManyRoomInputEnvelope
-    connect?: ChatParticipantWhereUniqueInput | ChatParticipantWhereUniqueInput[]
+  export type ReviewUpdateManyWithoutBidNestedInput = {
+    create?: XOR<ReviewCreateWithoutBidInput, ReviewUncheckedCreateWithoutBidInput> | ReviewCreateWithoutBidInput[] | ReviewUncheckedCreateWithoutBidInput[]
+    connectOrCreate?: ReviewCreateOrConnectWithoutBidInput | ReviewCreateOrConnectWithoutBidInput[]
+    upsert?: ReviewUpsertWithWhereUniqueWithoutBidInput | ReviewUpsertWithWhereUniqueWithoutBidInput[]
+    createMany?: ReviewCreateManyBidInputEnvelope
+    set?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    disconnect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    delete?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    connect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    update?: ReviewUpdateWithWhereUniqueWithoutBidInput | ReviewUpdateWithWhereUniqueWithoutBidInput[]
+    updateMany?: ReviewUpdateManyWithWhereWithoutBidInput | ReviewUpdateManyWithWhereWithoutBidInput[]
+    deleteMany?: ReviewScalarWhereInput | ReviewScalarWhereInput[]
+  }
+
+  export type ReviewUncheckedUpdateManyWithoutBidNestedInput = {
+    create?: XOR<ReviewCreateWithoutBidInput, ReviewUncheckedCreateWithoutBidInput> | ReviewCreateWithoutBidInput[] | ReviewUncheckedCreateWithoutBidInput[]
+    connectOrCreate?: ReviewCreateOrConnectWithoutBidInput | ReviewCreateOrConnectWithoutBidInput[]
+    upsert?: ReviewUpsertWithWhereUniqueWithoutBidInput | ReviewUpsertWithWhereUniqueWithoutBidInput[]
+    createMany?: ReviewCreateManyBidInputEnvelope
+    set?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    disconnect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    delete?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    connect?: ReviewWhereUniqueInput | ReviewWhereUniqueInput[]
+    update?: ReviewUpdateWithWhereUniqueWithoutBidInput | ReviewUpdateWithWhereUniqueWithoutBidInput[]
+    updateMany?: ReviewUpdateManyWithWhereWithoutBidInput | ReviewUpdateManyWithWhereWithoutBidInput[]
+    deleteMany?: ReviewScalarWhereInput | ReviewScalarWhereInput[]
+  }
+
+  export type ChatRoomParticipantCreateNestedManyWithoutRoomInput = {
+    create?: XOR<ChatRoomParticipantCreateWithoutRoomInput, ChatRoomParticipantUncheckedCreateWithoutRoomInput> | ChatRoomParticipantCreateWithoutRoomInput[] | ChatRoomParticipantUncheckedCreateWithoutRoomInput[]
+    connectOrCreate?: ChatRoomParticipantCreateOrConnectWithoutRoomInput | ChatRoomParticipantCreateOrConnectWithoutRoomInput[]
+    createMany?: ChatRoomParticipantCreateManyRoomInputEnvelope
+    connect?: ChatRoomParticipantWhereUniqueInput | ChatRoomParticipantWhereUniqueInput[]
+  }
+
+  export type ChatRoomParticipantUncheckedCreateNestedManyWithoutRoomInput = {
+    create?: XOR<ChatRoomParticipantCreateWithoutRoomInput, ChatRoomParticipantUncheckedCreateWithoutRoomInput> | ChatRoomParticipantCreateWithoutRoomInput[] | ChatRoomParticipantUncheckedCreateWithoutRoomInput[]
+    connectOrCreate?: ChatRoomParticipantCreateOrConnectWithoutRoomInput | ChatRoomParticipantCreateOrConnectWithoutRoomInput[]
+    createMany?: ChatRoomParticipantCreateManyRoomInputEnvelope
+    connect?: ChatRoomParticipantWhereUniqueInput | ChatRoomParticipantWhereUniqueInput[]
   }
 
   export type EnumRoomTypeFieldUpdateOperationsInput = {
     set?: $Enums.RoomType
   }
 
-  export type ChatParticipantUpdateManyWithoutRoomNestedInput = {
-    create?: XOR<ChatParticipantCreateWithoutRoomInput, ChatParticipantUncheckedCreateWithoutRoomInput> | ChatParticipantCreateWithoutRoomInput[] | ChatParticipantUncheckedCreateWithoutRoomInput[]
-    connectOrCreate?: ChatParticipantCreateOrConnectWithoutRoomInput | ChatParticipantCreateOrConnectWithoutRoomInput[]
-    upsert?: ChatParticipantUpsertWithWhereUniqueWithoutRoomInput | ChatParticipantUpsertWithWhereUniqueWithoutRoomInput[]
-    createMany?: ChatParticipantCreateManyRoomInputEnvelope
-    set?: ChatParticipantWhereUniqueInput | ChatParticipantWhereUniqueInput[]
-    disconnect?: ChatParticipantWhereUniqueInput | ChatParticipantWhereUniqueInput[]
-    delete?: ChatParticipantWhereUniqueInput | ChatParticipantWhereUniqueInput[]
-    connect?: ChatParticipantWhereUniqueInput | ChatParticipantWhereUniqueInput[]
-    update?: ChatParticipantUpdateWithWhereUniqueWithoutRoomInput | ChatParticipantUpdateWithWhereUniqueWithoutRoomInput[]
-    updateMany?: ChatParticipantUpdateManyWithWhereWithoutRoomInput | ChatParticipantUpdateManyWithWhereWithoutRoomInput[]
-    deleteMany?: ChatParticipantScalarWhereInput | ChatParticipantScalarWhereInput[]
+  export type ChatRoomParticipantUpdateManyWithoutRoomNestedInput = {
+    create?: XOR<ChatRoomParticipantCreateWithoutRoomInput, ChatRoomParticipantUncheckedCreateWithoutRoomInput> | ChatRoomParticipantCreateWithoutRoomInput[] | ChatRoomParticipantUncheckedCreateWithoutRoomInput[]
+    connectOrCreate?: ChatRoomParticipantCreateOrConnectWithoutRoomInput | ChatRoomParticipantCreateOrConnectWithoutRoomInput[]
+    upsert?: ChatRoomParticipantUpsertWithWhereUniqueWithoutRoomInput | ChatRoomParticipantUpsertWithWhereUniqueWithoutRoomInput[]
+    createMany?: ChatRoomParticipantCreateManyRoomInputEnvelope
+    set?: ChatRoomParticipantWhereUniqueInput | ChatRoomParticipantWhereUniqueInput[]
+    disconnect?: ChatRoomParticipantWhereUniqueInput | ChatRoomParticipantWhereUniqueInput[]
+    delete?: ChatRoomParticipantWhereUniqueInput | ChatRoomParticipantWhereUniqueInput[]
+    connect?: ChatRoomParticipantWhereUniqueInput | ChatRoomParticipantWhereUniqueInput[]
+    update?: ChatRoomParticipantUpdateWithWhereUniqueWithoutRoomInput | ChatRoomParticipantUpdateWithWhereUniqueWithoutRoomInput[]
+    updateMany?: ChatRoomParticipantUpdateManyWithWhereWithoutRoomInput | ChatRoomParticipantUpdateManyWithWhereWithoutRoomInput[]
+    deleteMany?: ChatRoomParticipantScalarWhereInput | ChatRoomParticipantScalarWhereInput[]
   }
 
-  export type ChatParticipantUncheckedUpdateManyWithoutRoomNestedInput = {
-    create?: XOR<ChatParticipantCreateWithoutRoomInput, ChatParticipantUncheckedCreateWithoutRoomInput> | ChatParticipantCreateWithoutRoomInput[] | ChatParticipantUncheckedCreateWithoutRoomInput[]
-    connectOrCreate?: ChatParticipantCreateOrConnectWithoutRoomInput | ChatParticipantCreateOrConnectWithoutRoomInput[]
-    upsert?: ChatParticipantUpsertWithWhereUniqueWithoutRoomInput | ChatParticipantUpsertWithWhereUniqueWithoutRoomInput[]
-    createMany?: ChatParticipantCreateManyRoomInputEnvelope
-    set?: ChatParticipantWhereUniqueInput | ChatParticipantWhereUniqueInput[]
-    disconnect?: ChatParticipantWhereUniqueInput | ChatParticipantWhereUniqueInput[]
-    delete?: ChatParticipantWhereUniqueInput | ChatParticipantWhereUniqueInput[]
-    connect?: ChatParticipantWhereUniqueInput | ChatParticipantWhereUniqueInput[]
-    update?: ChatParticipantUpdateWithWhereUniqueWithoutRoomInput | ChatParticipantUpdateWithWhereUniqueWithoutRoomInput[]
-    updateMany?: ChatParticipantUpdateManyWithWhereWithoutRoomInput | ChatParticipantUpdateManyWithWhereWithoutRoomInput[]
-    deleteMany?: ChatParticipantScalarWhereInput | ChatParticipantScalarWhereInput[]
+  export type ChatRoomParticipantUncheckedUpdateManyWithoutRoomNestedInput = {
+    create?: XOR<ChatRoomParticipantCreateWithoutRoomInput, ChatRoomParticipantUncheckedCreateWithoutRoomInput> | ChatRoomParticipantCreateWithoutRoomInput[] | ChatRoomParticipantUncheckedCreateWithoutRoomInput[]
+    connectOrCreate?: ChatRoomParticipantCreateOrConnectWithoutRoomInput | ChatRoomParticipantCreateOrConnectWithoutRoomInput[]
+    upsert?: ChatRoomParticipantUpsertWithWhereUniqueWithoutRoomInput | ChatRoomParticipantUpsertWithWhereUniqueWithoutRoomInput[]
+    createMany?: ChatRoomParticipantCreateManyRoomInputEnvelope
+    set?: ChatRoomParticipantWhereUniqueInput | ChatRoomParticipantWhereUniqueInput[]
+    disconnect?: ChatRoomParticipantWhereUniqueInput | ChatRoomParticipantWhereUniqueInput[]
+    delete?: ChatRoomParticipantWhereUniqueInput | ChatRoomParticipantWhereUniqueInput[]
+    connect?: ChatRoomParticipantWhereUniqueInput | ChatRoomParticipantWhereUniqueInput[]
+    update?: ChatRoomParticipantUpdateWithWhereUniqueWithoutRoomInput | ChatRoomParticipantUpdateWithWhereUniqueWithoutRoomInput[]
+    updateMany?: ChatRoomParticipantUpdateManyWithWhereWithoutRoomInput | ChatRoomParticipantUpdateManyWithWhereWithoutRoomInput[]
+    deleteMany?: ChatRoomParticipantScalarWhereInput | ChatRoomParticipantScalarWhereInput[]
   }
 
   export type ChatRoomCreateNestedOneWithoutParticipantsInput = {
     create?: XOR<ChatRoomCreateWithoutParticipantsInput, ChatRoomUncheckedCreateWithoutParticipantsInput>
     connectOrCreate?: ChatRoomCreateOrConnectWithoutParticipantsInput
     connect?: ChatRoomWhereUniqueInput
-  }
-
-  export type EnumParticipantRoleFieldUpdateOperationsInput = {
-    set?: $Enums.ParticipantRole
   }
 
   export type ChatRoomUpdateOneRequiredWithoutParticipantsNestedInput = {
@@ -32470,264 +19252,26 @@ export namespace Prisma {
     update?: XOR<XOR<ChatRoomUpdateToOneWithWhereWithoutParticipantsInput, ChatRoomUpdateWithoutParticipantsInput>, ChatRoomUncheckedUpdateWithoutParticipantsInput>
   }
 
-  export type NotificationCreateNestedManyWithoutTemplateInput = {
-    create?: XOR<NotificationCreateWithoutTemplateInput, NotificationUncheckedCreateWithoutTemplateInput> | NotificationCreateWithoutTemplateInput[] | NotificationUncheckedCreateWithoutTemplateInput[]
-    connectOrCreate?: NotificationCreateOrConnectWithoutTemplateInput | NotificationCreateOrConnectWithoutTemplateInput[]
-    createMany?: NotificationCreateManyTemplateInputEnvelope
-    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-  }
-
-  export type NotificationUncheckedCreateNestedManyWithoutTemplateInput = {
-    create?: XOR<NotificationCreateWithoutTemplateInput, NotificationUncheckedCreateWithoutTemplateInput> | NotificationCreateWithoutTemplateInput[] | NotificationUncheckedCreateWithoutTemplateInput[]
-    connectOrCreate?: NotificationCreateOrConnectWithoutTemplateInput | NotificationCreateOrConnectWithoutTemplateInput[]
-    createMany?: NotificationCreateManyTemplateInputEnvelope
-    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-  }
-
   export type EnumNotificationTypeFieldUpdateOperationsInput = {
     set?: $Enums.NotificationType
   }
 
-  export type EnumNotifChannelFieldUpdateOperationsInput = {
-    set?: $Enums.NotifChannel
+  export type BidCreateNestedOneWithoutReviewsInput = {
+    create?: XOR<BidCreateWithoutReviewsInput, BidUncheckedCreateWithoutReviewsInput>
+    connectOrCreate?: BidCreateOrConnectWithoutReviewsInput
+    connect?: BidWhereUniqueInput
   }
 
-  export type NotificationUpdateManyWithoutTemplateNestedInput = {
-    create?: XOR<NotificationCreateWithoutTemplateInput, NotificationUncheckedCreateWithoutTemplateInput> | NotificationCreateWithoutTemplateInput[] | NotificationUncheckedCreateWithoutTemplateInput[]
-    connectOrCreate?: NotificationCreateOrConnectWithoutTemplateInput | NotificationCreateOrConnectWithoutTemplateInput[]
-    upsert?: NotificationUpsertWithWhereUniqueWithoutTemplateInput | NotificationUpsertWithWhereUniqueWithoutTemplateInput[]
-    createMany?: NotificationCreateManyTemplateInputEnvelope
-    set?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    disconnect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    delete?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    update?: NotificationUpdateWithWhereUniqueWithoutTemplateInput | NotificationUpdateWithWhereUniqueWithoutTemplateInput[]
-    updateMany?: NotificationUpdateManyWithWhereWithoutTemplateInput | NotificationUpdateManyWithWhereWithoutTemplateInput[]
-    deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+  export type EnumReviewTypeFieldUpdateOperationsInput = {
+    set?: $Enums.ReviewType
   }
 
-  export type NotificationUncheckedUpdateManyWithoutTemplateNestedInput = {
-    create?: XOR<NotificationCreateWithoutTemplateInput, NotificationUncheckedCreateWithoutTemplateInput> | NotificationCreateWithoutTemplateInput[] | NotificationUncheckedCreateWithoutTemplateInput[]
-    connectOrCreate?: NotificationCreateOrConnectWithoutTemplateInput | NotificationCreateOrConnectWithoutTemplateInput[]
-    upsert?: NotificationUpsertWithWhereUniqueWithoutTemplateInput | NotificationUpsertWithWhereUniqueWithoutTemplateInput[]
-    createMany?: NotificationCreateManyTemplateInputEnvelope
-    set?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    disconnect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    delete?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    update?: NotificationUpdateWithWhereUniqueWithoutTemplateInput | NotificationUpdateWithWhereUniqueWithoutTemplateInput[]
-    updateMany?: NotificationUpdateManyWithWhereWithoutTemplateInput | NotificationUpdateManyWithWhereWithoutTemplateInput[]
-    deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
-  }
-
-  export type NotificationTemplateCreateNestedOneWithoutNotificationsInput = {
-    create?: XOR<NotificationTemplateCreateWithoutNotificationsInput, NotificationTemplateUncheckedCreateWithoutNotificationsInput>
-    connectOrCreate?: NotificationTemplateCreateOrConnectWithoutNotificationsInput
-    connect?: NotificationTemplateWhereUniqueInput
-  }
-
-  export type NotificationDeliveryCreateNestedManyWithoutNotificationInput = {
-    create?: XOR<NotificationDeliveryCreateWithoutNotificationInput, NotificationDeliveryUncheckedCreateWithoutNotificationInput> | NotificationDeliveryCreateWithoutNotificationInput[] | NotificationDeliveryUncheckedCreateWithoutNotificationInput[]
-    connectOrCreate?: NotificationDeliveryCreateOrConnectWithoutNotificationInput | NotificationDeliveryCreateOrConnectWithoutNotificationInput[]
-    createMany?: NotificationDeliveryCreateManyNotificationInputEnvelope
-    connect?: NotificationDeliveryWhereUniqueInput | NotificationDeliveryWhereUniqueInput[]
-  }
-
-  export type NotificationReadCreateNestedManyWithoutNotificationInput = {
-    create?: XOR<NotificationReadCreateWithoutNotificationInput, NotificationReadUncheckedCreateWithoutNotificationInput> | NotificationReadCreateWithoutNotificationInput[] | NotificationReadUncheckedCreateWithoutNotificationInput[]
-    connectOrCreate?: NotificationReadCreateOrConnectWithoutNotificationInput | NotificationReadCreateOrConnectWithoutNotificationInput[]
-    createMany?: NotificationReadCreateManyNotificationInputEnvelope
-    connect?: NotificationReadWhereUniqueInput | NotificationReadWhereUniqueInput[]
-  }
-
-  export type NotificationStatCreateNestedManyWithoutNotificationInput = {
-    create?: XOR<NotificationStatCreateWithoutNotificationInput, NotificationStatUncheckedCreateWithoutNotificationInput> | NotificationStatCreateWithoutNotificationInput[] | NotificationStatUncheckedCreateWithoutNotificationInput[]
-    connectOrCreate?: NotificationStatCreateOrConnectWithoutNotificationInput | NotificationStatCreateOrConnectWithoutNotificationInput[]
-    createMany?: NotificationStatCreateManyNotificationInputEnvelope
-    connect?: NotificationStatWhereUniqueInput | NotificationStatWhereUniqueInput[]
-  }
-
-  export type NotificationDeliveryUncheckedCreateNestedManyWithoutNotificationInput = {
-    create?: XOR<NotificationDeliveryCreateWithoutNotificationInput, NotificationDeliveryUncheckedCreateWithoutNotificationInput> | NotificationDeliveryCreateWithoutNotificationInput[] | NotificationDeliveryUncheckedCreateWithoutNotificationInput[]
-    connectOrCreate?: NotificationDeliveryCreateOrConnectWithoutNotificationInput | NotificationDeliveryCreateOrConnectWithoutNotificationInput[]
-    createMany?: NotificationDeliveryCreateManyNotificationInputEnvelope
-    connect?: NotificationDeliveryWhereUniqueInput | NotificationDeliveryWhereUniqueInput[]
-  }
-
-  export type NotificationReadUncheckedCreateNestedManyWithoutNotificationInput = {
-    create?: XOR<NotificationReadCreateWithoutNotificationInput, NotificationReadUncheckedCreateWithoutNotificationInput> | NotificationReadCreateWithoutNotificationInput[] | NotificationReadUncheckedCreateWithoutNotificationInput[]
-    connectOrCreate?: NotificationReadCreateOrConnectWithoutNotificationInput | NotificationReadCreateOrConnectWithoutNotificationInput[]
-    createMany?: NotificationReadCreateManyNotificationInputEnvelope
-    connect?: NotificationReadWhereUniqueInput | NotificationReadWhereUniqueInput[]
-  }
-
-  export type NotificationStatUncheckedCreateNestedManyWithoutNotificationInput = {
-    create?: XOR<NotificationStatCreateWithoutNotificationInput, NotificationStatUncheckedCreateWithoutNotificationInput> | NotificationStatCreateWithoutNotificationInput[] | NotificationStatUncheckedCreateWithoutNotificationInput[]
-    connectOrCreate?: NotificationStatCreateOrConnectWithoutNotificationInput | NotificationStatCreateOrConnectWithoutNotificationInput[]
-    createMany?: NotificationStatCreateManyNotificationInputEnvelope
-    connect?: NotificationStatWhereUniqueInput | NotificationStatWhereUniqueInput[]
-  }
-
-  export type EnumNotificationPriorityFieldUpdateOperationsInput = {
-    set?: $Enums.NotificationPriority
-  }
-
-  export type EnumNotificationStatusFieldUpdateOperationsInput = {
-    set?: $Enums.NotificationStatus
-  }
-
-  export type NotificationTemplateUpdateOneWithoutNotificationsNestedInput = {
-    create?: XOR<NotificationTemplateCreateWithoutNotificationsInput, NotificationTemplateUncheckedCreateWithoutNotificationsInput>
-    connectOrCreate?: NotificationTemplateCreateOrConnectWithoutNotificationsInput
-    upsert?: NotificationTemplateUpsertWithoutNotificationsInput
-    disconnect?: NotificationTemplateWhereInput | boolean
-    delete?: NotificationTemplateWhereInput | boolean
-    connect?: NotificationTemplateWhereUniqueInput
-    update?: XOR<XOR<NotificationTemplateUpdateToOneWithWhereWithoutNotificationsInput, NotificationTemplateUpdateWithoutNotificationsInput>, NotificationTemplateUncheckedUpdateWithoutNotificationsInput>
-  }
-
-  export type NotificationDeliveryUpdateManyWithoutNotificationNestedInput = {
-    create?: XOR<NotificationDeliveryCreateWithoutNotificationInput, NotificationDeliveryUncheckedCreateWithoutNotificationInput> | NotificationDeliveryCreateWithoutNotificationInput[] | NotificationDeliveryUncheckedCreateWithoutNotificationInput[]
-    connectOrCreate?: NotificationDeliveryCreateOrConnectWithoutNotificationInput | NotificationDeliveryCreateOrConnectWithoutNotificationInput[]
-    upsert?: NotificationDeliveryUpsertWithWhereUniqueWithoutNotificationInput | NotificationDeliveryUpsertWithWhereUniqueWithoutNotificationInput[]
-    createMany?: NotificationDeliveryCreateManyNotificationInputEnvelope
-    set?: NotificationDeliveryWhereUniqueInput | NotificationDeliveryWhereUniqueInput[]
-    disconnect?: NotificationDeliveryWhereUniqueInput | NotificationDeliveryWhereUniqueInput[]
-    delete?: NotificationDeliveryWhereUniqueInput | NotificationDeliveryWhereUniqueInput[]
-    connect?: NotificationDeliveryWhereUniqueInput | NotificationDeliveryWhereUniqueInput[]
-    update?: NotificationDeliveryUpdateWithWhereUniqueWithoutNotificationInput | NotificationDeliveryUpdateWithWhereUniqueWithoutNotificationInput[]
-    updateMany?: NotificationDeliveryUpdateManyWithWhereWithoutNotificationInput | NotificationDeliveryUpdateManyWithWhereWithoutNotificationInput[]
-    deleteMany?: NotificationDeliveryScalarWhereInput | NotificationDeliveryScalarWhereInput[]
-  }
-
-  export type NotificationReadUpdateManyWithoutNotificationNestedInput = {
-    create?: XOR<NotificationReadCreateWithoutNotificationInput, NotificationReadUncheckedCreateWithoutNotificationInput> | NotificationReadCreateWithoutNotificationInput[] | NotificationReadUncheckedCreateWithoutNotificationInput[]
-    connectOrCreate?: NotificationReadCreateOrConnectWithoutNotificationInput | NotificationReadCreateOrConnectWithoutNotificationInput[]
-    upsert?: NotificationReadUpsertWithWhereUniqueWithoutNotificationInput | NotificationReadUpsertWithWhereUniqueWithoutNotificationInput[]
-    createMany?: NotificationReadCreateManyNotificationInputEnvelope
-    set?: NotificationReadWhereUniqueInput | NotificationReadWhereUniqueInput[]
-    disconnect?: NotificationReadWhereUniqueInput | NotificationReadWhereUniqueInput[]
-    delete?: NotificationReadWhereUniqueInput | NotificationReadWhereUniqueInput[]
-    connect?: NotificationReadWhereUniqueInput | NotificationReadWhereUniqueInput[]
-    update?: NotificationReadUpdateWithWhereUniqueWithoutNotificationInput | NotificationReadUpdateWithWhereUniqueWithoutNotificationInput[]
-    updateMany?: NotificationReadUpdateManyWithWhereWithoutNotificationInput | NotificationReadUpdateManyWithWhereWithoutNotificationInput[]
-    deleteMany?: NotificationReadScalarWhereInput | NotificationReadScalarWhereInput[]
-  }
-
-  export type NotificationStatUpdateManyWithoutNotificationNestedInput = {
-    create?: XOR<NotificationStatCreateWithoutNotificationInput, NotificationStatUncheckedCreateWithoutNotificationInput> | NotificationStatCreateWithoutNotificationInput[] | NotificationStatUncheckedCreateWithoutNotificationInput[]
-    connectOrCreate?: NotificationStatCreateOrConnectWithoutNotificationInput | NotificationStatCreateOrConnectWithoutNotificationInput[]
-    upsert?: NotificationStatUpsertWithWhereUniqueWithoutNotificationInput | NotificationStatUpsertWithWhereUniqueWithoutNotificationInput[]
-    createMany?: NotificationStatCreateManyNotificationInputEnvelope
-    set?: NotificationStatWhereUniqueInput | NotificationStatWhereUniqueInput[]
-    disconnect?: NotificationStatWhereUniqueInput | NotificationStatWhereUniqueInput[]
-    delete?: NotificationStatWhereUniqueInput | NotificationStatWhereUniqueInput[]
-    connect?: NotificationStatWhereUniqueInput | NotificationStatWhereUniqueInput[]
-    update?: NotificationStatUpdateWithWhereUniqueWithoutNotificationInput | NotificationStatUpdateWithWhereUniqueWithoutNotificationInput[]
-    updateMany?: NotificationStatUpdateManyWithWhereWithoutNotificationInput | NotificationStatUpdateManyWithWhereWithoutNotificationInput[]
-    deleteMany?: NotificationStatScalarWhereInput | NotificationStatScalarWhereInput[]
-  }
-
-  export type NotificationDeliveryUncheckedUpdateManyWithoutNotificationNestedInput = {
-    create?: XOR<NotificationDeliveryCreateWithoutNotificationInput, NotificationDeliveryUncheckedCreateWithoutNotificationInput> | NotificationDeliveryCreateWithoutNotificationInput[] | NotificationDeliveryUncheckedCreateWithoutNotificationInput[]
-    connectOrCreate?: NotificationDeliveryCreateOrConnectWithoutNotificationInput | NotificationDeliveryCreateOrConnectWithoutNotificationInput[]
-    upsert?: NotificationDeliveryUpsertWithWhereUniqueWithoutNotificationInput | NotificationDeliveryUpsertWithWhereUniqueWithoutNotificationInput[]
-    createMany?: NotificationDeliveryCreateManyNotificationInputEnvelope
-    set?: NotificationDeliveryWhereUniqueInput | NotificationDeliveryWhereUniqueInput[]
-    disconnect?: NotificationDeliveryWhereUniqueInput | NotificationDeliveryWhereUniqueInput[]
-    delete?: NotificationDeliveryWhereUniqueInput | NotificationDeliveryWhereUniqueInput[]
-    connect?: NotificationDeliveryWhereUniqueInput | NotificationDeliveryWhereUniqueInput[]
-    update?: NotificationDeliveryUpdateWithWhereUniqueWithoutNotificationInput | NotificationDeliveryUpdateWithWhereUniqueWithoutNotificationInput[]
-    updateMany?: NotificationDeliveryUpdateManyWithWhereWithoutNotificationInput | NotificationDeliveryUpdateManyWithWhereWithoutNotificationInput[]
-    deleteMany?: NotificationDeliveryScalarWhereInput | NotificationDeliveryScalarWhereInput[]
-  }
-
-  export type NotificationReadUncheckedUpdateManyWithoutNotificationNestedInput = {
-    create?: XOR<NotificationReadCreateWithoutNotificationInput, NotificationReadUncheckedCreateWithoutNotificationInput> | NotificationReadCreateWithoutNotificationInput[] | NotificationReadUncheckedCreateWithoutNotificationInput[]
-    connectOrCreate?: NotificationReadCreateOrConnectWithoutNotificationInput | NotificationReadCreateOrConnectWithoutNotificationInput[]
-    upsert?: NotificationReadUpsertWithWhereUniqueWithoutNotificationInput | NotificationReadUpsertWithWhereUniqueWithoutNotificationInput[]
-    createMany?: NotificationReadCreateManyNotificationInputEnvelope
-    set?: NotificationReadWhereUniqueInput | NotificationReadWhereUniqueInput[]
-    disconnect?: NotificationReadWhereUniqueInput | NotificationReadWhereUniqueInput[]
-    delete?: NotificationReadWhereUniqueInput | NotificationReadWhereUniqueInput[]
-    connect?: NotificationReadWhereUniqueInput | NotificationReadWhereUniqueInput[]
-    update?: NotificationReadUpdateWithWhereUniqueWithoutNotificationInput | NotificationReadUpdateWithWhereUniqueWithoutNotificationInput[]
-    updateMany?: NotificationReadUpdateManyWithWhereWithoutNotificationInput | NotificationReadUpdateManyWithWhereWithoutNotificationInput[]
-    deleteMany?: NotificationReadScalarWhereInput | NotificationReadScalarWhereInput[]
-  }
-
-  export type NotificationStatUncheckedUpdateManyWithoutNotificationNestedInput = {
-    create?: XOR<NotificationStatCreateWithoutNotificationInput, NotificationStatUncheckedCreateWithoutNotificationInput> | NotificationStatCreateWithoutNotificationInput[] | NotificationStatUncheckedCreateWithoutNotificationInput[]
-    connectOrCreate?: NotificationStatCreateOrConnectWithoutNotificationInput | NotificationStatCreateOrConnectWithoutNotificationInput[]
-    upsert?: NotificationStatUpsertWithWhereUniqueWithoutNotificationInput | NotificationStatUpsertWithWhereUniqueWithoutNotificationInput[]
-    createMany?: NotificationStatCreateManyNotificationInputEnvelope
-    set?: NotificationStatWhereUniqueInput | NotificationStatWhereUniqueInput[]
-    disconnect?: NotificationStatWhereUniqueInput | NotificationStatWhereUniqueInput[]
-    delete?: NotificationStatWhereUniqueInput | NotificationStatWhereUniqueInput[]
-    connect?: NotificationStatWhereUniqueInput | NotificationStatWhereUniqueInput[]
-    update?: NotificationStatUpdateWithWhereUniqueWithoutNotificationInput | NotificationStatUpdateWithWhereUniqueWithoutNotificationInput[]
-    updateMany?: NotificationStatUpdateManyWithWhereWithoutNotificationInput | NotificationStatUpdateManyWithWhereWithoutNotificationInput[]
-    deleteMany?: NotificationStatScalarWhereInput | NotificationStatScalarWhereInput[]
-  }
-
-  export type NullableEnumNotificationPriorityFieldUpdateOperationsInput = {
-    set?: $Enums.NotificationPriority | null
-  }
-
-  export type NotificationCreateNestedOneWithoutDeliveriesInput = {
-    create?: XOR<NotificationCreateWithoutDeliveriesInput, NotificationUncheckedCreateWithoutDeliveriesInput>
-    connectOrCreate?: NotificationCreateOrConnectWithoutDeliveriesInput
-    connect?: NotificationWhereUniqueInput
-  }
-
-  export type EnumNotifDeliveryStatusFieldUpdateOperationsInput = {
-    set?: $Enums.NotifDeliveryStatus
-  }
-
-  export type NotificationUpdateOneRequiredWithoutDeliveriesNestedInput = {
-    create?: XOR<NotificationCreateWithoutDeliveriesInput, NotificationUncheckedCreateWithoutDeliveriesInput>
-    connectOrCreate?: NotificationCreateOrConnectWithoutDeliveriesInput
-    upsert?: NotificationUpsertWithoutDeliveriesInput
-    connect?: NotificationWhereUniqueInput
-    update?: XOR<XOR<NotificationUpdateToOneWithWhereWithoutDeliveriesInput, NotificationUpdateWithoutDeliveriesInput>, NotificationUncheckedUpdateWithoutDeliveriesInput>
-  }
-
-  export type NotificationCreateNestedOneWithoutReadsInput = {
-    create?: XOR<NotificationCreateWithoutReadsInput, NotificationUncheckedCreateWithoutReadsInput>
-    connectOrCreate?: NotificationCreateOrConnectWithoutReadsInput
-    connect?: NotificationWhereUniqueInput
-  }
-
-  export type NotificationUpdateOneRequiredWithoutReadsNestedInput = {
-    create?: XOR<NotificationCreateWithoutReadsInput, NotificationUncheckedCreateWithoutReadsInput>
-    connectOrCreate?: NotificationCreateOrConnectWithoutReadsInput
-    upsert?: NotificationUpsertWithoutReadsInput
-    connect?: NotificationWhereUniqueInput
-    update?: XOR<XOR<NotificationUpdateToOneWithWhereWithoutReadsInput, NotificationUpdateWithoutReadsInput>, NotificationUncheckedUpdateWithoutReadsInput>
-  }
-
-  export type NotificationCreateNestedOneWithoutAnalyticsInput = {
-    create?: XOR<NotificationCreateWithoutAnalyticsInput, NotificationUncheckedCreateWithoutAnalyticsInput>
-    connectOrCreate?: NotificationCreateOrConnectWithoutAnalyticsInput
-    connect?: NotificationWhereUniqueInput
-  }
-
-  export type EnumNotifAnalyticsEventFieldUpdateOperationsInput = {
-    set?: $Enums.NotifAnalyticsEvent
-  }
-
-  export type NotificationUpdateOneWithoutAnalyticsNestedInput = {
-    create?: XOR<NotificationCreateWithoutAnalyticsInput, NotificationUncheckedCreateWithoutAnalyticsInput>
-    connectOrCreate?: NotificationCreateOrConnectWithoutAnalyticsInput
-    upsert?: NotificationUpsertWithoutAnalyticsInput
-    disconnect?: NotificationWhereInput | boolean
-    delete?: NotificationWhereInput | boolean
-    connect?: NotificationWhereUniqueInput
-    update?: XOR<XOR<NotificationUpdateToOneWithWhereWithoutAnalyticsInput, NotificationUpdateWithoutAnalyticsInput>, NotificationUncheckedUpdateWithoutAnalyticsInput>
-  }
-
-  export type EnumAmountTypeFieldUpdateOperationsInput = {
-    set?: $Enums.AmountType
+  export type BidUpdateOneRequiredWithoutReviewsNestedInput = {
+    create?: XOR<BidCreateWithoutReviewsInput, BidUncheckedCreateWithoutReviewsInput>
+    connectOrCreate?: BidCreateOrConnectWithoutReviewsInput
+    upsert?: BidUpsertWithoutReviewsInput
+    connect?: BidWhereUniqueInput
+    update?: XOR<XOR<BidUpdateToOneWithWhereWithoutReviewsInput, BidUpdateWithoutReviewsInput>, BidUncheckedUpdateWithoutReviewsInput>
   }
 
   export type NestedUuidFilter<$PrismaModel = never> = {
@@ -33160,6 +19704,13 @@ export namespace Prisma {
     not?: NestedEnumBidStatusFilter<$PrismaModel> | $Enums.BidStatus
   }
 
+  export type NestedEnumFulfillmentStatusNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.FulfillmentStatus | EnumFulfillmentStatusFieldRefInput<$PrismaModel> | null
+    in?: $Enums.FulfillmentStatus[] | ListEnumFulfillmentStatusFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.FulfillmentStatus[] | ListEnumFulfillmentStatusFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumFulfillmentStatusNullableFilter<$PrismaModel> | $Enums.FulfillmentStatus | null
+  }
+
   export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
     in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
@@ -33186,6 +19737,16 @@ export namespace Prisma {
     _max?: NestedEnumBidStatusFilter<$PrismaModel>
   }
 
+  export type NestedEnumFulfillmentStatusNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.FulfillmentStatus | EnumFulfillmentStatusFieldRefInput<$PrismaModel> | null
+    in?: $Enums.FulfillmentStatus[] | ListEnumFulfillmentStatusFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.FulfillmentStatus[] | ListEnumFulfillmentStatusFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumFulfillmentStatusNullableWithAggregatesFilter<$PrismaModel> | $Enums.FulfillmentStatus | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumFulfillmentStatusNullableFilter<$PrismaModel>
+    _max?: NestedEnumFulfillmentStatusNullableFilter<$PrismaModel>
+  }
+
   export type NestedEnumRoomTypeFilter<$PrismaModel = never> = {
     equals?: $Enums.RoomType | EnumRoomTypeFieldRefInput<$PrismaModel>
     in?: $Enums.RoomType[] | ListEnumRoomTypeFieldRefInput<$PrismaModel>
@@ -33203,35 +19764,11 @@ export namespace Prisma {
     _max?: NestedEnumRoomTypeFilter<$PrismaModel>
   }
 
-  export type NestedEnumParticipantRoleFilter<$PrismaModel = never> = {
-    equals?: $Enums.ParticipantRole | EnumParticipantRoleFieldRefInput<$PrismaModel>
-    in?: $Enums.ParticipantRole[] | ListEnumParticipantRoleFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ParticipantRole[] | ListEnumParticipantRoleFieldRefInput<$PrismaModel>
-    not?: NestedEnumParticipantRoleFilter<$PrismaModel> | $Enums.ParticipantRole
-  }
-
-  export type NestedEnumParticipantRoleWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.ParticipantRole | EnumParticipantRoleFieldRefInput<$PrismaModel>
-    in?: $Enums.ParticipantRole[] | ListEnumParticipantRoleFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ParticipantRole[] | ListEnumParticipantRoleFieldRefInput<$PrismaModel>
-    not?: NestedEnumParticipantRoleWithAggregatesFilter<$PrismaModel> | $Enums.ParticipantRole
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumParticipantRoleFilter<$PrismaModel>
-    _max?: NestedEnumParticipantRoleFilter<$PrismaModel>
-  }
-
   export type NestedEnumNotificationTypeFilter<$PrismaModel = never> = {
     equals?: $Enums.NotificationType | EnumNotificationTypeFieldRefInput<$PrismaModel>
     in?: $Enums.NotificationType[] | ListEnumNotificationTypeFieldRefInput<$PrismaModel>
     notIn?: $Enums.NotificationType[] | ListEnumNotificationTypeFieldRefInput<$PrismaModel>
     not?: NestedEnumNotificationTypeFilter<$PrismaModel> | $Enums.NotificationType
-  }
-
-  export type NestedEnumNotifChannelFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotifChannel | EnumNotifChannelFieldRefInput<$PrismaModel>
-    in?: $Enums.NotifChannel[] | ListEnumNotifChannelFieldRefInput<$PrismaModel>
-    notIn?: $Enums.NotifChannel[] | ListEnumNotifChannelFieldRefInput<$PrismaModel>
-    not?: NestedEnumNotifChannelFilter<$PrismaModel> | $Enums.NotifChannel
   }
 
   export type NestedEnumNotificationTypeWithAggregatesFilter<$PrismaModel = never> = {
@@ -33244,116 +19781,21 @@ export namespace Prisma {
     _max?: NestedEnumNotificationTypeFilter<$PrismaModel>
   }
 
-  export type NestedEnumNotifChannelWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotifChannel | EnumNotifChannelFieldRefInput<$PrismaModel>
-    in?: $Enums.NotifChannel[] | ListEnumNotifChannelFieldRefInput<$PrismaModel>
-    notIn?: $Enums.NotifChannel[] | ListEnumNotifChannelFieldRefInput<$PrismaModel>
-    not?: NestedEnumNotifChannelWithAggregatesFilter<$PrismaModel> | $Enums.NotifChannel
+  export type NestedEnumReviewTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReviewType | EnumReviewTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ReviewType[] | ListEnumReviewTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReviewType[] | ListEnumReviewTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumReviewTypeFilter<$PrismaModel> | $Enums.ReviewType
+  }
+
+  export type NestedEnumReviewTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReviewType | EnumReviewTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ReviewType[] | ListEnumReviewTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReviewType[] | ListEnumReviewTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumReviewTypeWithAggregatesFilter<$PrismaModel> | $Enums.ReviewType
     _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumNotifChannelFilter<$PrismaModel>
-    _max?: NestedEnumNotifChannelFilter<$PrismaModel>
-  }
-
-  export type NestedEnumNotificationPriorityFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotificationPriority | EnumNotificationPriorityFieldRefInput<$PrismaModel>
-    in?: $Enums.NotificationPriority[] | ListEnumNotificationPriorityFieldRefInput<$PrismaModel>
-    notIn?: $Enums.NotificationPriority[] | ListEnumNotificationPriorityFieldRefInput<$PrismaModel>
-    not?: NestedEnumNotificationPriorityFilter<$PrismaModel> | $Enums.NotificationPriority
-  }
-
-  export type NestedEnumNotificationStatusFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotificationStatus | EnumNotificationStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.NotificationStatus[] | ListEnumNotificationStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.NotificationStatus[] | ListEnumNotificationStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumNotificationStatusFilter<$PrismaModel> | $Enums.NotificationStatus
-  }
-
-  export type NestedEnumNotificationPriorityWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotificationPriority | EnumNotificationPriorityFieldRefInput<$PrismaModel>
-    in?: $Enums.NotificationPriority[] | ListEnumNotificationPriorityFieldRefInput<$PrismaModel>
-    notIn?: $Enums.NotificationPriority[] | ListEnumNotificationPriorityFieldRefInput<$PrismaModel>
-    not?: NestedEnumNotificationPriorityWithAggregatesFilter<$PrismaModel> | $Enums.NotificationPriority
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumNotificationPriorityFilter<$PrismaModel>
-    _max?: NestedEnumNotificationPriorityFilter<$PrismaModel>
-  }
-
-  export type NestedEnumNotificationStatusWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotificationStatus | EnumNotificationStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.NotificationStatus[] | ListEnumNotificationStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.NotificationStatus[] | ListEnumNotificationStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumNotificationStatusWithAggregatesFilter<$PrismaModel> | $Enums.NotificationStatus
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumNotificationStatusFilter<$PrismaModel>
-    _max?: NestedEnumNotificationStatusFilter<$PrismaModel>
-  }
-
-  export type NestedEnumNotificationPriorityNullableFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotificationPriority | EnumNotificationPriorityFieldRefInput<$PrismaModel> | null
-    in?: $Enums.NotificationPriority[] | ListEnumNotificationPriorityFieldRefInput<$PrismaModel> | null
-    notIn?: $Enums.NotificationPriority[] | ListEnumNotificationPriorityFieldRefInput<$PrismaModel> | null
-    not?: NestedEnumNotificationPriorityNullableFilter<$PrismaModel> | $Enums.NotificationPriority | null
-  }
-
-  export type NestedEnumNotificationPriorityNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotificationPriority | EnumNotificationPriorityFieldRefInput<$PrismaModel> | null
-    in?: $Enums.NotificationPriority[] | ListEnumNotificationPriorityFieldRefInput<$PrismaModel> | null
-    notIn?: $Enums.NotificationPriority[] | ListEnumNotificationPriorityFieldRefInput<$PrismaModel> | null
-    not?: NestedEnumNotificationPriorityNullableWithAggregatesFilter<$PrismaModel> | $Enums.NotificationPriority | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedEnumNotificationPriorityNullableFilter<$PrismaModel>
-    _max?: NestedEnumNotificationPriorityNullableFilter<$PrismaModel>
-  }
-
-  export type NestedEnumNotifDeliveryStatusFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotifDeliveryStatus | EnumNotifDeliveryStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.NotifDeliveryStatus[] | ListEnumNotifDeliveryStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.NotifDeliveryStatus[] | ListEnumNotifDeliveryStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumNotifDeliveryStatusFilter<$PrismaModel> | $Enums.NotifDeliveryStatus
-  }
-
-  export type NestedEnumNotifDeliveryStatusWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotifDeliveryStatus | EnumNotifDeliveryStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.NotifDeliveryStatus[] | ListEnumNotifDeliveryStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.NotifDeliveryStatus[] | ListEnumNotifDeliveryStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumNotifDeliveryStatusWithAggregatesFilter<$PrismaModel> | $Enums.NotifDeliveryStatus
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumNotifDeliveryStatusFilter<$PrismaModel>
-    _max?: NestedEnumNotifDeliveryStatusFilter<$PrismaModel>
-  }
-
-  export type NestedEnumNotifAnalyticsEventFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotifAnalyticsEvent | EnumNotifAnalyticsEventFieldRefInput<$PrismaModel>
-    in?: $Enums.NotifAnalyticsEvent[] | ListEnumNotifAnalyticsEventFieldRefInput<$PrismaModel>
-    notIn?: $Enums.NotifAnalyticsEvent[] | ListEnumNotifAnalyticsEventFieldRefInput<$PrismaModel>
-    not?: NestedEnumNotifAnalyticsEventFilter<$PrismaModel> | $Enums.NotifAnalyticsEvent
-  }
-
-  export type NestedEnumNotifAnalyticsEventWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotifAnalyticsEvent | EnumNotifAnalyticsEventFieldRefInput<$PrismaModel>
-    in?: $Enums.NotifAnalyticsEvent[] | ListEnumNotifAnalyticsEventFieldRefInput<$PrismaModel>
-    notIn?: $Enums.NotifAnalyticsEvent[] | ListEnumNotifAnalyticsEventFieldRefInput<$PrismaModel>
-    not?: NestedEnumNotifAnalyticsEventWithAggregatesFilter<$PrismaModel> | $Enums.NotifAnalyticsEvent
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumNotifAnalyticsEventFilter<$PrismaModel>
-    _max?: NestedEnumNotifAnalyticsEventFilter<$PrismaModel>
-  }
-
-  export type NestedEnumAmountTypeFilter<$PrismaModel = never> = {
-    equals?: $Enums.AmountType | EnumAmountTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.AmountType[] | ListEnumAmountTypeFieldRefInput<$PrismaModel>
-    notIn?: $Enums.AmountType[] | ListEnumAmountTypeFieldRefInput<$PrismaModel>
-    not?: NestedEnumAmountTypeFilter<$PrismaModel> | $Enums.AmountType
-  }
-
-  export type NestedEnumAmountTypeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.AmountType | EnumAmountTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.AmountType[] | ListEnumAmountTypeFieldRefInput<$PrismaModel>
-    notIn?: $Enums.AmountType[] | ListEnumAmountTypeFieldRefInput<$PrismaModel>
-    not?: NestedEnumAmountTypeWithAggregatesFilter<$PrismaModel> | $Enums.AmountType
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumAmountTypeFilter<$PrismaModel>
-    _max?: NestedEnumAmountTypeFilter<$PrismaModel>
+    _min?: NestedEnumReviewTypeFilter<$PrismaModel>
+    _max?: NestedEnumReviewTypeFilter<$PrismaModel>
   }
 
   export type UserProfileCreateWithoutUserInput = {
@@ -33665,7 +20107,6 @@ export namespace Prisma {
     updatedAt?: Date | string
     parent?: RequestCategoryCreateNestedOneWithoutChildrenInput
     requests?: RequestCreateNestedManyWithoutCategoryInput
-    drafts?: RequestDraftCreateNestedManyWithoutCategoryInput
   }
 
   export type RequestCategoryUncheckedCreateWithoutChildrenInput = {
@@ -33680,7 +20121,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     requests?: RequestUncheckedCreateNestedManyWithoutCategoryInput
-    drafts?: RequestDraftUncheckedCreateNestedManyWithoutCategoryInput
   }
 
   export type RequestCategoryCreateOrConnectWithoutChildrenInput = {
@@ -33700,7 +20140,6 @@ export namespace Prisma {
     updatedAt?: Date | string
     children?: RequestCategoryCreateNestedManyWithoutParentInput
     requests?: RequestCreateNestedManyWithoutCategoryInput
-    drafts?: RequestDraftCreateNestedManyWithoutCategoryInput
   }
 
   export type RequestCategoryUncheckedCreateWithoutParentInput = {
@@ -33715,7 +20154,6 @@ export namespace Prisma {
     updatedAt?: Date | string
     children?: RequestCategoryUncheckedCreateNestedManyWithoutParentInput
     requests?: RequestUncheckedCreateNestedManyWithoutCategoryInput
-    drafts?: RequestDraftUncheckedCreateNestedManyWithoutCategoryInput
   }
 
   export type RequestCategoryCreateOrConnectWithoutParentInput = {
@@ -33749,8 +20187,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     images?: RequestImageCreateNestedManyWithoutRequestInput
-    extensions?: RequestExtensionCreateNestedManyWithoutRequestInput
-    searchIndex?: RequestSearchIndexCreateNestedOneWithoutRequestInput
   }
 
   export type RequestUncheckedCreateWithoutCategoryInput = {
@@ -33774,8 +20210,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     images?: RequestImageUncheckedCreateNestedManyWithoutRequestInput
-    extensions?: RequestExtensionUncheckedCreateNestedManyWithoutRequestInput
-    searchIndex?: RequestSearchIndexUncheckedCreateNestedOneWithoutRequestInput
   }
 
   export type RequestCreateOrConnectWithoutCategoryInput = {
@@ -33785,48 +20219,6 @@ export namespace Prisma {
 
   export type RequestCreateManyCategoryInputEnvelope = {
     data: RequestCreateManyCategoryInput | RequestCreateManyCategoryInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type RequestDraftCreateWithoutCategoryInput = {
-    id?: string
-    buyerId: string
-    title?: string | null
-    description?: string | null
-    budgetMin?: Decimal | DecimalJsLike | number | string | null
-    budgetMax?: Decimal | DecimalJsLike | number | string | null
-    locationLat?: Decimal | DecimalJsLike | number | string | null
-    locationLng?: Decimal | DecimalJsLike | number | string | null
-    locationAddress?: string | null
-    autoSaveData?: JsonNullValueInput | InputJsonValue
-    expiresAt: Date | string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type RequestDraftUncheckedCreateWithoutCategoryInput = {
-    id?: string
-    buyerId: string
-    title?: string | null
-    description?: string | null
-    budgetMin?: Decimal | DecimalJsLike | number | string | null
-    budgetMax?: Decimal | DecimalJsLike | number | string | null
-    locationLat?: Decimal | DecimalJsLike | number | string | null
-    locationLng?: Decimal | DecimalJsLike | number | string | null
-    locationAddress?: string | null
-    autoSaveData?: JsonNullValueInput | InputJsonValue
-    expiresAt: Date | string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type RequestDraftCreateOrConnectWithoutCategoryInput = {
-    where: RequestDraftWhereUniqueInput
-    create: XOR<RequestDraftCreateWithoutCategoryInput, RequestDraftUncheckedCreateWithoutCategoryInput>
-  }
-
-  export type RequestDraftCreateManyCategoryInputEnvelope = {
-    data: RequestDraftCreateManyCategoryInput | RequestDraftCreateManyCategoryInput[]
     skipDuplicates?: boolean
   }
 
@@ -33853,7 +20245,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     parent?: RequestCategoryUpdateOneWithoutChildrenNestedInput
     requests?: RequestUpdateManyWithoutCategoryNestedInput
-    drafts?: RequestDraftUpdateManyWithoutCategoryNestedInput
   }
 
   export type RequestCategoryUncheckedUpdateWithoutChildrenInput = {
@@ -33868,7 +20259,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     requests?: RequestUncheckedUpdateManyWithoutCategoryNestedInput
-    drafts?: RequestDraftUncheckedUpdateManyWithoutCategoryNestedInput
   }
 
   export type RequestCategoryUpsertWithWhereUniqueWithoutParentInput = {
@@ -33925,7 +20315,7 @@ export namespace Prisma {
     NOT?: RequestScalarWhereInput | RequestScalarWhereInput[]
     id?: UuidFilter<"Request"> | string
     buyerId?: UuidFilter<"Request"> | string
-    categoryId?: UuidFilter<"Request"> | string
+    categoryId?: UuidNullableFilter<"Request"> | string | null
     title?: StringFilter<"Request"> | string
     description?: StringFilter<"Request"> | string
     budgetMin?: DecimalNullableFilter<"Request"> | Decimal | DecimalJsLike | number | string | null
@@ -33945,42 +20335,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Request"> | Date | string
   }
 
-  export type RequestDraftUpsertWithWhereUniqueWithoutCategoryInput = {
-    where: RequestDraftWhereUniqueInput
-    update: XOR<RequestDraftUpdateWithoutCategoryInput, RequestDraftUncheckedUpdateWithoutCategoryInput>
-    create: XOR<RequestDraftCreateWithoutCategoryInput, RequestDraftUncheckedCreateWithoutCategoryInput>
-  }
-
-  export type RequestDraftUpdateWithWhereUniqueWithoutCategoryInput = {
-    where: RequestDraftWhereUniqueInput
-    data: XOR<RequestDraftUpdateWithoutCategoryInput, RequestDraftUncheckedUpdateWithoutCategoryInput>
-  }
-
-  export type RequestDraftUpdateManyWithWhereWithoutCategoryInput = {
-    where: RequestDraftScalarWhereInput
-    data: XOR<RequestDraftUpdateManyMutationInput, RequestDraftUncheckedUpdateManyWithoutCategoryInput>
-  }
-
-  export type RequestDraftScalarWhereInput = {
-    AND?: RequestDraftScalarWhereInput | RequestDraftScalarWhereInput[]
-    OR?: RequestDraftScalarWhereInput[]
-    NOT?: RequestDraftScalarWhereInput | RequestDraftScalarWhereInput[]
-    id?: UuidFilter<"RequestDraft"> | string
-    buyerId?: UuidFilter<"RequestDraft"> | string
-    categoryId?: UuidNullableFilter<"RequestDraft"> | string | null
-    title?: StringNullableFilter<"RequestDraft"> | string | null
-    description?: StringNullableFilter<"RequestDraft"> | string | null
-    budgetMin?: DecimalNullableFilter<"RequestDraft"> | Decimal | DecimalJsLike | number | string | null
-    budgetMax?: DecimalNullableFilter<"RequestDraft"> | Decimal | DecimalJsLike | number | string | null
-    locationLat?: DecimalNullableFilter<"RequestDraft"> | Decimal | DecimalJsLike | number | string | null
-    locationLng?: DecimalNullableFilter<"RequestDraft"> | Decimal | DecimalJsLike | number | string | null
-    locationAddress?: StringNullableFilter<"RequestDraft"> | string | null
-    autoSaveData?: JsonFilter<"RequestDraft">
-    expiresAt?: DateTimeFilter<"RequestDraft"> | Date | string
-    createdAt?: DateTimeFilter<"RequestDraft"> | Date | string
-    updatedAt?: DateTimeFilter<"RequestDraft"> | Date | string
-  }
-
   export type RequestCategoryCreateWithoutRequestsInput = {
     id?: string
     name: string
@@ -33993,7 +20347,6 @@ export namespace Prisma {
     updatedAt?: Date | string
     parent?: RequestCategoryCreateNestedOneWithoutChildrenInput
     children?: RequestCategoryCreateNestedManyWithoutParentInput
-    drafts?: RequestDraftCreateNestedManyWithoutCategoryInput
   }
 
   export type RequestCategoryUncheckedCreateWithoutRequestsInput = {
@@ -34008,7 +20361,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     children?: RequestCategoryUncheckedCreateNestedManyWithoutParentInput
-    drafts?: RequestDraftUncheckedCreateNestedManyWithoutCategoryInput
   }
 
   export type RequestCategoryCreateOrConnectWithoutRequestsInput = {
@@ -34054,57 +20406,6 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type RequestExtensionCreateWithoutRequestInput = {
-    id?: string
-    originalExpiresAt: Date | string
-    newExpiresAt: Date | string
-    extensionReason?: string | null
-    extendedBy?: string | null
-    createdAt?: Date | string
-  }
-
-  export type RequestExtensionUncheckedCreateWithoutRequestInput = {
-    id?: string
-    originalExpiresAt: Date | string
-    newExpiresAt: Date | string
-    extensionReason?: string | null
-    extendedBy?: string | null
-    createdAt?: Date | string
-  }
-
-  export type RequestExtensionCreateOrConnectWithoutRequestInput = {
-    where: RequestExtensionWhereUniqueInput
-    create: XOR<RequestExtensionCreateWithoutRequestInput, RequestExtensionUncheckedCreateWithoutRequestInput>
-  }
-
-  export type RequestExtensionCreateManyRequestInputEnvelope = {
-    data: RequestExtensionCreateManyRequestInput | RequestExtensionCreateManyRequestInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type RequestSearchIndexCreateWithoutRequestInput = {
-    id?: string
-    searchVector?: string | null
-    categoryPath?: string | null
-    locationText?: string | null
-    budgetRange?: string | null
-    createdAt?: Date | string
-  }
-
-  export type RequestSearchIndexUncheckedCreateWithoutRequestInput = {
-    id?: string
-    searchVector?: string | null
-    categoryPath?: string | null
-    locationText?: string | null
-    budgetRange?: string | null
-    createdAt?: Date | string
-  }
-
-  export type RequestSearchIndexCreateOrConnectWithoutRequestInput = {
-    where: RequestSearchIndexWhereUniqueInput
-    create: XOR<RequestSearchIndexCreateWithoutRequestInput, RequestSearchIndexUncheckedCreateWithoutRequestInput>
-  }
-
   export type RequestCategoryUpsertWithoutRequestsInput = {
     update: XOR<RequestCategoryUpdateWithoutRequestsInput, RequestCategoryUncheckedUpdateWithoutRequestsInput>
     create: XOR<RequestCategoryCreateWithoutRequestsInput, RequestCategoryUncheckedCreateWithoutRequestsInput>
@@ -34128,7 +20429,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     parent?: RequestCategoryUpdateOneWithoutChildrenNestedInput
     children?: RequestCategoryUpdateManyWithoutParentNestedInput
-    drafts?: RequestDraftUpdateManyWithoutCategoryNestedInput
   }
 
   export type RequestCategoryUncheckedUpdateWithoutRequestsInput = {
@@ -34143,7 +20443,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     children?: RequestCategoryUncheckedUpdateManyWithoutParentNestedInput
-    drafts?: RequestDraftUncheckedUpdateManyWithoutCategoryNestedInput
   }
 
   export type RequestImageUpsertWithWhereUniqueWithoutRequestInput = {
@@ -34180,64 +20479,6 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"RequestImage"> | Date | string
   }
 
-  export type RequestExtensionUpsertWithWhereUniqueWithoutRequestInput = {
-    where: RequestExtensionWhereUniqueInput
-    update: XOR<RequestExtensionUpdateWithoutRequestInput, RequestExtensionUncheckedUpdateWithoutRequestInput>
-    create: XOR<RequestExtensionCreateWithoutRequestInput, RequestExtensionUncheckedCreateWithoutRequestInput>
-  }
-
-  export type RequestExtensionUpdateWithWhereUniqueWithoutRequestInput = {
-    where: RequestExtensionWhereUniqueInput
-    data: XOR<RequestExtensionUpdateWithoutRequestInput, RequestExtensionUncheckedUpdateWithoutRequestInput>
-  }
-
-  export type RequestExtensionUpdateManyWithWhereWithoutRequestInput = {
-    where: RequestExtensionScalarWhereInput
-    data: XOR<RequestExtensionUpdateManyMutationInput, RequestExtensionUncheckedUpdateManyWithoutRequestInput>
-  }
-
-  export type RequestExtensionScalarWhereInput = {
-    AND?: RequestExtensionScalarWhereInput | RequestExtensionScalarWhereInput[]
-    OR?: RequestExtensionScalarWhereInput[]
-    NOT?: RequestExtensionScalarWhereInput | RequestExtensionScalarWhereInput[]
-    id?: UuidFilter<"RequestExtension"> | string
-    requestId?: UuidFilter<"RequestExtension"> | string
-    originalExpiresAt?: DateTimeFilter<"RequestExtension"> | Date | string
-    newExpiresAt?: DateTimeFilter<"RequestExtension"> | Date | string
-    extensionReason?: StringNullableFilter<"RequestExtension"> | string | null
-    extendedBy?: UuidNullableFilter<"RequestExtension"> | string | null
-    createdAt?: DateTimeFilter<"RequestExtension"> | Date | string
-  }
-
-  export type RequestSearchIndexUpsertWithoutRequestInput = {
-    update: XOR<RequestSearchIndexUpdateWithoutRequestInput, RequestSearchIndexUncheckedUpdateWithoutRequestInput>
-    create: XOR<RequestSearchIndexCreateWithoutRequestInput, RequestSearchIndexUncheckedCreateWithoutRequestInput>
-    where?: RequestSearchIndexWhereInput
-  }
-
-  export type RequestSearchIndexUpdateToOneWithWhereWithoutRequestInput = {
-    where?: RequestSearchIndexWhereInput
-    data: XOR<RequestSearchIndexUpdateWithoutRequestInput, RequestSearchIndexUncheckedUpdateWithoutRequestInput>
-  }
-
-  export type RequestSearchIndexUpdateWithoutRequestInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    searchVector?: NullableStringFieldUpdateOperationsInput | string | null
-    categoryPath?: NullableStringFieldUpdateOperationsInput | string | null
-    locationText?: NullableStringFieldUpdateOperationsInput | string | null
-    budgetRange?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type RequestSearchIndexUncheckedUpdateWithoutRequestInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    searchVector?: NullableStringFieldUpdateOperationsInput | string | null
-    categoryPath?: NullableStringFieldUpdateOperationsInput | string | null
-    locationText?: NullableStringFieldUpdateOperationsInput | string | null
-    budgetRange?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
   export type RequestCreateWithoutImagesInput = {
     id?: string
     buyerId: string
@@ -34258,15 +20499,13 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    category: RequestCategoryCreateNestedOneWithoutRequestsInput
-    extensions?: RequestExtensionCreateNestedManyWithoutRequestInput
-    searchIndex?: RequestSearchIndexCreateNestedOneWithoutRequestInput
+    category?: RequestCategoryCreateNestedOneWithoutRequestsInput
   }
 
   export type RequestUncheckedCreateWithoutImagesInput = {
     id?: string
     buyerId: string
-    categoryId: string
+    categoryId?: string | null
     title: string
     description: string
     budgetMin?: Decimal | DecimalJsLike | number | string | null
@@ -34284,8 +20523,6 @@ export namespace Prisma {
     publishedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    extensions?: RequestExtensionUncheckedCreateNestedManyWithoutRequestInput
-    searchIndex?: RequestSearchIndexUncheckedCreateNestedOneWithoutRequestInput
   }
 
   export type RequestCreateOrConnectWithoutImagesInput = {
@@ -34324,15 +20561,13 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    category?: RequestCategoryUpdateOneRequiredWithoutRequestsNestedInput
-    extensions?: RequestExtensionUpdateManyWithoutRequestNestedInput
-    searchIndex?: RequestSearchIndexUpdateOneWithoutRequestNestedInput
+    category?: RequestCategoryUpdateOneWithoutRequestsNestedInput
   }
 
   export type RequestUncheckedUpdateWithoutImagesInput = {
     id?: StringFieldUpdateOperationsInput | string
     buyerId?: StringFieldUpdateOperationsInput | string
-    categoryId?: StringFieldUpdateOperationsInput | string
+    categoryId?: NullableStringFieldUpdateOperationsInput | string | null
     title?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     budgetMin?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -34350,388 +20585,126 @@ export namespace Prisma {
     publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    extensions?: RequestExtensionUncheckedUpdateManyWithoutRequestNestedInput
-    searchIndex?: RequestSearchIndexUncheckedUpdateOneWithoutRequestNestedInput
   }
 
-  export type RequestCategoryCreateWithoutDraftsInput = {
+  export type ReviewCreateWithoutBidInput = {
     id?: string
-    name: string
-    slug: string
-    description?: string | null
-    iconUrl?: string | null
-    isActive?: boolean
-    sortOrder?: number
+    requestId: string
+    reviewerId: string
+    revieweeId: string
+    type: $Enums.ReviewType
+    rating: number
+    comment?: string | null
     createdAt?: Date | string
-    updatedAt?: Date | string
-    parent?: RequestCategoryCreateNestedOneWithoutChildrenInput
-    children?: RequestCategoryCreateNestedManyWithoutParentInput
-    requests?: RequestCreateNestedManyWithoutCategoryInput
   }
 
-  export type RequestCategoryUncheckedCreateWithoutDraftsInput = {
+  export type ReviewUncheckedCreateWithoutBidInput = {
     id?: string
-    name: string
-    slug: string
-    description?: string | null
-    parentId?: string | null
-    iconUrl?: string | null
-    isActive?: boolean
-    sortOrder?: number
+    requestId: string
+    reviewerId: string
+    revieweeId: string
+    type: $Enums.ReviewType
+    rating: number
+    comment?: string | null
     createdAt?: Date | string
-    updatedAt?: Date | string
-    children?: RequestCategoryUncheckedCreateNestedManyWithoutParentInput
-    requests?: RequestUncheckedCreateNestedManyWithoutCategoryInput
   }
 
-  export type RequestCategoryCreateOrConnectWithoutDraftsInput = {
-    where: RequestCategoryWhereUniqueInput
-    create: XOR<RequestCategoryCreateWithoutDraftsInput, RequestCategoryUncheckedCreateWithoutDraftsInput>
+  export type ReviewCreateOrConnectWithoutBidInput = {
+    where: ReviewWhereUniqueInput
+    create: XOR<ReviewCreateWithoutBidInput, ReviewUncheckedCreateWithoutBidInput>
   }
 
-  export type RequestCategoryUpsertWithoutDraftsInput = {
-    update: XOR<RequestCategoryUpdateWithoutDraftsInput, RequestCategoryUncheckedUpdateWithoutDraftsInput>
-    create: XOR<RequestCategoryCreateWithoutDraftsInput, RequestCategoryUncheckedCreateWithoutDraftsInput>
-    where?: RequestCategoryWhereInput
-  }
-
-  export type RequestCategoryUpdateToOneWithWhereWithoutDraftsInput = {
-    where?: RequestCategoryWhereInput
-    data: XOR<RequestCategoryUpdateWithoutDraftsInput, RequestCategoryUncheckedUpdateWithoutDraftsInput>
-  }
-
-  export type RequestCategoryUpdateWithoutDraftsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    slug?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    sortOrder?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    parent?: RequestCategoryUpdateOneWithoutChildrenNestedInput
-    children?: RequestCategoryUpdateManyWithoutParentNestedInput
-    requests?: RequestUpdateManyWithoutCategoryNestedInput
-  }
-
-  export type RequestCategoryUncheckedUpdateWithoutDraftsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    slug?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    parentId?: NullableStringFieldUpdateOperationsInput | string | null
-    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    sortOrder?: IntFieldUpdateOperationsInput | number
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    children?: RequestCategoryUncheckedUpdateManyWithoutParentNestedInput
-    requests?: RequestUncheckedUpdateManyWithoutCategoryNestedInput
-  }
-
-  export type RequestCreateWithoutExtensionsInput = {
-    id?: string
-    buyerId: string
-    title: string
-    description: string
-    budgetMin?: Decimal | DecimalJsLike | number | string | null
-    budgetMax?: Decimal | DecimalJsLike | number | string | null
-    locationLat?: Decimal | DecimalJsLike | number | string | null
-    locationLng?: Decimal | DecimalJsLike | number | string | null
-    locationAddress?: string | null
-    locationCity?: string | null
-    locationCountry?: string | null
-    status?: $Enums.RequestStatus
-    priorityScore?: number
-    bidCount?: number
-    viewCount?: number
-    expiresAt?: Date | string | null
-    publishedAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    category: RequestCategoryCreateNestedOneWithoutRequestsInput
-    images?: RequestImageCreateNestedManyWithoutRequestInput
-    searchIndex?: RequestSearchIndexCreateNestedOneWithoutRequestInput
-  }
-
-  export type RequestUncheckedCreateWithoutExtensionsInput = {
-    id?: string
-    buyerId: string
-    categoryId: string
-    title: string
-    description: string
-    budgetMin?: Decimal | DecimalJsLike | number | string | null
-    budgetMax?: Decimal | DecimalJsLike | number | string | null
-    locationLat?: Decimal | DecimalJsLike | number | string | null
-    locationLng?: Decimal | DecimalJsLike | number | string | null
-    locationAddress?: string | null
-    locationCity?: string | null
-    locationCountry?: string | null
-    status?: $Enums.RequestStatus
-    priorityScore?: number
-    bidCount?: number
-    viewCount?: number
-    expiresAt?: Date | string | null
-    publishedAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    images?: RequestImageUncheckedCreateNestedManyWithoutRequestInput
-    searchIndex?: RequestSearchIndexUncheckedCreateNestedOneWithoutRequestInput
-  }
-
-  export type RequestCreateOrConnectWithoutExtensionsInput = {
-    where: RequestWhereUniqueInput
-    create: XOR<RequestCreateWithoutExtensionsInput, RequestUncheckedCreateWithoutExtensionsInput>
-  }
-
-  export type RequestUpsertWithoutExtensionsInput = {
-    update: XOR<RequestUpdateWithoutExtensionsInput, RequestUncheckedUpdateWithoutExtensionsInput>
-    create: XOR<RequestCreateWithoutExtensionsInput, RequestUncheckedCreateWithoutExtensionsInput>
-    where?: RequestWhereInput
-  }
-
-  export type RequestUpdateToOneWithWhereWithoutExtensionsInput = {
-    where?: RequestWhereInput
-    data: XOR<RequestUpdateWithoutExtensionsInput, RequestUncheckedUpdateWithoutExtensionsInput>
-  }
-
-  export type RequestUpdateWithoutExtensionsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    buyerId?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
-    budgetMin?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    budgetMax?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationLat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationLng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    locationCity?: NullableStringFieldUpdateOperationsInput | string | null
-    locationCountry?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumRequestStatusFieldUpdateOperationsInput | $Enums.RequestStatus
-    priorityScore?: IntFieldUpdateOperationsInput | number
-    bidCount?: IntFieldUpdateOperationsInput | number
-    viewCount?: IntFieldUpdateOperationsInput | number
-    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    category?: RequestCategoryUpdateOneRequiredWithoutRequestsNestedInput
-    images?: RequestImageUpdateManyWithoutRequestNestedInput
-    searchIndex?: RequestSearchIndexUpdateOneWithoutRequestNestedInput
-  }
-
-  export type RequestUncheckedUpdateWithoutExtensionsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    buyerId?: StringFieldUpdateOperationsInput | string
-    categoryId?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
-    budgetMin?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    budgetMax?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationLat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationLng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    locationCity?: NullableStringFieldUpdateOperationsInput | string | null
-    locationCountry?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumRequestStatusFieldUpdateOperationsInput | $Enums.RequestStatus
-    priorityScore?: IntFieldUpdateOperationsInput | number
-    bidCount?: IntFieldUpdateOperationsInput | number
-    viewCount?: IntFieldUpdateOperationsInput | number
-    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    images?: RequestImageUncheckedUpdateManyWithoutRequestNestedInput
-    searchIndex?: RequestSearchIndexUncheckedUpdateOneWithoutRequestNestedInput
-  }
-
-  export type RequestCreateWithoutSearchIndexInput = {
-    id?: string
-    buyerId: string
-    title: string
-    description: string
-    budgetMin?: Decimal | DecimalJsLike | number | string | null
-    budgetMax?: Decimal | DecimalJsLike | number | string | null
-    locationLat?: Decimal | DecimalJsLike | number | string | null
-    locationLng?: Decimal | DecimalJsLike | number | string | null
-    locationAddress?: string | null
-    locationCity?: string | null
-    locationCountry?: string | null
-    status?: $Enums.RequestStatus
-    priorityScore?: number
-    bidCount?: number
-    viewCount?: number
-    expiresAt?: Date | string | null
-    publishedAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    category: RequestCategoryCreateNestedOneWithoutRequestsInput
-    images?: RequestImageCreateNestedManyWithoutRequestInput
-    extensions?: RequestExtensionCreateNestedManyWithoutRequestInput
-  }
-
-  export type RequestUncheckedCreateWithoutSearchIndexInput = {
-    id?: string
-    buyerId: string
-    categoryId: string
-    title: string
-    description: string
-    budgetMin?: Decimal | DecimalJsLike | number | string | null
-    budgetMax?: Decimal | DecimalJsLike | number | string | null
-    locationLat?: Decimal | DecimalJsLike | number | string | null
-    locationLng?: Decimal | DecimalJsLike | number | string | null
-    locationAddress?: string | null
-    locationCity?: string | null
-    locationCountry?: string | null
-    status?: $Enums.RequestStatus
-    priorityScore?: number
-    bidCount?: number
-    viewCount?: number
-    expiresAt?: Date | string | null
-    publishedAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    images?: RequestImageUncheckedCreateNestedManyWithoutRequestInput
-    extensions?: RequestExtensionUncheckedCreateNestedManyWithoutRequestInput
-  }
-
-  export type RequestCreateOrConnectWithoutSearchIndexInput = {
-    where: RequestWhereUniqueInput
-    create: XOR<RequestCreateWithoutSearchIndexInput, RequestUncheckedCreateWithoutSearchIndexInput>
-  }
-
-  export type RequestUpsertWithoutSearchIndexInput = {
-    update: XOR<RequestUpdateWithoutSearchIndexInput, RequestUncheckedUpdateWithoutSearchIndexInput>
-    create: XOR<RequestCreateWithoutSearchIndexInput, RequestUncheckedCreateWithoutSearchIndexInput>
-    where?: RequestWhereInput
-  }
-
-  export type RequestUpdateToOneWithWhereWithoutSearchIndexInput = {
-    where?: RequestWhereInput
-    data: XOR<RequestUpdateWithoutSearchIndexInput, RequestUncheckedUpdateWithoutSearchIndexInput>
-  }
-
-  export type RequestUpdateWithoutSearchIndexInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    buyerId?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
-    budgetMin?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    budgetMax?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationLat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationLng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    locationCity?: NullableStringFieldUpdateOperationsInput | string | null
-    locationCountry?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumRequestStatusFieldUpdateOperationsInput | $Enums.RequestStatus
-    priorityScore?: IntFieldUpdateOperationsInput | number
-    bidCount?: IntFieldUpdateOperationsInput | number
-    viewCount?: IntFieldUpdateOperationsInput | number
-    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    category?: RequestCategoryUpdateOneRequiredWithoutRequestsNestedInput
-    images?: RequestImageUpdateManyWithoutRequestNestedInput
-    extensions?: RequestExtensionUpdateManyWithoutRequestNestedInput
-  }
-
-  export type RequestUncheckedUpdateWithoutSearchIndexInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    buyerId?: StringFieldUpdateOperationsInput | string
-    categoryId?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
-    budgetMin?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    budgetMax?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationLat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationLng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    locationCity?: NullableStringFieldUpdateOperationsInput | string | null
-    locationCountry?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumRequestStatusFieldUpdateOperationsInput | $Enums.RequestStatus
-    priorityScore?: IntFieldUpdateOperationsInput | number
-    bidCount?: IntFieldUpdateOperationsInput | number
-    viewCount?: IntFieldUpdateOperationsInput | number
-    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    images?: RequestImageUncheckedUpdateManyWithoutRequestNestedInput
-    extensions?: RequestExtensionUncheckedUpdateManyWithoutRequestNestedInput
-  }
-
-  export type ChatParticipantCreateWithoutRoomInput = {
-    id?: string
-    userId: string
-    role?: $Enums.ParticipantRole
-    joinedAt?: Date | string
-    lastReadAt?: Date | string | null
-    isMuted?: boolean
-    isBanned?: boolean
-    bannedUntil?: Date | string | null
-    bannedBy?: string | null
-    bannedReason?: string | null
-    leftAt?: Date | string | null
-  }
-
-  export type ChatParticipantUncheckedCreateWithoutRoomInput = {
-    id?: string
-    userId: string
-    role?: $Enums.ParticipantRole
-    joinedAt?: Date | string
-    lastReadAt?: Date | string | null
-    isMuted?: boolean
-    isBanned?: boolean
-    bannedUntil?: Date | string | null
-    bannedBy?: string | null
-    bannedReason?: string | null
-    leftAt?: Date | string | null
-  }
-
-  export type ChatParticipantCreateOrConnectWithoutRoomInput = {
-    where: ChatParticipantWhereUniqueInput
-    create: XOR<ChatParticipantCreateWithoutRoomInput, ChatParticipantUncheckedCreateWithoutRoomInput>
-  }
-
-  export type ChatParticipantCreateManyRoomInputEnvelope = {
-    data: ChatParticipantCreateManyRoomInput | ChatParticipantCreateManyRoomInput[]
+  export type ReviewCreateManyBidInputEnvelope = {
+    data: ReviewCreateManyBidInput | ReviewCreateManyBidInput[]
     skipDuplicates?: boolean
   }
 
-  export type ChatParticipantUpsertWithWhereUniqueWithoutRoomInput = {
-    where: ChatParticipantWhereUniqueInput
-    update: XOR<ChatParticipantUpdateWithoutRoomInput, ChatParticipantUncheckedUpdateWithoutRoomInput>
-    create: XOR<ChatParticipantCreateWithoutRoomInput, ChatParticipantUncheckedCreateWithoutRoomInput>
+  export type ReviewUpsertWithWhereUniqueWithoutBidInput = {
+    where: ReviewWhereUniqueInput
+    update: XOR<ReviewUpdateWithoutBidInput, ReviewUncheckedUpdateWithoutBidInput>
+    create: XOR<ReviewCreateWithoutBidInput, ReviewUncheckedCreateWithoutBidInput>
   }
 
-  export type ChatParticipantUpdateWithWhereUniqueWithoutRoomInput = {
-    where: ChatParticipantWhereUniqueInput
-    data: XOR<ChatParticipantUpdateWithoutRoomInput, ChatParticipantUncheckedUpdateWithoutRoomInput>
+  export type ReviewUpdateWithWhereUniqueWithoutBidInput = {
+    where: ReviewWhereUniqueInput
+    data: XOR<ReviewUpdateWithoutBidInput, ReviewUncheckedUpdateWithoutBidInput>
   }
 
-  export type ChatParticipantUpdateManyWithWhereWithoutRoomInput = {
-    where: ChatParticipantScalarWhereInput
-    data: XOR<ChatParticipantUpdateManyMutationInput, ChatParticipantUncheckedUpdateManyWithoutRoomInput>
+  export type ReviewUpdateManyWithWhereWithoutBidInput = {
+    where: ReviewScalarWhereInput
+    data: XOR<ReviewUpdateManyMutationInput, ReviewUncheckedUpdateManyWithoutBidInput>
   }
 
-  export type ChatParticipantScalarWhereInput = {
-    AND?: ChatParticipantScalarWhereInput | ChatParticipantScalarWhereInput[]
-    OR?: ChatParticipantScalarWhereInput[]
-    NOT?: ChatParticipantScalarWhereInput | ChatParticipantScalarWhereInput[]
-    id?: UuidFilter<"ChatParticipant"> | string
-    roomId?: UuidFilter<"ChatParticipant"> | string
-    userId?: UuidFilter<"ChatParticipant"> | string
-    role?: EnumParticipantRoleFilter<"ChatParticipant"> | $Enums.ParticipantRole
-    joinedAt?: DateTimeFilter<"ChatParticipant"> | Date | string
-    lastReadAt?: DateTimeNullableFilter<"ChatParticipant"> | Date | string | null
-    isMuted?: BoolFilter<"ChatParticipant"> | boolean
-    isBanned?: BoolFilter<"ChatParticipant"> | boolean
-    bannedUntil?: DateTimeNullableFilter<"ChatParticipant"> | Date | string | null
-    bannedBy?: UuidNullableFilter<"ChatParticipant"> | string | null
-    bannedReason?: StringNullableFilter<"ChatParticipant"> | string | null
-    leftAt?: DateTimeNullableFilter<"ChatParticipant"> | Date | string | null
+  export type ReviewScalarWhereInput = {
+    AND?: ReviewScalarWhereInput | ReviewScalarWhereInput[]
+    OR?: ReviewScalarWhereInput[]
+    NOT?: ReviewScalarWhereInput | ReviewScalarWhereInput[]
+    id?: UuidFilter<"Review"> | string
+    bidId?: UuidFilter<"Review"> | string
+    requestId?: UuidFilter<"Review"> | string
+    reviewerId?: UuidFilter<"Review"> | string
+    revieweeId?: UuidFilter<"Review"> | string
+    type?: EnumReviewTypeFilter<"Review"> | $Enums.ReviewType
+    rating?: IntFilter<"Review"> | number
+    comment?: StringNullableFilter<"Review"> | string | null
+    createdAt?: DateTimeFilter<"Review"> | Date | string
+  }
+
+  export type ChatRoomParticipantCreateWithoutRoomInput = {
+    id?: string
+    userId: string
+    role?: string
+    lastReadAt?: Date | string | null
+    joinedAt?: Date | string
+    leftAt?: Date | string | null
+  }
+
+  export type ChatRoomParticipantUncheckedCreateWithoutRoomInput = {
+    id?: string
+    userId: string
+    role?: string
+    lastReadAt?: Date | string | null
+    joinedAt?: Date | string
+    leftAt?: Date | string | null
+  }
+
+  export type ChatRoomParticipantCreateOrConnectWithoutRoomInput = {
+    where: ChatRoomParticipantWhereUniqueInput
+    create: XOR<ChatRoomParticipantCreateWithoutRoomInput, ChatRoomParticipantUncheckedCreateWithoutRoomInput>
+  }
+
+  export type ChatRoomParticipantCreateManyRoomInputEnvelope = {
+    data: ChatRoomParticipantCreateManyRoomInput | ChatRoomParticipantCreateManyRoomInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ChatRoomParticipantUpsertWithWhereUniqueWithoutRoomInput = {
+    where: ChatRoomParticipantWhereUniqueInput
+    update: XOR<ChatRoomParticipantUpdateWithoutRoomInput, ChatRoomParticipantUncheckedUpdateWithoutRoomInput>
+    create: XOR<ChatRoomParticipantCreateWithoutRoomInput, ChatRoomParticipantUncheckedCreateWithoutRoomInput>
+  }
+
+  export type ChatRoomParticipantUpdateWithWhereUniqueWithoutRoomInput = {
+    where: ChatRoomParticipantWhereUniqueInput
+    data: XOR<ChatRoomParticipantUpdateWithoutRoomInput, ChatRoomParticipantUncheckedUpdateWithoutRoomInput>
+  }
+
+  export type ChatRoomParticipantUpdateManyWithWhereWithoutRoomInput = {
+    where: ChatRoomParticipantScalarWhereInput
+    data: XOR<ChatRoomParticipantUpdateManyMutationInput, ChatRoomParticipantUncheckedUpdateManyWithoutRoomInput>
+  }
+
+  export type ChatRoomParticipantScalarWhereInput = {
+    AND?: ChatRoomParticipantScalarWhereInput | ChatRoomParticipantScalarWhereInput[]
+    OR?: ChatRoomParticipantScalarWhereInput[]
+    NOT?: ChatRoomParticipantScalarWhereInput | ChatRoomParticipantScalarWhereInput[]
+    id?: UuidFilter<"ChatRoomParticipant"> | string
+    roomId?: UuidFilter<"ChatRoomParticipant"> | string
+    userId?: UuidFilter<"ChatRoomParticipant"> | string
+    role?: StringFilter<"ChatRoomParticipant"> | string
+    lastReadAt?: DateTimeNullableFilter<"ChatRoomParticipant"> | Date | string | null
+    joinedAt?: DateTimeFilter<"ChatRoomParticipant"> | Date | string
+    leftAt?: DateTimeNullableFilter<"ChatRoomParticipant"> | Date | string | null
   }
 
   export type ChatRoomCreateWithoutParticipantsInput = {
@@ -34810,708 +20783,120 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type NotificationCreateWithoutTemplateInput = {
+  export type BidCreateWithoutReviewsInput = {
     id?: string
-    userId: string
-    type: $Enums.NotificationType
-    title: string
-    content: string
-    channel?: $Enums.NotifChannel
-    priority?: $Enums.NotificationPriority
-    status?: $Enums.NotificationStatus
-    templateVariables?: JsonNullValueInput | InputJsonValue
-    metadata?: JsonNullValueInput | InputJsonValue
-    scheduledAt?: Date | string | null
-    sentAt?: Date | string | null
-    deliveredAt?: Date | string | null
-    readAt?: Date | string | null
+    requestId: string
+    merchantId: string
+    amount: Decimal | DecimalJsLike | number | string
+    deliveryDays: number
+    deliveryNotes?: string | null
+    specialTerms?: string | null
+    status?: $Enums.BidStatus
+    priorityScore?: number
+    isTemplate?: boolean
+    templateName?: string | null
+    bidFee?: Decimal | DecimalJsLike | number | string
+    feePaid?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
     expiresAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    deliveries?: NotificationDeliveryCreateNestedManyWithoutNotificationInput
-    reads?: NotificationReadCreateNestedManyWithoutNotificationInput
-    analytics?: NotificationStatCreateNestedManyWithoutNotificationInput
+    acceptedAt?: Date | string | null
+    rejectedAt?: Date | string | null
+    withdrawnAt?: Date | string | null
+    chatRoomId?: string | null
+    fulfillmentStatus?: $Enums.FulfillmentStatus | null
+    fulfillmentUpdatedAt?: Date | string | null
   }
 
-  export type NotificationUncheckedCreateWithoutTemplateInput = {
+  export type BidUncheckedCreateWithoutReviewsInput = {
     id?: string
-    userId: string
-    type: $Enums.NotificationType
-    title: string
-    content: string
-    channel?: $Enums.NotifChannel
-    priority?: $Enums.NotificationPriority
-    status?: $Enums.NotificationStatus
-    templateVariables?: JsonNullValueInput | InputJsonValue
-    metadata?: JsonNullValueInput | InputJsonValue
-    scheduledAt?: Date | string | null
-    sentAt?: Date | string | null
-    deliveredAt?: Date | string | null
-    readAt?: Date | string | null
+    requestId: string
+    merchantId: string
+    amount: Decimal | DecimalJsLike | number | string
+    deliveryDays: number
+    deliveryNotes?: string | null
+    specialTerms?: string | null
+    status?: $Enums.BidStatus
+    priorityScore?: number
+    isTemplate?: boolean
+    templateName?: string | null
+    bidFee?: Decimal | DecimalJsLike | number | string
+    feePaid?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
     expiresAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    deliveries?: NotificationDeliveryUncheckedCreateNestedManyWithoutNotificationInput
-    reads?: NotificationReadUncheckedCreateNestedManyWithoutNotificationInput
-    analytics?: NotificationStatUncheckedCreateNestedManyWithoutNotificationInput
+    acceptedAt?: Date | string | null
+    rejectedAt?: Date | string | null
+    withdrawnAt?: Date | string | null
+    chatRoomId?: string | null
+    fulfillmentStatus?: $Enums.FulfillmentStatus | null
+    fulfillmentUpdatedAt?: Date | string | null
   }
 
-  export type NotificationCreateOrConnectWithoutTemplateInput = {
-    where: NotificationWhereUniqueInput
-    create: XOR<NotificationCreateWithoutTemplateInput, NotificationUncheckedCreateWithoutTemplateInput>
+  export type BidCreateOrConnectWithoutReviewsInput = {
+    where: BidWhereUniqueInput
+    create: XOR<BidCreateWithoutReviewsInput, BidUncheckedCreateWithoutReviewsInput>
   }
 
-  export type NotificationCreateManyTemplateInputEnvelope = {
-    data: NotificationCreateManyTemplateInput | NotificationCreateManyTemplateInput[]
-    skipDuplicates?: boolean
+  export type BidUpsertWithoutReviewsInput = {
+    update: XOR<BidUpdateWithoutReviewsInput, BidUncheckedUpdateWithoutReviewsInput>
+    create: XOR<BidCreateWithoutReviewsInput, BidUncheckedCreateWithoutReviewsInput>
+    where?: BidWhereInput
   }
 
-  export type NotificationUpsertWithWhereUniqueWithoutTemplateInput = {
-    where: NotificationWhereUniqueInput
-    update: XOR<NotificationUpdateWithoutTemplateInput, NotificationUncheckedUpdateWithoutTemplateInput>
-    create: XOR<NotificationCreateWithoutTemplateInput, NotificationUncheckedCreateWithoutTemplateInput>
+  export type BidUpdateToOneWithWhereWithoutReviewsInput = {
+    where?: BidWhereInput
+    data: XOR<BidUpdateWithoutReviewsInput, BidUncheckedUpdateWithoutReviewsInput>
   }
 
-  export type NotificationUpdateWithWhereUniqueWithoutTemplateInput = {
-    where: NotificationWhereUniqueInput
-    data: XOR<NotificationUpdateWithoutTemplateInput, NotificationUncheckedUpdateWithoutTemplateInput>
-  }
-
-  export type NotificationUpdateManyWithWhereWithoutTemplateInput = {
-    where: NotificationScalarWhereInput
-    data: XOR<NotificationUpdateManyMutationInput, NotificationUncheckedUpdateManyWithoutTemplateInput>
-  }
-
-  export type NotificationScalarWhereInput = {
-    AND?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
-    OR?: NotificationScalarWhereInput[]
-    NOT?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
-    id?: UuidFilter<"Notification"> | string
-    userId?: UuidFilter<"Notification"> | string
-    type?: EnumNotificationTypeFilter<"Notification"> | $Enums.NotificationType
-    title?: StringFilter<"Notification"> | string
-    content?: StringFilter<"Notification"> | string
-    channel?: EnumNotifChannelFilter<"Notification"> | $Enums.NotifChannel
-    priority?: EnumNotificationPriorityFilter<"Notification"> | $Enums.NotificationPriority
-    status?: EnumNotificationStatusFilter<"Notification"> | $Enums.NotificationStatus
-    templateId?: UuidNullableFilter<"Notification"> | string | null
-    templateVariables?: JsonFilter<"Notification">
-    metadata?: JsonFilter<"Notification">
-    scheduledAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
-    sentAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
-    deliveredAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
-    readAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
-    expiresAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
-    createdAt?: DateTimeFilter<"Notification"> | Date | string
-    updatedAt?: DateTimeFilter<"Notification"> | Date | string
-  }
-
-  export type NotificationTemplateCreateWithoutNotificationsInput = {
-    id?: string
-    name: string
-    type: $Enums.NotificationType
-    channel: $Enums.NotifChannel
-    subjectTemplate?: string | null
-    contentTemplate: string
-    variables?: JsonNullValueInput | InputJsonValue
-    defaultLocale?: string
-    isActive?: boolean
-    version?: number
-    createdBy?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type NotificationTemplateUncheckedCreateWithoutNotificationsInput = {
-    id?: string
-    name: string
-    type: $Enums.NotificationType
-    channel: $Enums.NotifChannel
-    subjectTemplate?: string | null
-    contentTemplate: string
-    variables?: JsonNullValueInput | InputJsonValue
-    defaultLocale?: string
-    isActive?: boolean
-    version?: number
-    createdBy?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type NotificationTemplateCreateOrConnectWithoutNotificationsInput = {
-    where: NotificationTemplateWhereUniqueInput
-    create: XOR<NotificationTemplateCreateWithoutNotificationsInput, NotificationTemplateUncheckedCreateWithoutNotificationsInput>
-  }
-
-  export type NotificationDeliveryCreateWithoutNotificationInput = {
-    id?: string
-    channelType: $Enums.NotifChannel
-    provider: string
-    recipient: string
-    status?: $Enums.NotifDeliveryStatus
-    attemptCount?: number
-    sentAt?: Date | string | null
-    deliveredAt?: Date | string | null
-    errorMessage?: string | null
-    errorCode?: string | null
-    metadata?: JsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-  }
-
-  export type NotificationDeliveryUncheckedCreateWithoutNotificationInput = {
-    id?: string
-    channelType: $Enums.NotifChannel
-    provider: string
-    recipient: string
-    status?: $Enums.NotifDeliveryStatus
-    attemptCount?: number
-    sentAt?: Date | string | null
-    deliveredAt?: Date | string | null
-    errorMessage?: string | null
-    errorCode?: string | null
-    metadata?: JsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-  }
-
-  export type NotificationDeliveryCreateOrConnectWithoutNotificationInput = {
-    where: NotificationDeliveryWhereUniqueInput
-    create: XOR<NotificationDeliveryCreateWithoutNotificationInput, NotificationDeliveryUncheckedCreateWithoutNotificationInput>
-  }
-
-  export type NotificationDeliveryCreateManyNotificationInputEnvelope = {
-    data: NotificationDeliveryCreateManyNotificationInput | NotificationDeliveryCreateManyNotificationInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type NotificationReadCreateWithoutNotificationInput = {
-    id?: string
-    userId: string
-    readAt?: Date | string
-    deviceFingerprint?: string | null
-    ipAddress?: string | null
-    userAgent?: string | null
-    createdAt?: Date | string
-  }
-
-  export type NotificationReadUncheckedCreateWithoutNotificationInput = {
-    id?: string
-    userId: string
-    readAt?: Date | string
-    deviceFingerprint?: string | null
-    ipAddress?: string | null
-    userAgent?: string | null
-    createdAt?: Date | string
-  }
-
-  export type NotificationReadCreateOrConnectWithoutNotificationInput = {
-    where: NotificationReadWhereUniqueInput
-    create: XOR<NotificationReadCreateWithoutNotificationInput, NotificationReadUncheckedCreateWithoutNotificationInput>
-  }
-
-  export type NotificationReadCreateManyNotificationInputEnvelope = {
-    data: NotificationReadCreateManyNotificationInput | NotificationReadCreateManyNotificationInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type NotificationStatCreateWithoutNotificationInput = {
-    id?: string
-    userId?: string | null
-    eventType: $Enums.NotifAnalyticsEvent
-    channelType: $Enums.NotifChannel
-    provider?: string | null
-    deliveryTimeMs?: number | null
-    success: boolean
-    errorCode?: string | null
-    metadata?: JsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-  }
-
-  export type NotificationStatUncheckedCreateWithoutNotificationInput = {
-    id?: string
-    userId?: string | null
-    eventType: $Enums.NotifAnalyticsEvent
-    channelType: $Enums.NotifChannel
-    provider?: string | null
-    deliveryTimeMs?: number | null
-    success: boolean
-    errorCode?: string | null
-    metadata?: JsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-  }
-
-  export type NotificationStatCreateOrConnectWithoutNotificationInput = {
-    where: NotificationStatWhereUniqueInput
-    create: XOR<NotificationStatCreateWithoutNotificationInput, NotificationStatUncheckedCreateWithoutNotificationInput>
-  }
-
-  export type NotificationStatCreateManyNotificationInputEnvelope = {
-    data: NotificationStatCreateManyNotificationInput | NotificationStatCreateManyNotificationInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type NotificationTemplateUpsertWithoutNotificationsInput = {
-    update: XOR<NotificationTemplateUpdateWithoutNotificationsInput, NotificationTemplateUncheckedUpdateWithoutNotificationsInput>
-    create: XOR<NotificationTemplateCreateWithoutNotificationsInput, NotificationTemplateUncheckedCreateWithoutNotificationsInput>
-    where?: NotificationTemplateWhereInput
-  }
-
-  export type NotificationTemplateUpdateToOneWithWhereWithoutNotificationsInput = {
-    where?: NotificationTemplateWhereInput
-    data: XOR<NotificationTemplateUpdateWithoutNotificationsInput, NotificationTemplateUncheckedUpdateWithoutNotificationsInput>
-  }
-
-  export type NotificationTemplateUpdateWithoutNotificationsInput = {
+  export type BidUpdateWithoutReviewsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
-    channel?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    subjectTemplate?: NullableStringFieldUpdateOperationsInput | string | null
-    contentTemplate?: StringFieldUpdateOperationsInput | string
-    variables?: JsonNullValueInput | InputJsonValue
-    defaultLocale?: StringFieldUpdateOperationsInput | string
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    version?: IntFieldUpdateOperationsInput | number
-    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    requestId?: StringFieldUpdateOperationsInput | string
+    merchantId?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    deliveryDays?: IntFieldUpdateOperationsInput | number
+    deliveryNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    specialTerms?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumBidStatusFieldUpdateOperationsInput | $Enums.BidStatus
+    priorityScore?: IntFieldUpdateOperationsInput | number
+    isTemplate?: BoolFieldUpdateOperationsInput | boolean
+    templateName?: NullableStringFieldUpdateOperationsInput | string | null
+    bidFee?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    feePaid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationTemplateUncheckedUpdateWithoutNotificationsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
-    channel?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    subjectTemplate?: NullableStringFieldUpdateOperationsInput | string | null
-    contentTemplate?: StringFieldUpdateOperationsInput | string
-    variables?: JsonNullValueInput | InputJsonValue
-    defaultLocale?: StringFieldUpdateOperationsInput | string
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    version?: IntFieldUpdateOperationsInput | number
-    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationDeliveryUpsertWithWhereUniqueWithoutNotificationInput = {
-    where: NotificationDeliveryWhereUniqueInput
-    update: XOR<NotificationDeliveryUpdateWithoutNotificationInput, NotificationDeliveryUncheckedUpdateWithoutNotificationInput>
-    create: XOR<NotificationDeliveryCreateWithoutNotificationInput, NotificationDeliveryUncheckedCreateWithoutNotificationInput>
-  }
-
-  export type NotificationDeliveryUpdateWithWhereUniqueWithoutNotificationInput = {
-    where: NotificationDeliveryWhereUniqueInput
-    data: XOR<NotificationDeliveryUpdateWithoutNotificationInput, NotificationDeliveryUncheckedUpdateWithoutNotificationInput>
-  }
-
-  export type NotificationDeliveryUpdateManyWithWhereWithoutNotificationInput = {
-    where: NotificationDeliveryScalarWhereInput
-    data: XOR<NotificationDeliveryUpdateManyMutationInput, NotificationDeliveryUncheckedUpdateManyWithoutNotificationInput>
-  }
-
-  export type NotificationDeliveryScalarWhereInput = {
-    AND?: NotificationDeliveryScalarWhereInput | NotificationDeliveryScalarWhereInput[]
-    OR?: NotificationDeliveryScalarWhereInput[]
-    NOT?: NotificationDeliveryScalarWhereInput | NotificationDeliveryScalarWhereInput[]
-    id?: UuidFilter<"NotificationDelivery"> | string
-    notificationId?: UuidFilter<"NotificationDelivery"> | string
-    channelType?: EnumNotifChannelFilter<"NotificationDelivery"> | $Enums.NotifChannel
-    provider?: StringFilter<"NotificationDelivery"> | string
-    recipient?: StringFilter<"NotificationDelivery"> | string
-    status?: EnumNotifDeliveryStatusFilter<"NotificationDelivery"> | $Enums.NotifDeliveryStatus
-    attemptCount?: IntFilter<"NotificationDelivery"> | number
-    sentAt?: DateTimeNullableFilter<"NotificationDelivery"> | Date | string | null
-    deliveredAt?: DateTimeNullableFilter<"NotificationDelivery"> | Date | string | null
-    errorMessage?: StringNullableFilter<"NotificationDelivery"> | string | null
-    errorCode?: StringNullableFilter<"NotificationDelivery"> | string | null
-    metadata?: JsonFilter<"NotificationDelivery">
-    createdAt?: DateTimeFilter<"NotificationDelivery"> | Date | string
-  }
-
-  export type NotificationReadUpsertWithWhereUniqueWithoutNotificationInput = {
-    where: NotificationReadWhereUniqueInput
-    update: XOR<NotificationReadUpdateWithoutNotificationInput, NotificationReadUncheckedUpdateWithoutNotificationInput>
-    create: XOR<NotificationReadCreateWithoutNotificationInput, NotificationReadUncheckedCreateWithoutNotificationInput>
-  }
-
-  export type NotificationReadUpdateWithWhereUniqueWithoutNotificationInput = {
-    where: NotificationReadWhereUniqueInput
-    data: XOR<NotificationReadUpdateWithoutNotificationInput, NotificationReadUncheckedUpdateWithoutNotificationInput>
-  }
-
-  export type NotificationReadUpdateManyWithWhereWithoutNotificationInput = {
-    where: NotificationReadScalarWhereInput
-    data: XOR<NotificationReadUpdateManyMutationInput, NotificationReadUncheckedUpdateManyWithoutNotificationInput>
-  }
-
-  export type NotificationReadScalarWhereInput = {
-    AND?: NotificationReadScalarWhereInput | NotificationReadScalarWhereInput[]
-    OR?: NotificationReadScalarWhereInput[]
-    NOT?: NotificationReadScalarWhereInput | NotificationReadScalarWhereInput[]
-    id?: UuidFilter<"NotificationRead"> | string
-    notificationId?: UuidFilter<"NotificationRead"> | string
-    userId?: UuidFilter<"NotificationRead"> | string
-    readAt?: DateTimeFilter<"NotificationRead"> | Date | string
-    deviceFingerprint?: StringNullableFilter<"NotificationRead"> | string | null
-    ipAddress?: StringNullableFilter<"NotificationRead"> | string | null
-    userAgent?: StringNullableFilter<"NotificationRead"> | string | null
-    createdAt?: DateTimeFilter<"NotificationRead"> | Date | string
-  }
-
-  export type NotificationStatUpsertWithWhereUniqueWithoutNotificationInput = {
-    where: NotificationStatWhereUniqueInput
-    update: XOR<NotificationStatUpdateWithoutNotificationInput, NotificationStatUncheckedUpdateWithoutNotificationInput>
-    create: XOR<NotificationStatCreateWithoutNotificationInput, NotificationStatUncheckedCreateWithoutNotificationInput>
-  }
-
-  export type NotificationStatUpdateWithWhereUniqueWithoutNotificationInput = {
-    where: NotificationStatWhereUniqueInput
-    data: XOR<NotificationStatUpdateWithoutNotificationInput, NotificationStatUncheckedUpdateWithoutNotificationInput>
-  }
-
-  export type NotificationStatUpdateManyWithWhereWithoutNotificationInput = {
-    where: NotificationStatScalarWhereInput
-    data: XOR<NotificationStatUpdateManyMutationInput, NotificationStatUncheckedUpdateManyWithoutNotificationInput>
-  }
-
-  export type NotificationStatScalarWhereInput = {
-    AND?: NotificationStatScalarWhereInput | NotificationStatScalarWhereInput[]
-    OR?: NotificationStatScalarWhereInput[]
-    NOT?: NotificationStatScalarWhereInput | NotificationStatScalarWhereInput[]
-    id?: UuidFilter<"NotificationStat"> | string
-    notificationId?: UuidNullableFilter<"NotificationStat"> | string | null
-    userId?: UuidNullableFilter<"NotificationStat"> | string | null
-    eventType?: EnumNotifAnalyticsEventFilter<"NotificationStat"> | $Enums.NotifAnalyticsEvent
-    channelType?: EnumNotifChannelFilter<"NotificationStat"> | $Enums.NotifChannel
-    provider?: StringNullableFilter<"NotificationStat"> | string | null
-    deliveryTimeMs?: IntNullableFilter<"NotificationStat"> | number | null
-    success?: BoolFilter<"NotificationStat"> | boolean
-    errorCode?: StringNullableFilter<"NotificationStat"> | string | null
-    metadata?: JsonFilter<"NotificationStat">
-    createdAt?: DateTimeFilter<"NotificationStat"> | Date | string
-  }
-
-  export type NotificationCreateWithoutDeliveriesInput = {
-    id?: string
-    userId: string
-    type: $Enums.NotificationType
-    title: string
-    content: string
-    channel?: $Enums.NotifChannel
-    priority?: $Enums.NotificationPriority
-    status?: $Enums.NotificationStatus
-    templateVariables?: JsonNullValueInput | InputJsonValue
-    metadata?: JsonNullValueInput | InputJsonValue
-    scheduledAt?: Date | string | null
-    sentAt?: Date | string | null
-    deliveredAt?: Date | string | null
-    readAt?: Date | string | null
-    expiresAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    template?: NotificationTemplateCreateNestedOneWithoutNotificationsInput
-    reads?: NotificationReadCreateNestedManyWithoutNotificationInput
-    analytics?: NotificationStatCreateNestedManyWithoutNotificationInput
-  }
-
-  export type NotificationUncheckedCreateWithoutDeliveriesInput = {
-    id?: string
-    userId: string
-    type: $Enums.NotificationType
-    title: string
-    content: string
-    channel?: $Enums.NotifChannel
-    priority?: $Enums.NotificationPriority
-    status?: $Enums.NotificationStatus
-    templateId?: string | null
-    templateVariables?: JsonNullValueInput | InputJsonValue
-    metadata?: JsonNullValueInput | InputJsonValue
-    scheduledAt?: Date | string | null
-    sentAt?: Date | string | null
-    deliveredAt?: Date | string | null
-    readAt?: Date | string | null
-    expiresAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    reads?: NotificationReadUncheckedCreateNestedManyWithoutNotificationInput
-    analytics?: NotificationStatUncheckedCreateNestedManyWithoutNotificationInput
-  }
-
-  export type NotificationCreateOrConnectWithoutDeliveriesInput = {
-    where: NotificationWhereUniqueInput
-    create: XOR<NotificationCreateWithoutDeliveriesInput, NotificationUncheckedCreateWithoutDeliveriesInput>
-  }
-
-  export type NotificationUpsertWithoutDeliveriesInput = {
-    update: XOR<NotificationUpdateWithoutDeliveriesInput, NotificationUncheckedUpdateWithoutDeliveriesInput>
-    create: XOR<NotificationCreateWithoutDeliveriesInput, NotificationUncheckedCreateWithoutDeliveriesInput>
-    where?: NotificationWhereInput
-  }
-
-  export type NotificationUpdateToOneWithWhereWithoutDeliveriesInput = {
-    where?: NotificationWhereInput
-    data: XOR<NotificationUpdateWithoutDeliveriesInput, NotificationUncheckedUpdateWithoutDeliveriesInput>
-  }
-
-  export type NotificationUpdateWithoutDeliveriesInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
-    title?: StringFieldUpdateOperationsInput | string
-    content?: StringFieldUpdateOperationsInput | string
-    channel?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    priority?: EnumNotificationPriorityFieldUpdateOperationsInput | $Enums.NotificationPriority
-    status?: EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
-    templateVariables?: JsonNullValueInput | InputJsonValue
-    metadata?: JsonNullValueInput | InputJsonValue
-    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    template?: NotificationTemplateUpdateOneWithoutNotificationsNestedInput
-    reads?: NotificationReadUpdateManyWithoutNotificationNestedInput
-    analytics?: NotificationStatUpdateManyWithoutNotificationNestedInput
+    acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    withdrawnAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    chatRoomId?: NullableStringFieldUpdateOperationsInput | string | null
+    fulfillmentStatus?: NullableEnumFulfillmentStatusFieldUpdateOperationsInput | $Enums.FulfillmentStatus | null
+    fulfillmentUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
-  export type NotificationUncheckedUpdateWithoutDeliveriesInput = {
+  export type BidUncheckedUpdateWithoutReviewsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
-    title?: StringFieldUpdateOperationsInput | string
-    content?: StringFieldUpdateOperationsInput | string
-    channel?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    priority?: EnumNotificationPriorityFieldUpdateOperationsInput | $Enums.NotificationPriority
-    status?: EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
-    templateId?: NullableStringFieldUpdateOperationsInput | string | null
-    templateVariables?: JsonNullValueInput | InputJsonValue
-    metadata?: JsonNullValueInput | InputJsonValue
-    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    requestId?: StringFieldUpdateOperationsInput | string
+    merchantId?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    deliveryDays?: IntFieldUpdateOperationsInput | number
+    deliveryNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    specialTerms?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumBidStatusFieldUpdateOperationsInput | $Enums.BidStatus
+    priorityScore?: IntFieldUpdateOperationsInput | number
+    isTemplate?: BoolFieldUpdateOperationsInput | boolean
+    templateName?: NullableStringFieldUpdateOperationsInput | string | null
+    bidFee?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    feePaid?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    reads?: NotificationReadUncheckedUpdateManyWithoutNotificationNestedInput
-    analytics?: NotificationStatUncheckedUpdateManyWithoutNotificationNestedInput
-  }
-
-  export type NotificationCreateWithoutReadsInput = {
-    id?: string
-    userId: string
-    type: $Enums.NotificationType
-    title: string
-    content: string
-    channel?: $Enums.NotifChannel
-    priority?: $Enums.NotificationPriority
-    status?: $Enums.NotificationStatus
-    templateVariables?: JsonNullValueInput | InputJsonValue
-    metadata?: JsonNullValueInput | InputJsonValue
-    scheduledAt?: Date | string | null
-    sentAt?: Date | string | null
-    deliveredAt?: Date | string | null
-    readAt?: Date | string | null
-    expiresAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    template?: NotificationTemplateCreateNestedOneWithoutNotificationsInput
-    deliveries?: NotificationDeliveryCreateNestedManyWithoutNotificationInput
-    analytics?: NotificationStatCreateNestedManyWithoutNotificationInput
-  }
-
-  export type NotificationUncheckedCreateWithoutReadsInput = {
-    id?: string
-    userId: string
-    type: $Enums.NotificationType
-    title: string
-    content: string
-    channel?: $Enums.NotifChannel
-    priority?: $Enums.NotificationPriority
-    status?: $Enums.NotificationStatus
-    templateId?: string | null
-    templateVariables?: JsonNullValueInput | InputJsonValue
-    metadata?: JsonNullValueInput | InputJsonValue
-    scheduledAt?: Date | string | null
-    sentAt?: Date | string | null
-    deliveredAt?: Date | string | null
-    readAt?: Date | string | null
-    expiresAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    deliveries?: NotificationDeliveryUncheckedCreateNestedManyWithoutNotificationInput
-    analytics?: NotificationStatUncheckedCreateNestedManyWithoutNotificationInput
-  }
-
-  export type NotificationCreateOrConnectWithoutReadsInput = {
-    where: NotificationWhereUniqueInput
-    create: XOR<NotificationCreateWithoutReadsInput, NotificationUncheckedCreateWithoutReadsInput>
-  }
-
-  export type NotificationUpsertWithoutReadsInput = {
-    update: XOR<NotificationUpdateWithoutReadsInput, NotificationUncheckedUpdateWithoutReadsInput>
-    create: XOR<NotificationCreateWithoutReadsInput, NotificationUncheckedCreateWithoutReadsInput>
-    where?: NotificationWhereInput
-  }
-
-  export type NotificationUpdateToOneWithWhereWithoutReadsInput = {
-    where?: NotificationWhereInput
-    data: XOR<NotificationUpdateWithoutReadsInput, NotificationUncheckedUpdateWithoutReadsInput>
-  }
-
-  export type NotificationUpdateWithoutReadsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
-    title?: StringFieldUpdateOperationsInput | string
-    content?: StringFieldUpdateOperationsInput | string
-    channel?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    priority?: EnumNotificationPriorityFieldUpdateOperationsInput | $Enums.NotificationPriority
-    status?: EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
-    templateVariables?: JsonNullValueInput | InputJsonValue
-    metadata?: JsonNullValueInput | InputJsonValue
-    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    template?: NotificationTemplateUpdateOneWithoutNotificationsNestedInput
-    deliveries?: NotificationDeliveryUpdateManyWithoutNotificationNestedInput
-    analytics?: NotificationStatUpdateManyWithoutNotificationNestedInput
-  }
-
-  export type NotificationUncheckedUpdateWithoutReadsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
-    title?: StringFieldUpdateOperationsInput | string
-    content?: StringFieldUpdateOperationsInput | string
-    channel?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    priority?: EnumNotificationPriorityFieldUpdateOperationsInput | $Enums.NotificationPriority
-    status?: EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
-    templateId?: NullableStringFieldUpdateOperationsInput | string | null
-    templateVariables?: JsonNullValueInput | InputJsonValue
-    metadata?: JsonNullValueInput | InputJsonValue
-    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    deliveries?: NotificationDeliveryUncheckedUpdateManyWithoutNotificationNestedInput
-    analytics?: NotificationStatUncheckedUpdateManyWithoutNotificationNestedInput
-  }
-
-  export type NotificationCreateWithoutAnalyticsInput = {
-    id?: string
-    userId: string
-    type: $Enums.NotificationType
-    title: string
-    content: string
-    channel?: $Enums.NotifChannel
-    priority?: $Enums.NotificationPriority
-    status?: $Enums.NotificationStatus
-    templateVariables?: JsonNullValueInput | InputJsonValue
-    metadata?: JsonNullValueInput | InputJsonValue
-    scheduledAt?: Date | string | null
-    sentAt?: Date | string | null
-    deliveredAt?: Date | string | null
-    readAt?: Date | string | null
-    expiresAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    template?: NotificationTemplateCreateNestedOneWithoutNotificationsInput
-    deliveries?: NotificationDeliveryCreateNestedManyWithoutNotificationInput
-    reads?: NotificationReadCreateNestedManyWithoutNotificationInput
-  }
-
-  export type NotificationUncheckedCreateWithoutAnalyticsInput = {
-    id?: string
-    userId: string
-    type: $Enums.NotificationType
-    title: string
-    content: string
-    channel?: $Enums.NotifChannel
-    priority?: $Enums.NotificationPriority
-    status?: $Enums.NotificationStatus
-    templateId?: string | null
-    templateVariables?: JsonNullValueInput | InputJsonValue
-    metadata?: JsonNullValueInput | InputJsonValue
-    scheduledAt?: Date | string | null
-    sentAt?: Date | string | null
-    deliveredAt?: Date | string | null
-    readAt?: Date | string | null
-    expiresAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    deliveries?: NotificationDeliveryUncheckedCreateNestedManyWithoutNotificationInput
-    reads?: NotificationReadUncheckedCreateNestedManyWithoutNotificationInput
-  }
-
-  export type NotificationCreateOrConnectWithoutAnalyticsInput = {
-    where: NotificationWhereUniqueInput
-    create: XOR<NotificationCreateWithoutAnalyticsInput, NotificationUncheckedCreateWithoutAnalyticsInput>
-  }
-
-  export type NotificationUpsertWithoutAnalyticsInput = {
-    update: XOR<NotificationUpdateWithoutAnalyticsInput, NotificationUncheckedUpdateWithoutAnalyticsInput>
-    create: XOR<NotificationCreateWithoutAnalyticsInput, NotificationUncheckedCreateWithoutAnalyticsInput>
-    where?: NotificationWhereInput
-  }
-
-  export type NotificationUpdateToOneWithWhereWithoutAnalyticsInput = {
-    where?: NotificationWhereInput
-    data: XOR<NotificationUpdateWithoutAnalyticsInput, NotificationUncheckedUpdateWithoutAnalyticsInput>
-  }
-
-  export type NotificationUpdateWithoutAnalyticsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
-    title?: StringFieldUpdateOperationsInput | string
-    content?: StringFieldUpdateOperationsInput | string
-    channel?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    priority?: EnumNotificationPriorityFieldUpdateOperationsInput | $Enums.NotificationPriority
-    status?: EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
-    templateVariables?: JsonNullValueInput | InputJsonValue
-    metadata?: JsonNullValueInput | InputJsonValue
-    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    template?: NotificationTemplateUpdateOneWithoutNotificationsNestedInput
-    deliveries?: NotificationDeliveryUpdateManyWithoutNotificationNestedInput
-    reads?: NotificationReadUpdateManyWithoutNotificationNestedInput
-  }
-
-  export type NotificationUncheckedUpdateWithoutAnalyticsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
-    title?: StringFieldUpdateOperationsInput | string
-    content?: StringFieldUpdateOperationsInput | string
-    channel?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    priority?: EnumNotificationPriorityFieldUpdateOperationsInput | $Enums.NotificationPriority
-    status?: EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
-    templateId?: NullableStringFieldUpdateOperationsInput | string | null
-    templateVariables?: JsonNullValueInput | InputJsonValue
-    metadata?: JsonNullValueInput | InputJsonValue
-    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    deliveries?: NotificationDeliveryUncheckedUpdateManyWithoutNotificationNestedInput
-    reads?: NotificationReadUncheckedUpdateManyWithoutNotificationNestedInput
+    acceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    withdrawnAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    chatRoomId?: NullableStringFieldUpdateOperationsInput | string | null
+    fulfillmentStatus?: NullableEnumFulfillmentStatusFieldUpdateOperationsInput | $Enums.FulfillmentStatus | null
+    fulfillmentUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type AuthTokenCreateManyUserInput = {
@@ -35600,22 +20985,6 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
-  export type RequestDraftCreateManyCategoryInput = {
-    id?: string
-    buyerId: string
-    title?: string | null
-    description?: string | null
-    budgetMin?: Decimal | DecimalJsLike | number | string | null
-    budgetMax?: Decimal | DecimalJsLike | number | string | null
-    locationLat?: Decimal | DecimalJsLike | number | string | null
-    locationLng?: Decimal | DecimalJsLike | number | string | null
-    locationAddress?: string | null
-    autoSaveData?: JsonNullValueInput | InputJsonValue
-    expiresAt: Date | string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
   export type RequestCategoryUpdateWithoutParentInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
@@ -35628,7 +20997,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     children?: RequestCategoryUpdateManyWithoutParentNestedInput
     requests?: RequestUpdateManyWithoutCategoryNestedInput
-    drafts?: RequestDraftUpdateManyWithoutCategoryNestedInput
   }
 
   export type RequestCategoryUncheckedUpdateWithoutParentInput = {
@@ -35643,7 +21011,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     children?: RequestCategoryUncheckedUpdateManyWithoutParentNestedInput
     requests?: RequestUncheckedUpdateManyWithoutCategoryNestedInput
-    drafts?: RequestDraftUncheckedUpdateManyWithoutCategoryNestedInput
   }
 
   export type RequestCategoryUncheckedUpdateManyWithoutParentInput = {
@@ -35679,8 +21046,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     images?: RequestImageUpdateManyWithoutRequestNestedInput
-    extensions?: RequestExtensionUpdateManyWithoutRequestNestedInput
-    searchIndex?: RequestSearchIndexUpdateOneWithoutRequestNestedInput
   }
 
   export type RequestUncheckedUpdateWithoutCategoryInput = {
@@ -35704,8 +21069,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     images?: RequestImageUncheckedUpdateManyWithoutRequestNestedInput
-    extensions?: RequestExtensionUncheckedUpdateManyWithoutRequestNestedInput
-    searchIndex?: RequestSearchIndexUncheckedUpdateOneWithoutRequestNestedInput
   }
 
   export type RequestUncheckedUpdateManyWithoutCategoryInput = {
@@ -35730,54 +21093,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type RequestDraftUpdateWithoutCategoryInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    buyerId?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    budgetMin?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    budgetMax?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationLat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationLng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    autoSaveData?: JsonNullValueInput | InputJsonValue
-    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type RequestDraftUncheckedUpdateWithoutCategoryInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    buyerId?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    budgetMin?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    budgetMax?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationLat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationLng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    autoSaveData?: JsonNullValueInput | InputJsonValue
-    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type RequestDraftUncheckedUpdateManyWithoutCategoryInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    buyerId?: StringFieldUpdateOperationsInput | string
-    title?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    budgetMin?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    budgetMax?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationLat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationLng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    locationAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    autoSaveData?: JsonNullValueInput | InputJsonValue
-    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
   export type RequestImageCreateManyRequestInput = {
     id?: string
     imageUrl: string
@@ -35789,15 +21104,6 @@ export namespace Prisma {
     height?: number | null
     sortOrder?: number
     isPrimary?: boolean
-    createdAt?: Date | string
-  }
-
-  export type RequestExtensionCreateManyRequestInput = {
-    id?: string
-    originalExpiresAt: Date | string
-    newExpiresAt: Date | string
-    extensionReason?: string | null
-    extendedBy?: string | null
     createdAt?: Date | string
   }
 
@@ -35843,325 +21149,84 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type RequestExtensionUpdateWithoutRequestInput = {
+  export type ReviewCreateManyBidInput = {
+    id?: string
+    requestId: string
+    reviewerId: string
+    revieweeId: string
+    type: $Enums.ReviewType
+    rating: number
+    comment?: string | null
+    createdAt?: Date | string
+  }
+
+  export type ReviewUpdateWithoutBidInput = {
     id?: StringFieldUpdateOperationsInput | string
-    originalExpiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    newExpiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
-    extendedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    requestId?: StringFieldUpdateOperationsInput | string
+    reviewerId?: StringFieldUpdateOperationsInput | string
+    revieweeId?: StringFieldUpdateOperationsInput | string
+    type?: EnumReviewTypeFieldUpdateOperationsInput | $Enums.ReviewType
+    rating?: IntFieldUpdateOperationsInput | number
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type RequestExtensionUncheckedUpdateWithoutRequestInput = {
+  export type ReviewUncheckedUpdateWithoutBidInput = {
     id?: StringFieldUpdateOperationsInput | string
-    originalExpiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    newExpiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
-    extendedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    requestId?: StringFieldUpdateOperationsInput | string
+    reviewerId?: StringFieldUpdateOperationsInput | string
+    revieweeId?: StringFieldUpdateOperationsInput | string
+    type?: EnumReviewTypeFieldUpdateOperationsInput | $Enums.ReviewType
+    rating?: IntFieldUpdateOperationsInput | number
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type RequestExtensionUncheckedUpdateManyWithoutRequestInput = {
+  export type ReviewUncheckedUpdateManyWithoutBidInput = {
     id?: StringFieldUpdateOperationsInput | string
-    originalExpiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    newExpiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
-    extendedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    requestId?: StringFieldUpdateOperationsInput | string
+    reviewerId?: StringFieldUpdateOperationsInput | string
+    revieweeId?: StringFieldUpdateOperationsInput | string
+    type?: EnumReviewTypeFieldUpdateOperationsInput | $Enums.ReviewType
+    rating?: IntFieldUpdateOperationsInput | number
+    comment?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type ChatParticipantCreateManyRoomInput = {
+  export type ChatRoomParticipantCreateManyRoomInput = {
     id?: string
     userId: string
-    role?: $Enums.ParticipantRole
-    joinedAt?: Date | string
+    role?: string
     lastReadAt?: Date | string | null
-    isMuted?: boolean
-    isBanned?: boolean
-    bannedUntil?: Date | string | null
-    bannedBy?: string | null
-    bannedReason?: string | null
+    joinedAt?: Date | string
     leftAt?: Date | string | null
   }
 
-  export type ChatParticipantUpdateWithoutRoomInput = {
+  export type ChatRoomParticipantUpdateWithoutRoomInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    role?: EnumParticipantRoleFieldUpdateOperationsInput | $Enums.ParticipantRole
-    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: StringFieldUpdateOperationsInput | string
     lastReadAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    isMuted?: BoolFieldUpdateOperationsInput | boolean
-    isBanned?: BoolFieldUpdateOperationsInput | boolean
-    bannedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    bannedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    bannedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     leftAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
-  export type ChatParticipantUncheckedUpdateWithoutRoomInput = {
+  export type ChatRoomParticipantUncheckedUpdateWithoutRoomInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    role?: EnumParticipantRoleFieldUpdateOperationsInput | $Enums.ParticipantRole
-    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: StringFieldUpdateOperationsInput | string
     lastReadAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    isMuted?: BoolFieldUpdateOperationsInput | boolean
-    isBanned?: BoolFieldUpdateOperationsInput | boolean
-    bannedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    bannedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    bannedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     leftAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
-  export type ChatParticipantUncheckedUpdateManyWithoutRoomInput = {
+  export type ChatRoomParticipantUncheckedUpdateManyWithoutRoomInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: StringFieldUpdateOperationsInput | string
-    role?: EnumParticipantRoleFieldUpdateOperationsInput | $Enums.ParticipantRole
-    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: StringFieldUpdateOperationsInput | string
     lastReadAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    isMuted?: BoolFieldUpdateOperationsInput | boolean
-    isBanned?: BoolFieldUpdateOperationsInput | boolean
-    bannedUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    bannedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    bannedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     leftAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  }
-
-  export type NotificationCreateManyTemplateInput = {
-    id?: string
-    userId: string
-    type: $Enums.NotificationType
-    title: string
-    content: string
-    channel?: $Enums.NotifChannel
-    priority?: $Enums.NotificationPriority
-    status?: $Enums.NotificationStatus
-    templateVariables?: JsonNullValueInput | InputJsonValue
-    metadata?: JsonNullValueInput | InputJsonValue
-    scheduledAt?: Date | string | null
-    sentAt?: Date | string | null
-    deliveredAt?: Date | string | null
-    readAt?: Date | string | null
-    expiresAt?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type NotificationUpdateWithoutTemplateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
-    title?: StringFieldUpdateOperationsInput | string
-    content?: StringFieldUpdateOperationsInput | string
-    channel?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    priority?: EnumNotificationPriorityFieldUpdateOperationsInput | $Enums.NotificationPriority
-    status?: EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
-    templateVariables?: JsonNullValueInput | InputJsonValue
-    metadata?: JsonNullValueInput | InputJsonValue
-    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    deliveries?: NotificationDeliveryUpdateManyWithoutNotificationNestedInput
-    reads?: NotificationReadUpdateManyWithoutNotificationNestedInput
-    analytics?: NotificationStatUpdateManyWithoutNotificationNestedInput
-  }
-
-  export type NotificationUncheckedUpdateWithoutTemplateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
-    title?: StringFieldUpdateOperationsInput | string
-    content?: StringFieldUpdateOperationsInput | string
-    channel?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    priority?: EnumNotificationPriorityFieldUpdateOperationsInput | $Enums.NotificationPriority
-    status?: EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
-    templateVariables?: JsonNullValueInput | InputJsonValue
-    metadata?: JsonNullValueInput | InputJsonValue
-    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    deliveries?: NotificationDeliveryUncheckedUpdateManyWithoutNotificationNestedInput
-    reads?: NotificationReadUncheckedUpdateManyWithoutNotificationNestedInput
-    analytics?: NotificationStatUncheckedUpdateManyWithoutNotificationNestedInput
-  }
-
-  export type NotificationUncheckedUpdateManyWithoutTemplateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
-    title?: StringFieldUpdateOperationsInput | string
-    content?: StringFieldUpdateOperationsInput | string
-    channel?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    priority?: EnumNotificationPriorityFieldUpdateOperationsInput | $Enums.NotificationPriority
-    status?: EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
-    templateVariables?: JsonNullValueInput | InputJsonValue
-    metadata?: JsonNullValueInput | InputJsonValue
-    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationDeliveryCreateManyNotificationInput = {
-    id?: string
-    channelType: $Enums.NotifChannel
-    provider: string
-    recipient: string
-    status?: $Enums.NotifDeliveryStatus
-    attemptCount?: number
-    sentAt?: Date | string | null
-    deliveredAt?: Date | string | null
-    errorMessage?: string | null
-    errorCode?: string | null
-    metadata?: JsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-  }
-
-  export type NotificationReadCreateManyNotificationInput = {
-    id?: string
-    userId: string
-    readAt?: Date | string
-    deviceFingerprint?: string | null
-    ipAddress?: string | null
-    userAgent?: string | null
-    createdAt?: Date | string
-  }
-
-  export type NotificationStatCreateManyNotificationInput = {
-    id?: string
-    userId?: string | null
-    eventType: $Enums.NotifAnalyticsEvent
-    channelType: $Enums.NotifChannel
-    provider?: string | null
-    deliveryTimeMs?: number | null
-    success: boolean
-    errorCode?: string | null
-    metadata?: JsonNullValueInput | InputJsonValue
-    createdAt?: Date | string
-  }
-
-  export type NotificationDeliveryUpdateWithoutNotificationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    channelType?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    provider?: StringFieldUpdateOperationsInput | string
-    recipient?: StringFieldUpdateOperationsInput | string
-    status?: EnumNotifDeliveryStatusFieldUpdateOperationsInput | $Enums.NotifDeliveryStatus
-    attemptCount?: IntFieldUpdateOperationsInput | number
-    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
-    errorCode?: NullableStringFieldUpdateOperationsInput | string | null
-    metadata?: JsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationDeliveryUncheckedUpdateWithoutNotificationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    channelType?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    provider?: StringFieldUpdateOperationsInput | string
-    recipient?: StringFieldUpdateOperationsInput | string
-    status?: EnumNotifDeliveryStatusFieldUpdateOperationsInput | $Enums.NotifDeliveryStatus
-    attemptCount?: IntFieldUpdateOperationsInput | number
-    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
-    errorCode?: NullableStringFieldUpdateOperationsInput | string | null
-    metadata?: JsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationDeliveryUncheckedUpdateManyWithoutNotificationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    channelType?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    provider?: StringFieldUpdateOperationsInput | string
-    recipient?: StringFieldUpdateOperationsInput | string
-    status?: EnumNotifDeliveryStatusFieldUpdateOperationsInput | $Enums.NotifDeliveryStatus
-    attemptCount?: IntFieldUpdateOperationsInput | number
-    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
-    errorCode?: NullableStringFieldUpdateOperationsInput | string | null
-    metadata?: JsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationReadUpdateWithoutNotificationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    readAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    deviceFingerprint?: NullableStringFieldUpdateOperationsInput | string | null
-    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationReadUncheckedUpdateWithoutNotificationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    readAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    deviceFingerprint?: NullableStringFieldUpdateOperationsInput | string | null
-    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationReadUncheckedUpdateManyWithoutNotificationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
-    readAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    deviceFingerprint?: NullableStringFieldUpdateOperationsInput | string | null
-    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
-    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationStatUpdateWithoutNotificationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: NullableStringFieldUpdateOperationsInput | string | null
-    eventType?: EnumNotifAnalyticsEventFieldUpdateOperationsInput | $Enums.NotifAnalyticsEvent
-    channelType?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    provider?: NullableStringFieldUpdateOperationsInput | string | null
-    deliveryTimeMs?: NullableIntFieldUpdateOperationsInput | number | null
-    success?: BoolFieldUpdateOperationsInput | boolean
-    errorCode?: NullableStringFieldUpdateOperationsInput | string | null
-    metadata?: JsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationStatUncheckedUpdateWithoutNotificationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: NullableStringFieldUpdateOperationsInput | string | null
-    eventType?: EnumNotifAnalyticsEventFieldUpdateOperationsInput | $Enums.NotifAnalyticsEvent
-    channelType?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    provider?: NullableStringFieldUpdateOperationsInput | string | null
-    deliveryTimeMs?: NullableIntFieldUpdateOperationsInput | number | null
-    success?: BoolFieldUpdateOperationsInput | boolean
-    errorCode?: NullableStringFieldUpdateOperationsInput | string | null
-    metadata?: JsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationStatUncheckedUpdateManyWithoutNotificationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    userId?: NullableStringFieldUpdateOperationsInput | string | null
-    eventType?: EnumNotifAnalyticsEventFieldUpdateOperationsInput | $Enums.NotifAnalyticsEvent
-    channelType?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
-    provider?: NullableStringFieldUpdateOperationsInput | string | null
-    deliveryTimeMs?: NullableIntFieldUpdateOperationsInput | number | null
-    success?: BoolFieldUpdateOperationsInput | boolean
-    errorCode?: NullableStringFieldUpdateOperationsInput | string | null
-    metadata?: JsonNullValueInput | InputJsonValue
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 
@@ -36182,17 +21247,13 @@ export namespace Prisma {
      */
     export type RequestCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = RequestCountOutputTypeDefaultArgs<ExtArgs>
     /**
+     * @deprecated Use BidCountOutputTypeDefaultArgs instead
+     */
+    export type BidCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = BidCountOutputTypeDefaultArgs<ExtArgs>
+    /**
      * @deprecated Use ChatRoomCountOutputTypeDefaultArgs instead
      */
     export type ChatRoomCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ChatRoomCountOutputTypeDefaultArgs<ExtArgs>
-    /**
-     * @deprecated Use NotificationTemplateCountOutputTypeDefaultArgs instead
-     */
-    export type NotificationTemplateCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = NotificationTemplateCountOutputTypeDefaultArgs<ExtArgs>
-    /**
-     * @deprecated Use NotificationCountOutputTypeDefaultArgs instead
-     */
-    export type NotificationCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = NotificationCountOutputTypeDefaultArgs<ExtArgs>
     /**
      * @deprecated Use UserDefaultArgs instead
      */
@@ -36218,18 +21279,6 @@ export namespace Prisma {
      */
     export type RequestImageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = RequestImageDefaultArgs<ExtArgs>
     /**
-     * @deprecated Use RequestDraftDefaultArgs instead
-     */
-    export type RequestDraftArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = RequestDraftDefaultArgs<ExtArgs>
-    /**
-     * @deprecated Use RequestExtensionDefaultArgs instead
-     */
-    export type RequestExtensionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = RequestExtensionDefaultArgs<ExtArgs>
-    /**
-     * @deprecated Use RequestSearchIndexDefaultArgs instead
-     */
-    export type RequestSearchIndexArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = RequestSearchIndexDefaultArgs<ExtArgs>
-    /**
      * @deprecated Use SavedSearchDefaultArgs instead
      */
     export type SavedSearchArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = SavedSearchDefaultArgs<ExtArgs>
@@ -36242,41 +21291,17 @@ export namespace Prisma {
      */
     export type ChatRoomArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ChatRoomDefaultArgs<ExtArgs>
     /**
-     * @deprecated Use ChatParticipantDefaultArgs instead
+     * @deprecated Use ChatRoomParticipantDefaultArgs instead
      */
-    export type ChatParticipantArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ChatParticipantDefaultArgs<ExtArgs>
-    /**
-     * @deprecated Use NotificationTemplateDefaultArgs instead
-     */
-    export type NotificationTemplateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = NotificationTemplateDefaultArgs<ExtArgs>
+    export type ChatRoomParticipantArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ChatRoomParticipantDefaultArgs<ExtArgs>
     /**
      * @deprecated Use NotificationDefaultArgs instead
      */
     export type NotificationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = NotificationDefaultArgs<ExtArgs>
     /**
-     * @deprecated Use NotificationChannelDefaultArgs instead
+     * @deprecated Use ReviewDefaultArgs instead
      */
-    export type NotificationChannelArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = NotificationChannelDefaultArgs<ExtArgs>
-    /**
-     * @deprecated Use NotificationPreferenceDefaultArgs instead
-     */
-    export type NotificationPreferenceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = NotificationPreferenceDefaultArgs<ExtArgs>
-    /**
-     * @deprecated Use NotificationDeliveryDefaultArgs instead
-     */
-    export type NotificationDeliveryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = NotificationDeliveryDefaultArgs<ExtArgs>
-    /**
-     * @deprecated Use NotificationReadDefaultArgs instead
-     */
-    export type NotificationReadArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = NotificationReadDefaultArgs<ExtArgs>
-    /**
-     * @deprecated Use NotificationStatDefaultArgs instead
-     */
-    export type NotificationStatArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = NotificationStatDefaultArgs<ExtArgs>
-    /**
-     * @deprecated Use BidTemplateDefaultArgs instead
-     */
-    export type BidTemplateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = BidTemplateDefaultArgs<ExtArgs>
+    export type ReviewArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ReviewDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

@@ -40,10 +40,10 @@ router.post('/bids/:id/accept', authenticate, requireRole('BUYER'), bidControlle
 // Reject a single bid (BUYER only)
 router.post('/bids/:id/reject', authenticate, requireRole('BUYER'), bidController.rejectBid);
 
-// ─── Templates (MERCHANT only) ────────────────────────────────────────────
+// Confirm delivery (BUYER only)
+router.post('/bids/:id/confirm', authenticate, requireRole('BUYER'), bidController.confirmDelivery);
 
-router.post('/templates', authenticate, requireRole('MERCHANT'), bidController.createTemplate);
-router.get('/templates', authenticate, requireRole('MERCHANT'), bidController.getTemplates);
-router.delete('/templates/:id', authenticate, requireRole('MERCHANT'), bidController.deleteTemplate);
+// Update fulfillment status (MERCHANT only)
+router.patch('/bids/:id/fulfillment', authenticate, requireRole('MERCHANT'), bidController.updateFulfillmentStatus);
 
 module.exports = router;

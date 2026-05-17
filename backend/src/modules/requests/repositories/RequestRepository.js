@@ -91,7 +91,6 @@ const RequestRepository = {
     const fieldMap = {
       priority_score: 'priorityScore',
       created_at: 'createdAt',
-      expires_at: 'expiresAt',
       budget_max: 'budgetMax',
     };
 
@@ -132,15 +131,6 @@ const RequestRepository = {
     return prisma.request.update({
       where: { id },
       data: { bidCount: { increment: 1 } },
-    });
-  },
-
-  async findExpired() {
-    return prisma.request.findMany({
-      where: {
-        status: { in: ['ACTIVE', 'HAS_BIDS'] },
-        expiresAt: { lt: new Date() },
-      },
     });
   },
 

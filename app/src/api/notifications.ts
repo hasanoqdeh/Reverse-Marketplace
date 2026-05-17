@@ -18,17 +18,30 @@ async function request<T>(method: string, path: string, body?: object): Promise<
   return data as T;
 }
 
+export type NotificationType =
+  | 'NEW_MESSAGE'
+  | 'BID_PLACED'
+  | 'STATUS_IN_DELIVERY'
+  | 'BID_ACCEPTED'
+  | 'BUYER_REVIEW';
+
+export interface NotificationData {
+  chatRoomId?: string;
+  roomName?: string;
+  requestId?: string;
+  requestTitle?: string;
+  bidId?: string;
+  merchantId?: string;
+}
+
 export interface NotificationItem {
   id: string;
   userId: string;
-  type: 'SYSTEM' | 'REQUEST' | 'BID' | 'PAYMENT' | 'CHAT' | 'SUBSCRIPTION' | 'SECURITY' | 'MARKETING';
+  type: NotificationType;
   title: string;
-  content: string;
-  channel: 'IN_APP' | 'PUSH' | 'EMAIL' | 'SMS' | 'WEBHOOK';
-  priority: 'LOW' | 'NORMAL' | 'HIGH' | 'URGENT';
-  status: 'PENDING' | 'PROCESSING' | 'SENT' | 'DELIVERED' | 'FAILED' | 'EXPIRED' | 'READ';
-  metadata: Record<string, unknown>;
-  readAt: string | null;
+  body: string;
+  data: NotificationData;
+  isRead: boolean;
   createdAt: string;
 }
 
@@ -52,13 +65,3 @@ export const markAllNotificationsRead = () =>
 
 export const deleteNotification = (id: string) =>
   request<{ success: boolean }>('DELETE', `/notifications/${id}`);
-
-export const getNotificationPreferences = () =>
-  request<{ success: boolean; preferences: unknown[] }>('GET', '/notifications/preferences');
-
-export const updateNotificationPreferences = (preferences: unknown[]) =>
-  request<{ success: boolean }>('PUT', '/notifications/preferences', { preferences });
-
-export const registerDeviceChannel = (payload: {
-  channelType: string; deviceToken?: string; emailAddress?: string; phoneNumber?: string; isEnabled?: boolean;
-}) => request<{ success: boolean }>('POST', '/notifications/channel', payload);

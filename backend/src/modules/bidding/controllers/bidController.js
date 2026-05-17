@@ -178,51 +178,51 @@ const bidController = {
     }
   },
 
-  // ─── Templates ───────────────────────────────────────────────
+  // ─── Fulfillment ─────────────────────────────────────────────
 
-  async createTemplate(req, res) {
-    try {
-      const merchantId = req.user.id;
-      const result = await bidService.createTemplate(merchantId, req.body);
-
-      if (result.error) {
-        return res.status(422).json({ success: false, message: result.message, error: result.error });
-      }
-
-      res.status(201).json({ success: true, templateId: result.template.id, message: 'Template created' });
-    } catch (err) {
-      logger.error('createTemplate error', { error: err.message });
-      res.status(500).json({ success: false, message: 'Internal server error', error: 'INTERNAL_ERROR' });
-    }
-  },
-
-  async getTemplates(req, res) {
-    try {
-      const merchantId = req.user.id;
-      const result = await bidService.getTemplates(merchantId);
-      res.json({ success: true, templates: result.templates });
-    } catch (err) {
-      logger.error('getTemplates error', { error: err.message });
-      res.status(500).json({ success: false, message: 'Internal server error', error: 'INTERNAL_ERROR' });
-    }
-  },
-
-  async deleteTemplate(req, res) {
+  async updateFulfillmentStatus(req, res) {
     try {
       const { id } = req.params;
       const merchantId = req.user.id;
-      const result = await bidService.deleteTemplate(id, merchantId);
+      const { status } = req.body;
 
-      if (result.error) {
-        return res.status(404).json({ success: false, message: result.message, error: result.error });
+      const VALID = ['PREPARING', 'IN_DELIVERY', 'DELIVERED'];
+      if (!VALID.includes(status)) {
+        return res.status(422).json({ success: false, message: `Status must be one of: ${VALID.join(', ')}`, error: 'VALIDATION_ERROR' });
       }
 
-      res.json({ success: true, message: 'Template deleted' });
+      const result = await bidService.updateFulfillmentStatus(id, merchantId, status);
+
+      if (result.error) {
+        const statusMap = { NOT_FOUND: 404, INVALID_STATUS: 422, INVALID_TRANSITION: 422 };
+        return res.status(statusMap[result.error] || 400).json({ success: false, message: result.message, error: result.error });
+      }
+
+      res.json({ success: true, bid: result.bid, message: 'Fulfillment status updated' });
     } catch (err) {
-      logger.error('deleteTemplate error', { error: err.message });
+      logger.error('updateFulfillmentStatus error', { error: err.message });
       res.status(500).json({ success: false, message: 'Internal server error', error: 'INTERNAL_ERROR' });
     }
   },
+
+  async confirmDelivery(req, res) {
+    try {
+      const { id } = req.params;
+      const buyerId = req.user.id;
+      const result = await bidService.confirmDelivery(id, buyerId);
+
+      if (result.error) {
+        const statusMap = { NOT_FOUND: 404, FORBIDDEN: 403, INVALID_STATUS: 422 };
+        return res.status(statusMap[result.error] || 400).json({ success: false, message: result.message, error: result.error });
+      }
+
+      res.json({ success: true, message: 'Delivery confirmed', bidId: result.bidId, merchantId: result.merchantId });
+    } catch (err) {
+      logger.error('confirmDelivery error', { error: err.message });
+      res.status(500).json({ success: false, message: 'Internal server error', error: 'INTERNAL_ERROR' });
+    }
+  },
+
 };
 
 module.exports = bidController;

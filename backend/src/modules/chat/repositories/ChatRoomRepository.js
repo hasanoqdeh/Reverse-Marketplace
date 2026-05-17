@@ -3,8 +3,12 @@
 const prisma = require('../../../prisma/client');
 const ChatMessageRepository = require('./ChatMessageRepository');
 
+const INCLUDE_PARTICIPANTS = { participants: { where: { leftAt: null } } };
+
 const ChatRoomRepository = {
   async create({ name, description, type, relatedRequestId, relatedBidId, createdBy, participantIds = [] }) {
+    const uniqueIds = [...new Set([createdBy, ...participantIds])];
+
     return prisma.chatRoom.create({
       data: {
         name,
@@ -14,27 +18,20 @@ const ChatRoomRepository = {
         relatedBidId: relatedBidId || null,
         createdBy,
         participants: {
-          create: [
-            { userId: createdBy, role: 'OWNER' },
-            ...participantIds
-              .filter(id => id !== createdBy)
-              .map(id => ({ userId: id, role: 'MEMBER' })),
-          ],
+          create: uniqueIds.map((uid, i) => ({
+            userId: uid,
+            role: i === 0 ? 'OWNER' : 'MEMBER',
+          })),
         },
       },
-      include: { participants: true },
+      include: INCLUDE_PARTICIPANTS,
     });
   },
 
   async findById(id) {
     const room = await prisma.chatRoom.findUnique({
       where: { id },
-      include: {
-        participants: {
-          where: { leftAt: null, isBanned: false },
-          select: { userId: true, role: true, joinedAt: true, lastReadAt: true, isMuted: true },
-        },
-      },
+      include: INCLUDE_PARTICIPANTS,
     });
     if (!room) return null;
     const messageCount = await ChatMessageRepository.countByRoom(id).catch(() => 0);
@@ -51,16 +48,10 @@ const ChatRoomRepository = {
     const [rooms, total] = await Promise.all([
       prisma.chatRoom.findMany({
         where,
+        include: INCLUDE_PARTICIPANTS,
         orderBy: { lastMessageAt: { sort: 'desc', nulls: 'last' } },
         skip: (page - 1) * limit,
         take: limit,
-        include: {
-          participants: {
-            where: { leftAt: null },
-            select: { userId: true, role: true, lastReadAt: true },
-          },
-          _count: { select: { participants: { where: { leftAt: null } } } },
-        },
       }),
       prisma.chatRoom.count({ where }),
     ]);
@@ -78,16 +69,10 @@ const ChatRoomRepository = {
     const [rooms, total] = await Promise.all([
       prisma.chatRoom.findMany({
         where,
+        include: INCLUDE_PARTICIPANTS,
         orderBy: { lastMessageAt: { sort: 'desc', nulls: 'last' } },
         skip: (page - 1) * limit,
         take: limit,
-        include: {
-          _count: {
-            select: {
-              participants: { where: { leftAt: null } },
-            },
-          },
-        },
       }),
       prisma.chatRoom.count({ where }),
     ]);
@@ -96,35 +81,35 @@ const ChatRoomRepository = {
   },
 
   async isParticipant(roomId, userId) {
-    const p = await prisma.chatParticipant.findUnique({
-      where: { roomId_userId: { roomId, userId } },
+    const p = await prisma.chatRoomParticipant.findFirst({
+      where: { roomId, userId, leftAt: null },
     });
-    return p && !p.leftAt && !p.isBanned;
+    return p !== null;
   },
 
   async getParticipant(roomId, userId) {
-    return prisma.chatParticipant.findUnique({
-      where: { roomId_userId: { roomId, userId } },
+    return prisma.chatRoomParticipant.findFirst({
+      where: { roomId, userId, leftAt: null },
     });
   },
 
   async addParticipant(roomId, userId, role = 'MEMBER') {
-    return prisma.chatParticipant.upsert({
+    return prisma.chatRoomParticipant.upsert({
       where: { roomId_userId: { roomId, userId } },
+      update: { leftAt: null, role },
       create: { roomId, userId, role },
-      update: { leftAt: null, isBanned: false, role },
     });
   },
 
   async removeParticipant(roomId, userId) {
-    return prisma.chatParticipant.updateMany({
+    return prisma.chatRoomParticipant.updateMany({
       where: { roomId, userId },
       data: { leftAt: new Date() },
     });
   },
 
   async updateLastRead(roomId, userId) {
-    return prisma.chatParticipant.updateMany({
+    return prisma.chatRoomParticipant.updateMany({
       where: { roomId, userId },
       data: { lastReadAt: new Date() },
     });
@@ -140,12 +125,14 @@ const ChatRoomRepository = {
   async findByRequestId(requestId) {
     return prisma.chatRoom.findFirst({
       where: { relatedRequestId: requestId, isActive: true },
+      include: INCLUDE_PARTICIPANTS,
     });
   },
 
   async findByBidId(bidId) {
     return prisma.chatRoom.findFirst({
       where: { relatedBidId: bidId, isActive: true },
+      include: INCLUDE_PARTICIPANTS,
     });
   },
 

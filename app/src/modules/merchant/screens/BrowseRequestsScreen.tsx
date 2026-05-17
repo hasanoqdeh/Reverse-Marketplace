@@ -9,12 +9,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../../types/navigation';
 import {MarketRequest} from '../../../types/api';
 import {searchRequests} from '../../../api/requests';
+import AppHeader from '../../../components/AppHeader';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -145,12 +145,8 @@ export default function BrowseRequestsScreen() {
     : requests;
 
   return (
-    <SafeAreaView style={styles.safe}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Available Requests</Text>
-        <Text style={styles.subtitle}>Browse and bid on buyer requests</Text>
-      </View>
+    <View style={styles.safe}>
+      <AppHeader accentColor={ACCENT} />
 
       {/* Search */}
       <View style={styles.searchWrap}>
@@ -221,7 +217,7 @@ export default function BrowseRequestsScreen() {
           }
         />
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -246,12 +242,6 @@ const card = StyleSheet.create({
 
 const styles = StyleSheet.create({
   safe: {flex: 1, backgroundColor: '#F9FAFB'},
-  header: {
-    backgroundColor: '#FFFFFF', paddingHorizontal: 20, paddingTop: 16, paddingBottom: 12,
-    borderBottomWidth: 1, borderBottomColor: '#E5E7EB',
-  },
-  title: {fontSize: 22, fontWeight: '700', color: '#111827'},
-  subtitle: {fontSize: 13, color: '#6B7280', marginTop: 2},
   searchWrap: {
     flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFFFFF',
     marginHorizontal: 14, marginTop: 12, marginBottom: 4,

@@ -20,6 +20,9 @@ const config = {
     ],
   },
   watchFolders: [path.resolve(__dirname, 'src')],
+  resolver: {
+    assetExts: ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'ttf', 'otf', 'mp3', 'mp4', 'wav'],
+  },
 };
 
 module.exports = mergeConfig(getDefaultConfig(__dirname), config);

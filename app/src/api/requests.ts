@@ -6,26 +6,28 @@ export async function getCategories(): Promise<RequestCategory[]> {
   return res.data.categories ?? [];
 }
 
-export async function createDraft(data: {
-  categoryId?: string;
-  title?: string;
-  description?: string;
-  budgetMin?: number;
-  budgetMax?: number;
-}): Promise<{draftId: string; expiresAt: string}> {
-  const res = await apiClient.post('/requests/draft', data);
-  return res.data;
-}
-
 export async function publishRequest(data: {
   title: string;
   description: string;
-  categoryId: string;
+  categoryId?: string;
   budgetMin?: number;
   budgetMax?: number;
-  expiresInDays?: number;
-}): Promise<{requestId: string; publishedAt: string; expiresAt: string}> {
+}): Promise<{requestId: string; publishedAt: string}> {
   const res = await apiClient.post('/requests/publish', data);
+  return res.data;
+}
+
+export async function uploadRequestImage(
+  requestId: string,
+  uri: string,
+  type: string,
+  name: string,
+): Promise<{imageId: string; imageUrl: string}> {
+  const form = new FormData();
+  form.append('image', {uri, type, name} as any);
+  const res = await apiClient.post(`/requests/${requestId}/images`, form, {
+    headers: {'Content-Type': 'multipart/form-data'},
+  });
   return res.data;
 }
 
@@ -36,11 +38,6 @@ export async function getMyRequests(params?: {
 }): Promise<{requests: MarketRequest[]; pagination: PaginationMeta}> {
   const res = await apiClient.get('/requests/me/requests', {params});
   return res.data;
-}
-
-export async function getMyDrafts(): Promise<any[]> {
-  const res = await apiClient.get('/requests/me/drafts');
-  return res.data.drafts ?? [];
 }
 
 export async function getRequest(id: string): Promise<MarketRequest> {
@@ -64,12 +61,4 @@ export async function searchRequests(params?: {
 
 export async function cancelRequest(id: string, reason?: string): Promise<void> {
   await apiClient.post(`/requests/${id}/cancel`, {reason});
-}
-
-export async function extendRequest(
-  id: string,
-  reason?: string,
-): Promise<{newExpiresAt: string}> {
-  const res = await apiClient.post(`/requests/${id}/extend`, {reason});
-  return res.data;
 }

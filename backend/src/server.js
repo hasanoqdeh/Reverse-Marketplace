@@ -1,6 +1,7 @@
 'use strict';
 
 const http = require('http');
+const path = require('path');
 const { Server: SocketIOServer } = require('socket.io');
 const express = require('express');
 const cors = require('cors');
@@ -65,6 +66,9 @@ app.use('/api', limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+// Static file serving for uploaded chat media
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
@@ -84,6 +88,7 @@ const chatAdminRoutes = require('./modules/chat/routes/admin');
 const { initChatSocket } = require('./modules/chat/socket/chatSocket');
 const notificationRoutes = require('./modules/notifications/routes/notifications');
 const notificationAdminRoutes = require('./modules/notifications/routes/admin');
+const reviewRoutes = require('./modules/reviews/routes/reviews');
 
 // Import shared infrastructure
 const database = require('./database/connection');
@@ -91,6 +96,7 @@ const mongo = require('./database/mongo');
 const redisClient = require('./cache/redis');
 const eventPublisher = require('./events/publisher');
 const analyticsSubscriber = require('./modules/analytics/subscriber');
+const notificationConsumer = require('./modules/notifications/consumer');
 
 // Mount identity routes
 app.use('/api/v1/identity/auth', authRoutes);
@@ -115,6 +121,9 @@ app.use('/api/v1/chat', chatRoutes);
 // Mount notification routes (admin before public)
 app.use('/api/v1/notifications/admin', notificationAdminRoutes);
 app.use('/api/v1/notifications', notificationRoutes);
+
+// Mount reviews + merchant profile routes
+app.use('/api/v1/reviews', reviewRoutes);
 
 // API Routes
 app.get('/api/v1', (req, res) => {
@@ -222,6 +231,13 @@ const startServer = async () => {
     console.log('Analytics subscriber ready');
   } catch (err) {
     console.error('WARNING: Failed to start analytics subscriber:', err.message);
+  }
+
+  try {
+    await notificationConsumer.connect(io);
+    console.log('Notification consumer ready');
+  } catch (err) {
+    console.error('WARNING: Failed to start notification consumer:', err.message);
   }
 
   httpServer.listen(PORT, () => {

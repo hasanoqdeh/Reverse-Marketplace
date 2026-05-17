@@ -137,9 +137,9 @@ const publisher = {
 
   // ─── Request convenience publishers ───────────────────────────
 
-  async requestCreated(requestId, buyerId, categoryId, title, publishedAt, expiresAt) {
+  async requestCreated(requestId, buyerId, categoryId, title, publishedAt) {
     return this.publish('request.created', {
-      requestId, buyerId, categoryId, title, publishedAt, expiresAt,
+      requestId, buyerId, categoryId, title, publishedAt,
     }, { userId: buyerId, requestId });
   },
 
@@ -166,22 +166,6 @@ const publisher = {
     return this.publish('request.completed', {
       requestId, buyerId, acceptedBidId, merchantId,
       completedAt: new Date().toISOString(), finalAmount,
-    }, { userId: buyerId, requestId });
-  },
-
-  async requestExpired(requestId, buyerId) {
-    return this.publish('request.expired', {
-      requestId, buyerId, expiredAt: new Date().toISOString(),
-    }, { userId: buyerId, requestId });
-  },
-
-  async requestExtended(requestId, buyerId, originalExpiresAt, newExpiresAt, reason) {
-    return this.publish('request.extended', {
-      requestId, buyerId,
-      originalExpiresAt: originalExpiresAt instanceof Date ? originalExpiresAt.toISOString() : originalExpiresAt,
-      newExpiresAt: newExpiresAt instanceof Date ? newExpiresAt.toISOString() : newExpiresAt,
-      reason: reason || null,
-      extendedAt: new Date().toISOString(),
     }, { userId: buyerId, requestId });
   },
 
@@ -259,6 +243,31 @@ const publisher = {
       notificationId, userId, channel, provider,
       deliveredAt: deliveredAt instanceof Date ? deliveredAt.toISOString() : deliveredAt,
     }, { userId });
+  },
+
+  // ─── Fulfillment convenience publishers ──────────────────────
+
+  async bidFulfillmentUpdated(bidId, merchantId, oldStatus, newStatus) {
+    return this.publish('bid.fulfillment.updated', {
+      bidId, merchantId, oldStatus, newStatus,
+      updatedAt: new Date().toISOString(),
+    }, { userId: merchantId });
+  },
+
+  async bidDeliveryConfirmed(bidId, buyerId, merchantId) {
+    return this.publish('bid.delivery.confirmed', {
+      bidId, buyerId, merchantId,
+      confirmedAt: new Date().toISOString(),
+    }, { userId: buyerId });
+  },
+
+  // ─── Review convenience publishers ───────────────────────────
+
+  async reviewCreated(reviewId, bidId, reviewerId, revieweeId, rating, type) {
+    return this.publish('review.created', {
+      reviewId, bidId, reviewerId, revieweeId, rating, type,
+      createdAt: new Date().toISOString(),
+    }, { userId: reviewerId });
   },
 
   // ─── Admin convenience publishers ────────────────────────────

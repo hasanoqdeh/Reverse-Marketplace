@@ -24,21 +24,10 @@ async function truncatePostgres() {
   try {
     await client.query(`
       TRUNCATE TABLE
-        notification_analytics,
-        notification_reads,
-        notification_deliveries,
-        notification_preferences,
-        notification_channels,
         notifications,
-        notification_templates,
-        chat_participants,
         chat_rooms,
-        bid_templates,
         bids,
-        request_search_index,
         request_images,
-        request_extensions,
-        request_drafts,
         saved_searches,
         auth_tokens,
         requests,
