@@ -43,11 +43,6 @@ backend/
 npm install
 ```
 
-2. Setup environment variables:
-```bash
-cp .env.example .env
-# Edit .env with your configuration
-```
 
 3. Setup database:
 ```bash

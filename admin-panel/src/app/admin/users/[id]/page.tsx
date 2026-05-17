@@ -665,6 +665,7 @@ function Badge({ label, colorClass, border }: { label: string; colorClass: strin
 }
 
 function LogDetails({ details }: { details: Record<string, unknown> }) {
+  if (!details || typeof details !== 'object') return <span className="text-gray-300">—</span>
   const entries = Object.entries(details).filter(([, v]) => v !== null && v !== undefined)
   if (entries.length === 0) return <span className="text-gray-300">—</span>
   return (

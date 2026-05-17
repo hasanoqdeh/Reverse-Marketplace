@@ -312,7 +312,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/home/ubuntu/Desktop/Hass/Reverse Marketplace/backend/src/prisma/generated",
+      "value": "/app/src/prisma/generated",
       "fromEnvVar": null
     },
     "config": {
@@ -321,7 +321,7 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "debian-openssl-3.0.x",
+        "value": "linux-musl-openssl-3.0.x",
         "native": true
       },
       {
@@ -334,11 +334,12 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/home/ubuntu/Desktop/Hass/Reverse Marketplace/backend/src/prisma/schema.prisma",
+    "sourceFilePath": "/app/src/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null
+    "rootEnvPath": null,
+    "schemaEnvPath": "../../../.env"
   },
   "relativePath": "..",
   "clientVersion": "5.22.0",
