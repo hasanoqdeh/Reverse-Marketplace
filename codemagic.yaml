@@ -77,7 +77,9 @@ workflows:
 
       # 3. CocoaPods
       - name: Install CocoaPods
-        script: cd app/ios && pod install
+        script: |
+          pod cache clean boost --all 2>/dev/null || true
+          cd app/ios && pod install --repo-update
 
       # 4. Code signing
       - name: Set up code signing
