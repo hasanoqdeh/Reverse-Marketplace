@@ -11,6 +11,7 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
+    "@react-native-community/cli": "^11.3.6",
     "@react-native-async-storage/async-storage": "^1.19.3",
     "@react-native-community/cli": "^11.3.6",
     "@react-native-firebase/app": "^18.5.0",
@@ -43,6 +44,7 @@
     "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
+    "@react-native-community/cli": "^11.3.6",
     "@babel/core": "^7.20.0",
     "@babel/preset-env": "^7.20.0",
     "@babel/runtime": "^7.20.0",
