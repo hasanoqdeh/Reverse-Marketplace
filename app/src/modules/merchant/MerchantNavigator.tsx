@@ -7,16 +7,21 @@ import MyBidsScreen from './screens/MyBidsScreen';
 import ProfileScreen from '../../screens/profile/ProfileScreen';
 import ChatListScreen from '../../screens/chat/ChatListScreen';
 import NotificationsScreen from '../../screens/notifications/NotificationsScreen';
+import NotificationBell from '../../components/NotificationBell';
 import {MerchantTabParamList} from '../../types/navigation';
 
 const Tab = createBottomTabNavigator<MerchantTabParamList>();
 
 const ACCENT = '#16A34A';
 const INACTIVE = '#9CA3AF';
-const ICONS: Record<string, string> = {Dashboard: '⌂', Requests: '☰', MyBids: '⊙', Chat: '💬', Notifications: '🔔', Profile: '⊛'};
+const ICONS: Record<string, string> = {Dashboard: '⌂', Requests: '☰', MyBids: '⊙', Chat: '💬', Profile: '⊛'};
 
 function TabIcon({label, focused}: {label: string; focused: boolean}) {
-  return <Text style={{fontSize: 20, color: focused ? ACCENT : INACTIVE}}>{ICONS[label] ?? '●'}</Text>;
+  const color = focused ? ACCENT : INACTIVE;
+  if (label === 'Notifications') {
+    return <NotificationBell size={22} color={color} />;
+  }
+  return <Text style={{fontSize: 20, color}}>{ICONS[label] ?? '●'}</Text>;
 }
 
 export default function MerchantNavigator() {

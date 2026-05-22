@@ -7,6 +7,7 @@ const requestService = require('../services/requestService');
 const categoryService = require('../services/categoryService');
 const RequestImageRepository = require('../repositories/RequestImageRepository');
 const RequestRepository = require('../repositories/RequestRepository');
+const BidRepository = require('../../bidding/repositories/BidRepository');
 const config = require('../../../config');
 const logger = require('../../../utils/logger');
 
@@ -66,7 +67,12 @@ const requestController = {
       const request = await requestService.getRequest(id, viewerUserId, ip);
       if (!request) return res.status(404).json({ success: false, message: 'Request not found', error: 'NOT_FOUND' });
 
-      res.json({ success: true, request });
+      let merchantBid = null;
+      if (req.user?.role === 'MERCHANT') {
+        merchantBid = await BidRepository.findByRequestAndMerchant(id, req.user.id);
+      }
+
+      res.json({ success: true, request, merchantBid: merchantBid || null });
     } catch (err) {
       logger.error('getRequest error', { error: err.message });
       res.status(500).json({ success: false, message: 'Internal server error', error: 'INTERNAL_ERROR' });

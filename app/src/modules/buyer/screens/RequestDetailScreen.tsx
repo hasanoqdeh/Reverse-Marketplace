@@ -22,6 +22,7 @@ import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import io, {Socket} from 'socket.io-client';
+import {useFocusEffect} from '@react-navigation/native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../../types/navigation';
 import {Bid, ChatMessage, MarketRequest} from '../../../types/api';
@@ -118,6 +119,7 @@ export default function RequestDetailScreen({route, navigation}: Props) {
   const [marketAnalysis,  setMarketAnalysis]  = useState<{totalBids: number; lowestAmount: number | null; averageAmount: number | null} | null>(null);
   const [loading,         setLoading]         = useState(true);
   const [actionLoading,   setActionLoading]   = useState(false);
+  const [myMerchantBid,   setMyMerchantBid]   = useState<Bid | null>(null);
 
   // Sheet state
   const [sheetBid,   setSheetBid]   = useState<Bid | null>(null);
@@ -137,8 +139,12 @@ export default function RequestDetailScreen({route, navigation}: Props) {
 
   const load = useCallback(async () => {
     try {
-      const data = await getRequest(requestId);
+      const {request: data, merchantBid} = await getRequest(requestId);
       setRequest(data);
+      if (user?.role === 'MERCHANT') {
+        setMyMerchantBid(merchantBid);
+      }
+
       if (user?.id === data.buyerId && ['ACTIVE', 'HAS_BIDS', 'COMPLETED'].includes(data.status)) {
         const bidsRes = await getRequestBids(requestId, {limit: 50, sortBy: 'amount', sortOrder: 'asc'});
         setBids(bidsRes.bids);
@@ -162,7 +168,7 @@ export default function RequestDetailScreen({route, navigation}: Props) {
     }
   }, [requestId, navigation, user?.id]);
 
-  useEffect(() => { load(); }, [load]);
+  useFocusEffect(useCallback(() => { load(); }, [load]));
 
   const handleCancel = useCallback(() => {
     Alert.alert('Cancel Request', 'Are you sure?', [
@@ -286,16 +292,31 @@ export default function RequestDetailScreen({route, navigation}: Props) {
           )}
         </View>
 
-        {/* Merchant CTA */}
-        {!isBuyer && ['ACTIVE', 'HAS_BIDS'].includes(request.status) && (
-          <TouchableOpacity
-            style={s.merchantCTA}
-            onPress={() => navigation.navigate('SubmitBid', {requestId: request.id, requestTitle: request.title})}
-            activeOpacity={0.8}>
-            <Text style={s.ctaTitle}>Interested?</Text>
-            <Text style={s.ctaDesc}>Submit your best offer — the buyer is comparing proposals.</Text>
-            <View style={s.ctaBtn}><Text style={s.ctaBtnText}>Submit Bid →</Text></View>
-          </TouchableOpacity>
+        {/* Merchant section */}
+        {!isBuyer && (
+          <>
+            {myMerchantBid ? (
+              <MerchantBidCard
+                bid={myMerchantBid}
+                accent={ACCENT}
+                onPress={() => navigation.navigate('BidDetail', {bidId: myMerchantBid.id})}
+              />
+            ) : (
+              ['ACTIVE', 'HAS_BIDS'].includes(request.status) && (
+                <TouchableOpacity
+                  style={s.merchantCTA}
+                  onPress={() => navigation.navigate('SubmitBid', {requestId: request.id, requestTitle: request.title})}
+                  activeOpacity={0.8}>
+                  <Text style={s.ctaTitle}>Interested?</Text>
+                  <Text style={s.ctaDesc}>Submit your best offer — the buyer is comparing proposals.</Text>
+                  <View style={s.ctaBtn}><Text style={s.ctaBtnText}>Submit Bid →</Text></View>
+                </TouchableOpacity>
+              )
+            )}
+            {request.bidCount > 0 && (
+              <BidCompetitionSection totalBids={request.bidCount} hasBid={!!myMerchantBid} />
+            )}
+          </>
         )}
 
         {/* ── Proposals section ───────────────────────────── */}
@@ -370,6 +391,16 @@ export default function RequestDetailScreen({route, navigation}: Props) {
             confirmLoading={actionLoading}
           />
         )}
+
+        {/* History timeline */}
+        <HistorySection
+          isBuyer={isBuyer}
+          isOwner={isOwner}
+          request={request}
+          acceptedBid={acceptedBid}
+          myMerchantBid={myMerchantBid}
+          accent={ACCENT}
+        />
       </ScrollView>
 
       {/* ── Bid detail bottom sheet ─────────────────────── */}
@@ -658,6 +689,65 @@ function FulfillmentCard({bid, onConfirm, onOpenChat, confirmLoading}: {
           <Text style={ff.chatText}>💬  Chat with Merchant</Text>
         </TouchableOpacity>
       )}
+    </View>
+  );
+}
+
+// ─── Merchant Bid Card ───────────────────────────────────────────────────────
+
+const BID_STATUS_COLORS: Record<string, {bg: string; text: string}> = {
+  PENDING:   {bg: '#FEF9C3', text: '#854D0E'},
+  ACCEPTED:  {bg: '#DCFCE7', text: '#15803D'},
+  REJECTED:  {bg: '#FEF2F2', text: '#B91C1C'},
+  EXPIRED:   {bg: '#FEF3C7', text: '#B45309'},
+  WITHDRAWN: {bg: '#F3F4F6', text: '#6B7280'},
+};
+
+function MerchantBidCard({bid, accent, onPress}: {bid: Bid; accent: string; onPress: () => void}) {
+  const colors = BID_STATUS_COLORS[bid.status] ?? BID_STATUS_COLORS.PENDING;
+  return (
+    <TouchableOpacity style={mbc.card} onPress={onPress} activeOpacity={0.8}>
+      <View style={mbc.header}>
+        <Text style={mbc.label}>Your Bid</Text>
+        <View style={[mbc.statusPill, {backgroundColor: colors.bg}]}>
+          <Text style={[mbc.statusText, {color: colors.text}]}>
+            {bid.status.charAt(0) + bid.status.slice(1).toLowerCase()}
+          </Text>
+        </View>
+      </View>
+      <Text style={[mbc.amount, {color: accent}]}>${parseFloat(bid.amount).toFixed(2)}</Text>
+      <Text style={mbc.delivery}>{bid.deliveryDays} day{bid.deliveryDays !== 1 ? 's' : ''} delivery</Text>
+      <Text style={mbc.viewDetail}>View bid details →</Text>
+    </TouchableOpacity>
+  );
+}
+
+// ─── Bid Competition Section ──────────────────────────────────────────────────
+
+function BidCompetitionSection({totalBids, hasBid}: {totalBids: number; hasBid: boolean}) {
+  const otherCount = hasBid ? totalBids - 1 : totalBids;
+  const subtitle = hasBid
+    ? otherCount > 0
+      ? `Your bid + ${otherCount} other${otherCount !== 1 ? 's' : ''} on this request`
+      : 'You are the only bidder so far'
+    : `${totalBids} bid${totalBids !== 1 ? 's' : ''} already placed`;
+
+  return (
+    <View style={bcs.wrap}>
+      <Text style={bcs.title}>Competition</Text>
+      <Text style={bcs.subtitle}>{subtitle}</Text>
+      <View style={bcs.pillsRow}>
+        {hasBid && (
+          <View style={[bcs.pill, bcs.yourPill]}>
+            <Text style={bcs.yourPillText}>Your Bid</Text>
+          </View>
+        )}
+        {Array.from({length: otherCount}, (_, i) => (
+          <View key={i} style={bcs.pill}>
+            <Text style={bcs.pillText}>Bid {i + 1}</Text>
+          </View>
+        ))}
+      </View>
     </View>
   );
 }
@@ -1053,6 +1143,86 @@ function InlineChatModal({bid, initialRoomId, requestStatus, onClose}: {
   );
 }
 
+// ─── History Section ─────────────────────────────────────────────────────────
+
+type HistoryEvent = {icon: string; label: string; sublabel?: string; done: boolean; failed?: boolean};
+
+const FULFILLMENT_ORDER = ['AWAITING', 'PREPARING', 'IN_DELIVERY', 'DELIVERED', 'CONFIRMED'];
+
+function buildBuyerHistory(req: MarketRequest, accepted: Bid | null): HistoryEvent[] {
+  const fsIdx = accepted?.fulfillmentStatus
+    ? FULFILLMENT_ORDER.indexOf(accepted.fulfillmentStatus)
+    : -1;
+  return [
+    {icon: '📋', label: 'Request posted',                    sublabel: formatDate(req.publishedAt ?? req.createdAt), done: true},
+    {icon: '📬', label: req.bidCount > 0 ? `${req.bidCount} bid${req.bidCount !== 1 ? 's' : ''} received` : 'Waiting for bids', done: req.bidCount > 0},
+    {icon: '✅', label: 'Bid accepted',                      sublabel: accepted?.acceptedAt ? formatDate(accepted.acceptedAt) : undefined, done: !!accepted},
+    {icon: '📦', label: 'Merchant preparing',                done: fsIdx >= FULFILLMENT_ORDER.indexOf('PREPARING')},
+    {icon: '🚚', label: 'Out for delivery',                  done: fsIdx >= FULFILLMENT_ORDER.indexOf('IN_DELIVERY')},
+    {icon: '📬', label: 'Delivered',                         done: fsIdx >= FULFILLMENT_ORDER.indexOf('DELIVERED')},
+    {icon: '🎉', label: 'Completed',                         sublabel: req.status === 'COMPLETED' ? 'Transaction complete' : undefined, done: req.status === 'COMPLETED'},
+  ];
+}
+
+function buildMerchantHistory(bid: Bid): HistoryEvent[] {
+  const fsIdx = bid.fulfillmentStatus ? FULFILLMENT_ORDER.indexOf(bid.fulfillmentStatus) : -1;
+  const isAccepted = bid.status === 'ACCEPTED';
+  const isRejected = ['REJECTED', 'WITHDRAWN', 'EXPIRED'].includes(bid.status);
+  const base: HistoryEvent[] = [
+    {icon: '💼', label: 'Bid submitted',     sublabel: formatDate(bid.createdAt), done: true},
+    {
+      icon: isRejected ? '❌' : isAccepted ? '✅' : '⏳',
+      label: isAccepted ? 'Bid accepted' : isRejected ? `Bid ${bid.status.charAt(0) + bid.status.slice(1).toLowerCase()}` : 'Awaiting buyer decision',
+      sublabel: bid.acceptedAt ? formatDate(bid.acceptedAt) : bid.rejectedAt ? formatDate(bid.rejectedAt) : undefined,
+      done: bid.status !== 'PENDING',
+      failed: isRejected,
+    },
+  ];
+  if (!isAccepted) return base;
+  return [
+    ...base,
+    {icon: '📦', label: 'Started preparing',       done: fsIdx >= FULFILLMENT_ORDER.indexOf('PREPARING')},
+    {icon: '🚚', label: 'Sent for delivery',        done: fsIdx >= FULFILLMENT_ORDER.indexOf('IN_DELIVERY')},
+    {icon: '📬', label: 'Marked as delivered',      done: fsIdx >= FULFILLMENT_ORDER.indexOf('DELIVERED')},
+    {icon: '🎉', label: 'Buyer confirmed receipt',  done: fsIdx >= FULFILLMENT_ORDER.indexOf('CONFIRMED')},
+  ];
+}
+
+function HistorySection({isBuyer, isOwner, request, acceptedBid, myMerchantBid, accent}: {
+  isBuyer: boolean; isOwner: boolean; request: MarketRequest;
+  acceptedBid: Bid | null; myMerchantBid: Bid | null; accent: string;
+}) {
+  if (request.status === 'DRAFT') return null;
+  if (isBuyer && !isOwner) return null;
+  if (!isBuyer && !myMerchantBid) return null;
+
+  const events = isBuyer
+    ? buildBuyerHistory(request, acceptedBid)
+    : buildMerchantHistory(myMerchantBid!);
+
+  return (
+    <View style={hs.wrap}>
+      <Text style={[hs.heading, {color: accent}]}>History</Text>
+      {events.map((ev, i) => (
+        <View key={i} style={hs.row}>
+          <View style={hs.lineCol}>
+            <View style={[hs.dot, ev.done && !ev.failed && {backgroundColor: accent}, ev.failed && hs.dotFailed, !ev.done && hs.dotPending]} />
+            {i < events.length - 1 && (
+              <View style={[hs.line, ev.done && !ev.failed && {backgroundColor: accent + '44'}]} />
+            )}
+          </View>
+          <View style={hs.content}>
+            <Text style={[hs.label, !ev.done && !ev.failed && hs.labelPending, ev.failed && hs.labelFailed]}>
+              {ev.icon}{'  '}{ev.label}
+            </Text>
+            {ev.sublabel ? <Text style={hs.sublabel}>{ev.sublabel}</Text> : null}
+          </View>
+        </View>
+      ))}
+    </View>
+  );
+}
+
 // ─── Small components ─────────────────────────────────────────────────────────
 
 function MetaChip({icon, label}: {icon: string; label: string}) {
@@ -1253,6 +1423,32 @@ const ff = StyleSheet.create({
   btnDisabled:    {opacity: 0.6},
 });
 
+const mbc = StyleSheet.create({
+  card: {
+    backgroundColor: '#FFFFFF', borderRadius: 14, padding: 16, marginTop: 16,
+    borderWidth: 1.5, borderColor: '#D1FAE5',
+    shadowColor: '#000', shadowOffset: {width: 0, height: 2}, shadowOpacity: 0.05, shadowRadius: 6, elevation: 2,
+  },
+  header:     {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10},
+  label:      {fontSize: 11, fontWeight: '700', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: 0.5},
+  statusPill: {borderRadius: 12, paddingHorizontal: 8, paddingVertical: 3},
+  statusText: {fontSize: 12, fontWeight: '700'},
+  amount:     {fontSize: 28, fontWeight: '800', marginBottom: 4},
+  delivery:   {fontSize: 13, color: '#6B7280', marginBottom: 12},
+  viewDetail: {fontSize: 13, fontWeight: '600', color: '#9CA3AF', textAlign: 'right'},
+});
+
+const bcs = StyleSheet.create({
+  wrap:        {backgroundColor: '#FFFFFF', borderRadius: 14, padding: 16, marginTop: 12, borderWidth: 1, borderColor: '#E5E7EB'},
+  title:       {fontSize: 13, fontWeight: '700', color: '#374151', marginBottom: 2},
+  subtitle:    {fontSize: 12, color: '#9CA3AF', marginBottom: 12},
+  pillsRow:    {flexDirection: 'row', flexWrap: 'wrap', gap: 8},
+  pill:        {backgroundColor: '#F3F4F6', borderRadius: 20, paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1, borderColor: '#E5E7EB'},
+  pillText:    {fontSize: 12, color: '#6B7280', fontWeight: '500'},
+  yourPill:    {backgroundColor: '#DCFCE7', borderColor: '#A7F3D0'},
+  yourPillText:{fontSize: 12, color: '#15803D', fontWeight: '700'},
+});
+
 const s = StyleSheet.create({
   root:   {flex: 1, backgroundColor: '#F9FAFB'},
   safe:   {flex: 1, backgroundColor: '#F9FAFB'},
@@ -1287,4 +1483,20 @@ const s = StyleSheet.create({
   emptyIcon:        {fontSize: 36, marginBottom: 8},
   emptyTitle:       {fontSize: 16, fontWeight: '700', color: '#374151', marginBottom: 4},
   emptyDesc:        {fontSize: 13, color: '#9CA3AF', textAlign: 'center'},
+});
+
+const hs = StyleSheet.create({
+  wrap:         {marginTop: 24, backgroundColor: '#FFFFFF', borderRadius: 14, padding: 16, borderWidth: 1, borderColor: '#E5E7EB'},
+  heading:      {fontSize: 11, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 16},
+  row:          {flexDirection: 'row', minHeight: 44},
+  lineCol:      {width: 26, alignItems: 'center'},
+  dot:          {width: 14, height: 14, borderRadius: 7, marginTop: 3},
+  dotPending:   {backgroundColor: '#F3F4F6', borderWidth: 2, borderColor: '#D1D5DB'},
+  dotFailed:    {backgroundColor: '#EF4444'},
+  line:         {flex: 1, width: 2, backgroundColor: '#E5E7EB', marginTop: 2, marginBottom: 0},
+  content:      {flex: 1, paddingBottom: 12, paddingLeft: 8},
+  label:        {fontSize: 14, fontWeight: '600', color: '#111827', lineHeight: 20},
+  labelPending: {color: '#9CA3AF', fontWeight: '500'},
+  labelFailed:  {color: '#EF4444'},
+  sublabel:     {fontSize: 12, color: '#9CA3AF', marginTop: 2},
 });

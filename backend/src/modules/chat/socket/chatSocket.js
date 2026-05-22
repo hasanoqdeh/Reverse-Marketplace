@@ -3,6 +3,8 @@
 const jwt = require('jsonwebtoken');
 const ChatRoomRepository = require('../repositories/ChatRoomRepository');
 const ChatMessageRepository = require('../repositories/ChatMessageRepository');
+const notificationService = require('../../notifications/services/notificationService');
+const prisma = require('../../../prisma/client');
 // Messages persisted to MongoDB; rooms/participants in PostgreSQL
 const logger = require('../../../utils/logger');
 
@@ -87,6 +89,22 @@ function initChatSocket(io) {
 
         io.to(`room:${roomId}`).emit('new_message', message);
         _clearTyping(io, roomId, userId);
+
+        // Notify other participants directly (no RabbitMQ dependency)
+        prisma.chatRoomParticipant.findMany({
+          where: { roomId, leftAt: null, userId: { not: userId } },
+          select: { userId: true },
+        }).then(recipients => {
+          for (const r of recipients) {
+            notificationService.send(io, {
+              userId: r.userId,
+              type: 'NEW_MESSAGE',
+              title: 'New message',
+              body: 'You have a new message',
+              data: { chatRoomId: roomId },
+            }).catch(() => {});
+          }
+        }).catch(() => {});
       } catch (err) {
         logger.error('send_message error', { userId, roomId, error: err.message });
         socket.emit('error', { message: 'Failed to send message' });

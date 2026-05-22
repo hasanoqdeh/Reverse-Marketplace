@@ -1,5 +1,5 @@
 import apiClient from './client';
-import {MarketRequest, PaginationMeta, RequestCategory} from '../types/api';
+import {Bid, MarketRequest, PaginationMeta, RequestCategory} from '../types/api';
 
 export async function getCategories(): Promise<RequestCategory[]> {
   const res = await apiClient.get('/requests/categories');
@@ -40,9 +40,9 @@ export async function getMyRequests(params?: {
   return res.data;
 }
 
-export async function getRequest(id: string): Promise<MarketRequest> {
+export async function getRequest(id: string): Promise<{request: MarketRequest; merchantBid: Bid | null}> {
   const res = await apiClient.get(`/requests/${id}`);
-  return res.data.request;
+  return {request: res.data.request, merchantBid: res.data.merchantBid ?? null};
 }
 
 export async function searchRequests(params?: {

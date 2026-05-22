@@ -14,6 +14,7 @@ import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useAuth} from '../context/AuthContext';
 import {RootStackParamList} from '../types/navigation';
+import NotificationBell from './NotificationBell';
 
 const TEST_ACCOUNTS = [
   {phone: '+962780000004', name: 'Khalid', role: 'BUYER'},
@@ -133,7 +134,7 @@ export default function AppHeader({accentColor = '#2563EB', onBack, title, onOpt
           style={styles.btn}
           onPress={() => navigation.navigate('Notifications')}
           hitSlop={{top: 8, bottom: 8, left: 8, right: 8}}>
-          <Text style={styles.bell}>🔔</Text>
+          <NotificationBell size={24} color="#FFFFFF" />
         </TouchableOpacity>
       </View>
 
@@ -262,7 +263,6 @@ const styles = StyleSheet.create({
   center:     {flex: 1},
   greeting:   {fontSize: 13, color: '#BFDBFE', fontWeight: '500'},
   name:       {fontSize: 20, fontWeight: '700', color: '#FFFFFF'},
-  bell:       {fontSize: 22},
   burger:     {gap: 5},
   burgerLine: {width: 22, height: 2.5, borderRadius: 2, backgroundColor: '#FFFFFF'},
   backArrow:  {fontSize: 22, color: '#FFFFFF', fontWeight: '600'},

@@ -1,6 +1,8 @@
 'use strict';
 
 const bidService = require('../services/bidService');
+const RequestRepository = require('../../requests/repositories/RequestRepository');
+const notificationService = require('../../notifications/services/notificationService');
 const logger = require('../../../utils/logger');
 
 const bidController = {
@@ -15,6 +17,19 @@ const bidController = {
         const statusMap = { NOT_FOUND: 404, FORBIDDEN: 403, DUPLICATE_BID: 409, INVALID_STATUS: 422, VALIDATION_ERROR: 422 };
         return res.status(statusMap[result.error] || 400).json({ success: false, message: result.message, error: result.error });
       }
+
+      // Notify buyer directly (no RabbitMQ dependency)
+      RequestRepository.findById(result.bid.requestId).then(request => {
+        if (request) {
+          notificationService.send(req.app.get('io'), {
+            userId: request.buyerId,
+            type: 'BID_PLACED',
+            title: 'New bid on your request',
+            body: `A merchant placed a $${parseFloat(result.bid.amount).toFixed(2)} bid on your request`,
+            data: { bidId: result.bid.id, requestId: result.bid.requestId },
+          }).catch(() => {});
+        }
+      }).catch(() => {});
 
       res.status(201).json({
         success: true,
@@ -126,6 +141,15 @@ const bidController = {
         return res.status(statusMap[result.error] || 400).json({ success: false, message: result.message, error: result.error });
       }
 
+      // Notify merchant directly
+      notificationService.send(req.app.get('io'), {
+        userId: result.merchantId,
+        type: 'BID_ACCEPTED',
+        title: 'Your bid was accepted!',
+        body: 'Your bid has been accepted. Get ready to fulfill the order.',
+        data: { bidId: result.bidId },
+      }).catch(() => {});
+
       res.json({ success: true, bidId: result.bidId, merchantId: result.merchantId, message: 'Bid accepted' });
     } catch (err) {
       logger.error('acceptBid error', { error: err.message });
@@ -198,6 +222,24 @@ const bidController = {
         return res.status(statusMap[result.error] || 400).json({ success: false, message: result.message, error: result.error });
       }
 
+      // Notify buyer about fulfillment progress directly
+      const FULFILLMENT_MESSAGES = {
+        PREPARING:   'Merchant is preparing your order',
+        IN_DELIVERY: 'Your order is on the way!',
+        DELIVERED:   'Your order has been delivered — please confirm receipt',
+      };
+      RequestRepository.findById(result.bid.requestId).then(request => {
+        if (request && FULFILLMENT_MESSAGES[status]) {
+          notificationService.send(req.app.get('io'), {
+            userId: request.buyerId,
+            type: 'FULFILLMENT_UPDATED',
+            title: 'Order status updated',
+            body: FULFILLMENT_MESSAGES[status],
+            data: { bidId: req.params.id, requestId: result.bid.requestId, newStatus: status },
+          }).catch(() => {});
+        }
+      }).catch(() => {});
+
       res.json({ success: true, bid: result.bid, message: 'Fulfillment status updated' });
     } catch (err) {
       logger.error('updateFulfillmentStatus error', { error: err.message });
@@ -215,6 +257,15 @@ const bidController = {
         const statusMap = { NOT_FOUND: 404, FORBIDDEN: 403, INVALID_STATUS: 422 };
         return res.status(statusMap[result.error] || 400).json({ success: false, message: result.message, error: result.error });
       }
+
+      // Notify merchant that delivery was confirmed
+      notificationService.send(req.app.get('io'), {
+        userId: result.merchantId,
+        type: 'DELIVERY_CONFIRMED',
+        title: 'Delivery confirmed!',
+        body: 'The buyer has confirmed receipt. Transaction complete!',
+        data: { bidId: result.bidId, requestId: result.requestId },
+      }).catch(() => {});
 
       res.json({ success: true, message: 'Delivery confirmed', bidId: result.bidId, merchantId: result.merchantId });
     } catch (err) {

@@ -2,6 +2,7 @@ import React, {useEffect} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useAuth} from '../context/AuthContext';
+import {NotificationBadgeProvider} from '../context/NotificationBadgeContext';
 import {RootStackParamList} from '../types/navigation';
 import BuyerNavigator from '../modules/buyer/BuyerNavigator';
 import MerchantNavigator from '../modules/merchant/MerchantNavigator';
@@ -16,9 +17,9 @@ export default function AppNavigator() {
     }
   }, [isAuthenticated, isLoading, navigation]);
 
-  if (user?.role === 'MERCHANT') {
-    return <MerchantNavigator />;
-  }
-
-  return <BuyerNavigator />;
+  return (
+    <NotificationBadgeProvider>
+      {user?.role === 'MERCHANT' ? <MerchantNavigator /> : <BuyerNavigator />}
+    </NotificationBadgeProvider>
+  );
 }
