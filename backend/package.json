@@ -23,6 +23,7 @@
     "express-rate-limit": "^6.10.0",
     "helmet": "^7.0.0",
     "joi": "^17.9.2",
+    "js-yaml": "^4.1.1",
     "jsonwebtoken": "^9.0.2",
     "knex": "^2.5.1",
     "moment": "^2.29.4",
@@ -33,6 +34,8 @@
     "redis": "^4.6.8",
     "socket.io": "^4.7.2",
     "stripe": "^13.6.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
     "twilio": "^4.15.0",
     "uuid": "^9.0.0",
     "winston": "^3.10.0"

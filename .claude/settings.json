@@ -1,4 +1,4 @@
-/re{
+{
   "permissions": {
     "allow": [
       "Bash(docker-compose ps *)",

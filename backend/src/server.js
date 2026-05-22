@@ -74,6 +74,11 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Swagger UI — available at /api-docs
+const { spec, swaggerUi, swaggerUiOptions } = require('./swagger');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(spec, swaggerUiOptions));
+app.get('/api-docs.json', (req, res) => res.json(spec));
+
 // Import routes from new module locations
 const authRoutes = require('./modules/identity/routes/auth');
 const adminAuthRoutes = require('./modules/identity/routes/adminAuth');

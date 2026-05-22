@@ -17,8 +17,81 @@ router.use(requireRole('ADMIN'));
 router.use(getRateLimitMiddleware('admin'));
 
 /**
- * GET /admin/auth/me
- * Returns the authenticated admin's profile and computed permissions.
+ * @swagger
+ * /api/v1/identity/admin/auth/me:
+ *   get:
+ *     tags: [Admin Auth]
+ *     summary: Get own admin profile and permissions
+ *     description: |
+ *       Returns the authenticated admin's user record, profile, and effective
+ *       permissions derived from their `adminSubRole`.
+ *
+ *       **DB effects** (read-only)
+ *       - PostgreSQL `User` JOIN `UserProfile`: `SELECT WHERE id = req.user.id`.
+ *
+ *       **Events published**: none.
+ *     responses:
+ *       '200':
+ *         description: Admin profile and permissions
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 admin:
+ *                   $ref: '#/components/schemas/User'
+ *                 permissions:
+ *                   type: object
+ *                   properties:
+ *                     viewUsers:    { type: boolean }
+ *                     editUsers:    { type: boolean }
+ *                     suspendUsers: { type: boolean }
+ *                     banUsers:     { type: boolean }
+ *                     manageAdmins: { type: boolean }
+ *                     exportData:   { type: boolean }
+ *                     systemConfig: { type: boolean }
+ *       '401':
+ *         description: Not authenticated
+ *         content:
+ *           application/json:
+ *             schema: { $ref: '#/components/schemas/Error' }
+ *   patch:
+ *     tags: [Admin Auth]
+ *     summary: Update own admin profile
+ *     description: |
+ *       Updates the calling admin's profile fields (firstName, lastName, city, country).
+ *       Logs the action to the MongoDB activity log.
+ *
+ *       **DB effects**
+ *       - PostgreSQL `UserProfile`: `UPSERT`.
+ *       - MongoDB `ActivityLog`: `INSERT` with `actionType = USER_EDIT`.
+ *
+ *       **Events published**: none.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               firstName: { type: string }
+ *               lastName:  { type: string }
+ *               city:      { type: string }
+ *               country:   { type: string }
+ *     responses:
+ *       '200':
+ *         description: Profile updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 admin: { $ref: '#/components/schemas/User' }
+ *       '400':
+ *         description: No fields provided
+ *         content:
+ *           application/json:
+ *             schema: { $ref: '#/components/schemas/Error' }
  */
 router.get('/me', asyncHandler(async (req, res) => {
   const user = await UserRepository.findById(req.user.id);
@@ -45,10 +118,6 @@ router.get('/me', asyncHandler(async (req, res) => {
   });
 }));
 
-/**
- * PATCH /admin/auth/me
- * Update the authenticated admin's own profile fields.
- */
 router.patch('/me', asyncHandler(async (req, res) => {
   const { firstName, lastName, city, country } = req.body;
 
@@ -97,8 +166,48 @@ router.patch('/me', asyncHandler(async (req, res) => {
 }));
 
 /**
- * GET /admin/auth/sessions
- * Lists the authenticated admin's active sessions.
+ * @swagger
+ * /api/v1/identity/admin/auth/sessions:
+ *   get:
+ *     tags: [Admin Auth]
+ *     summary: List own active sessions
+ *     description: |
+ *       Returns a count of all non-revoked `AuthToken` rows for the calling admin.
+ *
+ *       **DB effects** (read-only)
+ *       - PostgreSQL `AuthToken`: `COUNT WHERE userId = ? AND revokedAt IS NULL`.
+ *
+ *       **Events published**: none.
+ *     responses:
+ *       '200':
+ *         description: Active session count
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 activeSessions: { type: integer }
+ *   delete:
+ *     tags: [Admin Auth]
+ *     summary: Revoke all own sessions (full logout from all devices)
+ *     description: |
+ *       Revokes every active refresh token for the calling admin. All other devices
+ *       will be logged out on their next token use. Logs the action to the activity log.
+ *
+ *       **DB effects**
+ *       - PostgreSQL `AuthToken`: `UPDATE revokedAt = NOW() WHERE userId = ? AND revokedAt IS NULL`.
+ *       - MongoDB `ActivityLog`: `INSERT` with `actionType = SESSION_TERMINATE`.
+ *
+ *       **Events published**: none.
+ *     responses:
+ *       '200':
+ *         description: All sessions revoked
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message: { type: string }
  */
 router.get('/sessions', asyncHandler(async (req, res) => {
   const count = await TokenRepository.countActiveRefreshTokens(req.user.id);
@@ -109,11 +218,6 @@ router.get('/sessions', asyncHandler(async (req, res) => {
   });
 }));
 
-/**
- * DELETE /admin/auth/sessions
- * Revokes all of the admin's tokens and sessions (full logout from all devices).
- * The current request will succeed; subsequent requests with old tokens will fail.
- */
 router.delete('/sessions', asyncHandler(async (req, res) => {
   await TokenRepository.revokeAllUserTokens(req.user.id);
   await TokenRepository.deactivateAllUserSessions(req.user.id);
