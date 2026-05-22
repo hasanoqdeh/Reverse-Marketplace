@@ -1,24 +1,27 @@
 import React from 'react';
 import {Text} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import DashboardScreen from './screens/DashboardScreen';
-import BrowseRequestsScreen from './screens/BrowseRequestsScreen';
-import MyBidsScreen from './screens/MyBidsScreen';
+import MerchantDiscoverScreen from './screens/MerchantDiscoverScreen';
+import MerchantActivityScreen from './screens/MerchantActivityScreen';
 import ProfileScreen from '../../screens/profile/ProfileScreen';
 import ChatListScreen from '../../screens/chat/ChatListScreen';
-import NotificationsScreen from '../../screens/notifications/NotificationsScreen';
 import NotificationBell from '../../components/NotificationBell';
 import {MerchantTabParamList} from '../../types/navigation';
 
 const Tab = createBottomTabNavigator<MerchantTabParamList>();
 
-const ACCENT = '#16A34A';
+const ACCENT   = '#16A34A';
 const INACTIVE = '#9CA3AF';
-const ICONS: Record<string, string> = {Dashboard: '⌂', Requests: '☰', MyBids: '⊙', Chat: '💬', Profile: '⊛'};
+
+const ICONS: Record<string, string> = {
+  Discover: '⊞',
+  Messages: '💬',
+  Profile:  '⊛',
+};
 
 function TabIcon({label, focused}: {label: string; focused: boolean}) {
   const color = focused ? ACCENT : INACTIVE;
-  if (label === 'Notifications') {
+  if (label === 'Activity') {
     return <NotificationBell size={22} color={color} />;
   }
   return <Text style={{fontSize: 20, color}}>{ICONS[label] ?? '●'}</Text>;
@@ -42,12 +45,10 @@ export default function MerchantNavigator() {
         tabBarLabelStyle: {fontSize: 11, fontWeight: '500'},
         tabBarIcon: ({focused}) => <TabIcon label={route.name} focused={focused} />,
       })}>
-      <Tab.Screen name="Dashboard" component={DashboardScreen} options={{tabBarLabel: 'Home'}} />
-      <Tab.Screen name="Requests" component={BrowseRequestsScreen} options={{tabBarLabel: 'Requests'}} />
-      <Tab.Screen name="MyBids" component={MyBidsScreen} options={{tabBarLabel: 'My Bids'}} />
-      <Tab.Screen name="Chat" component={ChatListScreen} options={{tabBarLabel: 'Messages'}} />
-      <Tab.Screen name="Notifications" component={NotificationsScreen} options={{tabBarLabel: 'Alerts'}} />
-      <Tab.Screen name="Profile" component={ProfileScreen} options={{tabBarLabel: 'Profile'}} />
+      <Tab.Screen name="Discover"  component={MerchantDiscoverScreen} options={{tabBarLabel: 'Discover'}} />
+      <Tab.Screen name="Activity"  component={MerchantActivityScreen} options={{tabBarLabel: 'Activity'}} />
+      <Tab.Screen name="Messages"  component={ChatListScreen}          options={{tabBarLabel: 'Messages'}} />
+      <Tab.Screen name="Profile"   component={ProfileScreen}           options={{tabBarLabel: 'Profile'}} />
     </Tab.Navigator>
   );
 }

@@ -23,7 +23,9 @@ export type NotificationType =
   | 'BID_PLACED'
   | 'STATUS_IN_DELIVERY'
   | 'BID_ACCEPTED'
-  | 'BUYER_REVIEW';
+  | 'BUYER_REVIEW'
+  | 'FULFILLMENT_UPDATED'
+  | 'DELIVERY_CONFIRMED';
 
 export interface NotificationData {
   chatRoomId?: string;

@@ -12,12 +12,10 @@ export type BuyerTabParamList = {
 };
 
 export type MerchantTabParamList = {
-  Dashboard: undefined;
-  Requests: undefined;
-  MyBids: undefined;
-  Chat: undefined;
-  Notifications: undefined;
-  Profile: undefined;
+  Discover:  undefined;
+  Activity:  undefined;
+  Messages:  undefined;
+  Profile:   undefined;
 };
 
 export type RootStackParamList = {

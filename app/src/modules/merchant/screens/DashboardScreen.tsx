@@ -18,7 +18,7 @@ import {searchRequests} from '../../../api/requests';
 import {getMyBids} from '../../../api/bids';
 import AppHeader from '../../../components/AppHeader';
 
-type TabNav = BottomTabNavigationProp<MerchantTabParamList, 'Dashboard'>;
+type TabNav = BottomTabNavigationProp<MerchantTabParamList, 'Discover'>;
 type RootNav = NativeStackNavigationProp<RootStackParamList>;
 
 const ACCENT = '#16A34A';
@@ -105,7 +105,7 @@ export default function DashboardScreen() {
         <TouchableOpacity
           style={styles.actionCard}
           activeOpacity={0.8}
-          onPress={() => tabNavigation.navigate('Requests')}>
+          onPress={() => tabNavigation.navigate('Discover')}>
           <View style={styles.actionIcon}>
             <Text style={styles.actionIconText}>☰</Text>
           </View>
@@ -151,7 +151,7 @@ export default function DashboardScreen() {
             ))}
             <TouchableOpacity
               style={styles.viewAllBtn}
-              onPress={() => tabNavigation.navigate('Requests')}
+              onPress={() => tabNavigation.navigate('Discover')}
               activeOpacity={0.8}>
               <Text style={styles.viewAllText}>View All Requests</Text>
             </TouchableOpacity>
