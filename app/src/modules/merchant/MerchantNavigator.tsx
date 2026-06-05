@@ -7,10 +7,11 @@ import ProfileScreen from '../../screens/profile/ProfileScreen';
 import ChatListScreen from '../../screens/chat/ChatListScreen';
 import NotificationBell from '../../components/NotificationBell';
 import {MerchantTabParamList} from '../../types/navigation';
+import {Colors} from '../../theme';
 
 const Tab = createBottomTabNavigator<MerchantTabParamList>();
 
-const ACCENT   = '#16A34A';
+const ACCENT   = Colors.primary;
 const INACTIVE = '#9CA3AF';
 
 const ICONS: Record<string, string> = {
@@ -36,7 +37,7 @@ export default function MerchantNavigator() {
         tabBarInactiveTintColor: INACTIVE,
         tabBarStyle: {
           backgroundColor: '#FFFFFF',
-          borderTopColor: '#E5E7EB',
+          borderTopColor: Colors.divider,
           borderTopWidth: 1,
           height: 60,
           paddingBottom: 8,

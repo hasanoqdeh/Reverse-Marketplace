@@ -1,16 +1,21 @@
 export interface AuthLoginResponse {
+  success: boolean;
   message: string;
   otpExpiresAt?: string;
   expiresAt?: string;
+  rateLimitExceeded?: boolean;
+  cooldown?: boolean;
+  cooldownRemaining?: number;
 }
 
 export interface AuthVerifyOTPResponse {
   success: boolean;
-  tokens: {
+  tokens?: {
     accessToken: string;
     refreshToken: string;
   };
-  user: User;
+  user?: User;
+  message?: string;
 }
 
 export interface AuthResendOTPResponse {
@@ -151,6 +156,21 @@ export interface Review {
 export interface MerchantProfile {
   id: string;
   phone: string;
+  profile: UserProfile | null;
+  memberSince: string;
+  avgRating: number | null;
+  reviewCount: number;
+  completedBids: number;
+}
+
+export interface PublicPlatformStats {
+  merchantCount: number;
+  completedRequests: number;
+  avgRating: number | null;
+}
+
+export interface TopMerchant {
+  id: string;
   profile: UserProfile | null;
   memberSince: string;
   avgRating: number | null;

@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -60,16 +60,14 @@ export default function MerchantStoreScreen({route, navigation}: Props) {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const load = useCallback(async (refresh = false) => {
+  const load = useCallback(async () => {
     try {
-      const [prof, reviewsRes] = await Promise.all([
+      const [profResult, reviewsResult] = await Promise.allSettled([
         getMerchantProfile(merchantId),
         getReviews(merchantId, {limit: 20}),
       ]);
-      setProfile(prof);
-      setReviews(reviewsRes.reviews);
-    } catch {
-      // ignore
+      if (profResult.status === 'fulfilled')    setProfile(profResult.value);
+      if (reviewsResult.status === 'fulfilled') setReviews(reviewsResult.value.reviews ?? []);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -78,7 +76,7 @@ export default function MerchantStoreScreen({route, navigation}: Props) {
 
   useEffect(() => { load(); }, [load]);
 
-  const handleRefresh = () => { setRefreshing(true); load(true); };
+  const handleRefresh = () => { setRefreshing(true); load(); };
 
   if (loading) {
     return (
@@ -144,16 +142,22 @@ export default function MerchantStoreScreen({route, navigation}: Props) {
               </View>
             </View>
 
-            {reviews.length > 0 && (
+            <View style={styles.reviewsHeader}>
               <Text style={styles.sectionTitle}>Reviews</Text>
-            )}
+              {profile?.reviewCount != null && profile.reviewCount > 0 && (
+                <Text style={styles.reviewCount}>{profile.reviewCount} review{profile.reviewCount !== 1 ? 's' : ''}</Text>
+              )}
+            </View>
           </>
         }
         renderItem={({item}) => <ReviewCard review={item} />}
         ListEmptyComponent={
           <View style={styles.empty}>
             <Text style={styles.emptyIcon}>⭐</Text>
-            <Text style={styles.emptyText}>No reviews yet</Text>
+            <Text style={styles.emptyTitle}>No reviews yet</Text>
+            <Text style={styles.emptySubtext}>
+              Reviews appear here once a buyer completes a transaction with this merchant.
+            </Text>
           </View>
         }
       />
@@ -188,8 +192,11 @@ const styles = StyleSheet.create({
   statValue: {fontSize: 22, fontWeight: '800', color: '#111827'},
   statLabel: {fontSize: 12, color: '#6B7280', marginTop: 2},
   statDivider: {width: 1, height: 32, backgroundColor: '#E5E7EB'},
-  sectionTitle: {fontSize: 16, fontWeight: '700', color: '#374151', marginBottom: 12},
-  empty: {alignItems: 'center', paddingVertical: 40},
+  reviewsHeader: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12},
+  sectionTitle: {fontSize: 16, fontWeight: '700', color: '#374151'},
+  reviewCount: {fontSize: 13, color: '#6B7280'},
+  empty: {alignItems: 'center', paddingVertical: 40, paddingHorizontal: 24},
   emptyIcon: {fontSize: 40, marginBottom: 10},
-  emptyText: {fontSize: 15, color: '#9CA3AF'},
+  emptyTitle: {fontSize: 15, fontWeight: '600', color: '#374151', marginBottom: 6},
+  emptySubtext: {fontSize: 13, color: '#9CA3AF', textAlign: 'center', lineHeight: 20},
 });

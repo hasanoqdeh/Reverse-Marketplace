@@ -14,10 +14,9 @@ import {RootStackParamList} from '../../../types/navigation';
 import {MarketRequest, RequestStatus} from '../../../types/api';
 import {getMyRequests} from '../../../api/requests';
 import AppHeader from '../../../components/AppHeader';
+import {Colors} from '../../../theme';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
-
-const ACCENT = '#2563EB';
 
 type Tab = {label: string; status: string | null};
 const TABS: Tab[] = [
@@ -29,12 +28,12 @@ const TABS: Tab[] = [
 ];
 
 const STATUS_META: Record<RequestStatus, {label: string; color: string}> = {
-  DRAFT: {label: 'Draft', color: '#6B7280'},
-  ACTIVE: {label: 'Active', color: '#16A34A'},
-  HAS_BIDS: {label: 'Has Bids', color: '#2563EB'},
+  DRAFT: {label: 'Draft', color: Colors.textSecondary},
+  ACTIVE: {label: 'Active', color: Colors.success},
+  HAS_BIDS: {label: 'Has Bids', color: Colors.primary},
   COMPLETED: {label: 'Completed', color: '#15803D'},
-  CANCELLED: {label: 'Cancelled', color: '#DC2626'},
-  EXPIRED: {label: 'Expired', color: '#D97706'},
+  CANCELLED: {label: 'Cancelled', color: Colors.error},
+  EXPIRED: {label: 'Expired', color: Colors.warning},
 };
 
 function formatBudget(min?: number | null, max?: number | null): string {
@@ -135,7 +134,7 @@ export default function RequestsScreen() {
 
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator size="large" color={ACCENT} />
+          <ActivityIndicator size="large" color={Colors.primary} />
         </View>
       ) : (
         <FlatList
@@ -143,12 +142,12 @@ export default function RequestsScreen() {
           keyExtractor={item => item.id}
           contentContainerStyle={{padding: 16, paddingBottom: 32, flexGrow: 1}}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={ACCENT} colors={[ACCENT]} />
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={Colors.primary} colors={[Colors.primary]} />
           }
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.3}
           ListFooterComponent={
-            loadingMore ? <ActivityIndicator style={{marginVertical: 16}} color={ACCENT} /> : null
+            loadingMore ? <ActivityIndicator style={{marginVertical: 16}} color={Colors.primary} /> : null
           }
           renderItem={({item}) => (
             <RequestCard
@@ -178,31 +177,31 @@ export default function RequestsScreen() {
 
 const card = StyleSheet.create({
   wrap: {
-    backgroundColor: '#FFFFFF', borderRadius: 14, padding: 16, marginBottom: 12,
-    shadowColor: '#000', shadowOffset: {width: 0, height: 1}, shadowOpacity: 0.06, shadowRadius: 6, elevation: 2,
+    backgroundColor: Colors.surface, borderRadius: 14, padding: 16, marginBottom: 12,
+    shadowColor: '#000', shadowOffset: {width: 0, height: 1}, shadowOpacity: 0.08, shadowRadius: 2, elevation: 2,
   },
   top: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6},
   status: {fontSize: 12, fontWeight: '700'},
-  category: {fontSize: 12, color: '#6B7280', backgroundColor: '#F3F4F6', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8},
-  title: {fontSize: 16, fontWeight: '700', color: '#111827', marginBottom: 10, lineHeight: 22},
+  category: {fontSize: 12, color: Colors.textSecondary, backgroundColor: Colors.feedBackground, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8},
+  title: {fontSize: 16, fontWeight: '700', color: Colors.textPrimary, marginBottom: 10, lineHeight: 22},
   footer: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
-  budget: {fontSize: 14, fontWeight: '600', color: ACCENT},
-  metaText: {fontSize: 12, color: '#9CA3AF'},
+  budget: {fontSize: 14, fontWeight: '600', color: Colors.primary},
+  metaText: {fontSize: 12, color: Colors.textSecondary},
 });
 
 const styles = StyleSheet.create({
-  safe: {flex: 1, backgroundColor: '#F3F4F6'},
-  tabBarWrap: {backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#E5E7EB'},
+  safe: {flex: 1, backgroundColor: Colors.feedBackground},
+  tabBarWrap: {backgroundColor: Colors.surface, borderBottomWidth: 1, borderBottomColor: Colors.divider},
   tabBar: {paddingHorizontal: 12, paddingVertical: 8, gap: 6},
-  tab: {paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, backgroundColor: '#F3F4F6'},
-  tabActive: {backgroundColor: '#DBEAFE'},
-  tabText: {fontSize: 13, fontWeight: '500', color: '#6B7280'},
-  tabTextActive: {color: ACCENT, fontWeight: '700'},
+  tab: {paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20, backgroundColor: Colors.feedBackground},
+  tabActive: {backgroundColor: Colors.primaryLight},
+  tabText: {fontSize: 13, fontWeight: '500', color: Colors.textSecondary},
+  tabTextActive: {color: Colors.primary, fontWeight: '700'},
   center: {flex: 1, alignItems: 'center', justifyContent: 'center'},
   empty: {flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 80},
   emptyIcon: {fontSize: 52, marginBottom: 16},
-  emptyTitle: {fontSize: 18, fontWeight: '700', color: '#374151', marginBottom: 8},
-  emptySubtitle: {fontSize: 14, color: '#9CA3AF', textAlign: 'center', marginBottom: 20},
-  emptyBtn: {backgroundColor: ACCENT, borderRadius: 12, paddingHorizontal: 20, paddingVertical: 12},
-  emptyBtnText: {fontSize: 14, fontWeight: '700', color: '#FFFFFF'},
+  emptyTitle: {fontSize: 18, fontWeight: '700', color: Colors.textPrimary, marginBottom: 8},
+  emptySubtitle: {fontSize: 14, color: Colors.textSecondary, textAlign: 'center', marginBottom: 20},
+  emptyBtn: {backgroundColor: Colors.primary, borderRadius: 12, paddingHorizontal: 20, paddingVertical: 12},
+  emptyBtnText: {fontSize: 14, fontWeight: '700', color: Colors.textOnPrimary},
 });

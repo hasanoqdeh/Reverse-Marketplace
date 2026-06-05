@@ -16,12 +16,11 @@ import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useAuth} from '../../context/AuthContext';
 import {RootStackParamList} from '../../types/navigation';
+import {Colors} from '../../theme';
 
 type NavProp = NativeStackNavigationProp<RootStackParamList, 'ProfileSetup'>;
 type Role = 'BUYER' | 'MERCHANT';
 
-const BUYER_ACCENT = '#2563EB';
-const MERCHANT_ACCENT = '#16A34A';
 const TOTAL_STEPS = 4;
 
 const ROLE_OPTIONS: {value: Role; emoji: string; label: string; desc: string; color: string; bg: string; light: string}[] = [
@@ -30,8 +29,8 @@ const ROLE_OPTIONS: {value: Role; emoji: string; label: string; desc: string; co
     emoji: '🛒',
     label: 'Buyer',
     desc: 'Post requests and receive competitive offers from merchants.',
-    color: BUYER_ACCENT,
-    bg: '#EFF6FF',
+    color: Colors.primary,
+    bg: Colors.primaryLight,
     light: '#DBEAFE',
   },
   {
@@ -39,8 +38,8 @@ const ROLE_OPTIONS: {value: Role; emoji: string; label: string; desc: string; co
     emoji: '🏪',
     label: 'Merchant',
     desc: 'Browse buyer requests and place bids to grow your business.',
-    color: MERCHANT_ACCENT,
-    bg: '#F0FDF4',
+    color: Colors.success,
+    bg: Colors.successLight,
     light: '#DCFCE7',
   },
 ];
@@ -59,8 +58,8 @@ export default function ProfileSetupScreen() {
   const [error, setError] = useState<string | null>(null);
 
   const fadeAnim = useRef(new Animated.Value(1)).current;
-  const ACCENT = role === 'MERCHANT' ? MERCHANT_ACCENT : BUYER_ACCENT;
-  const ICON_BG = role === 'MERCHANT' ? '#F0FDF4' : '#EFF6FF';
+  const ACCENT = Colors.primary;
+  const ICON_BG = role === 'MERCHANT' ? Colors.successLight : Colors.primaryLight;
 
   const fade = (next: number) => {
     Animated.sequence([
@@ -333,26 +332,26 @@ function SummaryRow({label, value, color}: {label: string; value: string; color:
 }
 
 const summaryStyles = StyleSheet.create({
-  row: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#F3F4F6'},
-  key: {fontSize: 14, color: '#6B7280', fontWeight: '500'},
+  row: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: Colors.divider},
+  key: {fontSize: 14, color: Colors.textSecondary, fontWeight: '500'},
   val: {fontSize: 14, fontWeight: '700', maxWidth: '60%', textAlign: 'right'},
 });
 
 const styles = StyleSheet.create({
-  safe: {flex: 1, backgroundColor: '#FFFFFF'},
+  safe: {flex: 1, backgroundColor: Colors.surface},
   flex: {flex: 1},
   scroll: {flexGrow: 1, paddingHorizontal: 24, paddingBottom: 40},
 
   progressRow: {flexDirection: 'row', marginTop: 16, marginBottom: 28, gap: 6},
   segWrap: {flex: 1},
   seg: {height: 4, borderRadius: 2},
-  segPending: {backgroundColor: '#E5E7EB'},
+  segPending: {backgroundColor: Colors.divider},
 
   content: {alignItems: 'center'},
 
   stepLabel: {fontSize: 12, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 8},
-  title: {fontSize: 26, fontWeight: '800', color: '#111827', textAlign: 'center', marginBottom: 8, letterSpacing: -0.3},
-  subtitle: {fontSize: 15, color: '#6B7280', textAlign: 'center', lineHeight: 22, marginBottom: 28, paddingHorizontal: 4},
+  title: {fontSize: 26, fontWeight: '800', color: Colors.textPrimary, textAlign: 'center', marginBottom: 8, letterSpacing: -0.3},
+  subtitle: {fontSize: 15, color: Colors.textSecondary, textAlign: 'center', lineHeight: 22, marginBottom: 28, paddingHorizontal: 4},
 
   iconCircle: {width: 88, height: 88, borderRadius: 44, alignItems: 'center', justifyContent: 'center', marginBottom: 20},
   iconEmoji: {fontSize: 40},
@@ -361,40 +360,40 @@ const styles = StyleSheet.create({
   roleList: {width: '100%', gap: 14, marginBottom: 28},
   roleCard: {
     flexDirection: 'row', alignItems: 'center',
-    borderWidth: 1.5, borderColor: '#E5E7EB', borderRadius: 16,
-    padding: 16, backgroundColor: '#FAFAFA',
+    borderWidth: 1.5, borderColor: Colors.divider, borderRadius: 16,
+    padding: 16, backgroundColor: Colors.feedBackground,
   },
   roleIconCircle: {width: 52, height: 52, borderRadius: 26, alignItems: 'center', justifyContent: 'center', marginRight: 14},
   roleEmoji: {fontSize: 26},
   roleBody: {flex: 1},
-  roleLabel: {fontSize: 17, fontWeight: '700', color: '#111827', marginBottom: 3},
-  roleDesc: {fontSize: 12, color: '#9CA3AF', lineHeight: 17},
-  radio: {width: 22, height: 22, borderRadius: 11, borderWidth: 2, borderColor: '#D1D5DB', alignItems: 'center', justifyContent: 'center'},
+  roleLabel: {fontSize: 17, fontWeight: '700', color: Colors.textPrimary, marginBottom: 3},
+  roleDesc: {fontSize: 12, color: Colors.textSecondary, lineHeight: 17},
+  radio: {width: 22, height: 22, borderRadius: 11, borderWidth: 2, borderColor: Colors.divider, alignItems: 'center', justifyContent: 'center'},
   radioDot: {width: 10, height: 10, borderRadius: 5},
 
   /* Form fields */
   fields: {width: '100%', gap: 16, marginBottom: 24},
   fieldGroup: {width: '100%'},
-  label: {fontSize: 13, fontWeight: '600', color: '#374151', marginBottom: 6},
+  label: {fontSize: 13, fontWeight: '600', color: Colors.textPrimary, marginBottom: 6},
   input: {
-    borderWidth: 1.5, borderColor: '#D1D5DB', borderRadius: 12,
+    borderWidth: 1.5, borderColor: Colors.divider, borderRadius: 12,
     paddingHorizontal: 14, paddingVertical: Platform.OS === 'ios' ? 14 : 11,
-    fontSize: 16, color: '#111827', backgroundColor: '#F9FAFB',
+    fontSize: 16, color: Colors.textPrimary, backgroundColor: Colors.feedBackground,
   },
 
   /* Summary */
   summaryBox: {
     width: '100%', borderWidth: 1, borderRadius: 16, padding: 20, marginBottom: 28,
-    backgroundColor: '#FAFAFA',
+    backgroundColor: Colors.feedBackground,
   },
 
   /* Error */
   errorBox: {
-    width: '100%', backgroundColor: '#FEF2F2', borderRadius: 10,
+    width: '100%', backgroundColor: Colors.errorLight, borderRadius: 10,
     paddingHorizontal: 14, paddingVertical: 10, marginBottom: 16,
     borderWidth: 1, borderColor: '#FECACA',
   },
-  errorText: {color: '#DC2626', fontSize: 14, textAlign: 'center'},
+  errorText: {color: Colors.error, fontSize: 14, textAlign: 'center'},
 
   /* Buttons */
   btn: {
@@ -402,8 +401,8 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 4}, shadowOpacity: 0.25, shadowRadius: 8, elevation: 4,
   },
   btnDisabled: {opacity: 0.5, shadowOpacity: 0, elevation: 0},
-  btnText: {color: '#FFFFFF', fontSize: 16, fontWeight: '700', letterSpacing: 0.3},
+  btnText: {color: Colors.textOnPrimary, fontSize: 16, fontWeight: '700', letterSpacing: 0.3},
 
   backBtn: {marginTop: 14, paddingVertical: 8},
-  backText: {fontSize: 15, color: '#6B7280', fontWeight: '500'},
+  backText: {fontSize: 15, color: Colors.textSecondary, fontWeight: '500'},
 });

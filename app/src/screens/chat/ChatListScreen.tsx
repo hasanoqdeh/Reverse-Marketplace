@@ -15,15 +15,16 @@ import {ChatRoom} from '../../types/api';
 import {getMyRooms} from '../../api/chat';
 import {useAuth} from '../../context/AuthContext';
 import AppHeader from '../../components/AppHeader';
+import {Colors} from '../../theme';
 
 type RootNav = NativeStackNavigationProp<RootStackParamList>;
 
 const ROOM_TYPE_COLORS: Record<string, {bg: string; text: string}> = {
-  DIRECT:  {bg: '#DBEAFE', text: '#2563EB'},
+  DIRECT:  {bg: Colors.primaryLight, text: Colors.primary},
   GROUP:   {bg: '#F3E8FF', text: '#7C3AED'},
-  REQUEST: {bg: '#DCFCE7', text: '#16A34A'},
+  REQUEST: {bg: Colors.successLight, text: Colors.success},
   BID:     {bg: '#FEF9C3', text: '#854D0E'},
-  SUPPORT: {bg: '#FEF2F2', text: '#DC2626'},
+  SUPPORT: {bg: Colors.errorLight, text: Colors.error},
 };
 
 function formatTime(iso: string): string {
@@ -73,7 +74,6 @@ export default function ChatListScreen() {
   const navigation = useNavigation<RootNav>();
   const {user} = useAuth();
   const isBuyer = user?.role === 'BUYER';
-  const ACCENT = isBuyer ? '#2563EB' : '#16A34A';
 
   const [rooms, setRooms] = useState<ChatRoom[]>([]);
   const [loading, setLoading] = useState(true);
@@ -101,12 +101,12 @@ export default function ChatListScreen() {
   }, [load]);
 
   return (
-    <View style={[styles.safe, {backgroundColor: '#F9FAFB'}]}>
-      <AppHeader accentColor={ACCENT} />
+    <View style={[styles.safe, {backgroundColor: Colors.feedBackground}]}>
+      <AppHeader />
 
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator size="large" color={ACCENT} />
+          <ActivityIndicator size="large" color={Colors.primary} />
         </View>
       ) : (
         <FlatList
@@ -114,7 +114,7 @@ export default function ChatListScreen() {
           keyExtractor={item => item.id}
           contentContainerStyle={{flexGrow: 1}}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={ACCENT} colors={[ACCENT]} />
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={Colors.primary} colors={[Colors.primary]} />
           }
           ItemSeparatorComponent={() => <View style={styles.separator} />}
           renderItem={({item}) => (
@@ -152,24 +152,24 @@ const row = StyleSheet.create({
   avatarText: {fontSize: 20, fontWeight: '700'},
   body: {flex: 1},
   topLine: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 3},
-  name: {fontSize: 15, fontWeight: '700', color: '#111827', flex: 1, marginRight: 8},
-  time: {fontSize: 11, color: '#9CA3AF'},
+  name: {fontSize: 15, fontWeight: '700', color: Colors.textPrimary, flex: 1, marginRight: 8},
+  time: {fontSize: 11, color: Colors.textSecondary},
   bottomLine: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'},
-  preview: {fontSize: 13, color: '#6B7280', flex: 1, marginRight: 8},
-  previewBold: {color: '#374151', fontWeight: '600'},
+  preview: {fontSize: 13, color: Colors.textSecondary, flex: 1, marginRight: 8},
+  previewBold: {color: Colors.textPrimary, fontWeight: '600'},
   badge: {
-    minWidth: 20, height: 20, borderRadius: 10, backgroundColor: '#2563EB',
+    minWidth: 20, height: 20, borderRadius: 10, backgroundColor: Colors.badge,
     alignItems: 'center', justifyContent: 'center', paddingHorizontal: 5,
   },
-  badgeText: {fontSize: 11, color: '#FFFFFF', fontWeight: '700'},
+  badgeText: {fontSize: 11, color: Colors.textOnPrimary, fontWeight: '700'},
 });
 
 const styles = StyleSheet.create({
   safe: {flex: 1},
   center: {flex: 1, alignItems: 'center', justifyContent: 'center'},
-  separator: {height: 1, backgroundColor: '#F3F4F6', marginLeft: 80},
+  separator: {height: 1, backgroundColor: Colors.divider, marginLeft: 80},
   empty: {flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 80, paddingHorizontal: 32},
   emptyIcon: {fontSize: 52, marginBottom: 16},
-  emptyTitle: {fontSize: 18, fontWeight: '700', color: '#374151', marginBottom: 8},
-  emptySubtitle: {fontSize: 14, color: '#9CA3AF', textAlign: 'center', lineHeight: 22},
+  emptyTitle: {fontSize: 18, fontWeight: '700', color: Colors.textPrimary, marginBottom: 8},
+  emptySubtitle: {fontSize: 14, color: Colors.textSecondary, textAlign: 'center', lineHeight: 22},
 });

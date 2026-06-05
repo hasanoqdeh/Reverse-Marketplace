@@ -13,14 +13,13 @@ import {RootStackParamList} from '../../../types/navigation';
 import {MarketRequest} from '../../../types/api';
 import {getMyRequests} from '../../../api/requests';
 import AppHeader from '../../../components/AppHeader';
+import {Colors} from '../../../theme';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
-const ACCENT = '#2563EB';
-
 const STATUS_COLOR: Record<string, string> = {
-  ACTIVE: '#16A34A', HAS_BIDS: '#2563EB', DRAFT: '#6B7280',
-  COMPLETED: '#15803D', CANCELLED: '#DC2626', EXPIRED: '#D97706',
+  ACTIVE: Colors.success, HAS_BIDS: Colors.primary, DRAFT: Colors.textSecondary,
+  COMPLETED: '#15803D', CANCELLED: Colors.error, EXPIRED: Colors.warning,
 };
 const STATUS_LABEL: Record<string, string> = {
   ACTIVE: 'Active', HAS_BIDS: 'Has Bids', DRAFT: 'Draft',
@@ -117,60 +116,60 @@ const stepStyles = StyleSheet.create({
   row: {flexDirection: 'row', alignItems: 'flex-start', marginBottom: 16},
   circle: {
     width: 32, height: 32, borderRadius: 16,
-    backgroundColor: '#EFF6FF', borderWidth: 1.5, borderColor: '#BFDBFE',
+    backgroundColor: Colors.primaryLight, borderWidth: 1.5, borderColor: Colors.primary,
     alignItems: 'center', justifyContent: 'center', marginRight: 12, marginTop: 2,
   },
-  num: {fontSize: 14, fontWeight: '700', color: ACCENT},
+  num: {fontSize: 14, fontWeight: '700', color: Colors.primary},
   text: {flex: 1},
-  title: {fontSize: 15, fontWeight: '600', color: '#111827', marginBottom: 2},
-  desc: {fontSize: 13, color: '#6B7280', lineHeight: 18},
+  title: {fontSize: 15, fontWeight: '600', color: Colors.textPrimary, marginBottom: 2},
+  desc: {fontSize: 13, color: Colors.textSecondary, lineHeight: 18},
 });
 
 const styles = StyleSheet.create({
-  safe: {flex: 1, backgroundColor: '#F3F4F6'},
+  safe: {flex: 1, backgroundColor: Colors.feedBackground},
   scroll: {paddingBottom: 32},
 
   // Compose bar
   composeBar: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: '#FFFFFF', marginHorizontal: 16, marginTop: 12,
+    backgroundColor: Colors.surface, marginHorizontal: 16, marginTop: 12,
     borderRadius: 16, paddingHorizontal: 14, paddingVertical: 12,
-    shadowColor: '#000', shadowOffset: {width: 0, height: 2}, shadowOpacity: 0.07, shadowRadius: 8, elevation: 3,
-    borderWidth: 1, borderColor: '#E5E7EB',
+    shadowColor: '#000', shadowOffset: {width: 0, height: 1}, shadowOpacity: 0.08, shadowRadius: 4, elevation: 2,
+    borderWidth: 1, borderColor: Colors.divider,
     gap: 10,
   },
   composeAvatar: {
-    width: 38, height: 38, borderRadius: 19, backgroundColor: ACCENT,
+    width: 38, height: 38, borderRadius: 19, backgroundColor: Colors.primary,
     alignItems: 'center', justifyContent: 'center',
   },
-  composeAvatarText: {fontSize: 16, fontWeight: '700', color: '#FFFFFF'},
-  composePlaceholder: {flex: 1, fontSize: 15, color: '#9CA3AF', fontWeight: '400'},
+  composeAvatarText: {fontSize: 16, fontWeight: '700', color: Colors.textOnPrimary},
+  composePlaceholder: {flex: 1, fontSize: 15, color: Colors.textPlaceholder, fontWeight: '400'},
   composeIcon: {
-    width: 36, height: 36, borderRadius: 18, backgroundColor: '#EFF6FF',
+    width: 36, height: 36, borderRadius: 18, backgroundColor: Colors.primaryLight,
     alignItems: 'center', justifyContent: 'center',
   },
   composeIconText: {fontSize: 18},
 
-  sectionTitle: {fontSize: 17, fontWeight: '700', color: '#111827', marginTop: 24, marginBottom: 12, paddingHorizontal: 20},
+  sectionTitle: {fontSize: 17, fontWeight: '700', color: Colors.textPrimary, marginTop: 24, marginBottom: 12, paddingHorizontal: 20},
   stepsCard: {
-    backgroundColor: '#FFFFFF', marginHorizontal: 16, borderRadius: 16, padding: 20,
-    shadowColor: '#000', shadowOffset: {width: 0, height: 1}, shadowOpacity: 0.05, shadowRadius: 4, elevation: 2,
+    backgroundColor: Colors.surface, marginHorizontal: 16, borderRadius: 16, padding: 20,
+    shadowColor: '#000', shadowOffset: {width: 0, height: 1}, shadowOpacity: 0.08, shadowRadius: 2, elevation: 2,
   },
   emptyCard: {
-    backgroundColor: '#FFFFFF', marginHorizontal: 16, borderRadius: 16,
+    backgroundColor: Colors.surface, marginHorizontal: 16, borderRadius: 16,
     paddingVertical: 40, paddingHorizontal: 24, alignItems: 'center',
-    shadowColor: '#000', shadowOffset: {width: 0, height: 1}, shadowOpacity: 0.05, shadowRadius: 4, elevation: 2,
+    shadowColor: '#000', shadowOffset: {width: 0, height: 1}, shadowOpacity: 0.08, shadowRadius: 2, elevation: 2,
   },
   emptyIcon: {fontSize: 40, marginBottom: 12},
-  emptyTitle: {fontSize: 16, fontWeight: '600', color: '#374151', marginBottom: 6},
-  emptySubtitle: {fontSize: 13, color: '#9CA3AF', textAlign: 'center', lineHeight: 18},
+  emptyTitle: {fontSize: 16, fontWeight: '600', color: Colors.textPrimary, marginBottom: 6},
+  emptySubtitle: {fontSize: 13, color: Colors.textSecondary, textAlign: 'center', lineHeight: 18},
   recentCard: {
-    backgroundColor: '#FFFFFF', marginHorizontal: 16, marginBottom: 10, borderRadius: 14, padding: 14,
-    shadowColor: '#000', shadowOffset: {width: 0, height: 1}, shadowOpacity: 0.05, shadowRadius: 4, elevation: 2,
+    backgroundColor: Colors.surface, marginHorizontal: 16, marginBottom: 10, borderRadius: 14, padding: 14,
+    shadowColor: '#000', shadowOffset: {width: 0, height: 1}, shadowOpacity: 0.08, shadowRadius: 2, elevation: 2,
   },
   recentTop: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4},
   recentStatus: {fontSize: 12, fontWeight: '700'},
-  recentBids: {fontSize: 12, color: '#9CA3AF'},
-  recentTitle: {fontSize: 15, fontWeight: '600', color: '#111827', marginBottom: 2},
-  recentCategory: {fontSize: 12, color: '#6B7280'},
+  recentBids: {fontSize: 12, color: Colors.textSecondary},
+  recentTitle: {fontSize: 15, fontWeight: '600', color: Colors.textPrimary, marginBottom: 2},
+  recentCategory: {fontSize: 12, color: Colors.textSecondary},
 });

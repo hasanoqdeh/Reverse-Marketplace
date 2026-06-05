@@ -13,10 +13,11 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../types/navigation';
 import {updateProfile as apiUpdateProfile} from '../../api/auth';
+import {Colors} from '../../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'MerchantSetup'>;
 
-const ACCENT = '#16A34A';
+const ACCENT = Colors.primary;
 
 export default function MerchantSetupScreen({navigation}: Props) {
 
@@ -142,7 +143,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF', padding: 16, paddingBottom: 24,
     borderTopWidth: 1, borderTopColor: '#E5E7EB',
   },
-  saveBtn: {backgroundColor: ACCENT, borderRadius: 14, paddingVertical: 16, alignItems: 'center'},
-  saveBtnText: {fontSize: 16, fontWeight: '700', color: '#FFFFFF'},
+  saveBtn: {backgroundColor: ACCENT, borderRadius: 10, paddingVertical: 12, alignItems: 'center'},
+  saveBtnText: {fontSize: 14, fontWeight: '700', color: '#FFFFFF'},
   disabled: {opacity: 0.6},
 });

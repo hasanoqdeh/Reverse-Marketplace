@@ -1,15 +1,15 @@
-import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import HomeScreen from './screens/HomeScreen';
+import BuyerDiscoverScreen from './screens/BuyerDiscoverScreen';
 import RequestsScreen from './screens/RequestsScreen';
 import {BuyerTabParamList, RootStackParamList} from '../../types/navigation';
+import {Colors} from '../../theme';
 
 const Tab = createBottomTabNavigator<BuyerTabParamList>();
 
-const ACCENT = '#2563EB';
+const ACCENT = Colors.primary;
 const INACTIVE = '#9CA3AF';
 
 function FabButton() {
@@ -41,12 +41,12 @@ export default function BuyerNavigator() {
         tabBarLabelStyle: styles.tabLabel,
       }}>
       <Tab.Screen
-        name="Home"
-        component={HomeScreen}
+        name="Discover"
+        component={BuyerDiscoverScreen}
         options={{
-          tabBarLabel: 'Home',
+          tabBarLabel: 'Discover',
           tabBarIcon: ({focused}) => (
-            <Text style={[styles.tabIcon, {color: focused ? ACCENT : INACTIVE}]}>⌂</Text>
+            <Text style={[styles.tabIcon, {color: focused ? ACCENT : INACTIVE}]}>⊕</Text>
           ),
         }}
       />
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 14,
-    shadowColor: ACCENT,
+    shadowColor: Colors.primary,
     shadowOffset: {width: 0, height: 6},
     shadowOpacity: 0.45,
     shadowRadius: 10,

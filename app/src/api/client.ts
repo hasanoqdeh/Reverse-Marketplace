@@ -12,6 +12,15 @@ const BASE_URL =
     ? 'http://10.0.2.2:3000/api/v1'
     : 'http://localhost:3000/api/v1';
 
+export const SERVER_URL =
+  Platform.OS === 'android' ? 'http://10.0.2.2:3000' : 'http://localhost:3000';
+
+export function getImageUrl(imagePath: string): string {
+  if (!imagePath) return '';
+  if (imagePath.startsWith('http')) return imagePath;
+  return `${SERVER_URL}${imagePath}`;
+}
+
 let logoutCallback: (() => void) | null = null;
 
 export function setLogoutCallback(cb: () => void): void {

@@ -6,7 +6,7 @@ export type AuthStackParamList = {
 };
 
 export type BuyerTabParamList = {
-  Home: undefined;
+  Discover: undefined;
   NewRequest: undefined;
   Requests: undefined;
 };

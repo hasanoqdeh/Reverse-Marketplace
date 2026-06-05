@@ -1,6 +1,10 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import {
   ActivityIndicator,
+  Alert,
+  Animated,
+  Dimensions,
+  Modal,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -12,16 +16,17 @@ import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../../types/navigation';
 import {Bid, FulfillmentStatus, MarketRequest} from '../../../types/api';
-import {getMyBids, updateFulfillmentStatus} from '../../../api/bids';
+import {getBid, getMyBids, updateFulfillmentStatus, withdrawBid} from '../../../api/bids';
 import {getRequest} from '../../../api/requests';
 import {createRoom} from '../../../api/chat';
 import {getMyNotifications, markNotificationRead} from '../../../api/notifications';
 import {NotificationItem} from '../../../api/notifications';
 import AppHeader from '../../../components/AppHeader';
+import {Colors} from '../../../theme';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
-const ACCENT = '#16A34A';
+const {height: SCREEN_HEIGHT} = Dimensions.get('window');
 
 // ─── Fulfillment helpers ──────────────────────────────────────────────────────
 
@@ -43,11 +48,29 @@ const NEXT_ACTION: Partial<Record<FulfillmentStatus, {label: string; next: Fulfi
   IN_DELIVERY: {label: 'Mark as Delivered', next: 'DELIVERED'},
 };
 
+// ─── Status meta ─────────────────────────────────────────────────────────────
+
+const STATUS_META: Record<string, {label: string; bg: string; text: string}> = {
+  PENDING:   {label: 'Pending',   bg: '#FEF9C3', text: '#854D0E'},
+  ACCEPTED:  {label: 'Accepted',  bg: '#DCFCE7', text: '#15803D'},
+  REJECTED:  {label: 'Rejected',  bg: '#FEF2F2', text: '#B91C1C'},
+  EXPIRED:   {label: 'Expired',   bg: '#FEF3C7', text: '#B45309'},
+  WITHDRAWN: {label: 'Withdrawn', bg: '#F3F4F6', text: '#6B7280'},
+};
+
+function formatDate(iso?: string | null): string {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('en-US', {
+    month: 'short', day: 'numeric', year: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+  });
+}
+
 // ─── Notification helpers ─────────────────────────────────────────────────────
 
 function notifIcon(type: string): string {
-  if (type === 'NEW_MESSAGE')       return '💬';
-  if (type === 'BID_ACCEPTED')      return '🎉';
+  if (type === 'NEW_MESSAGE')        return '💬';
+  if (type === 'BID_ACCEPTED')       return '🎉';
   if (type === 'DELIVERY_CONFIRMED') return '✅';
   return '🔔';
 }
@@ -55,10 +78,10 @@ function notifIcon(type: string): string {
 function formatRelative(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diff / 60_000);
-  if (mins < 1)   return 'just now';
-  if (mins < 60)  return `${mins}m ago`;
+  if (mins < 1)  return 'just now';
+  if (mins < 60) return `${mins}m ago`;
   const hrs = Math.floor(mins / 60);
-  if (hrs < 24)   return `${hrs}h ago`;
+  if (hrs < 24)  return `${hrs}h ago`;
   return `${Math.floor(hrs / 24)}d ago`;
 }
 
@@ -165,13 +188,13 @@ function OrderCard({bid, request, updating, onFulfillment, onMessage, onViewRequ
 interface PendingCardProps {
   bid: Bid;
   request: MarketRequest | undefined;
-  onViewRequest: (requestId: string) => void;
+  onViewBid: (bid: Bid) => void;
 }
 
-function PendingCard({bid, request, onViewRequest}: PendingCardProps) {
+function PendingCard({bid, request, onViewBid}: PendingCardProps) {
   return (
-    <View style={pc.wrap}>
-      <TouchableOpacity style={pc.row} onPress={() => onViewRequest(bid.requestId)} activeOpacity={0.8}>
+    <TouchableOpacity style={pc.wrap} onPress={() => onViewBid(bid)} activeOpacity={0.8}>
+      <View style={pc.row}>
         <View style={pc.left}>
           <Text style={pc.title} numberOfLines={2}>
             {request?.title ?? `Request #${bid.requestId.slice(-6)}`}
@@ -180,20 +203,15 @@ function PendingCard({bid, request, onViewRequest}: PendingCardProps) {
             ${parseFloat(bid.amount).toFixed(2)} · {bid.deliveryDays}d · Pending
           </Text>
         </View>
-        <View style={[pc.statusDot, {backgroundColor: '#FCD34D'}]} />
-      </TouchableOpacity>
-
-      {/* Messaging only unlocked after bid is accepted */}
+        <View style={pc.right}>
+          <View style={[pc.statusDot, {backgroundColor: '#FCD34D'}]} />
+          <Text style={pc.chevron}>›</Text>
+        </View>
+      </View>
       <View style={pc.waitNote}>
-        <Text style={pc.waitText}>⏳ Waiting for buyer to accept your bid</Text>
+        <Text style={pc.waitText}>⏳ Waiting for buyer to accept · Tap to view details</Text>
       </View>
-
-      <View style={pc.actions}>
-        <TouchableOpacity style={pc.viewBtn} onPress={() => onViewRequest(bid.requestId)} activeOpacity={0.8}>
-          <Text style={pc.viewBtnText}>View Request →</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -211,19 +229,182 @@ function ActivityRow({item, onPress}: {item: NotificationItem; onPress: (item: N
   );
 }
 
+// ─── Bid Detail Sheet ─────────────────────────────────────────────────────────
+
+function TimelineRow({label, value, highlight}: {label: string; value: string; highlight?: string}) {
+  return (
+    <View style={tl.row}>
+      <Text style={tl.label}>{label}</Text>
+      <Text style={[tl.value, highlight ? {color: highlight, fontWeight: '600'} : null]}>{value}</Text>
+    </View>
+  );
+}
+
+function NoteCard({label, value}: {label: string; value: string}) {
+  return (
+    <View style={nc.card}>
+      <Text style={nc.label}>{label}</Text>
+      <Text style={nc.text}>{value}</Text>
+    </View>
+  );
+}
+
+interface BidDetailSheetProps {
+  bid: Bid;
+  request: MarketRequest | undefined;
+  visible: boolean;
+  onClose: () => void;
+  onMessage: (bid: Bid, request: MarketRequest | undefined) => void;
+  onWithdraw: (bidId: string) => void;
+  onFulfillment: (bidId: string, next: FulfillmentStatus) => void;
+  updating: boolean;
+}
+
+function BidDetailSheet({bid, request, visible, onClose, onMessage, onWithdraw, onFulfillment, updating}: BidDetailSheetProps) {
+  const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
+
+  React.useEffect(() => {
+    if (visible) {
+      Animated.spring(slideAnim, {toValue: 0, useNativeDriver: true, bounciness: 0, speed: 14}).start();
+    } else {
+      Animated.timing(slideAnim, {toValue: SCREEN_HEIGHT, duration: 200, useNativeDriver: true}).start();
+    }
+  }, [visible, slideAnim]);
+
+  const meta = STATUS_META[bid.status] ?? STATUS_META.PENDING;
+  const fulfillmentStatus = bid.fulfillmentStatus ?? 'AWAITING';
+  const action = NEXT_ACTION[fulfillmentStatus as FulfillmentStatus];
+
+  return (
+    <Modal visible={visible} transparent animationType="none" onRequestClose={onClose}>
+      <TouchableOpacity style={bs.overlay} activeOpacity={1} onPress={onClose} />
+      <Animated.View style={[bs.sheet, {transform: [{translateY: slideAnim}]}]}>
+        <View style={bs.handleWrap}>
+          <View style={bs.handle} />
+        </View>
+
+        <ScrollView
+          contentContainerStyle={bs.content}
+          showsVerticalScrollIndicator={false}
+          bounces={false}>
+
+          {/* Header */}
+          <View style={bs.header}>
+            <Text style={bs.headerTitle}>Bid Details</Text>
+            <TouchableOpacity onPress={onClose} hitSlop={{top: 12, bottom: 12, left: 12, right: 12}}>
+              <Text style={bs.closeBtn}>✕</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Request title */}
+          {request && (
+            <Text style={bs.requestTitle} numberOfLines={2}>{request.title}</Text>
+          )}
+
+          {/* Status badge */}
+          <View style={[bs.statusBadge, {backgroundColor: meta.bg}]}>
+            <View style={[bs.statusDot, {backgroundColor: meta.text}]} />
+            <Text style={[bs.statusText, {color: meta.text}]}>{meta.label}</Text>
+          </View>
+
+          {/* Amount + delivery */}
+          <View style={bs.amountRow}>
+            <View style={bs.amountBox}>
+              <Text style={bs.amountLabel}>Your Bid</Text>
+              <Text style={bs.amount}>${parseFloat(bid.amount).toFixed(2)}</Text>
+            </View>
+            <View style={bs.deliveryBox}>
+              <Text style={bs.amountLabel}>Delivery</Text>
+              <Text style={bs.deliveryDays}>{bid.deliveryDays}d</Text>
+            </View>
+          </View>
+
+          {/* Timeline */}
+          <View style={bs.section}>
+            <Text style={bs.sectionTitle}>Timeline</Text>
+            <TimelineRow label="Submitted" value={formatDate(bid.createdAt)} />
+            {bid.expiresAt   && <TimelineRow label="Expires"   value={formatDate(bid.expiresAt)}   />}
+            {bid.acceptedAt  && <TimelineRow label="Accepted"  value={formatDate(bid.acceptedAt)}  highlight={Colors.success} />}
+            {bid.rejectedAt  && <TimelineRow label="Rejected"  value={formatDate(bid.rejectedAt)}  highlight={Colors.error} />}
+            {bid.withdrawnAt && <TimelineRow label="Withdrawn" value={formatDate(bid.withdrawnAt)} highlight={Colors.textSecondary} />}
+          </View>
+
+          {/* Notes */}
+          {(bid.deliveryNotes || bid.specialTerms) && (
+            <View style={bs.section}>
+              <Text style={bs.sectionTitle}>Your Notes</Text>
+              {bid.deliveryNotes && <NoteCard label="Delivery Notes" value={bid.deliveryNotes} />}
+              {bid.specialTerms  && <NoteCard label="Special Terms"  value={bid.specialTerms} />}
+            </View>
+          )}
+
+          {/* Accepted banner */}
+          {bid.status === 'ACCEPTED' && (
+            <View style={bs.acceptedBanner}>
+              <Text style={bs.acceptedIcon}>🎉</Text>
+              <Text style={bs.acceptedTitle}>Bid Accepted!</Text>
+              <Text style={bs.acceptedDesc}>The buyer has accepted your bid.</Text>
+            </View>
+          )}
+
+          {/* Fulfillment (accepted bids) */}
+          {bid.status === 'ACCEPTED' && (
+            <View style={bs.section}>
+              <Text style={bs.sectionTitle}>Fulfillment</Text>
+              <FulfillmentBar status={fulfillmentStatus} />
+              <Text style={bs.fulfillLabel}>{FULFILLMENT_LABELS[fulfillmentStatus]}</Text>
+              {action && (
+                <TouchableOpacity
+                  style={[bs.actionBtn, updating && {opacity: 0.6}]}
+                  onPress={() => onFulfillment(bid.id, action.next)}
+                  disabled={updating}
+                  activeOpacity={0.8}>
+                  {updating
+                    ? <ActivityIndicator size="small" color="#FFF" />
+                    : <Text style={bs.actionBtnText}>{action.label}</Text>}
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
+
+          {/* Chat button */}
+          {bid.status === 'ACCEPTED' && bid.chatRoomId && (
+            <TouchableOpacity
+              style={bs.chatBtn}
+              onPress={() => { onClose(); onMessage(bid, request); }}
+              activeOpacity={0.8}>
+              <Text style={bs.chatBtnText}>💬  Message Buyer</Text>
+            </TouchableOpacity>
+          )}
+
+          {/* Withdraw button */}
+          {bid.status === 'PENDING' && (
+            <TouchableOpacity
+              style={bs.withdrawBtn}
+              onPress={() => onWithdraw(bid.id)}
+              activeOpacity={0.8}>
+              <Text style={bs.withdrawBtnText}>Withdraw Bid</Text>
+            </TouchableOpacity>
+          )}
+        </ScrollView>
+      </Animated.View>
+    </Modal>
+  );
+}
+
 // ─── Main Screen ──────────────────────────────────────────────────────────────
 
 export default function MerchantActivityScreen() {
   const navigation = useNavigation<Nav>();
 
-  const [activeBids,  setActiveBids]  = useState<Bid[]>([]);
-  const [pendingBids, setPendingBids] = useState<Bid[]>([]);
-  const [requestMap,  setRequestMap]  = useState<Record<string, MarketRequest>>({});
+  const [activeBids,    setActiveBids]    = useState<Bid[]>([]);
+  const [pendingBids,   setPendingBids]   = useState<Bid[]>([]);
+  const [requestMap,    setRequestMap]    = useState<Record<string, MarketRequest>>({});
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
-  const [loading,     setLoading]     = useState(true);
-  const [refreshing,  setRefreshing]  = useState(false);
-
+  const [loading,       setLoading]       = useState(true);
+  const [refreshing,    setRefreshing]    = useState(false);
   const [updatingBidId, setUpdatingBidId] = useState<string | null>(null);
+  const [sheetBid,      setSheetBid]      = useState<Bid | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -232,7 +413,7 @@ export default function MerchantActivityScreen() {
         getMyNotifications({limit: 20}),
       ]);
 
-      const all = bidsRes.bids;
+      const all     = bidsRes.bids;
       const active  = all.filter(b => b.status === 'ACCEPTED');
       const pending = all.filter(b => b.status === 'PENDING');
 
@@ -263,9 +444,9 @@ export default function MerchantActivityScreen() {
     setUpdatingBidId(bidId);
     try {
       await updateFulfillmentStatus(bidId, next);
-      setActiveBids(prev => prev.map(b =>
-        b.id === bidId ? {...b, fulfillmentStatus: next} : b,
-      ));
+      const update = (b: Bid) => b.id === bidId ? {...b, fulfillmentStatus: next} : b;
+      setActiveBids(prev => prev.map(update));
+      setSheetBid(prev => prev?.id === bidId ? {...prev, fulfillmentStatus: next} : prev);
     } catch {
       // silently ignore
     } finally {
@@ -275,10 +456,7 @@ export default function MerchantActivityScreen() {
 
   const openChat = useCallback(async (bid: Bid, request: MarketRequest | undefined) => {
     if (bid.chatRoomId) {
-      navigation.navigate('ChatRoom', {
-        roomId: bid.chatRoomId,
-        roomName: request?.title ?? 'Buyer',
-      });
+      navigation.navigate('ChatRoom', {roomId: bid.chatRoomId, roomName: request?.title ?? 'Buyer'});
       return;
     }
     try {
@@ -301,30 +479,68 @@ export default function MerchantActivityScreen() {
     navigation.navigate('RequestDetail', {requestId});
   }, [navigation]);
 
+  const openBidSheet = useCallback((bid: Bid) => {
+    setSheetBid(bid);
+  }, []);
+
+  const closeBidSheet = useCallback(() => {
+    setSheetBid(null);
+  }, []);
+
+  const handleWithdraw = useCallback((bidId: string) => {
+    Alert.alert('Withdraw Bid', 'Are you sure you want to withdraw this bid?', [
+      {text: 'Cancel'},
+      {
+        text: 'Withdraw',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await withdrawBid(bidId);
+            closeBidSheet();
+            setPendingBids(prev => prev.filter(b => b.id !== bidId));
+          } catch (err: any) {
+            Alert.alert('Error', err?.response?.data?.message ?? 'Failed to withdraw bid.');
+          }
+        },
+      },
+    ]);
+  }, [closeBidSheet]);
+
   const handleNotifPress = useCallback(async (item: NotificationItem) => {
     if (!item.isRead) markNotificationRead(item.id).catch(() => {});
     if (item.data?.chatRoomId) {
       navigation.navigate('ChatRoom', {roomId: item.data.chatRoomId, roomName: 'Buyer'});
     } else if (item.data?.bidId) {
-      navigation.navigate('BidDetail', {bidId: item.data.bidId});
+      const bidId = item.data.bidId;
+      const found = [...activeBids, ...pendingBids].find(b => b.id === bidId);
+      if (found) {
+        openBidSheet(found);
+      } else {
+        try {
+          const data = await getBid(bidId);
+          openBidSheet(data);
+        } catch {
+          // silently ignore
+        }
+      }
     }
-  }, [navigation]);
+  }, [navigation, activeBids, pendingBids, openBidSheet]);
 
   const empty = !loading && activeBids.length === 0 && pendingBids.length === 0 && notifications.length === 0;
 
   return (
     <View style={styles.root}>
-      <AppHeader accentColor={ACCENT} />
+      <AppHeader />
 
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator size="large" color={ACCENT} />
+          <ActivityIndicator size="large" color={Colors.primary} />
         </View>
       ) : (
         <ScrollView
           contentContainerStyle={styles.scroll}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={ACCENT} colors={[ACCENT]} />
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={Colors.primary} colors={[Colors.primary]} />
           }>
 
           {/* ── Active Orders ── */}
@@ -354,7 +570,7 @@ export default function MerchantActivityScreen() {
                   key={bid.id}
                   bid={bid}
                   request={requestMap[bid.requestId]}
-                  onViewRequest={handleViewRequest}
+                  onViewBid={openBidSheet}
                 />
               ))}
             </View>
@@ -381,6 +597,20 @@ export default function MerchantActivityScreen() {
           )}
         </ScrollView>
       )}
+
+      {/* ── Bid Detail Sheet ── */}
+      {sheetBid && (
+        <BidDetailSheet
+          bid={sheetBid}
+          request={requestMap[sheetBid.requestId]}
+          visible={!!sheetBid}
+          onClose={closeBidSheet}
+          onMessage={openChat}
+          onWithdraw={handleWithdraw}
+          onFulfillment={handleFulfillment}
+          updating={updatingBidId === sheetBid.id}
+        />
+      )}
     </View>
   );
 }
@@ -389,83 +619,119 @@ export default function MerchantActivityScreen() {
 
 const sh = StyleSheet.create({
   row:       {flexDirection: 'row', alignItems: 'center', marginBottom: 10},
-  title:     {fontSize: 15, fontWeight: '700', color: '#374151', flex: 1},
-  badge:     {backgroundColor: ACCENT, borderRadius: 10, paddingHorizontal: 8, paddingVertical: 2},
-  badgeText: {fontSize: 12, color: '#FFF', fontWeight: '700'},
+  title:     {fontSize: 15, fontWeight: '700', color: Colors.textSecondary, flex: 1},
+  badge:     {backgroundColor: Colors.primary, borderRadius: 10, paddingHorizontal: 8, paddingVertical: 2},
+  badgeText: {fontSize: 12, color: Colors.textOnPrimary, fontWeight: '700'},
 });
 
 const fb = StyleSheet.create({
   wrap:       {flexDirection: 'row', alignItems: 'center', marginVertical: 12},
-  dot:        {width: 12, height: 12, borderRadius: 6, backgroundColor: '#D1D5DB', alignItems: 'center', justifyContent: 'center'},
-  dotActive:  {backgroundColor: ACCENT},
-  check:      {fontSize: 7, color: '#FFF', fontWeight: '800'},
-  line:       {flex: 1, height: 2, backgroundColor: '#D1D5DB'},
-  lineActive: {backgroundColor: ACCENT},
+  dot:        {width: 12, height: 12, borderRadius: 6, backgroundColor: Colors.divider, alignItems: 'center', justifyContent: 'center'},
+  dotActive:  {backgroundColor: Colors.primary},
+  check:      {fontSize: 7, color: Colors.textOnPrimary, fontWeight: '800'},
+  line:       {flex: 1, height: 2, backgroundColor: Colors.divider},
+  lineActive: {backgroundColor: Colors.primary},
 });
 
 const oc = StyleSheet.create({
-  wrap:     {backgroundColor: '#FFF', borderRadius: 16, padding: 16, marginBottom: 12, shadowColor: '#000', shadowOffset: {width: 0, height: 2}, shadowOpacity: 0.07, shadowRadius: 8, elevation: 3},
-  top:      {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8},
-  tag:      {backgroundColor: '#DCFCE7', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3},
-  tagText:  {fontSize: 10, fontWeight: '800', color: ACCENT, letterSpacing: 0.5},
-  status:   {fontSize: 12, fontWeight: '600', color: '#6B7280'},
-  title:    {fontSize: 16, fontWeight: '700', color: '#111827', lineHeight: 22, marginBottom: 4},
-  meta:     {fontSize: 13, color: '#6B7280', marginBottom: 4},
-  actions:  {gap: 8, marginTop: 4},
-  btn:      {borderRadius: 10, paddingVertical: 11, paddingHorizontal: 16, alignItems: 'center', justifyContent: 'center'},
-  btnPrimary:     {backgroundColor: ACCENT},
-  btnPrimaryText: {color: '#FFF', fontWeight: '700', fontSize: 14},
-  btnSecondary:     {backgroundColor: '#F0FDF4', borderWidth: 1, borderColor: '#BBF7D0'},
-  btnSecondaryText: {color: ACCENT, fontWeight: '600', fontSize: 14},
-  btnDisabled:   {opacity: 0.6},
-  btnWaiting:    {backgroundColor: '#FEF3C7'},
-  btnWaitingText:{color: '#92400E', fontWeight: '600', fontSize: 13, textAlign: 'center'},
-  btnDone:       {backgroundColor: '#DCFCE7'},
-  btnDoneText:   {color: '#15803D', fontWeight: '700', fontSize: 14, textAlign: 'center'},
-  btnOutline:    {backgroundColor: '#FFF', borderWidth: 1, borderColor: '#E5E7EB'},
-  btnOutlineText:{color: '#374151', fontWeight: '600', fontSize: 13},
+  wrap:           {backgroundColor: Colors.surface, borderRadius: 16, padding: 16, marginBottom: 12, shadowColor: '#000', shadowOffset: {width: 0, height: 1}, shadowOpacity: 0.08, shadowRadius: 2, elevation: 2},
+  top:            {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8},
+  tag:            {backgroundColor: Colors.successLight, borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3},
+  tagText:        {fontSize: 10, fontWeight: '800', color: Colors.success, letterSpacing: 0.5},
+  status:         {fontSize: 12, fontWeight: '600', color: Colors.textSecondary},
+  title:          {fontSize: 16, fontWeight: '700', color: Colors.textPrimary, lineHeight: 22, marginBottom: 4},
+  meta:           {fontSize: 13, color: Colors.textSecondary, marginBottom: 4},
+  actions:        {gap: 8, marginTop: 4},
+  btn:            {borderRadius: 10, paddingVertical: 12, paddingHorizontal: 16, alignItems: 'center', justifyContent: 'center'},
+  btnPrimary:     {backgroundColor: Colors.primary},
+  btnPrimaryText: {color: Colors.textOnPrimary, fontWeight: '700', fontSize: 14},
+  btnSecondary:     {backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E4E6EA'},
+  btnSecondaryText: {color: Colors.textPrimary, fontWeight: '600', fontSize: 14},
+  btnDisabled:    {opacity: 0.6},
+  btnWaiting:     {backgroundColor: Colors.warningLight},
+  btnWaitingText: {color: '#92400E', fontWeight: '600', fontSize: 13, textAlign: 'center'},
+  btnDone:        {backgroundColor: Colors.successLight},
+  btnDoneText:    {color: Colors.success, fontWeight: '700', fontSize: 14, textAlign: 'center'},
+  btnOutline:     {backgroundColor: Colors.surface, borderWidth: 1, borderColor: Colors.divider},
+  btnOutlineText: {color: Colors.textPrimary, fontWeight: '600', fontSize: 13},
 });
 
 const pc = StyleSheet.create({
-  wrap:      {backgroundColor: '#FFF', borderRadius: 16, padding: 14, marginBottom: 10, shadowColor: '#000', shadowOffset: {width: 0, height: 1}, shadowOpacity: 0.05, shadowRadius: 4, elevation: 2},
+  wrap:      {backgroundColor: Colors.surface, borderRadius: 16, padding: 14, marginBottom: 10, shadowColor: '#000', shadowOffset: {width: 0, height: 1}, shadowOpacity: 0.08, shadowRadius: 2, elevation: 2},
   row:       {flexDirection: 'row', alignItems: 'flex-start', marginBottom: 10},
   left:      {flex: 1},
-  title:     {fontSize: 15, fontWeight: '700', color: '#111827', lineHeight: 20, marginBottom: 3},
-  meta:      {fontSize: 12, color: '#6B7280'},
-  statusDot: {width: 10, height: 10, borderRadius: 5, marginTop: 4, marginLeft: 8},
-  actions:   {flexDirection: 'row', gap: 8},
-  msgBtn:    {flex: 1, borderRadius: 9, paddingVertical: 9, backgroundColor: '#F0FDF4', borderWidth: 1, borderColor: '#BBF7D0', alignItems: 'center'},
-  msgBtnText:{fontSize: 13, fontWeight: '600', color: ACCENT},
-  replyBtn:  {flex: 1, borderRadius: 9, paddingVertical: 9, backgroundColor: '#EFF6FF', borderWidth: 1, borderColor: '#BFDBFE', alignItems: 'center'},
-  replyBtnText:{fontSize: 13, fontWeight: '600', color: '#2563EB'},
-  replyBox:  {marginTop: 10, gap: 8},
-  input:     {borderWidth: 1, borderColor: '#E5E7EB', borderRadius: 10, padding: 10, fontSize: 14, color: '#111827', minHeight: 72, textAlignVertical: 'top'},
-  chips:     {flexDirection: 'row', gap: 6, flexWrap: 'wrap'},
-  chip:      {borderRadius: 20, paddingHorizontal: 10, paddingVertical: 5, backgroundColor: '#F3F4F6'},
-  chipText:  {fontSize: 12, color: '#374151'},
-  waitNote:  {backgroundColor: '#FEF9C3', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 7, marginBottom: 10},
+  right:     {alignItems: 'center', gap: 4},
+  title:     {fontSize: 15, fontWeight: '700', color: Colors.textPrimary, lineHeight: 20, marginBottom: 3},
+  meta:      {fontSize: 12, color: Colors.textSecondary},
+  statusDot: {width: 10, height: 10, borderRadius: 5, marginTop: 4},
+  chevron:   {fontSize: 20, color: Colors.textSecondary, fontWeight: '300'},
+  waitNote:  {backgroundColor: Colors.warningLight, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 7},
   waitText:  {fontSize: 12, color: '#92400E', fontWeight: '500'},
-  viewBtn:   {flex: 1, borderRadius: 9, paddingVertical: 9, backgroundColor: '#F3F4F6', alignItems: 'center'},
-  viewBtnText:{fontSize: 13, fontWeight: '600', color: '#374151'},
 });
 
 const ar = StyleSheet.create({
-  wrap:  {flexDirection: 'row', alignItems: 'flex-start', backgroundColor: '#FFF', borderRadius: 14, padding: 12, marginBottom: 8, shadowColor: '#000', shadowOffset: {width: 0, height: 1}, shadowOpacity: 0.04, shadowRadius: 3, elevation: 1},
+  wrap:  {flexDirection: 'row', alignItems: 'flex-start', backgroundColor: Colors.surface, borderRadius: 14, padding: 12, marginBottom: 8, shadowColor: '#000', shadowOffset: {width: 0, height: 1}, shadowOpacity: 0.06, shadowRadius: 2, elevation: 1},
   icon:  {fontSize: 22, marginRight: 12, width: 30, textAlign: 'center'},
   body:  {flex: 1},
-  title: {fontSize: 14, fontWeight: '700', color: '#111827', marginBottom: 2},
-  msg:   {fontSize: 13, color: '#6B7280', marginBottom: 3},
-  time:  {fontSize: 11, color: '#9CA3AF'},
-  dot:   {width: 9, height: 9, borderRadius: 5, backgroundColor: '#2563EB', marginTop: 4, marginLeft: 6},
+  title: {fontSize: 14, fontWeight: '700', color: Colors.textPrimary, marginBottom: 2},
+  msg:   {fontSize: 13, color: Colors.textSecondary, marginBottom: 3},
+  time:  {fontSize: 11, color: Colors.textSecondary},
+  dot:   {width: 9, height: 9, borderRadius: 5, backgroundColor: Colors.primary, marginTop: 4, marginLeft: 6},
+});
+
+const bs = StyleSheet.create({
+  overlay:       {flex: 1, backgroundColor: 'rgba(0,0,0,0.4)'},
+  sheet:         {position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: Colors.surface, borderTopLeftRadius: 20, borderTopRightRadius: 20, maxHeight: SCREEN_HEIGHT * 0.9},
+  handleWrap:    {alignItems: 'center', paddingTop: 12, paddingBottom: 4},
+  handle:        {width: 36, height: 4, borderRadius: 2, backgroundColor: Colors.divider},
+  content:       {paddingHorizontal: 20, paddingBottom: 40},
+  header:        {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 12, marginBottom: 4},
+  headerTitle:   {fontSize: 17, fontWeight: '700', color: Colors.textPrimary},
+  closeBtn:      {fontSize: 16, color: Colors.textSecondary, fontWeight: '600'},
+  requestTitle:  {fontSize: 15, fontWeight: '600', color: Colors.textSecondary, marginBottom: 12, lineHeight: 20},
+  statusBadge:   {flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', borderRadius: 20, paddingHorizontal: 12, paddingVertical: 6, marginBottom: 16, gap: 6},
+  statusDot:     {width: 8, height: 8, borderRadius: 4},
+  statusText:    {fontSize: 13, fontWeight: '700'},
+  amountRow:     {flexDirection: 'row', gap: 12, marginBottom: 20},
+  amountBox:     {flex: 1, backgroundColor: Colors.primaryLight, borderRadius: 14, padding: 16, alignItems: 'center'},
+  deliveryBox:   {flex: 1, backgroundColor: Colors.feedBackground, borderRadius: 14, padding: 16, alignItems: 'center'},
+  amountLabel:   {fontSize: 11, fontWeight: '600', color: Colors.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4},
+  amount:        {fontSize: 28, fontWeight: '800', color: Colors.primary},
+  deliveryDays:  {fontSize: 28, fontWeight: '800', color: Colors.textPrimary},
+  section:       {backgroundColor: Colors.feedBackground, borderRadius: 14, padding: 14, marginBottom: 12},
+  sectionTitle:  {fontSize: 12, fontWeight: '700', color: Colors.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10},
+  fulfillLabel:  {fontSize: 13, color: Colors.textSecondary, textAlign: 'center', marginTop: 4},
+  actionBtn:     {marginTop: 12, borderRadius: 10, backgroundColor: Colors.primary, paddingVertical: 12, alignItems: 'center'},
+  actionBtnText: {fontSize: 14, fontWeight: '700', color: Colors.textOnPrimary},
+  acceptedBanner:{backgroundColor: Colors.successLight, borderRadius: 14, padding: 16, alignItems: 'center', borderWidth: 1, borderColor: '#BBF7D0', marginBottom: 12},
+  acceptedIcon:  {fontSize: 28, marginBottom: 6},
+  acceptedTitle: {fontSize: 16, fontWeight: '800', color: Colors.success, marginBottom: 4},
+  acceptedDesc:  {fontSize: 13, color: '#166534', textAlign: 'center'},
+  chatBtn:       {borderRadius: 10, backgroundColor: Colors.primaryLight, borderWidth: 1, borderColor: Colors.primary, paddingVertical: 12, alignItems: 'center', marginBottom: 10},
+  chatBtnText:   {fontSize: 14, fontWeight: '700', color: Colors.primary},
+  withdrawBtn:   {borderWidth: 1, borderColor: '#FCA5A5', backgroundColor: Colors.errorLight, borderRadius: 10, paddingVertical: 12, alignItems: 'center', marginBottom: 10},
+  withdrawBtnText:{fontSize: 14, fontWeight: '700', color: Colors.error},
+});
+
+const tl = StyleSheet.create({
+  row:   {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', paddingVertical: 7, borderBottomWidth: 1, borderBottomColor: Colors.divider},
+  label: {fontSize: 13, color: Colors.textSecondary},
+  value: {fontSize: 13, color: Colors.textPrimary, textAlign: 'right', flex: 1, paddingLeft: 16},
+});
+
+const nc = StyleSheet.create({
+  card:  {backgroundColor: Colors.surface, borderRadius: 10, padding: 12, marginBottom: 8, borderWidth: 1, borderColor: Colors.divider},
+  label: {fontSize: 11, fontWeight: '700', color: Colors.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4},
+  text:  {fontSize: 14, color: Colors.textPrimary, lineHeight: 20},
 });
 
 const styles = StyleSheet.create({
-  root:      {flex: 1, backgroundColor: '#F9FAFB'},
+  root:      {flex: 1, backgroundColor: Colors.feedBackground},
   center:    {flex: 1, alignItems: 'center', justifyContent: 'center'},
   scroll:    {padding: 14, paddingBottom: 40},
   section:   {marginBottom: 22},
   emptyWrap: {flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 80},
   emptyIcon: {fontSize: 52, marginBottom: 16},
-  emptyTitle:{fontSize: 18, fontWeight: '700', color: '#374151', marginBottom: 8},
-  emptyMsg:  {fontSize: 14, color: '#9CA3AF', textAlign: 'center', lineHeight: 22, paddingHorizontal: 24},
+  emptyTitle:{fontSize: 18, fontWeight: '700', color: Colors.textPrimary, marginBottom: 8},
+  emptyMsg:  {fontSize: 14, color: Colors.textSecondary, textAlign: 'center', lineHeight: 22, paddingHorizontal: 24},
 });

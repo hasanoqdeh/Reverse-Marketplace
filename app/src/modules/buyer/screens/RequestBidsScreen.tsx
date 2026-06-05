@@ -15,19 +15,18 @@ import {RootStackParamList} from '../../../types/navigation';
 import {Bid} from '../../../types/api';
 import {getRequestBids, acceptBid, rejectBid} from '../../../api/bids';
 import {getMerchantProfile} from '../../../api/reviews';
+import {Colors} from '../../../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'RequestBids'>;
 
 type MerchantStats = {avgRating: number | null; reviewCount: number; completedBids: number};
-
-const ACCENT = '#2563EB';
 
 const STATUS_META: Record<string, {label: string; bg: string; text: string}> = {
   PENDING:   {label: 'Pending',   bg: '#FEF9C3', text: '#854D0E'},
   ACCEPTED:  {label: 'Accepted',  bg: '#DCFCE7', text: '#15803D'},
   REJECTED:  {label: 'Rejected',  bg: '#FEF2F2', text: '#B91C1C'},
   EXPIRED:   {label: 'Expired',   bg: '#FEF3C7', text: '#B45309'},
-  WITHDRAWN: {label: 'Withdrawn', bg: '#F3F4F6', text: '#6B7280'},
+  WITHDRAWN: {label: 'Withdrawn', bg: Colors.feedBackground, text: Colors.textSecondary},
 };
 
 function formatDate(iso: string): string {
@@ -270,7 +269,7 @@ export default function RequestBidsScreen({route, navigation}: Props) {
 
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator size="large" color={ACCENT} />
+          <ActivityIndicator size="large" color={Colors.primary} />
         </View>
       ) : (
         <FlatList
@@ -278,7 +277,7 @@ export default function RequestBidsScreen({route, navigation}: Props) {
           keyExtractor={item => item.id}
           contentContainerStyle={{padding: 14, paddingBottom: 40, flexGrow: 1}}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={ACCENT} colors={[ACCENT]} />
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={Colors.primary} colors={[Colors.primary]} />
           }
           renderItem={({item}) => (
             <BidCard
@@ -314,74 +313,74 @@ function SummaryChip({label, value, accent}: {label: string; value: string; acce
 }
 
 const sc = StyleSheet.create({
-  chip: {flex: 1, alignItems: 'center', backgroundColor: '#F3F4F6', borderRadius: 10, paddingVertical: 8},
-  chipAccent: {backgroundColor: '#DBEAFE'},
-  label: {fontSize: 10, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: 0.5},
-  labelAccent: {color: '#3B82F6'},
-  value: {fontSize: 15, fontWeight: '700', color: '#111827', marginTop: 2},
-  valueAccent: {color: ACCENT},
+  chip: {flex: 1, alignItems: 'center', backgroundColor: Colors.feedBackground, borderRadius: 10, paddingVertical: 8},
+  chipAccent: {backgroundColor: Colors.primaryLight},
+  label: {fontSize: 10, color: Colors.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5},
+  labelAccent: {color: Colors.primary},
+  value: {fontSize: 15, fontWeight: '700', color: Colors.textPrimary, marginTop: 2},
+  valueAccent: {color: Colors.primary},
 });
 
 const card = StyleSheet.create({
   wrap: {
-    backgroundColor: '#FFFFFF', borderRadius: 16, padding: 16, marginBottom: 12,
+    backgroundColor: Colors.surface, borderRadius: 16, padding: 16, marginBottom: 12,
     shadowColor: '#000', shadowOffset: {width: 0, height: 2}, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2,
   },
   merchantRow: {flexDirection: 'row', alignItems: 'center', marginBottom: 12, gap: 10},
-  avatarCircle: {width: 36, height: 36, borderRadius: 18, backgroundColor: '#DBEAFE', alignItems: 'center', justifyContent: 'center'},
-  avatarText: {fontSize: 12, fontWeight: '700', color: ACCENT},
+  avatarCircle: {width: 36, height: 36, borderRadius: 18, backgroundColor: Colors.primaryLight, alignItems: 'center', justifyContent: 'center'},
+  avatarText: {fontSize: 12, fontWeight: '700', color: Colors.primary},
   merchantInfo: {flex: 1},
-  merchantId: {fontSize: 13, fontWeight: '600', color: '#374151'},
-  merchantStats: {fontSize: 12, color: '#F59E0B', marginTop: 1},
+  merchantId: {fontSize: 13, fontWeight: '600', color: Colors.textPrimary},
+  merchantStats: {fontSize: 12, color: Colors.warning, marginTop: 1},
   top: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10},
   badge: {borderRadius: 16, paddingHorizontal: 10, paddingVertical: 4},
   badgeText: {fontSize: 11, fontWeight: '700'},
-  date: {fontSize: 11, color: '#9CA3AF'},
-  amount: {fontSize: 30, fontWeight: '800', color: '#111827', marginBottom: 2},
-  delivery: {fontSize: 13, color: '#6B7280', marginBottom: 8},
-  notes: {fontSize: 13, color: '#6B7280', lineHeight: 18, marginBottom: 10, fontStyle: 'italic'},
+  date: {fontSize: 11, color: Colors.textSecondary},
+  amount: {fontSize: 30, fontWeight: '800', color: Colors.textPrimary, marginBottom: 2},
+  delivery: {fontSize: 13, color: Colors.textSecondary, marginBottom: 8},
+  notes: {fontSize: 13, color: Colors.textSecondary, lineHeight: 18, marginBottom: 10, fontStyle: 'italic'},
   actions: {flexDirection: 'row', gap: 10, marginTop: 4},
   rejectBtn: {
-    flex: 1, borderRadius: 12, borderWidth: 1.5, borderColor: '#FCA5A5',
-    backgroundColor: '#FEF2F2', paddingVertical: 11, alignItems: 'center',
+    flex: 1, borderRadius: 10, borderWidth: 1.5, borderColor: '#FCA5A5',
+    backgroundColor: Colors.errorLight, paddingVertical: 12, alignItems: 'center',
   },
   acceptBtn: {
-    flex: 1, borderRadius: 12, backgroundColor: ACCENT,
-    paddingVertical: 11, alignItems: 'center',
+    flex: 1, borderRadius: 10, backgroundColor: Colors.primary,
+    paddingVertical: 12, alignItems: 'center',
   },
   chatBtn: {
-    width: 44, borderRadius: 12, backgroundColor: '#F3F4F6',
-    paddingVertical: 11, alignItems: 'center',
+    width: 44, borderRadius: 10, backgroundColor: Colors.feedBackground,
+    paddingVertical: 12, alignItems: 'center',
   },
   chatFullBtn: {
-    marginTop: 10, borderRadius: 12, backgroundColor: '#EFF6FF',
-    borderWidth: 1, borderColor: '#BFDBFE', paddingVertical: 11, alignItems: 'center',
+    marginTop: 10, borderRadius: 10, backgroundColor: '#FFFFFF',
+    borderWidth: 1, borderColor: '#E4E6EA', paddingVertical: 12, alignItems: 'center',
   },
-  chatFullText: {fontSize: 14, fontWeight: '700', color: ACCENT},
+  chatFullText: {fontSize: 14, fontWeight: '700', color: Colors.primary},
   chatBtnText: {fontSize: 16},
-  rejectText: {fontSize: 14, fontWeight: '700', color: '#B91C1C'},
-  acceptText: {fontSize: 14, fontWeight: '700', color: '#FFFFFF'},
+  rejectText: {fontSize: 14, fontWeight: '700', color: Colors.error},
+  acceptText: {fontSize: 14, fontWeight: '700', color: Colors.textOnPrimary},
   disabledBtn: {opacity: 0.6},
 });
 
 const styles = StyleSheet.create({
-  safe: {flex: 1, backgroundColor: '#F3F4F6'},
+  safe: {flex: 1, backgroundColor: Colors.feedBackground},
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    backgroundColor: '#FFFFFF', paddingHorizontal: 20, paddingVertical: 14,
-    borderBottomWidth: 1, borderBottomColor: '#E5E7EB',
+    backgroundColor: Colors.surface, paddingHorizontal: 20, paddingVertical: 14,
+    borderBottomWidth: 1, borderBottomColor: Colors.divider,
   },
-  back: {fontSize: 20, color: '#374151', fontWeight: '600'},
+  back: {fontSize: 20, color: Colors.textPrimary, fontWeight: '600'},
   headerCenter: {flex: 1, alignItems: 'center'},
-  headerTitle: {fontSize: 17, fontWeight: '700', color: '#111827'},
-  headerSub: {fontSize: 12, color: '#6B7280', marginTop: 1},
+  headerTitle: {fontSize: 17, fontWeight: '700', color: Colors.textPrimary},
+  headerSub: {fontSize: 12, color: Colors.textSecondary, marginTop: 1},
   summaryBar: {
     flexDirection: 'row', gap: 8, paddingHorizontal: 14, paddingVertical: 10,
-    backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#E5E7EB',
+    backgroundColor: Colors.surface, borderBottomWidth: 1, borderBottomColor: Colors.divider,
   },
   center: {flex: 1, alignItems: 'center', justifyContent: 'center'},
   empty: {flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 80},
   emptyIcon: {fontSize: 52, marginBottom: 16},
-  emptyTitle: {fontSize: 18, fontWeight: '700', color: '#374151', marginBottom: 8},
-  emptySubtitle: {fontSize: 14, color: '#9CA3AF', textAlign: 'center', lineHeight: 22},
+  emptyTitle: {fontSize: 18, fontWeight: '700', color: Colors.textPrimary, marginBottom: 8},
+  emptySubtitle: {fontSize: 14, color: Colors.textSecondary, textAlign: 'center', lineHeight: 22},
 });

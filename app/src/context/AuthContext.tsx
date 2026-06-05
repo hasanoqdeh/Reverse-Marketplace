@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as AuthAPI from '../api/auth';
 import {setLogoutCallback} from '../api/client';
 import {User} from '../types/api';
+import {usePushNotifications} from '../hooks/usePushNotifications';
 
 interface AuthContextValue {
   user: User | null;
@@ -113,6 +114,9 @@ export function AuthProvider({children}: {children: React.ReactNode}) {
     setError(null);
     try {
       const response = await AuthAPI.verifyOTP(phone, otp);
+      if (!response.success || !response.tokens || !response.user) {
+        throw new Error(response.message ?? 'OTP verification failed');
+      }
       const { tokens, user: responseUser } = response;
       const { accessToken, refreshToken } = tokens;
 
@@ -168,8 +172,18 @@ export function AuthProvider({children}: {children: React.ReactNode}) {
   );
 
   const switchAccount = useCallback(async (phone: string) => {
-    await AuthAPI.sendOTP(phone);
+    const otpRes = await AuthAPI.sendOTP(phone);
+    if (!otpRes.success) {
+      const msg = (otpRes as any).message ?? 'Failed to send OTP';
+      throw new Error(msg);
+    }
+
     const response = await AuthAPI.verifyOTP(phone, '123456');
+    if (!response.success || !response.tokens) {
+      const msg = (response as any).message ?? 'OTP verification failed';
+      throw new Error(msg);
+    }
+
     const {tokens, user: responseUser} = response;
     await Promise.all([
       AsyncStorage.setItem('accessToken', tokens.accessToken),
@@ -181,6 +195,8 @@ export function AuthProvider({children}: {children: React.ReactNode}) {
     setLoginStep('phone');
     setError(null);
   }, []);
+
+  usePushNotifications(isAuthenticated);
 
   const needsProfileSetup =
     isAuthenticated && !isLoading && !user?.profile?.firstName;

@@ -67,3 +67,9 @@ export const markAllNotificationsRead = () =>
 
 export const deleteNotification = (id: string) =>
   request<{ success: boolean }>('DELETE', `/notifications/${id}`);
+
+export const registerDeviceToken = (token: string, platform: 'android' | 'ios') =>
+  request<{ success: boolean }>('POST', '/notifications/device-token', { token, platform });
+
+export const removeDeviceToken = (token: string) =>
+  request<{ success: boolean }>('DELETE', '/notifications/device-token', { token });

@@ -13,10 +13,11 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../../types/navigation';
 import {Bid, FulfillmentStatus} from '../../../types/api';
 import {getBid, withdrawBid, updateFulfillmentStatus} from '../../../api/bids';
+import {Colors} from '../../../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BidDetail'>;
 
-const ACCENT = '#16A34A';
+const ACCENT = Colors.primary;
 
 const STATUS_META: Record<string, {label: string; bg: string; text: string}> = {
   PENDING:   {label: 'Pending',   bg: '#FEF9C3', text: '#854D0E'},
@@ -275,8 +276,8 @@ const ft = StyleSheet.create({
   labelDone: {color: '#16A34A'},
   labelActive: {fontSize: 13, fontWeight: '700', color: '#D97706'},
   actionBtn: {
-    marginTop: 12, borderRadius: 12, backgroundColor: '#16A34A',
-    paddingVertical: 13, alignItems: 'center',
+    marginTop: 12, borderRadius: 10, backgroundColor: '#16A34A',
+    paddingVertical: 12, alignItems: 'center',
   },
   actionText: {fontSize: 14, fontWeight: '700', color: '#FFFFFF'},
   disabledBtn: {opacity: 0.6},
@@ -351,12 +352,12 @@ const styles = StyleSheet.create({
   },
   withdrawBtn: {
     borderWidth: 1.5, borderColor: '#FCA5A5', backgroundColor: '#FEF2F2',
-    borderRadius: 14, paddingVertical: 14, alignItems: 'center',
+    borderRadius: 10, paddingVertical: 12, alignItems: 'center',
   },
-  withdrawBtnText: {fontSize: 15, fontWeight: '700', color: '#B91C1C'},
+  withdrawBtnText: {fontSize: 14, fontWeight: '700', color: '#B91C1C'},
   chatBtn: {
-    marginTop: 4, borderRadius: 14, backgroundColor: '#EFF6FF',
-    borderWidth: 1, borderColor: '#BFDBFE', paddingVertical: 14, alignItems: 'center',
+    marginTop: 4, borderRadius: 10, backgroundColor: '#EFF6FF',
+    borderWidth: 1, borderColor: '#BFDBFE', paddingVertical: 12, alignItems: 'center',
   },
-  chatBtnText: {fontSize: 15, fontWeight: '700', color: '#2563EB'},
+  chatBtnText: {fontSize: 14, fontWeight: '700', color: '#2563EB'},
 });

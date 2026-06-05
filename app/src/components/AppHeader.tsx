@@ -1,6 +1,7 @@
 import React, {useCallback, useRef, useState} from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Animated,
   Modal,
   StyleSheet,
@@ -15,6 +16,7 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useAuth} from '../context/AuthContext';
 import {RootStackParamList} from '../types/navigation';
 import NotificationBell from './NotificationBell';
+import {Colors} from '../theme';
 
 const TEST_ACCOUNTS = [
   {phone: '+962780000004', name: 'Khalid', role: 'BUYER'},
@@ -41,7 +43,7 @@ interface Props {
   onOptions?: () => void;
 }
 
-export default function AppHeader({accentColor = '#2563EB', onBack, title, onOptions}: Props) {
+export default function AppHeader({accentColor = Colors.primary, onBack, title, onOptions}: Props) {
   const navigation = useNavigation<Nav>();
   const {user, logout, switchAccount} = useAuth();
   const insets = useSafeAreaInsets();
@@ -83,8 +85,8 @@ export default function AppHeader({accentColor = '#2563EB', onBack, title, onOpt
     try {
       await switchAccount(phone);
       closeDrawer();
-    } catch {
-      // silently ignore — user stays logged in
+    } catch (err: any) {
+      Alert.alert('Switch Failed', err?.message ?? 'Could not switch account. Try again.');
     } finally {
       setSwitchingPhone(null);
     }
@@ -92,7 +94,7 @@ export default function AppHeader({accentColor = '#2563EB', onBack, title, onOpt
 
   if (onBack !== undefined) {
     return (
-      <View style={[styles.header, {backgroundColor: accentColor, paddingTop: insets.top + 14}]}>
+      <View style={[styles.header, {backgroundColor: Colors.background, paddingTop: insets.top + 14}]}>
         <TouchableOpacity style={styles.btn} onPress={onBack} hitSlop={{top: 8, bottom: 8, left: 8, right: 8}}>
           <Text style={styles.backArrow}>←</Text>
         </TouchableOpacity>
@@ -113,7 +115,7 @@ export default function AppHeader({accentColor = '#2563EB', onBack, title, onOpt
   return (
     <>
       {/* ── Header bar ───────────────────────────────────────── */}
-      <View style={[styles.header, {backgroundColor: accentColor, paddingTop: insets.top + 14}]}>
+      <View style={[styles.header, {backgroundColor: Colors.background, paddingTop: insets.top + 14}]}>
         {/* Burger */}
         <TouchableOpacity style={styles.btn} onPress={openDrawer} hitSlop={{top: 8, bottom: 8, left: 8, right: 8}}>
           <View style={styles.burger}>
@@ -134,7 +136,7 @@ export default function AppHeader({accentColor = '#2563EB', onBack, title, onOpt
           style={styles.btn}
           onPress={() => navigation.navigate('Notifications')}
           hitSlop={{top: 8, bottom: 8, left: 8, right: 8}}>
-          <NotificationBell size={24} color="#FFFFFF" />
+          <NotificationBell size={24} color={Colors.textPrimary} />
         </TouchableOpacity>
       </View>
 
@@ -147,7 +149,7 @@ export default function AppHeader({accentColor = '#2563EB', onBack, title, onOpt
         <Animated.View style={[styles.drawer, {transform: [{translateX: drawerAnim}]}]}>
           <SafeAreaView style={{flex: 1}} edges={['top', 'bottom']}>
             {/* Drawer header */}
-            <View style={[styles.drawerHeader, {backgroundColor: accentColor}]}>
+            <View style={styles.drawerHeader}>
               <View style={styles.avatar}>
                 <Text style={styles.avatarText}>{initial}</Text>
               </View>
@@ -243,31 +245,32 @@ const sw = StyleSheet.create({
   rowActive: {backgroundColor: '#EFF6FF'},
   roleBadge: {
     width: 32, height: 32, borderRadius: 16,
-    backgroundColor: '#2563EB',
+    backgroundColor: Colors.primary,
     alignItems: 'center', justifyContent: 'center', marginRight: 12,
   },
-  roleBadgeMerchant: {backgroundColor: '#16A34A'},
+  roleBadgeMerchant: {backgroundColor: Colors.success},
   roleText: {color: '#FFFFFF', fontSize: 13, fontWeight: '700'},
   info: {flex: 1},
   name: {fontSize: 14, fontWeight: '600', color: '#111827'},
   role: {fontSize: 11, color: '#6B7280', marginTop: 1},
-  check: {fontSize: 16, color: '#2563EB', fontWeight: '700'},
+  check: {fontSize: 16, color: Colors.primary, fontWeight: '700'},
 });
 
 const styles = StyleSheet.create({
   header: {
     flexDirection: 'row', alignItems: 'center',
     paddingHorizontal: 16, paddingBottom: 20, gap: 12,
+    borderBottomWidth: 1, borderBottomColor: Colors.divider,
   },
   btn:        {width: 40, height: 40, alignItems: 'center', justifyContent: 'center'},
   center:     {flex: 1},
-  greeting:   {fontSize: 13, color: '#BFDBFE', fontWeight: '500'},
-  name:       {fontSize: 20, fontWeight: '700', color: '#FFFFFF'},
+  greeting:   {fontSize: 13, color: Colors.textSecondary, fontWeight: '500'},
+  name:       {fontSize: 20, fontWeight: '700', color: Colors.textPrimary},
   burger:     {gap: 5},
-  burgerLine: {width: 22, height: 2.5, borderRadius: 2, backgroundColor: '#FFFFFF'},
-  backArrow:  {fontSize: 22, color: '#FFFFFF', fontWeight: '600'},
-  titleText:  {fontSize: 18, fontWeight: '700', color: '#FFFFFF'},
-  optionsIcon:{fontSize: 24, color: '#FFFFFF', fontWeight: '700'},
+  burgerLine: {width: 22, height: 2.5, borderRadius: 2, backgroundColor: Colors.textPrimary},
+  backArrow:  {fontSize: 22, color: Colors.textPrimary, fontWeight: '600'},
+  titleText:  {fontSize: 18, fontWeight: '700', color: Colors.textPrimary},
+  optionsIcon:{fontSize: 24, color: Colors.textPrimary, fontWeight: '700'},
 
   overlay: {...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.45)'},
   drawer: {
@@ -275,11 +278,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     shadowColor: '#000', shadowOffset: {width: 4, height: 0}, shadowOpacity: 0.15, shadowRadius: 16, elevation: 20,
   },
-  drawerHeader: {paddingHorizontal: 20, paddingTop: 24, paddingBottom: 28},
+  drawerHeader: {paddingHorizontal: 20, paddingTop: 24, paddingBottom: 28, backgroundColor: Colors.primary},
   avatar:       {width: 56, height: 56, borderRadius: 28, backgroundColor: 'rgba(255,255,255,0.25)', alignItems: 'center', justifyContent: 'center', marginBottom: 12},
   avatarText:   {fontSize: 22, fontWeight: '700', color: '#FFFFFF'},
   drawerName:   {fontSize: 17, fontWeight: '700', color: '#FFFFFF', marginBottom: 2},
-  drawerPhone:  {fontSize: 13, color: '#BFDBFE'},
+  drawerPhone:  {fontSize: 13, color: 'rgba(255,255,255,0.75)'},
   items:        {flex: 1, paddingTop: 8},
   signOut:      {flexDirection: 'row', alignItems: 'center', paddingVertical: 18, paddingHorizontal: 20, borderTopWidth: 1, borderTopColor: '#F3F4F6'},
   signOutIcon:  {fontSize: 18, marginRight: 14, width: 24, textAlign: 'center'},

@@ -23,10 +23,9 @@ import {useAuth} from '../../../context/AuthContext';
 import {RootStackParamList} from '../../../types/navigation';
 import {RequestCategory} from '../../../types/api';
 import {getCategories, publishRequest, uploadRequestImage} from '../../../api/requests';
+import {Colors} from '../../../theme';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
-
-const ACCENT = '#2563EB';
 
 const CATEGORY_EMOJI: Record<string, string> = {
   'Electronics':      '📱',
@@ -304,23 +303,23 @@ export default function CreateRequestScreen() {
 }
 
 const styles = StyleSheet.create({
-  root: {flex: 1, backgroundColor: '#FFFFFF'},
+  root: {flex: 1, backgroundColor: Colors.surface},
 
   // Header
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 16, paddingVertical: 12,
-    borderBottomWidth: 1, borderBottomColor: '#F3F4F6',
+    borderBottomWidth: 1, borderBottomColor: Colors.divider,
   },
-  closeBtn: {fontSize: 18, color: '#374151', fontWeight: '600', paddingHorizontal: 4},
-  headerTitle: {fontSize: 16, fontWeight: '700', color: '#111827'},
+  closeBtn: {fontSize: 18, color: Colors.textPrimary, fontWeight: '600', paddingHorizontal: 4},
+  headerTitle: {fontSize: 16, fontWeight: '700', color: Colors.textPrimary},
   postBtn: {
     paddingHorizontal: 18, paddingVertical: 8, borderRadius: 20,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: Colors.feedBackground,
   },
-  postBtnActive: {backgroundColor: ACCENT},
-  postBtnText: {fontSize: 14, fontWeight: '700', color: '#9CA3AF'},
-  postBtnTextActive: {color: '#FFFFFF'},
+  postBtnActive: {backgroundColor: Colors.primary},
+  postBtnText: {fontSize: 14, fontWeight: '700', color: Colors.textSecondary},
+  postBtnTextActive: {color: Colors.textOnPrimary},
 
   // Scroll
   scroll: {flex: 1},
@@ -330,17 +329,17 @@ const styles = StyleSheet.create({
   composerRow: {flexDirection: 'row', gap: 12},
   avatar: {
     width: 42, height: 42, borderRadius: 21,
-    backgroundColor: ACCENT, alignItems: 'center', justifyContent: 'center', marginTop: 2,
+    backgroundColor: Colors.primary, alignItems: 'center', justifyContent: 'center', marginTop: 2,
   },
-  avatarText: {fontSize: 18, fontWeight: '700', color: '#FFFFFF'},
+  avatarText: {fontSize: 18, fontWeight: '700', color: Colors.textOnPrimary},
   composerFields: {flex: 1},
   titleInput: {
-    fontSize: 18, fontWeight: '600', color: '#111827',
+    fontSize: 18, fontWeight: '600', color: Colors.textPrimary,
     lineHeight: 26, minHeight: 36, marginBottom: 8,
     padding: 0,
   },
   descInput: {
-    fontSize: 15, color: '#374151', lineHeight: 22, minHeight: 80,
+    fontSize: 15, color: Colors.textPrimary, lineHeight: 22, minHeight: 80,
     padding: 0,
   },
 
@@ -348,30 +347,30 @@ const styles = StyleSheet.create({
   selectedChip: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
     alignSelf: 'flex-start', marginTop: 12,
-    backgroundColor: '#EFF6FF', borderRadius: 20,
+    backgroundColor: Colors.primaryLight, borderRadius: 20,
     paddingHorizontal: 12, paddingVertical: 6,
-    borderWidth: 1, borderColor: '#BFDBFE',
+    borderWidth: 1, borderColor: Colors.primary,
   },
   selectedChipEmoji: {fontSize: 16},
-  selectedChipText: {fontSize: 13, fontWeight: '600', color: ACCENT},
-  selectedChipClose: {fontSize: 11, color: '#93C5FD', fontWeight: '700'},
+  selectedChipText: {fontSize: 13, fontWeight: '600', color: Colors.primary},
+  selectedChipClose: {fontSize: 11, color: Colors.primary, fontWeight: '700'},
 
   // Budget row
   budgetRow: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
-    marginTop: 14, backgroundColor: '#F9FAFB',
-    borderRadius: 12, padding: 10, borderWidth: 1, borderColor: '#E5E7EB',
+    marginTop: 14, backgroundColor: Colors.feedBackground,
+    borderRadius: 12, padding: 10, borderWidth: 1, borderColor: Colors.divider,
   },
   budgetLabel: {fontSize: 18},
   budgetInput: {
     flex: 1, flexDirection: 'row', alignItems: 'center',
-    backgroundColor: '#FFFFFF', borderRadius: 8, borderWidth: 1, borderColor: '#D1D5DB',
+    backgroundColor: Colors.surface, borderRadius: 8, borderWidth: 1, borderColor: Colors.divider,
     paddingHorizontal: 8, height: 38,
   },
-  budgetCurrency: {fontSize: 14, color: '#6B7280', marginRight: 2},
-  budgetField: {flex: 1, fontSize: 14, color: '#111827', padding: 0},
-  budgetDash: {fontSize: 16, color: '#9CA3AF'},
-  budgetRemove: {fontSize: 14, color: '#9CA3AF', paddingHorizontal: 4},
+  budgetCurrency: {fontSize: 14, color: Colors.textSecondary, marginRight: 2},
+  budgetField: {flex: 1, fontSize: 14, color: Colors.textPrimary, padding: 0},
+  budgetDash: {fontSize: 16, color: Colors.textSecondary},
+  budgetRemove: {fontSize: 14, color: Colors.textSecondary, paddingHorizontal: 4},
 
   // Images
   imageRow: {flexDirection: 'row', gap: 8, marginTop: 14, flexWrap: 'wrap'},
@@ -380,46 +379,46 @@ const styles = StyleSheet.create({
   thumbRemove: {
     position: 'absolute', top: -6, right: -6,
     width: 20, height: 20, borderRadius: 10,
-    backgroundColor: '#374151', alignItems: 'center', justifyContent: 'center',
+    backgroundColor: Colors.textPrimary, alignItems: 'center', justifyContent: 'center',
   },
-  thumbRemoveText: {color: '#FFFFFF', fontSize: 10, fontWeight: '700'},
+  thumbRemoveText: {color: Colors.textOnPrimary, fontSize: 10, fontWeight: '700'},
   thumbAdd: {
     width: 80, height: 80, borderRadius: 10,
-    backgroundColor: '#F3F4F6', borderWidth: 1.5, borderColor: '#D1D5DB',
+    backgroundColor: Colors.feedBackground, borderWidth: 1.5, borderColor: Colors.divider,
     alignItems: 'center', justifyContent: 'center',
   },
-  thumbAddText: {fontSize: 28, color: '#9CA3AF', fontWeight: '300'},
+  thumbAddText: {fontSize: 28, color: Colors.textSecondary, fontWeight: '300'},
 
   // Toolbar
-  toolbar: {backgroundColor: '#FFFFFF'},
-  toolbarDivider: {height: 1, backgroundColor: '#F3F4F6'},
+  toolbar: {backgroundColor: Colors.surface},
+  toolbarDivider: {height: 1, backgroundColor: Colors.divider},
   toolbarRow: {flexDirection: 'row', paddingHorizontal: 8, paddingTop: 8},
   toolBtn: {flex: 1, alignItems: 'center', paddingVertical: 8, gap: 3},
   toolBtnIcon: {fontSize: 22},
-  toolBtnLabel: {fontSize: 11, color: '#6B7280', fontWeight: '500'},
+  toolBtnLabel: {fontSize: 11, color: Colors.textSecondary, fontWeight: '500'},
   toolBtnActive: {},
-  toolBtnActiveLabel: {color: ACCENT, fontWeight: '700'},
+  toolBtnActiveLabel: {color: Colors.primary, fontWeight: '700'},
   toolBtnDisabled: {opacity: 0.35},
 
   // Category sheet
   sheetOverlay: {flex: 1, backgroundColor: 'rgba(0,0,0,0.35)'},
   sheet: {
-    backgroundColor: '#FFFFFF', borderTopLeftRadius: 24, borderTopRightRadius: 24,
+    backgroundColor: Colors.surface, borderTopLeftRadius: 24, borderTopRightRadius: 24,
     paddingHorizontal: 16, paddingTop: 12,
     shadowColor: '#000', shadowOffset: {width: 0, height: -4}, shadowOpacity: 0.1, shadowRadius: 16, elevation: 20,
   },
-  sheetHandle: {width: 36, height: 4, borderRadius: 2, backgroundColor: '#D1D5DB', alignSelf: 'center', marginBottom: 16},
-  sheetTitle: {fontSize: 17, fontWeight: '700', color: '#111827', marginBottom: 2},
-  sheetSub: {fontSize: 13, color: '#9CA3AF', marginBottom: 16},
+  sheetHandle: {width: 36, height: 4, borderRadius: 2, backgroundColor: Colors.divider, alignSelf: 'center', marginBottom: 16},
+  sheetTitle: {fontSize: 17, fontWeight: '700', color: Colors.textPrimary, marginBottom: 2},
+  sheetSub: {fontSize: 13, color: Colors.textSecondary, marginBottom: 16},
   catGrid: {gap: 10, marginBottom: 10},
   catCard: {
     flex: 1, alignItems: 'center', paddingVertical: 16, borderRadius: 14,
-    backgroundColor: '#F9FAFB', borderWidth: 1.5, borderColor: '#E5E7EB',
+    backgroundColor: Colors.feedBackground, borderWidth: 1.5, borderColor: Colors.divider,
   },
-  catCardActive: {backgroundColor: '#EFF6FF', borderColor: ACCENT},
+  catCardActive: {backgroundColor: Colors.primaryLight, borderColor: Colors.primary},
   catEmoji: {fontSize: 28, marginBottom: 6},
-  catName: {fontSize: 12, fontWeight: '600', color: '#374151', textAlign: 'center'},
-  catNameActive: {color: ACCENT},
+  catName: {fontSize: 12, fontWeight: '600', color: Colors.textPrimary, textAlign: 'center'},
+  catNameActive: {color: Colors.primary},
   skipBtn: {alignItems: 'center', paddingVertical: 14, marginTop: 4},
-  skipBtnText: {fontSize: 14, color: '#9CA3AF', fontWeight: '500'},
+  skipBtnText: {fontSize: 14, color: Colors.textSecondary, fontWeight: '500'},
 });

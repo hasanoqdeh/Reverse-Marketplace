@@ -15,11 +15,12 @@ import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {useAuth} from '../../context/AuthContext';
 import {AuthStackParamList} from '../../types/navigation';
+import {Colors} from '../../theme';
 
 type NavProp = StackNavigationProp<AuthStackParamList, 'PhoneInput'>;
 
 const COUNTRY_CODE = '+962';
-const ACCENT = '#2563EB';
+const ACCENT = Colors.primary;
 
 export default function PhoneInputScreen() {
   const navigation = useNavigation<NavProp>();

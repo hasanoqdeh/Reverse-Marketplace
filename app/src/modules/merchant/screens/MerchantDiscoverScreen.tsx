@@ -4,10 +4,12 @@ import {
   Alert,
   Animated,
   FlatList,
+  Image,
   KeyboardAvoidingView,
   Modal,
   Platform,
   RefreshControl,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -21,11 +23,11 @@ import {Bid, MarketRequest} from '../../../types/api';
 import {RootStackParamList} from '../../../types/navigation';
 import {searchRequests} from '../../../api/requests';
 import {getMyBids, submitBid} from '../../../api/bids';
+import {getImageUrl} from '../../../api/client';
 import AppHeader from '../../../components/AppHeader';
+import {Colors} from '../../../theme';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
-
-const ACCENT = '#16A34A';
 
 const SORT_OPTIONS = [
   {label: 'Newest',   field: 'created_at', order: 'desc'},
@@ -108,6 +110,17 @@ function PostCard({item, myBid, onQuickBid, onViewRequest}: PostCardProps) {
           <Text style={post.desc} numberOfLines={4}>{item.description}</Text>
         ) : null}
       </TouchableOpacity>
+
+      {/* ── Images ── */}
+      {item.images && item.images.length > 0 && (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={post.imgScroll} contentContainerStyle={post.imgRow}>
+          {item.images.map(img => (
+            <TouchableOpacity key={img.id} onPress={onViewRequest} activeOpacity={0.9}>
+              <Image source={{uri: getImageUrl(img.imageUrl)}} style={post.img} resizeMode="cover" />
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      )}
 
       {/* ── Info strip ── */}
       <View style={post.strip}>
@@ -372,7 +385,7 @@ export default function MerchantDiscoverScreen() {
 
   return (
     <View style={s.root}>
-      <AppHeader accentColor={ACCENT} />
+      <AppHeader />
 
       {/* Sort bar */}
       <View style={s.sortBar}>
@@ -391,7 +404,7 @@ export default function MerchantDiscoverScreen() {
       </View>
 
       {loading ? (
-        <View style={s.center}><ActivityIndicator size="large" color={ACCENT} /></View>
+        <View style={s.center}><ActivityIndicator size="large" color={Colors.primary} /></View>
       ) : (
         <FlatList
           data={requests}
@@ -399,12 +412,12 @@ export default function MerchantDiscoverScreen() {
           contentContainerStyle={s.list}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={() => loadAll(1, sortIdx, true)}
-              tintColor={ACCENT} colors={[ACCENT]} />
+              tintColor={Colors.primary} colors={[Colors.primary]} />
           }
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.3}
           ListFooterComponent={
-            loadingMore ? <ActivityIndicator style={{marginVertical: 16}} color={ACCENT} /> : null
+            loadingMore ? <ActivityIndicator style={{marginVertical: 16}} color={Colors.primary} /> : null
           }
           renderItem={({item}) => (
             <PostCard
@@ -442,56 +455,61 @@ const post = StyleSheet.create({
     marginBottom: 8,
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: Colors.divider,
   },
 
   // Header
   header:   {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, marginBottom: 10},
   meta:     {flexDirection: 'row', alignItems: 'center', flex: 1, gap: 6},
-  catBadge: {backgroundColor: '#DCFCE7', borderRadius: 6, paddingHorizontal: 9, paddingVertical: 3},
-  catText:  {fontSize: 11, fontWeight: '800', color: ACCENT, letterSpacing: 0.3},
-  dot:      {fontSize: 14, color: '#D1D5DB'},
-  location: {fontSize: 12, color: '#6B7280', flex: 1},
-  time:     {fontSize: 12, color: '#9CA3AF', marginLeft: 8},
+  catBadge: {backgroundColor: Colors.primaryLight, borderRadius: 6, paddingHorizontal: 9, paddingVertical: 3},
+  catText:  {fontSize: 11, fontWeight: '800', color: Colors.primary, letterSpacing: 0.3},
+  dot:      {fontSize: 14, color: Colors.divider},
+  location: {fontSize: 12, color: Colors.textSecondary, flex: 1},
+  time:     {fontSize: 12, color: Colors.textSecondary, marginLeft: 8},
 
   // Body
-  title: {fontSize: 17, fontWeight: '800', color: '#111827', lineHeight: 24, paddingHorizontal: 16, marginBottom: 6},
-  desc:  {fontSize: 14, color: '#4B5563', lineHeight: 21, paddingHorizontal: 16, marginBottom: 12},
+  title: {fontSize: 17, fontWeight: '800', color: Colors.textPrimary, lineHeight: 24, paddingHorizontal: 16, marginBottom: 6},
+  desc:  {fontSize: 14, color: Colors.textSecondary, lineHeight: 21, paddingHorizontal: 16, marginBottom: 12},
+
+  // Images
+  imgScroll: {marginBottom: 12},
+  imgRow:    {paddingHorizontal: 16, gap: 8},
+  img:       {width: 200, height: 150, borderRadius: 12},
 
   // Info strip
   strip: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     marginHorizontal: 16, marginBottom: 12,
-    backgroundColor: '#F9FAFB', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10,
-    borderWidth: 1, borderColor: '#E5E7EB',
+    backgroundColor: Colors.feedBackground, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10,
+    borderWidth: 1, borderColor: Colors.divider,
   },
-  budget:      {fontSize: 15, fontWeight: '800', color: '#111827'},
-  expiry:      {fontSize: 12, fontWeight: '600', color: '#D97706'},
-  expiryUrgent:{color: '#DC2626'},
+  budget:      {fontSize: 15, fontWeight: '800', color: Colors.textPrimary},
+  expiry:      {fontSize: 12, fontWeight: '600', color: Colors.warning},
+  expiryUrgent:{color: Colors.error},
 
-  divider: {height: 1, backgroundColor: '#F3F4F6', marginBottom: 4},
+  divider: {height: 1, backgroundColor: Colors.divider, marginBottom: 4},
 
   // Actions
   actions:       {flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 8, gap: 8},
   stat:          {flexDirection: 'row', alignItems: 'center', gap: 5, flex: 1},
   statIcon:      {fontSize: 14},
-  statText:      {fontSize: 13, color: '#6B7280', fontWeight: '500'},
+  statText:      {fontSize: 13, color: Colors.textSecondary, fontWeight: '500'},
 
-  bidBtn:        {flexDirection: 'row', alignItems: 'center', backgroundColor: ACCENT, borderRadius: 20, paddingVertical: 8, paddingHorizontal: 16,
-    shadowColor: ACCENT, shadowOffset: {width: 0, height: 2}, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3},
-  bidBtnText:    {fontSize: 13, fontWeight: '800', color: '#FFF'},
+  bidBtn:        {flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.primary, borderRadius: 20, paddingVertical: 7, paddingHorizontal: 16,
+    shadowColor: Colors.primary, shadowOffset: {width: 0, height: 2}, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3},
+  bidBtnText:    {fontSize: 13, fontWeight: '800', color: Colors.textOnPrimary},
 
-  bidPending:    {borderRadius: 20, paddingVertical: 8, paddingHorizontal: 14, backgroundColor: '#DCFCE7', borderWidth: 1, borderColor: '#86EFAC'},
-  bidPendingText:{fontSize: 12, fontWeight: '700', color: ACCENT},
+  bidPending:    {borderRadius: 20, paddingVertical: 8, paddingHorizontal: 14, backgroundColor: Colors.primaryLight, borderWidth: 1, borderColor: Colors.primary},
+  bidPendingText:{fontSize: 12, fontWeight: '700', color: Colors.primary},
 
-  bidAccepted:   {borderRadius: 20, paddingVertical: 8, paddingHorizontal: 14, backgroundColor: '#F0FDF4'},
-  bidAcceptedText:{fontSize: 12, fontWeight: '700', color: '#15803D'},
+  bidAccepted:   {borderRadius: 20, paddingVertical: 8, paddingHorizontal: 14, backgroundColor: Colors.successLight},
+  bidAcceptedText:{fontSize: 12, fontWeight: '700', color: Colors.success},
 
-  bidClosed:     {borderRadius: 20, paddingVertical: 8, paddingHorizontal: 14, backgroundColor: '#F3F4F6'},
-  bidClosedText: {fontSize: 12, fontWeight: '600', color: '#9CA3AF'},
+  bidClosed:     {borderRadius: 20, paddingVertical: 8, paddingHorizontal: 14, backgroundColor: Colors.feedBackground},
+  bidClosedText: {fontSize: 12, fontWeight: '600', color: Colors.textSecondary},
 
-  detailBtn:     {borderRadius: 20, paddingVertical: 8, paddingHorizontal: 14, backgroundColor: '#F3F4F6'},
-  detailBtnText: {fontSize: 13, fontWeight: '600', color: '#374151'},
+  detailBtn:     {borderRadius: 20, paddingVertical: 8, paddingHorizontal: 14, backgroundColor: Colors.feedBackground},
+  detailBtnText: {fontSize: 13, fontWeight: '600', color: Colors.textPrimary},
 });
 
 const qs = StyleSheet.create({
@@ -504,45 +522,45 @@ const qs = StyleSheet.create({
   },
   handle:  {width: 40, height: 4, borderRadius: 2, backgroundColor: '#D1D5DB', alignSelf: 'center', marginBottom: 20},
   hdr:     {marginBottom: 20},
-  hdrLabel:{fontSize: 11, fontWeight: '700', color: ACCENT, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 4},
-  hdrTitle:{fontSize: 17, fontWeight: '700', color: '#111827', lineHeight: 24, marginBottom: 4},
-  hdrBudget:{fontSize: 13, color: '#6B7280'},
+  hdrLabel:{fontSize: 11, fontWeight: '700', color: Colors.primary, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 4},
+  hdrTitle:{fontSize: 17, fontWeight: '700', color: Colors.textPrimary, lineHeight: 24, marginBottom: 4},
+  hdrBudget:{fontSize: 13, color: Colors.textSecondary},
   fields:  {gap: 12, marginBottom: 20},
   row:     {flexDirection: 'row', gap: 12},
   field:   {gap: 6},
-  label:   {fontSize: 12, fontWeight: '700', color: '#6B7280', textTransform: 'uppercase', letterSpacing: 0.5},
-  inputRow:{flexDirection: 'row', alignItems: 'center', backgroundColor: '#F9FAFB', borderRadius: 12, borderWidth: 1.5, borderColor: '#E5E7EB', paddingHorizontal: 12, height: 48},
-  prefix:  {fontSize: 16, fontWeight: '700', color: '#374151', marginRight: 4},
-  suffix:  {fontSize: 13, color: '#9CA3AF', marginLeft: 4},
-  input:   {fontSize: 18, fontWeight: '700', color: '#111827', flex: 1},
+  label:   {fontSize: 12, fontWeight: '700', color: Colors.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5},
+  inputRow:{flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.feedBackground, borderRadius: 12, borderWidth: 1.5, borderColor: Colors.divider, paddingHorizontal: 12, height: 48},
+  prefix:  {fontSize: 16, fontWeight: '700', color: Colors.textPrimary, marginRight: 4},
+  suffix:  {fontSize: 13, color: Colors.textSecondary, marginLeft: 4},
+  input:   {fontSize: 18, fontWeight: '700', color: Colors.textPrimary, flex: 1},
   addNote: {paddingVertical: 8},
-  addNoteText:{fontSize: 13, color: ACCENT, fontWeight: '600'},
+  addNoteText:{fontSize: 13, color: Colors.primary, fontWeight: '600'},
   noteInput:{height: 80, alignItems: 'flex-start', paddingTop: 10, paddingBottom: 10},
   chips:   {flexDirection: 'row', flexWrap: 'wrap', gap: 8},
-  chip:    {backgroundColor: '#F3F4F6', borderRadius: 20, paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1, borderColor: '#E5E7EB'},
-  chipText:{fontSize: 12, color: '#374151', fontWeight: '500'},
+  chip:    {backgroundColor: Colors.feedBackground, borderRadius: 20, paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1, borderColor: Colors.divider},
+  chipText:{fontSize: 12, color: Colors.textPrimary, fontWeight: '500'},
   btns:    {flexDirection: 'row', gap: 12},
-  cancelBtn:{flex: 1, borderRadius: 14, borderWidth: 1.5, borderColor: '#E5E7EB', paddingVertical: 15, alignItems: 'center'},
-  cancelText:{fontSize: 15, fontWeight: '600', color: '#6B7280'},
-  submitBtn:{flex: 2, borderRadius: 14, backgroundColor: ACCENT, paddingVertical: 15, alignItems: 'center',
-    shadowColor: ACCENT, shadowOffset: {width: 0, height: 4}, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4},
-  submitText:{fontSize: 16, fontWeight: '800', color: '#FFFFFF'},
+  cancelBtn:{flex: 1, backgroundColor: '#FFFFFF', borderRadius: 10, borderWidth: 1, borderColor: '#E4E6EA', paddingVertical: 12, alignItems: 'center'},
+  cancelText:{fontSize: 14, fontWeight: '600', color: Colors.textSecondary},
+  submitBtn:{flex: 2, borderRadius: 10, backgroundColor: Colors.primary, paddingVertical: 12, alignItems: 'center',
+    shadowColor: Colors.primary, shadowOffset: {width: 0, height: 4}, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4},
+  submitText:{fontSize: 14, fontWeight: '800', color: Colors.textOnPrimary},
   disabled: {opacity: 0.6},
 });
 
 const s = StyleSheet.create({
-  root:      {flex: 1, backgroundColor: '#F0F2F5'},
-  sortBar:   {flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFFFFF', paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#E5E7EB', gap: 12},
-  feedLabel: {fontSize: 15, fontWeight: '800', color: '#111827'},
+  root:      {flex: 1, backgroundColor: Colors.feedBackground},
+  sortBar:   {flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.surface, paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: Colors.divider, gap: 12},
+  feedLabel: {fontSize: 15, fontWeight: '800', color: Colors.textPrimary},
   chips:     {flexDirection: 'row', gap: 8, flex: 1, justifyContent: 'flex-end'},
-  chip:      {borderRadius: 20, paddingHorizontal: 12, paddingVertical: 5, backgroundColor: '#F3F4F6', borderWidth: 1, borderColor: '#E5E7EB'},
-  chipActive:{backgroundColor: '#DCFCE7', borderColor: ACCENT},
-  chipText:  {fontSize: 12, fontWeight: '600', color: '#6B7280'},
-  chipTextActive:{color: ACCENT, fontWeight: '700'},
+  chip:      {borderRadius: 20, paddingHorizontal: 12, paddingVertical: 5, backgroundColor: Colors.feedBackground, borderWidth: 1, borderColor: Colors.divider},
+  chipActive:{backgroundColor: Colors.primaryLight, borderColor: Colors.primary},
+  chipText:  {fontSize: 12, fontWeight: '600', color: Colors.textSecondary},
+  chipTextActive:{color: Colors.primary, fontWeight: '700'},
   list:      {paddingBottom: 32},
   center:    {flex: 1, alignItems: 'center', justifyContent: 'center'},
   empty:     {flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 80},
   emptyIcon: {fontSize: 48, marginBottom: 12},
-  emptyTitle:{fontSize: 17, fontWeight: '700', color: '#374151', marginBottom: 6},
-  emptyDesc: {fontSize: 13, color: '#9CA3AF'},
+  emptyTitle:{fontSize: 17, fontWeight: '700', color: Colors.textPrimary, marginBottom: 6},
+  emptyDesc: {fontSize: 13, color: Colors.textSecondary},
 });

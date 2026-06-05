@@ -13,8 +13,7 @@ import {
 } from 'react-native';
 import {useAuth} from '../../context/AuthContext';
 import AppHeader from '../../components/AppHeader';
-
-const PRIMARY = '#2563EB';
+import {Colors} from '../../theme';
 
 export default function ProfileScreen() {
   const {user, logout, updateProfile} = useAuth();
@@ -234,16 +233,16 @@ function Field({label, value, onChangeText, placeholder}: {
 
 const fieldStyles = StyleSheet.create({
   wrap: {marginBottom: 14},
-  label: {fontSize: 13, color: '#6B7280', fontWeight: '600', marginBottom: 6},
+  label: {fontSize: 13, color: Colors.textSecondary, fontWeight: '600', marginBottom: 6},
   input: {
     borderWidth: 1,
-    borderColor: '#D1D5DB',
+    borderColor: Colors.divider,
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 11,
     fontSize: 15,
-    color: '#111827',
-    backgroundColor: '#F9FAFB',
+    color: Colors.textPrimary,
+    backgroundColor: Colors.feedBackground,
   },
 });
 
@@ -254,14 +253,14 @@ const infoStyles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 13,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: Colors.divider,
   },
-  label: {fontSize: 14, color: '#6B7280', fontWeight: '500'},
-  value: {fontSize: 14, color: '#111827', fontWeight: '600', maxWidth: '60%', textAlign: 'right'},
+  label: {fontSize: 14, color: Colors.textSecondary, fontWeight: '500'},
+  value: {fontSize: 14, color: Colors.textPrimary, fontWeight: '600', maxWidth: '60%', textAlign: 'right'},
 });
 
 const styles = StyleSheet.create({
-  safe: {flex: 1, backgroundColor: '#F3F4F6'},
+  safe: {flex: 1, backgroundColor: Colors.feedBackground},
   editBtn: {
     marginTop: 14,
     paddingHorizontal: 20,
@@ -271,9 +270,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.5)',
   },
-  editBtnText: {fontSize: 14, fontWeight: '700', color: '#FFFFFF'},
+  editBtnText: {fontSize: 14, fontWeight: '700', color: Colors.textOnPrimary},
   avatarSection: {
-    backgroundColor: PRIMARY,
+    backgroundColor: Colors.primary,
     alignItems: 'center',
     paddingVertical: 32,
   },
@@ -288,62 +287,63 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'rgba(255,255,255,0.4)',
   },
-  avatarInitials: {fontSize: 32, fontWeight: '700', color: '#FFFFFF'},
-  displayName: {fontSize: 18, fontWeight: '700', color: '#FFFFFF', marginBottom: 8},
+  avatarInitials: {fontSize: 32, fontWeight: '700', color: Colors.textOnPrimary},
+  displayName: {fontSize: 18, fontWeight: '700', color: Colors.textOnPrimary, marginBottom: 8},
   roleBadge: {
     backgroundColor: 'rgba(255,255,255,0.2)',
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 20,
   },
-  roleText: {fontSize: 12, fontWeight: '600', color: '#FFFFFF', letterSpacing: 1},
+  roleText: {fontSize: 12, fontWeight: '600', color: Colors.textOnPrimary, letterSpacing: 1},
   card: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.surface,
     marginTop: 16,
     marginHorizontal: 16,
     borderRadius: 16,
     padding: 16,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
+    shadowOpacity: 0.08,
+    shadowRadius: 2,
     elevation: 2,
   },
   cardTitle: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#6B7280',
+    color: Colors.textSecondary,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
     marginBottom: 14,
   },
   formActions: {gap: 10, marginTop: 6},
   saveBtn: {
-    backgroundColor: PRIMARY,
+    backgroundColor: Colors.primary,
     borderRadius: 10,
-    paddingVertical: 14,
+    paddingVertical: 12,
     alignItems: 'center',
   },
-  saveBtnText: {color: '#FFFFFF', fontSize: 15, fontWeight: '700'},
+  saveBtnText: {color: Colors.textOnPrimary, fontSize: 14, fontWeight: '700'},
   cancelBtn: {
-    borderWidth: 1.5,
-    borderColor: '#D1D5DB',
+    backgroundColor: '#FFFFFF',
     borderRadius: 10,
-    paddingVertical: 13,
+    paddingVertical: 12,
+    borderWidth: 1,
+    borderColor: '#E4E6EA',
     alignItems: 'center',
   },
-  cancelBtnText: {color: '#374151', fontSize: 15, fontWeight: '600'},
+  cancelBtnText: {color: Colors.textPrimary, fontSize: 14, fontWeight: '600'},
   btnDisabled: {opacity: 0.6},
-  statusActive: {color: '#059669'},
-  statusInactive: {color: '#DC2626'},
+  statusActive: {color: Colors.success},
+  statusInactive: {color: Colors.error},
   logoutSection: {marginTop: 16, marginHorizontal: 16, marginBottom: 32},
   logoutBtn: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    paddingVertical: 16,
+    backgroundColor: Colors.surface,
+    borderRadius: 10,
+    paddingVertical: 12,
     alignItems: 'center',
     borderWidth: 1.5,
     borderColor: '#FCA5A5',
   },
-  logoutText: {fontSize: 16, fontWeight: '700', color: '#DC2626'},
+  logoutText: {fontSize: 14, fontWeight: '700', color: Colors.error},
 });

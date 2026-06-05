@@ -25,11 +25,12 @@ import {RootStackParamList} from '../../types/navigation';
 import {ChatMessage} from '../../types/api';
 import {getMessages, getRoom, sendMessage, markRoomRead, uploadChatMedia} from '../../api/chat';
 import {useAuth} from '../../context/AuthContext';
+import {Colors} from '../../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ChatRoom'>;
 
 const API_BASE = 'http://10.0.2.2:3000';
-const ACCENT = '#2563EB';
+const ACCENT = Colors.primary;
 const audioPlayer = new AudioRecorderPlayer();
 
 function formatTime(iso: string): string {
@@ -501,19 +502,19 @@ const b = StyleSheet.create({
     paddingHorizontal: 14, paddingVertical: 10,
     marginBottom: 4,
   },
-  mine:      {backgroundColor: '#2563EB', alignSelf: 'flex-end', borderBottomRightRadius: 4},
+  mine:      {backgroundColor: Colors.primary, alignSelf: 'flex-end', borderBottomRightRadius: 4},
   theirs:    {
-    backgroundColor: '#FFFFFF', alignSelf: 'flex-start', borderBottomLeftRadius: 4,
+    backgroundColor: Colors.surface, alignSelf: 'flex-start', borderBottomLeftRadius: 4,
     shadowColor: '#000', shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.05, shadowRadius: 4, elevation: 1,
   },
   text:      {fontSize: 15, lineHeight: 21},
-  textMine:  {color: '#FFFFFF'},
-  textTheirs:{color: '#111827'},
+  textMine:  {color: Colors.textOnPrimary},
+  textTheirs:{color: Colors.textPrimary},
   time:      {fontSize: 10, marginTop: 4},
   timeMine:  {color: 'rgba(255,255,255,0.6)', textAlign: 'right'},
-  timeTheirs:{color: '#9CA3AF'},
-  deleted:   {fontSize: 14, fontStyle: 'italic', color: '#9CA3AF'},
+  timeTheirs:{color: Colors.textSecondary},
+  deleted:   {fontSize: 14, fontStyle: 'italic', color: Colors.textSecondary},
 });
 
 const imgStyles = StyleSheet.create({
@@ -528,68 +529,68 @@ const vs = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.25)',
     alignItems: 'center', justifyContent: 'center',
   },
-  playIcon:{fontSize: 16, color: '#FFFFFF'},
+  playIcon:{fontSize: 16, color: Colors.textOnPrimary},
   barTrack:{flex: 1, height: 4, backgroundColor: 'rgba(255,255,255,0.3)', borderRadius: 2, overflow: 'hidden'},
   barFill: {height: '100%', borderRadius: 2},
 });
 
 const s = StyleSheet.create({
-  safe:   {flex: 1, backgroundColor: '#F3F4F6'},
+  safe:   {flex: 1, backgroundColor: Colors.feedBackground},
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    backgroundColor: '#FFFFFF', paddingHorizontal: 20, paddingVertical: 14,
-    borderBottomWidth: 1, borderBottomColor: '#E5E7EB',
+    backgroundColor: Colors.surface, paddingHorizontal: 20, paddingVertical: 14,
+    borderBottomWidth: 1, borderBottomColor: Colors.divider,
   },
-  back:         {fontSize: 20, color: '#374151', fontWeight: '600'},
+  back:         {fontSize: 20, color: Colors.textPrimary, fontWeight: '600'},
   headerCenter: {flex: 1, alignItems: 'center'},
-  headerTitle:  {fontSize: 17, fontWeight: '700', color: '#111827'},
-  typingText:   {fontSize: 11, color: '#6B7280', fontStyle: 'italic', marginTop: 1},
+  headerTitle:  {fontSize: 17, fontWeight: '700', color: Colors.textPrimary},
+  typingText:   {fontSize: 11, color: Colors.textSecondary, fontStyle: 'italic', marginTop: 1},
   center:       {flex: 1, alignItems: 'center', justifyContent: 'center'},
   listContent:  {padding: 12, paddingBottom: 8, flexGrow: 1},
   empty:        {flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 60},
   emptyIcon:    {fontSize: 48, marginBottom: 12},
-  emptyText:    {fontSize: 15, color: '#9CA3AF'},
+  emptyText:    {fontSize: 15, color: Colors.textSecondary},
 
   archivedBanner: {
-    backgroundColor: '#F3F4F6', borderTopWidth: 1, borderTopColor: '#E5E7EB',
+    backgroundColor: Colors.feedBackground, borderTopWidth: 1, borderTopColor: Colors.divider,
     paddingHorizontal: 20, paddingVertical: 14, alignItems: 'center',
   },
-  archivedText: {fontSize: 13, color: '#6B7280', textAlign: 'center', lineHeight: 18},
+  archivedText: {fontSize: 13, color: Colors.textSecondary, textAlign: 'center', lineHeight: 18},
 
   compose: {
     flexDirection: 'row', alignItems: 'flex-end',
     padding: 10, gap: 8,
-    backgroundColor: '#FFFFFF', borderTopWidth: 1, borderTopColor: '#E5E7EB',
+    backgroundColor: Colors.surface, borderTopWidth: 1, borderTopColor: Colors.divider,
   },
   actionBtn:  {width: 40, height: 40, alignItems: 'center', justifyContent: 'center'},
   actionIcon: {fontSize: 22},
 
   input: {
-    flex: 1, backgroundColor: '#F9FAFB', borderRadius: 22,
-    borderWidth: 1, borderColor: '#E5E7EB',
+    flex: 1, backgroundColor: Colors.feedBackground, borderRadius: 22,
+    borderWidth: 1, borderColor: Colors.divider,
     paddingHorizontal: 16, paddingVertical: 10,
-    fontSize: 15, color: '#111827', maxHeight: 120,
+    fontSize: 15, color: Colors.textPrimary, maxHeight: 120,
   },
 
   recordingBar: {
     flex: 1, flexDirection: 'row', alignItems: 'center',
-    backgroundColor: '#FEF2F2', borderRadius: 22,
+    backgroundColor: Colors.errorLight, borderRadius: 22,
     paddingHorizontal: 16, paddingVertical: 12, gap: 10,
     borderWidth: 1, borderColor: '#FECACA',
   },
-  recordDot:   {width: 10, height: 10, borderRadius: 5, backgroundColor: '#EF4444'},
-  recordTimer: {fontSize: 15, fontWeight: '700', color: '#EF4444', minWidth: 38},
-  recordHint:  {fontSize: 13, color: '#9CA3AF'},
+  recordDot:   {width: 10, height: 10, borderRadius: 5, backgroundColor: Colors.error},
+  recordTimer: {fontSize: 15, fontWeight: '700', color: Colors.error, minWidth: 38},
+  recordHint:  {fontSize: 13, color: Colors.textSecondary},
 
   sendBtn: {
-    width: 44, height: 44, borderRadius: 22, backgroundColor: ACCENT,
+    width: 44, height: 44, borderRadius: 22, backgroundColor: Colors.primary,
     alignItems: 'center', justifyContent: 'center',
   },
-  sendBtnDisabled: {backgroundColor: '#BFDBFE'},
-  sendIcon: {fontSize: 18, color: '#FFFFFF', fontWeight: '700'},
+  sendBtnDisabled: {backgroundColor: Colors.primaryLight},
+  sendIcon: {fontSize: 18, color: Colors.textOnPrimary, fontWeight: '700'},
 
   micBtn: {
-    width: 44, height: 44, borderRadius: 22, backgroundColor: '#E5E7EB',
+    width: 44, height: 44, borderRadius: 22, backgroundColor: Colors.feedBackground,
     alignItems: 'center', justifyContent: 'center',
   },
   micBtnActive: {backgroundColor: '#FEE2E2'},

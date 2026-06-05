@@ -33,6 +33,7 @@ import {getMerchantProfile} from '../../../api/reviews';
 import {useAuth} from '../../../context/AuthContext';
 import AppHeader from '../../../components/AppHeader';
 import ImageViewerModal from '../../../components/ImageViewerModal';
+import {Colors} from '../../../theme';
 
 const API_BASE = 'http://10.0.2.2:3000';
 const chatAudioPlayer = new AudioRecorderPlayer();
@@ -46,13 +47,10 @@ function formatDuration(secs: number): string {
 type MerchantStats = {avgRating: number | null; reviewCount: number; completedBids: number};
 type Props = NativeStackScreenProps<RootStackParamList, 'RequestDetail'>;
 
-const BUYER_ACCENT    = '#2563EB';
-const MERCHANT_ACCENT = '#16A34A';
-
 const STATUS_META: Record<string, {label: string; bg: string; text: string}> = {
-  DRAFT:     {label: 'Draft',     bg: '#F3F4F6', text: '#6B7280'},
+  DRAFT:     {label: 'Draft',     bg: Colors.feedBackground, text: Colors.textSecondary},
   ACTIVE:    {label: 'Active',    bg: '#DCFCE7', text: '#16A34A'},
-  HAS_BIDS:  {label: 'Has Bids', bg: '#DBEAFE', text: '#2563EB'},
+  HAS_BIDS:  {label: 'Has Bids', bg: Colors.primaryLight,   text: Colors.primary},
   COMPLETED: {label: 'Completed', bg: '#F0FDF4', text: '#15803D'},
   CANCELLED: {label: 'Cancelled', bg: '#FEF2F2', text: '#DC2626'},
   EXPIRED:   {label: 'Expired',   bg: '#FEF3C7', text: '#D97706'},
@@ -110,7 +108,7 @@ export default function RequestDetailScreen({route, navigation}: Props) {
   const {user} = useAuth();
   const insets = useSafeAreaInsets();
   const isBuyer  = user?.role === 'BUYER';
-  const ACCENT   = isBuyer ? BUYER_ACCENT : MERCHANT_ACCENT;
+  const ACCENT   = Colors.primary;
 
   const [request,         setRequest]         = useState<MarketRequest | null>(null);
   const [bids,            setBids]            = useState<Bid[]>([]);
@@ -120,6 +118,8 @@ export default function RequestDetailScreen({route, navigation}: Props) {
   const [loading,         setLoading]         = useState(true);
   const [actionLoading,   setActionLoading]   = useState(false);
   const [myMerchantBid,   setMyMerchantBid]   = useState<Bid | null>(null);
+
+  const [viewingImage, setViewingImage] = useState<string | null>(null);
 
   // Sheet state
   const [sheetBid,   setSheetBid]   = useState<Bid | null>(null);
@@ -233,7 +233,7 @@ export default function RequestDetailScreen({route, navigation}: Props) {
   if (loading) {
     return (
       <SafeAreaView style={s.safe}>
-        <View style={s.center}><ActivityIndicator size="large" color={ACCENT} /></View>
+        <View style={s.center}><ActivityIndicator size="large" color={Colors.primary} /></View>
       </SafeAreaView>
     );
   }
@@ -277,6 +277,24 @@ export default function RequestDetailScreen({route, navigation}: Props) {
         <View style={s.descCard}>
           <Text style={s.descText}>{request.description}</Text>
         </View>
+
+        {/* Images */}
+        {request.images && request.images.length > 0 && (
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.imgScroll} contentContainerStyle={s.imgRow}>
+            {request.images.map((img, idx) => (
+              <TouchableOpacity
+                key={img.id}
+                activeOpacity={0.9}
+                onPress={() => setViewingImage(img.imageUrl)}>
+                <Image
+                  source={{uri: `${API_BASE}${img.imageUrl}`}}
+                  style={s.requestImg}
+                  resizeMode="cover"
+                />
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        )}
 
         {/* Dates */}
         <View style={s.datesRow}>
@@ -429,6 +447,13 @@ export default function RequestDetailScreen({route, navigation}: Props) {
           insets={insets}
           anim={sheetAnim}
           requestStatus={request.status}
+        />
+      )}
+
+      {viewingImage && (
+        <ImageViewerModal
+          uri={`${API_BASE}${viewingImage}`}
+          onClose={() => setViewingImage(null)}
         />
       )}
     </View>
@@ -802,7 +827,7 @@ function MessageBubble({
         <View style={mb.barTrack}>
           <View style={[mb.barFill, {
             width: `${Math.round(progress * 100)}%` as any,
-            backgroundColor: isMine ? 'rgba(255,255,255,0.85)' : BUYER_ACCENT,
+            backgroundColor: isMine ? 'rgba(255,255,255,0.85)' : Colors.primary,
           }]} />
         </View>
         <Text style={[mb.time, isMine ? mb.timeMine : mb.timeTheirs, {marginLeft: 6}]}>
@@ -1043,7 +1068,7 @@ function InlineChatModal({bid, initialRoomId, requestStatus, onClose}: {
     <Modal visible animationType="slide" onRequestClose={handleClose}>
       <SafeAreaView style={ch.safe}>
         {/* Header */}
-        <View style={[ch.header, {backgroundColor: BUYER_ACCENT}]}>
+        <View style={[ch.header, {backgroundColor: Colors.primary}]}>
           <TouchableOpacity onPress={handleClose} hitSlop={{top: 12, bottom: 12, left: 12, right: 12}}>
             <Text style={ch.back}>← Back</Text>
           </TouchableOpacity>
@@ -1053,7 +1078,7 @@ function InlineChatModal({bid, initialRoomId, requestStatus, onClose}: {
 
         <KeyboardAvoidingView style={{flex: 1}} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
           {loading ? (
-            <View style={ch.center}><ActivityIndicator size="large" color={BUYER_ACCENT} /></View>
+            <View style={ch.center}><ActivityIndicator size="large" color={Colors.primary} /></View>
           ) : (
             <FlatList
               ref={flatListRef}
@@ -1093,7 +1118,7 @@ function InlineChatModal({bid, initialRoomId, requestStatus, onClose}: {
                 disabled={sending || uploadingMedia || recording}
                 activeOpacity={0.7}>
                 {uploadingMedia
-                  ? <ActivityIndicator size="small" color={BUYER_ACCENT} />
+                  ? <ActivityIndicator size="small" color={Colors.primary} />
                   : <Text style={ch.actionIcon}>📎</Text>}
               </TouchableOpacity>
 
@@ -1250,79 +1275,79 @@ const BID_STATUS_PILL: Record<string, object> = {
 
 const mb = StyleSheet.create({
   wrap:      {maxWidth: '75%', borderRadius: 18, paddingHorizontal: 14, paddingVertical: 10, marginBottom: 4},
-  mine:      {backgroundColor: BUYER_ACCENT, alignSelf: 'flex-end', borderBottomRightRadius: 4},
-  theirs:    {backgroundColor: '#FFFFFF', alignSelf: 'flex-start', borderBottomLeftRadius: 4,
+  mine:      {backgroundColor: Colors.primary, alignSelf: 'flex-end', borderBottomRightRadius: 4},
+  theirs:    {backgroundColor: Colors.surface, alignSelf: 'flex-start', borderBottomLeftRadius: 4,
     shadowColor: '#000', shadowOffset: {width: 0, height: 1}, shadowOpacity: 0.05, shadowRadius: 4, elevation: 1},
   text:      {fontSize: 15, lineHeight: 21},
-  textMine:  {color: '#FFFFFF'},
-  textTheirs:{color: '#111827'},
+  textMine:  {color: Colors.textOnPrimary},
+  textTheirs:{color: Colors.textPrimary},
   time:      {fontSize: 10, marginTop: 4},
   timeMine:  {color: 'rgba(255,255,255,0.6)', textAlign: 'right'},
-  timeTheirs:{color: '#9CA3AF'},
-  deleted:   {fontSize: 14, fontStyle: 'italic', color: '#9CA3AF'},
+  timeTheirs:{color: Colors.textSecondary},
+  deleted:   {fontSize: 14, fontStyle: 'italic', color: Colors.textSecondary},
   img:       {width: 220, height: 170, borderRadius: 14},
   voiceWrap: {flexDirection: 'row', alignItems: 'center', paddingVertical: 8, gap: 8},
   playBtn:   {width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.25)', alignItems: 'center', justifyContent: 'center'},
-  playIcon:  {fontSize: 16, color: '#FFFFFF'},
+  playIcon:  {fontSize: 16, color: Colors.textOnPrimary},
   barTrack:  {flex: 1, height: 4, backgroundColor: 'rgba(255,255,255,0.3)', borderRadius: 2, overflow: 'hidden'},
   barFill:   {height: '100%' as any, borderRadius: 2},
 });
 
 const ch = StyleSheet.create({
-  safe:        {flex: 1, backgroundColor: '#F3F4F6'},
+  safe:        {flex: 1, backgroundColor: Colors.feedBackground},
   header:      {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 20, paddingVertical: 14,
   },
-  back:        {fontSize: 15, fontWeight: '700', color: '#FFFFFF'},
-  title:       {fontSize: 17, fontWeight: '700', color: '#FFFFFF'},
+  back:        {fontSize: 15, fontWeight: '700', color: Colors.textOnPrimary},
+  title:       {fontSize: 17, fontWeight: '700', color: Colors.textOnPrimary},
   center:      {flex: 1, alignItems: 'center', justifyContent: 'center'},
   list:        {padding: 12, paddingBottom: 8, flexGrow: 1},
   empty:       {flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 60},
   emptyIcon:   {fontSize: 48, marginBottom: 12},
-  emptyText:   {fontSize: 15, color: '#9CA3AF'},
+  emptyText:   {fontSize: 15, color: Colors.textSecondary},
   archived:    {
-    backgroundColor: '#F3F4F6', borderTopWidth: 1, borderTopColor: '#E5E7EB',
+    backgroundColor: Colors.feedBackground, borderTopWidth: 1, borderTopColor: Colors.divider,
     paddingHorizontal: 20, paddingVertical: 14, alignItems: 'center',
   },
-  archivedText:{fontSize: 13, color: '#6B7280', textAlign: 'center', lineHeight: 18},
+  archivedText:{fontSize: 13, color: Colors.textSecondary, textAlign: 'center', lineHeight: 18},
   compose:     {
     flexDirection: 'row', alignItems: 'flex-end', padding: 10, gap: 8,
-    backgroundColor: '#FFFFFF', borderTopWidth: 1, borderTopColor: '#E5E7EB',
+    backgroundColor: Colors.surface, borderTopWidth: 1, borderTopColor: Colors.divider,
   },
   input:       {
-    flex: 1, backgroundColor: '#F9FAFB', borderRadius: 22, borderWidth: 1, borderColor: '#E5E7EB',
-    paddingHorizontal: 16, paddingVertical: 10, fontSize: 15, color: '#111827', maxHeight: 120,
+    flex: 1, backgroundColor: Colors.feedBackground, borderRadius: 22, borderWidth: 1, borderColor: Colors.divider,
+    paddingHorizontal: 16, paddingVertical: 10, fontSize: 15, color: Colors.textPrimary, maxHeight: 120,
   },
   actionBtn:      {width: 40, height: 40, alignItems: 'center', justifyContent: 'center'},
   actionIcon:     {fontSize: 22},
   recordingBar:   {
     flex: 1, flexDirection: 'row', alignItems: 'center',
-    backgroundColor: '#FEF2F2', borderRadius: 22,
+    backgroundColor: Colors.errorLight, borderRadius: 22,
     paddingHorizontal: 16, paddingVertical: 12, gap: 10,
     borderWidth: 1, borderColor: '#FECACA',
   },
-  recordDot:      {width: 10, height: 10, borderRadius: 5, backgroundColor: '#EF4444'},
-  recordTimer:    {fontSize: 15, fontWeight: '700', color: '#EF4444', minWidth: 38},
-  recordHint:     {fontSize: 13, color: '#9CA3AF'},
-  sendBtn:        {width: 44, height: 44, borderRadius: 22, backgroundColor: BUYER_ACCENT, alignItems: 'center', justifyContent: 'center'},
-  sendBtnDisabled:{backgroundColor: '#BFDBFE'},
-  sendIcon:       {fontSize: 18, color: '#FFFFFF', fontWeight: '700'},
-  micBtn:         {width: 44, height: 44, borderRadius: 22, backgroundColor: '#E5E7EB', alignItems: 'center', justifyContent: 'center'},
+  recordDot:      {width: 10, height: 10, borderRadius: 5, backgroundColor: Colors.error},
+  recordTimer:    {fontSize: 15, fontWeight: '700', color: Colors.error, minWidth: 38},
+  recordHint:     {fontSize: 13, color: Colors.textSecondary},
+  sendBtn:        {width: 44, height: 44, borderRadius: 22, backgroundColor: Colors.primary, alignItems: 'center', justifyContent: 'center'},
+  sendBtnDisabled:{backgroundColor: Colors.primaryLight},
+  sendIcon:       {fontSize: 18, color: Colors.textOnPrimary, fontWeight: '700'},
+  micBtn:         {width: 44, height: 44, borderRadius: 22, backgroundColor: Colors.feedBackground, alignItems: 'center', justifyContent: 'center'},
   micBtnActive:   {backgroundColor: '#FEE2E2'},
   micIcon:        {fontSize: 20},
 });
 
 const mc = StyleSheet.create({
-  chip:  {flexDirection: 'row', alignItems: 'center', backgroundColor: '#F3F4F6', borderRadius: 8, paddingHorizontal: 9, paddingVertical: 5, gap: 4},
+  chip:  {flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.feedBackground, borderRadius: 8, paddingHorizontal: 9, paddingVertical: 5, gap: 4},
   icon:  {fontSize: 13},
-  label: {fontSize: 12, color: '#6B7280', fontWeight: '500'},
+  label: {fontSize: 12, color: Colors.textSecondary, fontWeight: '500'},
 });
 
 const pc = StyleSheet.create({
   card: {
-    backgroundColor: '#FFFFFF', borderRadius: 16, padding: 16, marginBottom: 10,
-    borderWidth: 1.5, borderColor: '#E5E7EB',
+    backgroundColor: Colors.surface, borderRadius: 16, padding: 16, marginBottom: 10,
+    borderWidth: 1.5, borderColor: Colors.divider,
     shadowColor: '#000', shadowOffset: {width: 0, height: 2}, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2,
   },
   cardAccepted: {borderColor: '#16A34A', backgroundColor: '#F0FDF4'},
@@ -1331,7 +1356,7 @@ const pc = StyleSheet.create({
     backgroundColor: '#16A34A', borderRadius: 8, paddingVertical: 5, paddingHorizontal: 10,
     alignSelf: 'flex-start', marginBottom: 10,
   },
-  acceptedBannerText: {fontSize: 12, fontWeight: '700', color: '#FFFFFF'},
+  acceptedBannerText: {fontSize: 12, fontWeight: '700', color: Colors.textOnPrimary},
   badgeRow:    {flexDirection: 'row', gap: 6, marginBottom: 10, flexWrap: 'wrap'},
   badge:       {borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4},
   badgeText:   {fontSize: 11, fontWeight: '700'},
@@ -1342,19 +1367,19 @@ const pc = StyleSheet.create({
   },
   avatarText:    {fontSize: 14, fontWeight: '800'},
   merchantMeta:  {flex: 1},
-  merchantName:  {fontSize: 14, fontWeight: '700', color: '#111827'},
-  rating:        {fontSize: 12, color: '#F59E0B', marginTop: 1},
-  mutedText:     {color: '#9CA3AF'},
+  merchantName:  {fontSize: 14, fontWeight: '700', color: Colors.textPrimary},
+  rating:        {fontSize: 12, color: Colors.warning, marginTop: 1},
+  mutedText:     {color: Colors.textSecondary},
   statusPill:    {borderRadius: 12, paddingHorizontal: 8, paddingVertical: 3},
-  statusPillText:{fontSize: 11, fontWeight: '700', color: '#6B7280'},
+  statusPillText:{fontSize: 11, fontWeight: '700', color: Colors.textSecondary},
   priceRow:      {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6},
-  price:         {fontSize: 26, fontWeight: '800', color: '#111827'},
-  deliveryPill:  {backgroundColor: '#F3F4F6', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 5},
+  price:         {fontSize: 26, fontWeight: '800', color: Colors.textPrimary},
+  deliveryPill:  {backgroundColor: Colors.feedBackground, borderRadius: 20, paddingHorizontal: 10, paddingVertical: 5},
   deliveryPillAccepted: {backgroundColor: '#DCFCE7'},
-  deliveryText:  {fontSize: 12, fontWeight: '600', color: '#6B7280'},
+  deliveryText:  {fontSize: 12, fontWeight: '600', color: Colors.textSecondary},
   deliveryTextAccepted: {color: '#15803D'},
-  notesPreview:  {fontSize: 13, color: '#9CA3AF', fontStyle: 'italic', marginBottom: 6},
-  tapHint:       {fontSize: 12, color: '#93C5FD', fontWeight: '500', marginTop: 4, textAlign: 'right'},
+  notesPreview:  {fontSize: 13, color: Colors.textSecondary, fontStyle: 'italic', marginBottom: 6},
+  tapHint:       {fontSize: 12, color: Colors.primary, fontWeight: '500', marginTop: 4, textAlign: 'right'},
 });
 
 const bs = StyleSheet.create({
@@ -1364,139 +1389,142 @@ const bs = StyleSheet.create({
   },
   sheet: {
     position: 'absolute', bottom: 0, left: 0, right: 0,
-    backgroundColor: '#FFFFFF', borderTopLeftRadius: 24, borderTopRightRadius: 24,
+    backgroundColor: Colors.surface, borderTopLeftRadius: 24, borderTopRightRadius: 24,
     paddingHorizontal: 20, paddingTop: 12,
     shadowColor: '#000', shadowOffset: {width: 0, height: -4}, shadowOpacity: 0.12, shadowRadius: 20, elevation: 24,
   },
-  handle:        {width: 40, height: 4, borderRadius: 2, backgroundColor: '#D1D5DB', alignSelf: 'center', marginBottom: 20},
+  handle:        {width: 40, height: 4, borderRadius: 2, backgroundColor: Colors.divider, alignSelf: 'center', marginBottom: 20},
   merchantHeader:{flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 16},
-  bigAvatar:     {width: 52, height: 52, borderRadius: 26, backgroundColor: '#DBEAFE', alignItems: 'center', justifyContent: 'center'},
-  bigAvatarText: {fontSize: 18, fontWeight: '800', color: BUYER_ACCENT},
+  bigAvatar:     {width: 52, height: 52, borderRadius: 26, backgroundColor: Colors.primaryLight, alignItems: 'center', justifyContent: 'center'},
+  bigAvatarText: {fontSize: 18, fontWeight: '800', color: Colors.primary},
   merchantMetaBlock: {flex: 1},
-  merchantNameLg:{fontSize: 16, fontWeight: '700', color: '#111827'},
-  merchantRating:{fontSize: 13, color: '#F59E0B', marginTop: 2},
-  viewProfile:   {fontSize: 13, color: '#9CA3AF'},
+  merchantNameLg:{fontSize: 16, fontWeight: '700', color: Colors.textPrimary},
+  merchantRating:{fontSize: 13, color: Colors.warning, marginTop: 2},
+  viewProfile:   {fontSize: 13, color: Colors.textSecondary},
   badgeRow:      {flexDirection: 'row', gap: 6, flexWrap: 'wrap', marginBottom: 16},
   badge:         {borderRadius: 20, paddingHorizontal: 10, paddingVertical: 5},
   badgeText:     {fontSize: 12, fontWeight: '700'},
   priceBlock:    {flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 16},
-  bigPrice:      {fontSize: 36, fontWeight: '800', color: '#111827'},
-  deliveryBadge: {backgroundColor: '#F3F4F6', borderRadius: 20, paddingHorizontal: 12, paddingVertical: 7},
-  deliveryBadgeText: {fontSize: 13, fontWeight: '600', color: '#374151'},
-  notesCard:     {backgroundColor: '#F9FAFB', borderRadius: 12, padding: 14, marginBottom: 20, borderWidth: 1, borderColor: '#E5E7EB'},
-  notesLabel:    {fontSize: 11, fontWeight: '700', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6},
-  notesText:     {fontSize: 15, color: '#374151', lineHeight: 22},
+  bigPrice:      {fontSize: 36, fontWeight: '800', color: Colors.textPrimary},
+  deliveryBadge: {backgroundColor: Colors.feedBackground, borderRadius: 20, paddingHorizontal: 12, paddingVertical: 7},
+  deliveryBadgeText: {fontSize: 13, fontWeight: '600', color: Colors.textPrimary},
+  notesCard:     {backgroundColor: Colors.feedBackground, borderRadius: 12, padding: 14, marginBottom: 20, borderWidth: 1, borderColor: Colors.divider},
+  notesLabel:    {fontSize: 11, fontWeight: '700', color: Colors.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6},
+  notesText:     {fontSize: 15, color: Colors.textPrimary, lineHeight: 22},
   actions:       {gap: 10},
   chatBtn: {
-    borderRadius: 14, borderWidth: 1.5, borderColor: '#BFDBFE',
-    backgroundColor: '#EFF6FF', paddingVertical: 14, alignItems: 'center',
+    borderRadius: 10, borderWidth: 1, borderColor: '#E4E6EA',
+    backgroundColor: '#FFFFFF', paddingVertical: 12, alignItems: 'center',
   },
-  chatBtnText:   {fontSize: 15, fontWeight: '700', color: BUYER_ACCENT},
+  chatBtnText:   {fontSize: 14, fontWeight: '700', color: Colors.primary},
   acceptBtn: {
-    borderRadius: 14, backgroundColor: BUYER_ACCENT,
-    paddingVertical: 16, alignItems: 'center',
-    shadowColor: BUYER_ACCENT, shadowOffset: {width: 0, height: 4}, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
+    borderRadius: 10, backgroundColor: Colors.primary,
+    paddingVertical: 12, alignItems: 'center',
+    shadowColor: Colors.primary, shadowOffset: {width: 0, height: 4}, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
   },
-  acceptBtnText: {fontSize: 16, fontWeight: '700', color: '#FFFFFF'},
-  acceptedState: {backgroundColor: '#F0FDF4', borderRadius: 14, borderWidth: 1, borderColor: '#BBF7D0', paddingVertical: 14, alignItems: 'center'},
-  acceptedStateText: {fontSize: 15, fontWeight: '700', color: '#15803D'},
+  acceptBtnText: {fontSize: 14, fontWeight: '700', color: Colors.textOnPrimary},
+  acceptedState: {backgroundColor: '#F0FDF4', borderRadius: 10, borderWidth: 1, borderColor: '#BBF7D0', paddingVertical: 12, alignItems: 'center'},
+  acceptedStateText: {fontSize: 14, fontWeight: '700', color: '#15803D'},
   btnDisabled:   {opacity: 0.6},
 });
 
 const ff = StyleSheet.create({
   card: {
-    backgroundColor: '#FFFBEB', borderRadius: 16, padding: 18, marginTop: 16,
+    backgroundColor: Colors.warningLight, borderRadius: 16, padding: 18, marginTop: 16,
     borderWidth: 1, borderColor: '#FDE68A',
   },
   title:          {fontSize: 12, fontWeight: '700', color: '#92400E', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 14},
   progressTrack:  {flexDirection: 'row', alignItems: 'center', marginBottom: 16},
-  progressDot:    {width: 10, height: 10, borderRadius: 5, backgroundColor: '#E5E7EB'},
+  progressDot:    {width: 10, height: 10, borderRadius: 5, backgroundColor: Colors.divider},
   progressDotDone:{backgroundColor: '#D97706'},
-  progressLine:   {flex: 1, height: 2, backgroundColor: '#E5E7EB'},
+  progressLine:   {flex: 1, height: 2, backgroundColor: Colors.divider},
   progressLineDone:{backgroundColor: '#D97706'},
   statusIcon:     {fontSize: 28, textAlign: 'center', marginBottom: 6},
   statusLabel:    {fontSize: 15, fontWeight: '600', color: '#92400E', textAlign: 'center', marginBottom: 16},
-  confirmBtn:     {backgroundColor: '#15803D', borderRadius: 12, paddingVertical: 13, alignItems: 'center', marginBottom: 10},
-  confirmText:    {fontSize: 15, fontWeight: '700', color: '#FFFFFF'},
-  chatBtn:        {backgroundColor: '#EFF6FF', borderRadius: 12, borderWidth: 1, borderColor: '#BFDBFE', paddingVertical: 12, alignItems: 'center'},
-  chatText:       {fontSize: 14, fontWeight: '700', color: BUYER_ACCENT},
+  confirmBtn:     {backgroundColor: Colors.success, borderRadius: 10, paddingVertical: 12, alignItems: 'center', marginBottom: 10},
+  confirmText:    {fontSize: 14, fontWeight: '700', color: Colors.textOnPrimary},
+  chatBtn:        {backgroundColor: '#FFFFFF', borderRadius: 10, borderWidth: 1, borderColor: '#E4E6EA', paddingVertical: 12, alignItems: 'center'},
+  chatText:       {fontSize: 14, fontWeight: '700', color: Colors.primary},
   btnDisabled:    {opacity: 0.6},
 });
 
 const mbc = StyleSheet.create({
   card: {
-    backgroundColor: '#FFFFFF', borderRadius: 14, padding: 16, marginTop: 16,
+    backgroundColor: Colors.surface, borderRadius: 14, padding: 16, marginTop: 16,
     borderWidth: 1.5, borderColor: '#D1FAE5',
     shadowColor: '#000', shadowOffset: {width: 0, height: 2}, shadowOpacity: 0.05, shadowRadius: 6, elevation: 2,
   },
   header:     {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10},
-  label:      {fontSize: 11, fontWeight: '700', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: 0.5},
+  label:      {fontSize: 11, fontWeight: '700', color: Colors.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5},
   statusPill: {borderRadius: 12, paddingHorizontal: 8, paddingVertical: 3},
   statusText: {fontSize: 12, fontWeight: '700'},
   amount:     {fontSize: 28, fontWeight: '800', marginBottom: 4},
-  delivery:   {fontSize: 13, color: '#6B7280', marginBottom: 12},
-  viewDetail: {fontSize: 13, fontWeight: '600', color: '#9CA3AF', textAlign: 'right'},
+  delivery:   {fontSize: 13, color: Colors.textSecondary, marginBottom: 12},
+  viewDetail: {fontSize: 13, fontWeight: '600', color: Colors.textSecondary, textAlign: 'right'},
 });
 
 const bcs = StyleSheet.create({
-  wrap:        {backgroundColor: '#FFFFFF', borderRadius: 14, padding: 16, marginTop: 12, borderWidth: 1, borderColor: '#E5E7EB'},
-  title:       {fontSize: 13, fontWeight: '700', color: '#374151', marginBottom: 2},
-  subtitle:    {fontSize: 12, color: '#9CA3AF', marginBottom: 12},
+  wrap:        {backgroundColor: Colors.surface, borderRadius: 14, padding: 16, marginTop: 12, borderWidth: 1, borderColor: Colors.divider},
+  title:       {fontSize: 13, fontWeight: '700', color: Colors.textPrimary, marginBottom: 2},
+  subtitle:    {fontSize: 12, color: Colors.textSecondary, marginBottom: 12},
   pillsRow:    {flexDirection: 'row', flexWrap: 'wrap', gap: 8},
-  pill:        {backgroundColor: '#F3F4F6', borderRadius: 20, paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1, borderColor: '#E5E7EB'},
-  pillText:    {fontSize: 12, color: '#6B7280', fontWeight: '500'},
+  pill:        {backgroundColor: Colors.feedBackground, borderRadius: 20, paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1, borderColor: Colors.divider},
+  pillText:    {fontSize: 12, color: Colors.textSecondary, fontWeight: '500'},
   yourPill:    {backgroundColor: '#DCFCE7', borderColor: '#A7F3D0'},
   yourPillText:{fontSize: 12, color: '#15803D', fontWeight: '700'},
 });
 
 const s = StyleSheet.create({
-  root:   {flex: 1, backgroundColor: '#F9FAFB'},
-  safe:   {flex: 1, backgroundColor: '#F9FAFB'},
+  root:   {flex: 1, backgroundColor: Colors.feedBackground},
+  safe:   {flex: 1, backgroundColor: Colors.feedBackground},
   center: {flex: 1, alignItems: 'center', justifyContent: 'center'},
   content:      {padding: 16, paddingBottom: 40},
   topRow:       {flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10, flexWrap: 'wrap'},
   statusBadge:  {borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4},
   statusText:   {fontSize: 12, fontWeight: '700'},
   categoryPill: {fontSize: 13, fontWeight: '600'},
-  title:        {fontSize: 22, fontWeight: '800', color: '#111827', marginBottom: 12, lineHeight: 28},
+  title:        {fontSize: 22, fontWeight: '800', color: Colors.textPrimary, marginBottom: 12, lineHeight: 28},
   metaRow:      {flexDirection: 'row', gap: 6, flexWrap: 'wrap', marginBottom: 14},
-  descCard:     {backgroundColor: '#FFFFFF', borderRadius: 14, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: '#F3F4F6'},
-  descText:     {fontSize: 15, color: '#374151', lineHeight: 24},
+  descCard:     {backgroundColor: Colors.surface, borderRadius: 14, padding: 16, marginBottom: 12, borderWidth: 1, borderColor: Colors.divider},
+  descText:     {fontSize: 15, color: Colors.textPrimary, lineHeight: 24},
+  imgScroll:    {marginBottom: 12},
+  imgRow:       {gap: 8, paddingHorizontal: 0},
+  requestImg:   {width: 220, height: 165, borderRadius: 12},
   datesRow:     {flexDirection: 'row', gap: 10, marginBottom: 16},
-  dateBox:      {flex: 1, backgroundColor: '#FFFFFF', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#F3F4F6'},
-  dateLabel:    {fontSize: 10, fontWeight: '700', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 2},
-  dateValue:    {fontSize: 14, fontWeight: '600', color: '#374151'},
+  dateBox:      {flex: 1, backgroundColor: Colors.surface, borderRadius: 12, padding: 12, borderWidth: 1, borderColor: Colors.divider},
+  dateLabel:    {fontSize: 10, fontWeight: '700', color: Colors.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 2},
+  dateValue:    {fontSize: 14, fontWeight: '600', color: Colors.textPrimary},
   merchantCTA: {
-    backgroundColor: '#F0FDF4', borderRadius: 14, padding: 20, borderWidth: 1, borderColor: '#BBF7D0', alignItems: 'center',
+    backgroundColor: Colors.successLight, borderRadius: 14, padding: 20, borderWidth: 1, borderColor: '#BBF7D0', alignItems: 'center',
   },
   ctaTitle:    {fontSize: 16, fontWeight: '700', color: '#15803D', marginBottom: 4},
   ctaDesc:     {fontSize: 13, color: '#166534', textAlign: 'center', marginBottom: 16, lineHeight: 19},
-  ctaBtn:      {backgroundColor: MERCHANT_ACCENT, borderRadius: 12, paddingVertical: 12, paddingHorizontal: 28},
-  ctaBtnText:  {fontSize: 15, fontWeight: '700', color: '#FFFFFF'},
+  ctaBtn:      {backgroundColor: Colors.primary, borderRadius: 12, paddingVertical: 12, paddingHorizontal: 28},
+  ctaBtnText:  {fontSize: 15, fontWeight: '700', color: Colors.textOnPrimary},
   proposalsSection: {marginTop: 24},
   proposalsHeader:  {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12},
-  proposalsTitle:   {fontSize: 18, fontWeight: '800', color: '#111827'},
+  proposalsTitle:   {fontSize: 18, fontWeight: '800', color: Colors.textPrimary},
   marketRow:        {flexDirection: 'row', gap: 12},
-  marketStat:       {fontSize: 12, color: '#9CA3AF'},
-  marketStatBold:   {fontWeight: '700', color: '#374151'},
-  emptyBids:        {alignItems: 'center', paddingVertical: 36, backgroundColor: '#FFFFFF', borderRadius: 14, borderWidth: 1, borderColor: '#E5E7EB'},
+  marketStat:       {fontSize: 12, color: Colors.textSecondary},
+  marketStatBold:   {fontWeight: '700', color: Colors.textPrimary},
+  emptyBids:        {alignItems: 'center', paddingVertical: 36, backgroundColor: Colors.surface, borderRadius: 14, borderWidth: 1, borderColor: Colors.divider},
   emptyIcon:        {fontSize: 36, marginBottom: 8},
-  emptyTitle:       {fontSize: 16, fontWeight: '700', color: '#374151', marginBottom: 4},
-  emptyDesc:        {fontSize: 13, color: '#9CA3AF', textAlign: 'center'},
+  emptyTitle:       {fontSize: 16, fontWeight: '700', color: Colors.textPrimary, marginBottom: 4},
+  emptyDesc:        {fontSize: 13, color: Colors.textSecondary, textAlign: 'center'},
 });
 
 const hs = StyleSheet.create({
-  wrap:         {marginTop: 24, backgroundColor: '#FFFFFF', borderRadius: 14, padding: 16, borderWidth: 1, borderColor: '#E5E7EB'},
+  wrap:         {marginTop: 24, backgroundColor: Colors.surface, borderRadius: 14, padding: 16, borderWidth: 1, borderColor: Colors.divider},
   heading:      {fontSize: 11, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 16},
   row:          {flexDirection: 'row', minHeight: 44},
   lineCol:      {width: 26, alignItems: 'center'},
   dot:          {width: 14, height: 14, borderRadius: 7, marginTop: 3},
-  dotPending:   {backgroundColor: '#F3F4F6', borderWidth: 2, borderColor: '#D1D5DB'},
-  dotFailed:    {backgroundColor: '#EF4444'},
-  line:         {flex: 1, width: 2, backgroundColor: '#E5E7EB', marginTop: 2, marginBottom: 0},
+  dotPending:   {backgroundColor: Colors.feedBackground, borderWidth: 2, borderColor: Colors.divider},
+  dotFailed:    {backgroundColor: Colors.error},
+  line:         {flex: 1, width: 2, backgroundColor: Colors.divider, marginTop: 2, marginBottom: 0},
   content:      {flex: 1, paddingBottom: 12, paddingLeft: 8},
-  label:        {fontSize: 14, fontWeight: '600', color: '#111827', lineHeight: 20},
-  labelPending: {color: '#9CA3AF', fontWeight: '500'},
-  labelFailed:  {color: '#EF4444'},
-  sublabel:     {fontSize: 12, color: '#9CA3AF', marginTop: 2},
+  label:        {fontSize: 14, fontWeight: '600', color: Colors.textPrimary, lineHeight: 20},
+  labelPending: {color: Colors.textSecondary, fontWeight: '500'},
+  labelFailed:  {color: Colors.error},
+  sublabel:     {fontSize: 12, color: Colors.textSecondary, marginTop: 2},
 });

@@ -16,6 +16,7 @@ import {
 } from '../../api/notifications';
 import { RootStackParamList } from '../../types/navigation';
 import AppHeader from '../../components/AppHeader';
+import {Colors} from '../../theme';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -23,9 +24,9 @@ const API_BASE = 'http://10.0.2.2:3000';
 
 const TYPE_META: Record<string, { color: string; icon: string; label: string }> = {
   NEW_MESSAGE:        { color: '#7C3AED', icon: '💬', label: 'Message' },
-  BID_PLACED:         { color: '#059669', icon: '💰', label: 'Bid' },
-  STATUS_IN_DELIVERY: { color: '#D97706', icon: '🚚', label: 'Delivery' },
-  BID_ACCEPTED:       { color: '#2563EB', icon: '✅', label: 'Accepted' },
+  BID_PLACED:         { color: Colors.success, icon: '💰', label: 'Bid' },
+  STATUS_IN_DELIVERY: { color: Colors.warning, icon: '🚚', label: 'Delivery' },
+  BID_ACCEPTED:       { color: Colors.primary, icon: '✅', label: 'Accepted' },
   BUYER_REVIEW:       { color: '#DB2777', icon: '⭐', label: 'Review' },
 };
 
@@ -194,7 +195,7 @@ export default function NotificationsScreen() {
   };
 
   if (loading) {
-    return <View style={styles.center}><ActivityIndicator size="large" color="#2563EB" /></View>;
+    return <View style={styles.center}><ActivityIndicator size="large" color={Colors.primary} /></View>;
   }
 
   return (
@@ -253,33 +254,33 @@ export default function NotificationsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container:        { flex: 1, backgroundColor: '#F9FAFB' },
+  container:        { flex: 1, backgroundColor: Colors.feedBackground },
   center:           { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  actionBar:        { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 8, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#E5E7EB' },
-  unreadLabel:      { fontSize: 12, color: '#6B7280' },
-  markAllBtn:       { paddingHorizontal: 12, paddingVertical: 6, backgroundColor: '#EFF6FF', borderRadius: 8 },
-  markAllText:      { fontSize: 13, color: '#2563EB', fontWeight: '600' },
-  filterBar:        { maxHeight: 48, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#E5E7EB' },
-  filterTab:        { paddingHorizontal: 14, paddingVertical: 10, borderRadius: 20, backgroundColor: '#F3F4F6' },
-  filterTabActive:  { backgroundColor: '#2563EB' },
-  filterText:       { fontSize: 13, color: '#6B7280', fontWeight: '500' },
-  filterTextActive: { color: '#fff', fontWeight: '700' },
-  row:              { flexDirection: 'row', padding: 14, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#F3F4F6', alignItems: 'flex-start' },
-  rowUnread:        { backgroundColor: '#EFF6FF' },
+  actionBar:        { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 8, backgroundColor: Colors.surface, borderBottomWidth: 1, borderBottomColor: Colors.divider },
+  unreadLabel:      { fontSize: 12, color: Colors.textSecondary },
+  markAllBtn:       { paddingHorizontal: 12, paddingVertical: 6, backgroundColor: Colors.primaryLight, borderRadius: 8 },
+  markAllText:      { fontSize: 13, color: Colors.primary, fontWeight: '600' },
+  filterBar:        { maxHeight: 48, backgroundColor: Colors.surface, borderBottomWidth: 1, borderBottomColor: Colors.divider },
+  filterTab:        { paddingHorizontal: 14, paddingVertical: 10, borderRadius: 20, backgroundColor: Colors.feedBackground },
+  filterTabActive:  { backgroundColor: Colors.primary },
+  filterText:       { fontSize: 13, color: Colors.textSecondary, fontWeight: '500' },
+  filterTextActive: { color: Colors.textOnPrimary, fontWeight: '700' },
+  row:              { flexDirection: 'row', padding: 14, backgroundColor: Colors.surface, borderBottomWidth: 1, borderBottomColor: Colors.divider, alignItems: 'flex-start' },
+  rowUnread:        { backgroundColor: Colors.primaryLight },
   iconBadge:        { width: 44, height: 44, borderRadius: 22, justifyContent: 'center', alignItems: 'center', marginRight: 12 },
   iconText:         { fontSize: 20 },
   rowBody:          { flex: 1 },
   rowTop:           { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 3 },
-  title:            { fontSize: 14, color: '#374151', fontWeight: '500', flex: 1, marginRight: 8 },
-  titleUnread:      { fontWeight: '700', color: '#111827' },
-  time:             { fontSize: 11, color: '#9CA3AF' },
-  body:             { fontSize: 13, color: '#6B7280', lineHeight: 18, marginBottom: 6 },
+  title:            { fontSize: 14, color: Colors.textSecondary, fontWeight: '500', flex: 1, marginRight: 8 },
+  titleUnread:      { fontWeight: '700', color: Colors.textPrimary },
+  time:             { fontSize: 11, color: Colors.textSecondary },
+  body:             { fontSize: 13, color: Colors.textSecondary, lineHeight: 18, marginBottom: 6 },
   typePill:         { alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4 },
   typeText:         { fontSize: 10, fontWeight: '700' },
-  unreadDot:        { width: 10, height: 10, borderRadius: 5, backgroundColor: '#2563EB', alignSelf: 'center', marginLeft: 8 },
+  unreadDot:        { width: 10, height: 10, borderRadius: 5, backgroundColor: Colors.primary, alignSelf: 'center', marginLeft: 8 },
   emptyContainer:   { flex: 1 },
   emptyState:       { flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 80 },
   emptyIcon:        { fontSize: 48, marginBottom: 12 },
-  emptyTitle:       { fontSize: 18, fontWeight: '700', color: '#374151', marginBottom: 6 },
-  emptyDesc:        { fontSize: 14, color: '#9CA3AF', textAlign: 'center' },
+  emptyTitle:       { fontSize: 18, fontWeight: '700', color: Colors.textPrimary, marginBottom: 6 },
+  emptyDesc:        { fontSize: 14, color: Colors.textSecondary, textAlign: 'center' },
 });

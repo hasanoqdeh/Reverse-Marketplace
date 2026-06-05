@@ -15,10 +15,11 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../../types/navigation';
 import {submitBid} from '../../../api/bids';
+import {Colors} from '../../../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SubmitBid'>;
 
-const ACCENT = '#16A34A';
+const ACCENT = Colors.primary;
 
 export default function SubmitBidScreen({route, navigation}: Props) {
   const {requestId, requestTitle} = route.params;
@@ -231,10 +232,10 @@ const styles = StyleSheet.create({
     borderTopWidth: 1, borderTopColor: '#E5E7EB',
   },
   submitBtn: {
-    backgroundColor: ACCENT, borderRadius: 14, paddingVertical: 16,
+    backgroundColor: ACCENT, borderRadius: 10, paddingVertical: 12,
     alignItems: 'center',
     shadowColor: ACCENT, shadowOffset: {width: 0, height: 4}, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
   },
   submitBtnDisabled: {backgroundColor: '#D1FAE5', shadowOpacity: 0},
-  submitBtnText: {fontSize: 16, fontWeight: '700', color: '#FFFFFF'},
+  submitBtnText: {fontSize: 14, fontWeight: '700', color: '#FFFFFF'},
 });
