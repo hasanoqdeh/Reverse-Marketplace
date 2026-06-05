@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "113140576943",
+    "project_id": "talabak-c301a",
+    "storage_bucket": "talabak-c301a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:113140576943:android:058662716f2d11d618da5a",
+        "android_client_info": {
+          "package_name": "com.reversemarketplacebuyer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3nhZBHopAz74D2Pt-Vrxq9tj7Hm5slGI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

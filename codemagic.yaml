@@ -48,19 +48,31 @@ workflows:
             exit 1
           fi
 
-          echo "Copying iOS template…"
+          # ── Fix: cp -r into an existing directory copies the source as a
+          # subdirectory (app/ios/ios/), not in-place.  We must remove app/ios/
+          # first so the template lands AS app/ios/ (the correct level).
+          # Preserve any Pods that Codemagic already restored from cache.
+          if [ -d "app/ios/Pods" ]; then
+            echo "Preserving cached Pods…"
+            mv app/ios/Pods /tmp/_ios_pods_cache
+          fi
+          rm -rf app/ios
           cp -r "$TEMPLATE" app/ios
+          if [ -d "/tmp/_ios_pods_cache" ]; then
+            mv /tmp/_ios_pods_cache app/ios/Pods
+            echo "Pods cache restored."
+          fi
 
-          # Detect the placeholder name (e.g. "HelloWorld")
+          # Detect the placeholder name used by this template (e.g. "HelloWorld")
           PLACEHOLDER=$(ls app/ios | grep -v "Tests\|\.xcodeproj\|Podfile\|\.xcworkspace" | head -1)
-          echo "Placeholder: $PLACEHOLDER"
+          echo "Placeholder: $PLACEHOLDER → $APP_NAME"
 
           # Replace placeholder → APP_NAME in every source file
-          # NOTE: macOS BSD sed requires an explicit empty-string extension after -i
+          # macOS BSD sed requires an explicit empty-string extension after -i
           find app/ios -type f \( \
-            -name "*.h"         -o -name "*.m"         -o -name "*.mm"    \
-            -o -name "*.swift"  -o -name "*.plist"      -o -name "*.storyboard" \
-            -o -name "*.pbxproj" -o -name "*.xcscheme"  -o -name "Podfile" \) \
+            -name "*.h"          -o -name "*.m"          -o -name "*.mm"       \
+            -o -name "*.swift"   -o -name "*.plist"       -o -name "*.storyboard" \
+            -o -name "*.pbxproj" -o -name "*.xcscheme"    -o -name "Podfile" \) \
             -exec sed -i "" "s/$PLACEHOLDER/$APP_NAME/g" {} \;
 
           # Rename directories and files (deepest first so parents still match)
@@ -68,6 +80,14 @@ workflows:
             new="${old//$PLACEHOLDER/$APP_NAME}"
             [ "$old" != "$new" ] && mv "$old" "$new"
           done
+
+          # Confirm the expected app directory was produced
+          if [ ! -d "app/ios/$APP_NAME" ]; then
+            echo "ERROR: expected app/ios/$APP_NAME to be a directory after generation."
+            echo "Contents of app/ios/:"
+            ls -la app/ios/
+            exit 1
+          fi
 
           # Set bundle ID
           INFO_PLIST="app/ios/$APP_NAME/Info.plist"
