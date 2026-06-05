@@ -83,10 +83,22 @@ workflows:
             -o -name "*.pbxproj" -o -name "*.xcscheme"    -o -name "Podfile" \) \
             -exec sed -i "" "s/$PLACEHOLDER/$APP_NAME/g" {} \;
 
-          # Rename directories and files (deepest first so parents still match)
-          find app/ios -name "*${PLACEHOLDER}*" | sort -r | while IFS= read -r old; do
-            new="${old//$PLACEHOLDER/$APP_NAME}"
-            [ "$old" != "$new" ] && mv "$old" "$new"
+          # Rename directories and files.
+          # IMPORTANT: rename only the BASENAME of each entry, and use
+          # `find -depth` so children are renamed before their parent dir.
+          # The previous approach substituted the placeholder across the WHOLE
+          # path at once — so moving e.g.
+          #   HelloWorld.xcodeproj/.../HelloWorld.xcscheme
+          # targeted a parent dir (ReverseMarketplaceBuyer.xcodeproj) that did
+          # not exist yet, the mv failed silently, and the scheme kept its old
+          # name → "workspace does not contain a scheme named ...".
+          find app/ios -depth -name "*${PLACEHOLDER}*" | while IFS= read -r old; do
+            dir=$(dirname "$old")
+            base=$(basename "$old")
+            newbase="${base//$PLACEHOLDER/$APP_NAME}"
+            if [ "$base" != "$newbase" ]; then
+              mv "$dir/$base" "$dir/$newbase"
+            fi
           done
 
           # Confirm the expected app directory was produced
@@ -96,6 +108,16 @@ workflows:
             ls -la app/ios/
             exit 1
           fi
+
+          # Confirm the shared scheme was renamed correctly (xcodebuild needs it)
+          SCHEME="app/ios/$APP_NAME.xcodeproj/xcshareddata/xcschemes/$APP_NAME.xcscheme"
+          if [ ! -f "$SCHEME" ]; then
+            echo "ERROR: expected shared scheme not found at $SCHEME"
+            echo "Schemes present:"
+            find "app/ios/$APP_NAME.xcodeproj" -name "*.xcscheme" 2>/dev/null
+            exit 1
+          fi
+          echo "Scheme OK: $SCHEME"
 
           # Set bundle ID
           INFO_PLIST="app/ios/$APP_NAME/Info.plist"
@@ -341,7 +363,17 @@ workflows:
       # ── 7. Code signing ──────────────────────────────────────────────────────
       - name: Set up code signing
         script: |
-          echo "$CM_CERTIFICATE" | base64 --decode > /tmp/cert.p12
+          set -e
+
+          # ── Certificate ──────────────────────────────────────────────────
+          # printf (not echo) so no trailing newline corrupts the binary;
+          # `base64 --decode -i` reads the value as-is.
+          printf '%s' "$CM_CERTIFICATE" | base64 --decode > /tmp/cert.p12
+          if ! openssl pkcs12 -in /tmp/cert.p12 -nokeys -passin "pass:$CM_CERTIFICATE_PASSWORD" >/dev/null 2>&1; then
+            echo "ERROR: CM_CERTIFICATE did not decode to a valid .p12 (check the secret / password)."
+            exit 1
+          fi
+
           security create-keychain -p "" build.keychain
           security default-keychain -s build.keychain
           security unlock-keychain -p "" build.keychain
@@ -350,9 +382,35 @@ workflows:
           security set-key-partition-list -S apple-tool:,apple:,codesign: \
             -s -k "" build.keychain
 
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          echo "$CM_PROVISIONING_PROFILE" | base64 --decode \
-            > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
+          # ── Provisioning profile ─────────────────────────────────────────
+          PROFILE_TMP="/tmp/profile.mobileprovision"
+          printf '%s' "$CM_PROVISIONING_PROFILE" | base64 --decode > "$PROFILE_TMP"
+
+          # Decode the CMS-signed profile to a plain plist so we can read it
+          if ! security cms -D -i "$PROFILE_TMP" > /tmp/profile.plist 2>/dev/null; then
+            echo "ERROR: CM_PROVISIONING_PROFILE is not a valid .mobileprovision."
+            echo "First bytes of the decoded secret:"
+            head -c 64 "$PROFILE_TMP" | xxd | head
+            exit 1
+          fi
+
+          # Extract the real UUID and Name (xcodebuild matches by these, NOT filename)
+          PROFILE_UUID=$(/usr/libexec/PlistBuddy -c "Print :UUID" /tmp/profile.plist)
+          PROFILE_NAME=$(/usr/libexec/PlistBuddy -c "Print :Name" /tmp/profile.plist)
+          if [ -z "$PROFILE_UUID" ]; then
+            echo "ERROR: profile is missing the required UUID property."
+            exit 1
+          fi
+          echo "Provisioning profile: name='$PROFILE_NAME' uuid=$PROFILE_UUID"
+
+          # Install under the UUID filename (Xcode's expected convention)
+          PROFILES_DIR="$HOME/Library/MobileDevice/Provisioning Profiles"
+          mkdir -p "$PROFILES_DIR"
+          cp "$PROFILE_TMP" "$PROFILES_DIR/$PROFILE_UUID.mobileprovision"
+
+          # Export name + uuid to subsequent build steps via Codemagic's $CM_ENV
+          echo "PROFILE_NAME=$PROFILE_NAME" >> "$CM_ENV"
+          echo "PROFILE_UUID=$PROFILE_UUID" >> "$CM_ENV"
 
       # ── 8. Build & archive ───────────────────────────────────────────────────
       - name: Build iOS app
@@ -368,22 +426,46 @@ workflows:
             CODE_SIGN_STYLE=Manual \
             DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
             CODE_SIGN_IDENTITY="iPhone Distribution" \
-            PROVISIONING_PROFILE_SPECIFIER="profile" \
+            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_UUID" \
             | xcpretty
 
       # ── 9. Export IPA ────────────────────────────────────────────────────────
+      #       ExportOptions.plist is built in Python (not a shell heredoc) so the
+      #       YAML linter cannot indent the terminator and break it. For manual
+      #       ad-hoc signing it must declare signingStyle + the bundle-ID → profile
+      #       mapping, otherwise xcodebuild can't pick the right profile to export.
       - name: Export IPA
         script: |
           set -o pipefail
-          cat > /tmp/ExportOptions.plist <<PLIST
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0"><dict>
-            <key>method</key>          <string>ad-hoc</string>
-            <key>teamID</key>          <string>$APPLE_TEAM_ID</string>
-            <key>compileBitcode</key>  <false/>
-          </dict></plist>
-          PLIST
+
+          python3 - <<'PYEOF'
+          import os
+          
+          bundle = os.environ['BUNDLE_ID']
+          team   = os.environ['APPLE_TEAM_ID']
+          # Prefer the profile name; fall back to UUID. Both are valid here.
+          profile = os.environ.get('PROFILE_NAME') or os.environ['PROFILE_UUID']
+          
+          lines = [
+              '<?xml version="1.0" encoding="UTF-8"?>',
+              '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"'
+              ' "http://www.apple.com/DTDs/PropertyList-1.0.dtd">',
+              '<plist version="1.0"><dict>',
+              '  <key>method</key><string>ad-hoc</string>',
+              f'  <key>teamID</key><string>{team}</string>',
+              '  <key>signingStyle</key><string>manual</string>',
+              '  <key>signingCertificate</key><string>iPhone Distribution</string>',
+              '  <key>provisioningProfiles</key>',
+              '  <dict>',
+              f'    <key>{bundle}</key><string>{profile}</string>',
+              '  </dict>',
+              '  <key>compileBitcode</key><false/>',
+              '</dict></plist>',
+          ]
+          with open('/tmp/ExportOptions.plist', 'w') as f:
+              f.write('\n'.join(lines) + '\n')
+          print(f"ExportOptions.plist written: bundle={bundle} profile={profile}")
+          PYEOF
 
           xcodebuild -exportArchive \
             -archivePath       "/tmp/$APP_NAME.xcarchive" \
