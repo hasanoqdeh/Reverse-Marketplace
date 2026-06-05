@@ -79,6 +79,41 @@ workflows:
       - name: Install CocoaPods
         script: |
           pod cache clean boost --all 2>/dev/null || true
+
+          # ── Boost checksum fix ──────────────────────────────────────────────
+          # JFrog Artifactory sometimes serves boost_1_76_0.tar.bz2 with a
+          # different checksum than the one hardcoded in react-native's podspec.
+          # Strategy: download the file, measure the real sha256, patch the
+          # podspec to match it, and pre-populate the CocoaPods download cache
+          # so pod install doesn't re-download (and re-fail) the same file.
+          BOOST_VER="1.76.0"
+          BOOST_FILE="boost_1_76_0.tar.bz2"
+          BOOST_URL="https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VER}/source/${BOOST_FILE}"
+          BOOST_PODSPEC="app/node_modules/react-native/third-party-podspecs/boost.podspec"
+
+          echo "Downloading boost ${BOOST_VER}…"
+          curl -L --retry 3 "${BOOST_URL}" -o "/tmp/${BOOST_FILE}"
+
+          ACTUAL_SHA=$(shasum -a 256 "/tmp/${BOOST_FILE}" | awk '{print $1}')
+          OLD_SHA=$(grep -oE '[a-f0-9]{64}' "${BOOST_PODSPEC}" | head -1)
+          echo "Podspec sha256 : ${OLD_SHA}"
+          echo "Actual sha256  : ${ACTUAL_SHA}"
+
+          if [ "${OLD_SHA}" != "${ACTUAL_SHA}" ]; then
+            echo "Mismatch detected — patching podspec…"
+            sed -i "" "s/${OLD_SHA}/${ACTUAL_SHA}/" "${BOOST_PODSPEC}"
+            echo "Patched: ${BOOST_PODSPEC}"
+          else
+            echo "Checksum matches — no patch needed."
+          fi
+
+          # Pre-populate CocoaPods cache so pod install uses this file directly
+          PODS_CACHE="${HOME}/Library/Caches/CocoaPods/Pods/External/boost"
+          mkdir -p "${PODS_CACHE}"
+          cp "/tmp/${BOOST_FILE}" "${PODS_CACHE}/"
+          echo "Boost cached at: ${PODS_CACHE}/${BOOST_FILE}"
+          # ───────────────────────────────────────────────────────────────────
+
           cd app/ios && pod install --repo-update
 
       # 4. Code signing
