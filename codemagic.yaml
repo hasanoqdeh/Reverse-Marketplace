@@ -8,16 +8,19 @@ workflows:
 
     environment:
       vars:
-        APP_NAME: ReverseMarketplaceBuyer
-        BUNDLE_ID: com.reversemarketplacebuyer
+        APP_NAME:   ReverseMarketplaceBuyer
+        BUNDLE_ID:  com.reversemarketplacebuyer
+        NO_FLIPPER: "1"    # Flipper conflicts with Firebase on RN 0.72 — keep disabled
       node: "20.20.0"
       xcode: latest
       cocoapods: default
-      # Set these in Codemagic UI → Environment Variables:
-      #   APPLE_TEAM_ID           — 10-character Apple Developer Team ID
-      #   CM_CERTIFICATE          — base64 of your .p12 distribution certificate
-      #   CM_CERTIFICATE_PASSWORD — password for the .p12
-      #   CM_PROVISIONING_PROFILE — base64 of your Ad Hoc .mobileprovision
+      # ── Required secrets (set in Codemagic UI → Environment Variables) ──────
+      #   APPLE_TEAM_ID             — 10-char Apple Developer Team ID
+      #   CM_CERTIFICATE            — base64 of .p12 distribution certificate
+      #   CM_CERTIFICATE_PASSWORD   — .p12 password
+      #   CM_PROVISIONING_PROFILE   — base64 of Ad Hoc .mobileprovision
+      #   GOOGLE_SERVICE_INFO_PLIST — base64 of GoogleService-Info.plist (Firebase)
+      #                               Generate: base64 -i GoogleService-Info.plist | pbcopy
 
     cache:
       cache_paths:
@@ -25,85 +28,249 @@ workflows:
         - app/ios/Pods
 
     scripts:
-      # 1. Node deps
+
+      # ── 1. Node dependencies ─────────────────────────────────────────────────
       - name: Install Node dependencies
         script: cd app && npm install
 
-      # 2. Generate ios/ from the template bundled inside node_modules/react-native
-      #    This avoids running `react-native init` (slow, needs network/prompts).
+      # ── 2. Generate ios/ from the RN template ────────────────────────────────
+      #       Skipped when ios/Podfile already exists in the repo.
       - name: Generate iOS project from template
         script: |
           if [ -d "app/ios" ] && [ -f "app/ios/Podfile" ]; then
-            echo "ios/ already exists — skipping."
+            echo "ios/ already exists — skipping generation."
             exit 0
           fi
 
           TEMPLATE="app/node_modules/react-native/template/ios"
           if [ ! -d "$TEMPLATE" ]; then
-            echo "ERROR: react-native template not found at $TEMPLATE"
+            echo "ERROR: RN template not found at $TEMPLATE"
             exit 1
           fi
 
-          echo "Copying iOS template from node_modules…"
+          echo "Copying iOS template…"
           cp -r "$TEMPLATE" app/ios
 
-          # ── Detect the placeholder name used by this template ──────────────
+          # Detect the placeholder name (e.g. "HelloWorld")
           PLACEHOLDER=$(ls app/ios | grep -v "Tests\|\.xcodeproj\|Podfile\|\.xcworkspace" | head -1)
-          echo "Template placeholder name: $PLACEHOLDER"
+          echo "Placeholder: $PLACEHOLDER"
 
-          # ── Replace placeholder → APP_NAME in all source files ────────────
+          # Replace placeholder → APP_NAME in every source file
+          # NOTE: macOS BSD sed requires an explicit empty-string extension after -i
           find app/ios -type f \( \
-            -name "*.h" -o -name "*.m" -o -name "*.mm" -o -name "*.swift" \
-            -o -name "*.plist" -o -name "*.storyboard" \
-            -o -name "*.pbxproj" -o -name "*.xcscheme" \
-            -o -name "Podfile" \) \
-            -exec sed -i "s/$PLACEHOLDER/$APP_NAME/g" {} \;
+            -name "*.h"         -o -name "*.m"         -o -name "*.mm"    \
+            -o -name "*.swift"  -o -name "*.plist"      -o -name "*.storyboard" \
+            -o -name "*.pbxproj" -o -name "*.xcscheme"  -o -name "Podfile" \) \
+            -exec sed -i "" "s/$PLACEHOLDER/$APP_NAME/g" {} \;
 
-          # ── Rename directories and files ───────────────────────────────────
-          # Sort in reverse so nested paths are renamed before their parents
+          # Rename directories and files (deepest first so parents still match)
           find app/ios -name "*${PLACEHOLDER}*" | sort -r | while IFS= read -r old; do
             new="${old//$PLACEHOLDER/$APP_NAME}"
             [ "$old" != "$new" ] && mv "$old" "$new"
           done
 
-          # ── Set bundle ID ──────────────────────────────────────────────────
+          # Set bundle ID
           INFO_PLIST="app/ios/$APP_NAME/Info.plist"
           if [ -f "$INFO_PLIST" ]; then
             /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $BUNDLE_ID" "$INFO_PLIST"
-            echo "Bundle ID set to $BUNDLE_ID"
+            echo "Bundle ID → $BUNDLE_ID"
           fi
 
           echo "ios/ folder ready."
 
-      # 3. CocoaPods
+      # ── 3. GoogleService-Info.plist ──────────────────────────────────────────
+      #       @react-native-firebase adds a Copy build phase that FAILS at
+      #       archive time if this file is absent.  Decode from the secret
+      #       env var; fall back to a structure-valid placeholder so the build
+      #       still completes (Firebase won't connect but the IPA is produced).
+      - name: Set up GoogleService-Info.plist
+        script: |
+          PLIST_DIR="app/ios/$APP_NAME"
+          PLIST_PATH="$PLIST_DIR/GoogleService-Info.plist"
+          mkdir -p "$PLIST_DIR"
+
+          if [ -n "${GOOGLE_SERVICE_INFO_PLIST:-}" ]; then
+            echo "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode > "$PLIST_PATH"
+            echo "GoogleService-Info.plist injected from secret."
+          else
+            echo "WARNING: GOOGLE_SERVICE_INFO_PLIST not set — writing placeholder."
+            cat > "$PLIST_PATH" <<'GSEOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>API_KEY</key>                    <string>placeholder</string>
+  <key>GCM_SENDER_ID</key>             <string>000000000000</string>
+  <key>PLIST_VERSION</key>             <string>1</string>
+  <key>BUNDLE_ID</key>                 <string>com.reversemarketplacebuyer</string>
+  <key>PROJECT_ID</key>                <string>placeholder-project</string>
+  <key>STORAGE_BUCKET</key>            <string>placeholder-project.appspot.com</string>
+  <key>IS_ADS_ENABLED</key>            <false/>
+  <key>IS_ANALYTICS_ENABLED</key>      <false/>
+  <key>IS_APPINVITE_ENABLED</key>      <false/>
+  <key>IS_GCM_ENABLED</key>            <true/>
+  <key>IS_SIGNIN_ENABLED</key>         <false/>
+  <key>GOOGLE_APP_ID</key>             <string>1:000000000000:ios:0000000000000000000000</string>
+</dict>
+</plist>
+GSEOF
+            echo "Placeholder written."
+          fi
+
+      # ── 4. Patch Podfile ─────────────────────────────────────────────────────
+      #       Fixes three issues that every build hits with this dependency set:
+      #         a) Firebase Swift pods need GoogleUtilities module maps
+      #         b) react-native-permissions 3.x needs setup_permissions([...])
+      #         c) $RNFirebaseAsStaticFramework for static-library Firebase
+      - name: Patch Podfile
+        script: |
+          PODFILE="app/ios/Podfile"
+          [ -f "$PODFILE" ] || { echo "ERROR: Podfile missing"; exit 1; }
+
+          python3 - <<'PYEOF'
+import re
+
+PODFILE = "app/ios/Podfile"
+with open(PODFILE) as f:
+    src = f.read()
+
+changed = False
+
+# ── a) $RNFirebaseAsStaticFramework ──────────────────────────────────────────
+# Must be declared before any `require` so @react-native-firebase and
+# react-native-maps (Google Maps) configure Firebase as static frameworks.
+if '$RNFirebaseAsStaticFramework' not in src:
+    src = '$RNFirebaseAsStaticFramework = true\n\n' + src
+    changed = True
+    print("+ $RNFirebaseAsStaticFramework = true")
+
+# ── b) use_modular_headers! ───────────────────────────────────────────────────
+# FirebaseCoreInternal (Swift) imports GoogleUtilities which has no module map.
+# CocoaPods generates one automatically when this flag is present.
+if 'use_modular_headers!' not in src:
+    src = re.sub(r'(platform :ios[^\n]*\n)', r'\1use_modular_headers!\n', src, count=1)
+    changed = True
+    print("+ use_modular_headers!")
+
+# ── c) setup_permissions for react-native-permissions 3.x ───────────────────
+# Without this, the permission handler implementations are not compiled into
+# the binary and every permission check returns "unavailable" at runtime.
+PERMS = """\
+
+# react-native-permissions: include only the handlers the app uses
+setup_permissions([
+  'Camera',
+  'LocationAlways',
+  'LocationWhenInUse',
+  'Microphone',
+  'Notifications',
+  'PhotoLibrary',
+  'PhotoLibraryAddOnly',
+])
+
+"""
+if 'setup_permissions' not in src:
+    src = re.sub(r'(^target\b)', PERMS + r'\1', src, count=1, flags=re.MULTILINE)
+    changed = True
+    print("+ setup_permissions([...])")
+
+if changed:
+    with open(PODFILE, 'w') as f:
+        f.write(src)
+    print("Podfile patched.")
+else:
+    print("Podfile already up-to-date.")
+PYEOF
+
+      # ── 5. Patch Info.plist ──────────────────────────────────────────────────
+      #       Adds privacy usage strings (App Store / runtime requirement) and
+      #       registers react-native-vector-icons fonts with iOS.
+      - name: Patch Info.plist
+        script: |
+          INFO_PLIST="app/ios/$APP_NAME/Info.plist"
+          [ -f "$INFO_PLIST" ] || { echo "ERROR: Info.plist missing at $INFO_PLIST"; exit 1; }
+
+          # Helper: add a key only if it is not already present
+          add_string() {
+            local KEY="$1" VAL="$2"
+            if ! /usr/libexec/PlistBuddy -c "Print :$KEY" "$INFO_PLIST" &>/dev/null; then
+              /usr/libexec/PlistBuddy -c "Add :$KEY string $VAL" "$INFO_PLIST"
+              echo "  + $KEY"
+            fi
+          }
+
+          echo "Privacy usage strings:"
+          # react-native-image-picker
+          add_string NSCameraUsageDescription          "Used to take photos for your requests and profile."
+          add_string NSPhotoLibraryUsageDescription    "Used to attach photos to your requests."
+          add_string NSPhotoLibraryAddUsageDescription "Used to save photos from the app."
+          # react-native-audio-recorder-player
+          add_string NSMicrophoneUsageDescription      "Used for voice messages in chat."
+          # react-native-geolocation-service
+          add_string NSLocationWhenInUseUsageDescription             "Used to show nearby merchants and requests."
+          add_string NSLocationAlwaysAndWhenInUseUsageDescription    "Used to show nearby merchants and requests."
+          add_string NSLocationAlwaysUsageDescription                "Used to show nearby merchants and requests."
+
+          echo "UIAppFonts (react-native-vector-icons):"
+          # Ensure the array key exists
+          if ! /usr/libexec/PlistBuddy -c "Print :UIAppFonts" "$INFO_PLIST" &>/dev/null; then
+            /usr/libexec/PlistBuddy -c "Add :UIAppFonts array" "$INFO_PLIST"
+          fi
+
+          add_font() {
+            local FONT="$1"
+            if ! /usr/libexec/PlistBuddy -c "Print :UIAppFonts" "$INFO_PLIST" 2>/dev/null | grep -qF "$FONT"; then
+              /usr/libexec/PlistBuddy -c "Add :UIAppFonts: string $FONT" "$INFO_PLIST"
+              echo "  + $FONT"
+            fi
+          }
+
+          add_font AntDesign.ttf
+          add_font Entypo.ttf
+          add_font EvilIcons.ttf
+          add_font Feather.ttf
+          add_font FontAwesome.ttf
+          add_font FontAwesome5_Brands.ttf
+          add_font FontAwesome5_Regular.ttf
+          add_font FontAwesome5_Solid.ttf
+          add_font Foundation.ttf
+          add_font Ionicons.ttf
+          add_font MaterialCommunityIcons.ttf
+          add_font MaterialIcons.ttf
+          add_font Octicons.ttf
+          add_font SimpleLineIcons.ttf
+          add_font Zocial.ttf
+
+          echo "Info.plist patched."
+
+      # ── 6. CocoaPods ─────────────────────────────────────────────────────────
       - name: Install CocoaPods
         script: |
           pod cache clean boost --all 2>/dev/null || true
 
-          # ── Boost dead-mirror fix ───────────────────────────────────────────
-          # boostorg.jfrog.io (JFrog Artifactory) was shut down. curl "succeeds"
-          # but receives an HTML error page → tar fails with "Unrecognized archive
-          # format". Fix: patch the podspec to use archives.boost.io (the official
-          # replacement), download from there, verify it is a real archive, then
-          # update the sha256 to match and pre-cache the file.
+          # ── Boost dead-mirror fix ──────────────────────────────────────────
+          # boostorg.jfrog.io (JFrog Artifactory) was shut down. curl now gets
+          # an HTML error page which tar rejects as "Unrecognized archive format".
+          # Switch to archives.boost.io and patch both the URL and sha256 inside
+          # react-native's boost.podspec before pod install runs.
           BOOST_VER="1.76.0"
           BOOST_FILE="boost_1_76_0.tar.bz2"
-          BOOST_NEW_URL="https://archives.boost.io/release/${BOOST_VER}/source/${BOOST_FILE}"
+          BOOST_URL="https://archives.boost.io/release/${BOOST_VER}/source/${BOOST_FILE}"
           BOOST_PODSPEC="app/node_modules/react-native/third-party-podspecs/boost.podspec"
 
-          echo "Downloading boost ${BOOST_VER} from archives.boost.io…"
-          curl -L --fail --retry 3 "${BOOST_NEW_URL}" -o "/tmp/${BOOST_FILE}"
+          echo "Downloading boost ${BOOST_VER}…"
+          curl -L --fail --retry 3 "${BOOST_URL}" -o "/tmp/${BOOST_FILE}"
 
-          # Abort early if the download is not a real bzip2 archive
+          # Guard: abort if what we got is not a real bzip2 archive
           if ! file "/tmp/${BOOST_FILE}" | grep -q 'bzip2'; then
-            echo "ERROR: Downloaded file is not a valid bzip2 archive:"
+            echo "ERROR: download is not a valid bzip2 archive:"
             file "/tmp/${BOOST_FILE}"
             head -c 512 "/tmp/${BOOST_FILE}"
             exit 1
           fi
-          echo "Archive verified: $(file /tmp/${BOOST_FILE})"
+          echo "Verified: $(file /tmp/${BOOST_FILE})"
 
-          # Patch the dead JFrog URL → working archives.boost.io URL
+          # Patch dead URL in podspec
           sed -i "" \
             "s|boostorg.jfrog.io/artifactory/main/release|archives.boost.io/release|g" \
             "${BOOST_PODSPEC}"
@@ -115,18 +282,18 @@ workflows:
           echo "Actual sha256  : ${ACTUAL_SHA}"
           if [ "${OLD_SHA}" != "${ACTUAL_SHA}" ]; then
             sed -i "" "s/${OLD_SHA}/${ACTUAL_SHA}/" "${BOOST_PODSPEC}"
-            echo "Patched sha256 in podspec."
+            echo "Patched sha256."
           fi
 
-          # Pre-populate the CocoaPods download cache (pod install reuses it)
+          # Pre-populate CocoaPods download cache → pod install reuses the file
           PODS_CACHE="${HOME}/Library/Caches/CocoaPods/Pods/External/boost"
           mkdir -p "${PODS_CACHE}"
           cp "/tmp/${BOOST_FILE}" "${PODS_CACHE}/"
-          # ───────────────────────────────────────────────────────────────────
+          # ──────────────────────────────────────────────────────────────────
 
           cd app/ios && pod install --repo-update
 
-      # 4. Code signing
+      # ── 7. Code signing ──────────────────────────────────────────────────────
       - name: Set up code signing
         script: |
           echo "$CM_CERTIFICATE" | base64 --decode > /tmp/cert.p12
@@ -142,14 +309,15 @@ workflows:
           echo "$CM_PROVISIONING_PROFILE" | base64 --decode \
             > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
 
-      # 5. Build & archive
+      # ── 8. Build & archive ───────────────────────────────────────────────────
       - name: Build iOS app
         script: |
+          set -o pipefail   # ensure xcodebuild failures are not swallowed by xcpretty
           xcodebuild \
             -workspace "app/ios/$APP_NAME.xcworkspace" \
-            -scheme "$APP_NAME" \
+            -scheme      "$APP_NAME" \
             -configuration Release \
-            -sdk iphoneos \
+            -sdk         iphoneos \
             -archivePath "/tmp/$APP_NAME.xcarchive" \
             archive \
             CODE_SIGN_STYLE=Manual \
@@ -158,22 +326,23 @@ workflows:
             PROVISIONING_PROFILE_SPECIFIER="profile" \
             | xcpretty
 
-      # 6. Export IPA
+      # ── 9. Export IPA ────────────────────────────────────────────────────────
       - name: Export IPA
         script: |
+          set -o pipefail
           cat > /tmp/ExportOptions.plist <<PLIST
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0"><dict>
-            <key>method</key><string>ad-hoc</string>
-            <key>teamID</key><string>$APPLE_TEAM_ID</string>
-            <key>compileBitcode</key><false/>
-          </dict></plist>
-          PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>method</key>          <string>ad-hoc</string>
+  <key>teamID</key>          <string>$APPLE_TEAM_ID</string>
+  <key>compileBitcode</key>  <false/>
+</dict></plist>
+PLIST
 
           xcodebuild -exportArchive \
-            -archivePath "/tmp/$APP_NAME.xcarchive" \
-            -exportPath /tmp/ipa \
+            -archivePath       "/tmp/$APP_NAME.xcarchive" \
+            -exportPath        /tmp/ipa \
             -exportOptionsPlist /tmp/ExportOptions.plist \
             | xcpretty
 
