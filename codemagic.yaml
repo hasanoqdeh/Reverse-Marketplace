@@ -80,38 +80,48 @@ workflows:
         script: |
           pod cache clean boost --all 2>/dev/null || true
 
-          # ── Boost checksum fix ──────────────────────────────────────────────
-          # JFrog Artifactory sometimes serves boost_1_76_0.tar.bz2 with a
-          # different checksum than the one hardcoded in react-native's podspec.
-          # Strategy: download the file, measure the real sha256, patch the
-          # podspec to match it, and pre-populate the CocoaPods download cache
-          # so pod install doesn't re-download (and re-fail) the same file.
+          # ── Boost dead-mirror fix ───────────────────────────────────────────
+          # boostorg.jfrog.io (JFrog Artifactory) was shut down. curl "succeeds"
+          # but receives an HTML error page → tar fails with "Unrecognized archive
+          # format". Fix: patch the podspec to use archives.boost.io (the official
+          # replacement), download from there, verify it is a real archive, then
+          # update the sha256 to match and pre-cache the file.
           BOOST_VER="1.76.0"
           BOOST_FILE="boost_1_76_0.tar.bz2"
-          BOOST_URL="https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VER}/source/${BOOST_FILE}"
+          BOOST_NEW_URL="https://archives.boost.io/release/${BOOST_VER}/source/${BOOST_FILE}"
           BOOST_PODSPEC="app/node_modules/react-native/third-party-podspecs/boost.podspec"
 
-          echo "Downloading boost ${BOOST_VER}…"
-          curl -L --retry 3 "${BOOST_URL}" -o "/tmp/${BOOST_FILE}"
+          echo "Downloading boost ${BOOST_VER} from archives.boost.io…"
+          curl -L --fail --retry 3 "${BOOST_NEW_URL}" -o "/tmp/${BOOST_FILE}"
 
+          # Abort early if the download is not a real bzip2 archive
+          if ! file "/tmp/${BOOST_FILE}" | grep -q 'bzip2'; then
+            echo "ERROR: Downloaded file is not a valid bzip2 archive:"
+            file "/tmp/${BOOST_FILE}"
+            head -c 512 "/tmp/${BOOST_FILE}"
+            exit 1
+          fi
+          echo "Archive verified: $(file /tmp/${BOOST_FILE})"
+
+          # Patch the dead JFrog URL → working archives.boost.io URL
+          sed -i "" \
+            "s|boostorg.jfrog.io/artifactory/main/release|archives.boost.io/release|g" \
+            "${BOOST_PODSPEC}"
+
+          # Patch sha256 to match what archives.boost.io actually serves
           ACTUAL_SHA=$(shasum -a 256 "/tmp/${BOOST_FILE}" | awk '{print $1}')
           OLD_SHA=$(grep -oE '[a-f0-9]{64}' "${BOOST_PODSPEC}" | head -1)
           echo "Podspec sha256 : ${OLD_SHA}"
           echo "Actual sha256  : ${ACTUAL_SHA}"
-
           if [ "${OLD_SHA}" != "${ACTUAL_SHA}" ]; then
-            echo "Mismatch detected — patching podspec…"
             sed -i "" "s/${OLD_SHA}/${ACTUAL_SHA}/" "${BOOST_PODSPEC}"
-            echo "Patched: ${BOOST_PODSPEC}"
-          else
-            echo "Checksum matches — no patch needed."
+            echo "Patched sha256 in podspec."
           fi
 
-          # Pre-populate CocoaPods cache so pod install uses this file directly
+          # Pre-populate the CocoaPods download cache (pod install reuses it)
           PODS_CACHE="${HOME}/Library/Caches/CocoaPods/Pods/External/boost"
           mkdir -p "${PODS_CACHE}"
           cp "/tmp/${BOOST_FILE}" "${PODS_CACHE}/"
-          echo "Boost cached at: ${PODS_CACHE}/${BOOST_FILE}"
           # ───────────────────────────────────────────────────────────────────
 
           cd app/ios && pod install --repo-update
