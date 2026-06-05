@@ -11,10 +11,18 @@ workflows:
         APP_NAME:   ReverseMarketplaceBuyer
         BUNDLE_ID:  com.reversemarketplacebuyer
         NO_FLIPPER: "1"    # Flipper conflicts with Firebase on RN 0.72 — keep disabled
+      # ── IMPORTANT ───────────────────────────────────────────────────────────
+      # Secrets added in the Codemagic UI belong to a *variable group*. That
+      # group MUST be listed here, otherwise the variables are NOT injected and
+      # decode to empty strings ("CM_CERTIFICATE decoded to an empty file").
+      # Create a group in: App settings → Environment variables → Group name,
+      # then make the name below match it exactly.
+      groups:
+        - ios_signing
       node: "20.20.0"
       xcode: latest
       cocoapods: default
-      # ── Required secrets (set in Codemagic UI → Environment Variables) ──────
+      # ── Required secrets (add to the 'ios_signing' group in the Codemagic UI) ─
       #   APPLE_TEAM_ID             — 10-char Apple Developer Team ID
       #   CM_CERTIFICATE            — base64 of .p12 distribution certificate
       #   CM_CERTIFICATE_PASSWORD   — .p12 password
