@@ -366,21 +366,36 @@ workflows:
           set -e
 
           # ── Certificate ──────────────────────────────────────────────────
-          # printf (not echo) so no trailing newline corrupts the binary;
-          # `base64 --decode -i` reads the value as-is.
+          # printf (not echo) so no trailing newline corrupts the binary.
           printf '%s' "$CM_CERTIFICATE" | base64 --decode > /tmp/cert.p12
-          if ! openssl pkcs12 -in /tmp/cert.p12 -nokeys -passin "pass:$CM_CERTIFICATE_PASSWORD" >/dev/null 2>&1; then
-            echo "ERROR: CM_CERTIFICATE did not decode to a valid .p12 (check the secret / password)."
+
+          # Only check the file is non-empty here. We deliberately do NOT validate
+          # with `openssl pkcs12`: OpenSSL 3.x rejects Apple .p12 files by default
+          # because they use legacy ciphers (3DES/RC2), producing a FALSE failure.
+          # macOS `security import` below uses Apple's own crypto and is the real
+          # gate — it reads Apple .p12 files correctly regardless of OpenSSL version.
+          if [ ! -s /tmp/cert.p12 ]; then
+            echo "ERROR: CM_CERTIFICATE decoded to an empty file."
+            echo "       The secret is missing or is not valid base64 of a .p12."
             exit 1
           fi
 
           security create-keychain -p "" build.keychain
           security default-keychain -s build.keychain
           security unlock-keychain -p "" build.keychain
-          security import /tmp/cert.p12 -k build.keychain \
-            -P "$CM_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+
+          if ! security import /tmp/cert.p12 -k build.keychain \
+                 -P "$CM_CERTIFICATE_PASSWORD" -T /usr/bin/codesign; then
+            echo "ERROR: failed to import the certificate into the keychain."
+            echo "       Check CM_CERTIFICATE (base64 of the .p12) and CM_CERTIFICATE_PASSWORD."
+            exit 1
+          fi
           security set-key-partition-list -S apple-tool:,apple:,codesign: \
             -s -k "" build.keychain
+
+          # Show the imported signing identity for confirmation in the log
+          echo "Imported code-signing identities:"
+          security find-identity -v -p codesigning build.keychain || true
 
           # ── Provisioning profile ─────────────────────────────────────────
           PROFILE_TMP="/tmp/profile.mobileprovision"
