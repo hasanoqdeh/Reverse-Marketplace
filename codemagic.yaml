@@ -63,8 +63,16 @@ workflows:
             echo "Pods cache restored."
           fi
 
-          # Detect the placeholder name used by this template (e.g. "HelloWorld")
-          PLACEHOLDER=$(ls app/ios | grep -v "Tests\|\.xcodeproj\|Podfile\|\.xcworkspace" | head -1)
+          # Detect the placeholder name from the .xcodeproj directory.
+          # This is the only reliable source — listing the dir and filtering by
+          # name is fragile (it can pick up .xcode.env, .gitignore, etc.).
+          # e.g. "HelloWorld.xcodeproj" → placeholder "HelloWorld".
+          PLACEHOLDER=$(ls app/ios | grep '\.xcodeproj$' | head -1 | sed 's/\.xcodeproj$//')
+          if [ -z "$PLACEHOLDER" ]; then
+            echo "ERROR: could not detect placeholder (.xcodeproj not found)."
+            ls -la app/ios/
+            exit 1
+          fi
           echo "Placeholder: $PLACEHOLDER → $APP_NAME"
 
           # Replace placeholder → APP_NAME in every source file
