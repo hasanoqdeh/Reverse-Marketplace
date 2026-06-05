@@ -314,6 +314,8 @@ enum NotificationType {
   STATUS_IN_DELIVERY
   BID_ACCEPTED
   BUYER_REVIEW
+  FULFILLMENT_UPDATED
+  DELIVERY_CONFIRMED
 
   @@map("notification_type")
 }
@@ -334,6 +336,20 @@ model Notification {
   @@index([isRead])
   @@index([createdAt(sort: Desc)])
   @@map("notifications")
+}
+
+// ─── Device tokens for FCM push notifications ─────────────────────────────
+
+model DeviceToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  token     String   @unique
+  platform  String   @db.VarChar(10)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@index([userId])
+  @@map("device_tokens")
 }
 
 // ─── Bidding models ────────────────────────────────────────────────────────

@@ -48,6 +48,27 @@ const reviewController = {
       res.status(500).json({ success: false, message: 'Internal server error', error: 'INTERNAL_ERROR' });
     }
   },
+
+  async getPublicStats(req, res) {
+    try {
+      const stats = await reviewService.getPublicStats();
+      res.json({ success: true, stats });
+    } catch (err) {
+      logger.error('getPublicStats error', { error: err.message });
+      res.status(500).json({ success: false, message: 'Internal server error', error: 'INTERNAL_ERROR' });
+    }
+  },
+
+  async getTopMerchants(req, res) {
+    try {
+      const limit = parseInt(req.query.limit, 10) || 8;
+      const merchants = await reviewService.getTopMerchants(limit);
+      res.json({ success: true, merchants });
+    } catch (err) {
+      logger.error('getTopMerchants error', { error: err.message });
+      res.status(500).json({ success: false, message: 'Internal server error', error: 'INTERNAL_ERROR' });
+    }
+  },
 };
 
 module.exports = reviewController;

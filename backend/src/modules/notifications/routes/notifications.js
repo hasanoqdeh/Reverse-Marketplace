@@ -142,4 +142,45 @@ router.post('/:id/read', controller.markRead);
  */
 router.delete('/:id', controller.deleteOne);
 
+/**
+ * @swagger
+ * /api/v1/notifications/device-token:
+ *   post:
+ *     tags: [Notifications]
+ *     summary: Register a device FCM token for push notifications
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token: { type: string }
+ *               platform: { type: string, enum: [android, ios] }
+ *     responses:
+ *       '200':
+ *         description: Token registered
+ */
+router.post('/device-token', controller.registerDeviceToken);
+
+/**
+ * @swagger
+ * /api/v1/notifications/device-token:
+ *   delete:
+ *     tags: [Notifications]
+ *     summary: Remove a device FCM token (call on logout)
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token: { type: string }
+ *     responses:
+ *       '200':
+ *         description: Token removed
+ */
+router.delete('/device-token', controller.removeDeviceToken);
+
 module.exports = router;

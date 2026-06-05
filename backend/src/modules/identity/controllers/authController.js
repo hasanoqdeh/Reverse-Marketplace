@@ -4,6 +4,7 @@ const Joi = require('joi');
 const AdminRepository = require('../repositories/AdminRepository');
 const OtpService = require('../services/otpService');
 const AuthService = require('../services/authService');
+const prisma = require('../../../prisma/client');
 
 // ─── Validation schemas ────────────────────────────────────────────────────
 
@@ -244,6 +245,13 @@ const IdentityAuthController = {
         ipAddress: req.ip,
         userAgent: req.get('User-Agent'),
         success: true,
+      }).catch(() => {});
+    }
+
+    // Remove FCM device token if provided
+    if (req.body.deviceToken) {
+      prisma.deviceToken.deleteMany({
+        where: { token: req.body.deviceToken, userId },
       }).catch(() => {});
     }
 

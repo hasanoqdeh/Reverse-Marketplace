@@ -288,6 +288,15 @@ exports.Prisma.NotificationScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.DeviceTokenScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  token: 'token',
+  platform: 'platform',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.ReviewScalarFieldEnum = {
   id: 'id',
   bidId: 'bidId',
@@ -386,7 +395,9 @@ exports.NotificationType = exports.$Enums.NotificationType = {
   BID_PLACED: 'BID_PLACED',
   STATUS_IN_DELIVERY: 'STATUS_IN_DELIVERY',
   BID_ACCEPTED: 'BID_ACCEPTED',
-  BUYER_REVIEW: 'BUYER_REVIEW'
+  BUYER_REVIEW: 'BUYER_REVIEW',
+  FULFILLMENT_UPDATED: 'FULFILLMENT_UPDATED',
+  DELIVERY_CONFIRMED: 'DELIVERY_CONFIRMED'
 };
 
 exports.ReviewType = exports.$Enums.ReviewType = {
@@ -406,6 +417,7 @@ exports.Prisma.ModelName = {
   ChatRoom: 'ChatRoom',
   ChatRoomParticipant: 'ChatRoomParticipant',
   Notification: 'Notification',
+  DeviceToken: 'DeviceToken',
   Review: 'Review'
 };
 

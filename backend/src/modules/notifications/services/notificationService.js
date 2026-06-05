@@ -1,6 +1,7 @@
 'use strict';
 
 const NotificationRepository = require('../repositories/NotificationRepository');
+const fcmService = require('./fcmService');
 const logger = require('../../../utils/logger');
 
 const notificationService = {
@@ -10,6 +11,8 @@ const notificationService = {
     if (io) {
       io.to(`user:${userId}`).emit('notification:new', notification);
     }
+
+    fcmService.sendToUser(userId, { title, body, data }).catch(() => {});
 
     return notification;
   },

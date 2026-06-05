@@ -115,6 +115,9 @@ router.post('/', authenticate, reviewController.submitReview);
  */
 router.get('/user/:userId', reviewController.getReviews);
 
+router.get('/stats',         reviewController.getPublicStats);
+router.get('/merchants/top', reviewController.getTopMerchants);
+
 /**
  * @swagger
  * /api/v1/reviews/merchants/{merchantId}:

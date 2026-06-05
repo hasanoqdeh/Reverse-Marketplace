@@ -150,19 +150,14 @@ app.get('/api/v1', (req, res) => {
         actorLogs: '/api/v1/analytics/activity/actor/:actorId',
         stats: '/api/v1/analytics/stats',
       },
-      users: '/api/v1/users',
-      products: '/api/v1/products',
-      orders: '/api/v1/orders',
-      payments: '/api/v1/payments',
       notifications: '/api/v1/notifications',
       chat: '/api/v1/chat',
       bidding: {
         bids: '/api/v1/bidding/bids',
         myBids: '/api/v1/bidding/me/bids',
         requestBids: '/api/v1/bidding/requests/:requestId/bids',
-        templates: '/api/v1/bidding/templates',
       },
-      subscriptions: '/api/v1/subscriptions',
+      reviews: '/api/v1/reviews',
     },
   });
 });

@@ -19,11 +19,19 @@ reverse-marketplace/
 │   │   ├── utils/             # logger
 │   │   └── modules/
 │   │       ├── identity/      # Auth, users, admin (routes/controllers/repos/services)
-│   │       └── requests/      # Requests, categories (routes/controllers/repos/services)
+│   │       └── requests/      # Requests, categories, bids, chat, reviews, notifications
 │   ├── database/
 │   │   ├── migrate.js         # Migration runner
 │   │   └── migrations/        # SQL migration files (001_identity, 002_requests)
 │   └── init.sql               # Postgres bootstrap (Docker)
+├── app/                       # React Native 0.72 mobile app
+│   └── src/
+│       ├── theme.ts           # Shared design tokens (Colors, Shadows)
+│       ├── components/        # AppHeader, ImageViewerModal, etc.
+│       ├── modules/
+│       │   ├── buyer/         # BuyerNavigator + buyer screens
+│       │   └── merchant/      # MerchantNavigator + merchant screens
+│       └── screens/           # auth/, chat/, notifications/, profile/, rating/
 ├── admin-panel/               # Next.js 14 App Router (admin dashboard)
 ├── rabbitmq/                  # RabbitMQ config
 ├── nginx/                     # Nginx config
@@ -40,15 +48,35 @@ reverse-marketplace/
 | Cache | Redis |
 | Queue | RabbitMQ + Bull |
 | Auth | JWT + bcryptjs |
-| Realtime | Socket.io |
-| Payments | Stripe |
-| SMS | Twilio |
-| Email | Nodemailer |
+| Realtime | Socket.IO (backend wired; mobile partial) |
 | Admin | Next.js 14 App Router |
 | Mobile | React Native 0.72 |
 | Validation | Joi |
 | Logging | Winston |
 | Tests | Jest + Supertest |
+
+## Mobile Theme System
+
+All UI colors come from `app/src/theme.ts`. Never use raw hex codes in screen files — import from theme.
+
+```typescript
+import {Colors} from '../../theme';  // adjust relative path
+
+Colors.primary       // #1877F2  — FB blue, all interactive elements
+Colors.primaryLight  // #E7F3FF  — chip backgrounds, unread rows
+Colors.feedBackground// #F0F2F5  — screen/list backgrounds
+Colors.surface       // #FFFFFF  — cards, headers, sheets
+Colors.divider       // #E4E6EA  — borders, separators
+Colors.textPrimary   // #050505
+Colors.textSecondary // #65676B
+Colors.textOnPrimary // #FFFFFF  — text on blue backgrounds
+Colors.success       // #42B72A  — confirmed/done states (keep green)
+Colors.error         // #E41E3F
+Colors.warning       // #F59E0B  — ratings, fulfillment progress
+Colors.badge         // #E41E3F  — unread count badges
+```
+
+Green (`Colors.success`) is kept for semantic fulfillment/confirmed states. All interactive actions use `Colors.primary`.
 
 ## Dev Commands
 
@@ -111,6 +139,18 @@ npx react-native run-android --deviceId emulator-5556
 - Migrations are numbered SQL files in `backend/database/migrations/` tracked by a `migrations` table
 - Inter-module events via RabbitMQ through `src/events/publisher.js`
 - Admin panel uses Next.js App Router with `app/admin/` routes
+- Mobile screens import `Colors` from `app/src/theme.ts` — no raw hex strings in StyleSheets
+
+## Deleted Files (cleanup 2025-05)
+
+These files were removed as dead code — replaced by newer implementations:
+
+| File | Reason |
+|------|--------|
+| `app/src/modules/merchant/screens/BrowseRequestsScreen.tsx` | Replaced by `MerchantDiscoverScreen.tsx` |
+| `app/src/modules/merchant/screens/MyBidsScreen.tsx` | Replaced by `MerchantActivityScreen.tsx` |
+| `app/src/modules/merchant/screens/DashboardScreen.tsx` | Orphaned, never registered |
+| `backend/src/modules/identity/services/smsService.js` | Never imported; OTP uses RabbitMQ events |
 
 ## Security Reminders
 - Never commit `.env` files

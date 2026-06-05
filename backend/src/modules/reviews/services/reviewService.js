@@ -74,6 +74,14 @@ const reviewService = {
     };
   },
 
+  async getPublicStats() {
+    return ReviewRepository.getPublicStats();
+  },
+
+  async getTopMerchants(limit = 8) {
+    return ReviewRepository.getTopMerchants(Math.min(limit, 20));
+  },
+
   async getMerchantProfile(merchantId) {
     const prisma = require('../../../prisma/client');
     const user = await prisma.user.findUnique({
