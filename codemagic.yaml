@@ -83,39 +83,53 @@ workflows:
       #       archive time if this file is absent.  Decode from the secret
       #       env var; fall back to a structure-valid placeholder so the build
       #       still completes (Firebase won't connect but the IPA is produced).
+      #
+      #       Written in Python (not a shell heredoc) so YAML linter indentation
+      #       cannot break the terminator and cause "unexpected end of file".
       - name: Set up GoogleService-Info.plist
         script: |
-          PLIST_DIR="app/ios/$APP_NAME"
-          PLIST_PATH="$PLIST_DIR/GoogleService-Info.plist"
-          mkdir -p "$PLIST_DIR"
-
-          if [ -n "${GOOGLE_SERVICE_INFO_PLIST:-}" ]; then
-            echo "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode > "$PLIST_PATH"
-            echo "GoogleService-Info.plist injected from secret."
-          else
-            echo "WARNING: GOOGLE_SERVICE_INFO_PLIST not set — writing placeholder."
-            cat > "$PLIST_PATH" <<'GSEOF'
-              <?xml version="1.0" encoding="UTF-8"?>
-              <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-              <plist version="1.0">
-              <dict>
-                <key>API_KEY</key>                    <string>placeholder</string>
-                <key>GCM_SENDER_ID</key>             <string>000000000000</string>
-                <key>PLIST_VERSION</key>             <string>1</string>
-                <key>BUNDLE_ID</key>                 <string>com.reversemarketplacebuyer</string>
-                <key>PROJECT_ID</key>                <string>placeholder-project</string>
-                <key>STORAGE_BUCKET</key>            <string>placeholder-project.appspot.com</string>
-                <key>IS_ADS_ENABLED</key>            <false/>
-                <key>IS_ANALYTICS_ENABLED</key>      <false/>
-                <key>IS_APPINVITE_ENABLED</key>      <false/>
-                <key>IS_GCM_ENABLED</key>            <true/>
-                <key>IS_SIGNIN_ENABLED</key>         <false/>
-                <key>GOOGLE_APP_ID</key>             <string>1:000000000000:ios:0000000000000000000000</string>
-              </dict>
-              </plist>
-              GSEOF
-            echo "Placeholder written."
-          fi
+          python3 - <<'PYEOF'
+          import os, base64
+          
+          APP_NAME  = os.environ['APP_NAME']
+          BUNDLE_ID = os.environ['BUNDLE_ID']
+          plist_dir  = f"app/ios/{APP_NAME}"
+          plist_path = f"{plist_dir}/GoogleService-Info.plist"
+          
+          os.makedirs(plist_dir, exist_ok=True)
+          
+          secret = os.environ.get('GOOGLE_SERVICE_INFO_PLIST', '').strip()
+          if secret:
+              with open(plist_path, 'wb') as f:
+                  f.write(base64.b64decode(secret))
+              print("GoogleService-Info.plist injected from secret.")
+          else:
+              print("WARNING: GOOGLE_SERVICE_INFO_PLIST not set — writing structure-valid placeholder.")
+              lines = [
+                  '<?xml version="1.0" encoding="UTF-8"?>',
+                  '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"'
+                  ' "http://www.apple.com/DTDs/PropertyList-1.0.dtd">',
+                  '<plist version="1.0">',
+                  '<dict>',
+                  '  <key>API_KEY</key>               <string>placeholder</string>',
+                  '  <key>GCM_SENDER_ID</key>         <string>000000000000</string>',
+                  '  <key>PLIST_VERSION</key>         <string>1</string>',
+                  f'  <key>BUNDLE_ID</key>             <string>{BUNDLE_ID}</string>',
+                  '  <key>PROJECT_ID</key>            <string>placeholder-project</string>',
+                  '  <key>STORAGE_BUCKET</key>        <string>placeholder-project.appspot.com</string>',
+                  '  <key>IS_ADS_ENABLED</key>        <false/>',
+                  '  <key>IS_ANALYTICS_ENABLED</key>  <false/>',
+                  '  <key>IS_APPINVITE_ENABLED</key>  <false/>',
+                  '  <key>IS_GCM_ENABLED</key>        <true/>',
+                  '  <key>IS_SIGNIN_ENABLED</key>     <false/>',
+                  '  <key>GOOGLE_APP_ID</key>         <string>1:000000000000:ios:0000000000000000000000</string>',
+                  '</dict>',
+                  '</plist>',
+              ]
+              with open(plist_path, 'w') as f:
+                  f.write('\n'.join(lines) + '\n')
+              print("Placeholder written.")
+          PYEOF
 
       # ── 4. Patch Podfile ─────────────────────────────────────────────────────
       #       Fixes three issues that every build hits with this dependency set:
