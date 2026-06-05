@@ -195,11 +195,15 @@ workflows:
               print("+ use_modular_headers!")
           
           # ── c) setup_permissions for react-native-permissions 3.x ───────────────────
-          # Without this, the permission handler implementations are not compiled into
-          # the binary and every permission check returns "unavailable" at runtime.
+          # The setup_permissions() method is NOT built into CocoaPods — it is
+          # defined in react-native-permissions/scripts/setup.rb, which must be
+          # required first (otherwise: "undefined method 'setup_permissions'").
+          # Without this block the handler pods are not compiled and every
+          # permission check returns "unavailable" at runtime.
           PERMS = """\
-          
-          # react-native-permissions: include only the handlers the app uses
+
+          # react-native-permissions: load setup helper, then declare the handlers used
+          require_relative '../node_modules/react-native-permissions/scripts/setup'
           setup_permissions([
             'Camera',
             'LocationAlways',
@@ -209,12 +213,12 @@ workflows:
             'PhotoLibrary',
             'PhotoLibraryAddOnly',
           ])
-          
+
           """
           if 'setup_permissions' not in src:
               src = re.sub(r'(^target\b)', PERMS + r'\1', src, count=1, flags=re.MULTILINE)
               changed = True
-              print("+ setup_permissions([...])")
+              print("+ require react-native-permissions setup + setup_permissions([...])")
           
           if changed:
               with open(PODFILE, 'w') as f:
