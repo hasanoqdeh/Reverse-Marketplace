@@ -373,6 +373,28 @@ workflows:
         script: |
           set -e
 
+          # ── Diagnostics: is each secret actually reaching the build? ──────
+          # Prints only the character length, never the value. Length 0 means the
+          # variable was NOT injected → the 'ios_signing' group name in this YAML
+          # does not match the group in the Codemagic UI, or the var is not in it.
+          echo "Secret injection check (length 0 = NOT set):"
+          echo "  CM_CERTIFICATE            : ${#CM_CERTIFICATE}"
+          echo "  CM_CERTIFICATE_PASSWORD   : ${#CM_CERTIFICATE_PASSWORD}"
+          echo "  CM_PROVISIONING_PROFILE   : ${#CM_PROVISIONING_PROFILE}"
+          echo "  APPLE_TEAM_ID             : ${#APPLE_TEAM_ID}"
+          echo "  GOOGLE_SERVICE_INFO_PLIST : ${#GOOGLE_SERVICE_INFO_PLIST}"
+
+          if [ "${#CM_CERTIFICATE}" -eq 0 ]; then
+            echo ""
+            echo "ERROR: CM_CERTIFICATE is empty in the build environment."
+            echo "Fix one of these in the Codemagic UI (App settings → Environment variables):"
+            echo "  1. The group containing the secrets must be named EXACTLY 'ios_signing'"
+            echo "     (case-sensitive, no spaces). It currently does not match."
+            echo "  2. CM_CERTIFICATE must be inside that group (not the default group)."
+            echo "  3. After changing groups, save and start a NEW build."
+            exit 1
+          fi
+
           # ── Certificate ──────────────────────────────────────────────────
           # printf (not echo) so no trailing newline corrupts the binary.
           printf '%s' "$CM_CERTIFICATE" | base64 --decode > /tmp/cert.p12
@@ -509,9 +531,14 @@ workflows:
           failure: true
 
 
-  # ─── Android — APK debug build ───────────────────────────────────────────────
-  android-debug:
-    name: Android Debug APK
+  # ─── Android — standalone APK (installable on any device) ────────────────────
+  #     Builds a RELEASE APK, not debug. A debug APK loads JS from the Metro dev
+  #     server and shows "Could not connect to development server" when installed
+  #     by itself. The release APK bundles the JS inside and is signed with the
+  #     debug keystore (app/build.gradle → buildTypes.release uses signingConfigs.debug),
+  #     so it installs and runs standalone with no Apple/Google account needed.
+  android-release:
+    name: Android Release APK (standalone)
     instance_type: linux_x2
     max_build_duration: 30
 
@@ -528,11 +555,19 @@ workflows:
       - name: Install Node dependencies
         script: cd app && npm install
 
-      - name: Build debug APK
-        script: cd app/android && ./gradlew assembleDebug
+      - name: Build release APK (JS bundled, debug-signed)
+        script: |
+          cd app/android
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon --stacktrace
+
+      - name: Show APK location
+        script: |
+          echo "Built APKs:"
+          ls -lh app/android/app/build/outputs/apk/release/*.apk
 
     artifacts:
-      - app/android/app/build/outputs/apk/debug/*.apk
+      - app/android/app/build/outputs/apk/release/*.apk
 
     publishing:
       email:
