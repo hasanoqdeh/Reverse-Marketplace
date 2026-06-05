@@ -95,25 +95,25 @@ workflows:
           else
             echo "WARNING: GOOGLE_SERVICE_INFO_PLIST not set — writing placeholder."
             cat > "$PLIST_PATH" <<'GSEOF'
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-  <key>API_KEY</key>                    <string>placeholder</string>
-  <key>GCM_SENDER_ID</key>             <string>000000000000</string>
-  <key>PLIST_VERSION</key>             <string>1</string>
-  <key>BUNDLE_ID</key>                 <string>com.reversemarketplacebuyer</string>
-  <key>PROJECT_ID</key>                <string>placeholder-project</string>
-  <key>STORAGE_BUCKET</key>            <string>placeholder-project.appspot.com</string>
-  <key>IS_ADS_ENABLED</key>            <false/>
-  <key>IS_ANALYTICS_ENABLED</key>      <false/>
-  <key>IS_APPINVITE_ENABLED</key>      <false/>
-  <key>IS_GCM_ENABLED</key>            <true/>
-  <key>IS_SIGNIN_ENABLED</key>         <false/>
-  <key>GOOGLE_APP_ID</key>             <string>1:000000000000:ios:0000000000000000000000</string>
-</dict>
-</plist>
-GSEOF
+              <?xml version="1.0" encoding="UTF-8"?>
+              <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+              <plist version="1.0">
+              <dict>
+                <key>API_KEY</key>                    <string>placeholder</string>
+                <key>GCM_SENDER_ID</key>             <string>000000000000</string>
+                <key>PLIST_VERSION</key>             <string>1</string>
+                <key>BUNDLE_ID</key>                 <string>com.reversemarketplacebuyer</string>
+                <key>PROJECT_ID</key>                <string>placeholder-project</string>
+                <key>STORAGE_BUCKET</key>            <string>placeholder-project.appspot.com</string>
+                <key>IS_ADS_ENABLED</key>            <false/>
+                <key>IS_ANALYTICS_ENABLED</key>      <false/>
+                <key>IS_APPINVITE_ENABLED</key>      <false/>
+                <key>IS_GCM_ENABLED</key>            <true/>
+                <key>IS_SIGNIN_ENABLED</key>         <false/>
+                <key>GOOGLE_APP_ID</key>             <string>1:000000000000:ios:0000000000000000000000</string>
+              </dict>
+              </plist>
+              GSEOF
             echo "Placeholder written."
           fi
 
@@ -128,59 +128,59 @@ GSEOF
           [ -f "$PODFILE" ] || { echo "ERROR: Podfile missing"; exit 1; }
 
           python3 - <<'PYEOF'
-import re
-
-PODFILE = "app/ios/Podfile"
-with open(PODFILE) as f:
-    src = f.read()
-
-changed = False
-
-# ── a) $RNFirebaseAsStaticFramework ──────────────────────────────────────────
-# Must be declared before any `require` so @react-native-firebase and
-# react-native-maps (Google Maps) configure Firebase as static frameworks.
-if '$RNFirebaseAsStaticFramework' not in src:
-    src = '$RNFirebaseAsStaticFramework = true\n\n' + src
-    changed = True
-    print("+ $RNFirebaseAsStaticFramework = true")
-
-# ── b) use_modular_headers! ───────────────────────────────────────────────────
-# FirebaseCoreInternal (Swift) imports GoogleUtilities which has no module map.
-# CocoaPods generates one automatically when this flag is present.
-if 'use_modular_headers!' not in src:
-    src = re.sub(r'(platform :ios[^\n]*\n)', r'\1use_modular_headers!\n', src, count=1)
-    changed = True
-    print("+ use_modular_headers!")
-
-# ── c) setup_permissions for react-native-permissions 3.x ───────────────────
-# Without this, the permission handler implementations are not compiled into
-# the binary and every permission check returns "unavailable" at runtime.
-PERMS = """\
-
-# react-native-permissions: include only the handlers the app uses
-setup_permissions([
-  'Camera',
-  'LocationAlways',
-  'LocationWhenInUse',
-  'Microphone',
-  'Notifications',
-  'PhotoLibrary',
-  'PhotoLibraryAddOnly',
-])
-
-"""
-if 'setup_permissions' not in src:
-    src = re.sub(r'(^target\b)', PERMS + r'\1', src, count=1, flags=re.MULTILINE)
-    changed = True
-    print("+ setup_permissions([...])")
-
-if changed:
-    with open(PODFILE, 'w') as f:
-        f.write(src)
-    print("Podfile patched.")
-else:
-    print("Podfile already up-to-date.")
-PYEOF
+          import re
+          
+          PODFILE = "app/ios/Podfile"
+          with open(PODFILE) as f:
+              src = f.read()
+          
+          changed = False
+          
+          # ── a) $RNFirebaseAsStaticFramework ──────────────────────────────────────────
+          # Must be declared before any `require` so @react-native-firebase and
+          # react-native-maps (Google Maps) configure Firebase as static frameworks.
+          if '$RNFirebaseAsStaticFramework' not in src:
+              src = '$RNFirebaseAsStaticFramework = true\n\n' + src
+              changed = True
+              print("+ $RNFirebaseAsStaticFramework = true")
+          
+          # ── b) use_modular_headers! ───────────────────────────────────────────────────
+          # FirebaseCoreInternal (Swift) imports GoogleUtilities which has no module map.
+          # CocoaPods generates one automatically when this flag is present.
+          if 'use_modular_headers!' not in src:
+              src = re.sub(r'(platform :ios[^\n]*\n)', r'\1use_modular_headers!\n', src, count=1)
+              changed = True
+              print("+ use_modular_headers!")
+          
+          # ── c) setup_permissions for react-native-permissions 3.x ───────────────────
+          # Without this, the permission handler implementations are not compiled into
+          # the binary and every permission check returns "unavailable" at runtime.
+          PERMS = """\
+          
+          # react-native-permissions: include only the handlers the app uses
+          setup_permissions([
+            'Camera',
+            'LocationAlways',
+            'LocationWhenInUse',
+            'Microphone',
+            'Notifications',
+            'PhotoLibrary',
+            'PhotoLibraryAddOnly',
+          ])
+          
+          """
+          if 'setup_permissions' not in src:
+              src = re.sub(r'(^target\b)', PERMS + r'\1', src, count=1, flags=re.MULTILINE)
+              changed = True
+              print("+ setup_permissions([...])")
+          
+          if changed:
+              with open(PODFILE, 'w') as f:
+                  f.write(src)
+              print("Podfile patched.")
+          else:
+              print("Podfile already up-to-date.")
+          PYEOF
 
       # ── 5. Patch Info.plist ──────────────────────────────────────────────────
       #       Adds privacy usage strings (App Store / runtime requirement) and
@@ -331,14 +331,14 @@ PYEOF
         script: |
           set -o pipefail
           cat > /tmp/ExportOptions.plist <<PLIST
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0"><dict>
-  <key>method</key>          <string>ad-hoc</string>
-  <key>teamID</key>          <string>$APPLE_TEAM_ID</string>
-  <key>compileBitcode</key>  <false/>
-</dict></plist>
-PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key>          <string>ad-hoc</string>
+            <key>teamID</key>          <string>$APPLE_TEAM_ID</string>
+            <key>compileBitcode</key>  <false/>
+          </dict></plist>
+          PLIST
 
           xcodebuild -exportArchive \
             -archivePath       "/tmp/$APP_NAME.xcarchive" \
