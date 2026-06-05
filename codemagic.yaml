@@ -194,31 +194,30 @@ workflows:
               changed = True
               print("+ use_modular_headers!")
           
-          # ── c) setup_permissions for react-native-permissions 3.x ───────────────────
-          # The setup_permissions() method is NOT built into CocoaPods — it is
-          # defined in react-native-permissions/scripts/setup.rb, which must be
-          # required first (otherwise: "undefined method 'setup_permissions'").
-          # Without this block the handler pods are not compiled and every
-          # permission check returns "unavailable" at runtime.
-          PERMS = """\
-
-          # react-native-permissions: load setup helper, then declare the handlers used
-          require_relative '../node_modules/react-native-permissions/scripts/setup'
-          setup_permissions([
-            'Camera',
-            'LocationAlways',
-            'LocationWhenInUse',
-            'Microphone',
-            'Notifications',
-            'PhotoLibrary',
-            'PhotoLibraryAddOnly',
-          ])
-
+          # ── c) react-native-permissions 3.8.4 handler pods ──────────────────────────
+          # v3.x has NO setup_permissions() helper — that arrived in v4. Instead
+          # each permission handler ships as its own pod (Permission-Camera, …)
+          # that must be declared INSIDE the app target. Without these the JS
+          # permission checks return "unavailable" at runtime.
+          PERM_PODS = """\
+            permissions_path = '../node_modules/react-native-permissions/ios'
+            pod 'Permission-Camera',              :path => "#{permissions_path}/Camera"
+            pod 'Permission-LocationAlways',      :path => "#{permissions_path}/LocationAlways"
+            pod 'Permission-LocationWhenInUse',   :path => "#{permissions_path}/LocationWhenInUse"
+            pod 'Permission-Microphone',          :path => "#{permissions_path}/Microphone"
+            pod 'Permission-Notifications',       :path => "#{permissions_path}/Notifications"
+            pod 'Permission-PhotoLibrary',        :path => "#{permissions_path}/PhotoLibrary"
+            pod 'Permission-PhotoLibraryAddOnly', :path => "#{permissions_path}/PhotoLibraryAddOnly"
           """
-          if 'setup_permissions' not in src:
-              src = re.sub(r'(^target\b)', PERMS + r'\1', src, count=1, flags=re.MULTILINE)
+          if 'Permission-Camera' not in src:
+              # Insert the pod lines right after the first `target '…' do` line.
+              src = re.sub(
+                  r"(target ['\"][^'\"]+['\"] do[^\n]*\n)",
+                  lambda m: m.group(1) + PERM_PODS,
+                  src, count=1
+              )
               changed = True
-              print("+ require react-native-permissions setup + setup_permissions([...])")
+              print("+ react-native-permissions handler pods")
           
           if changed:
               with open(PODFILE, 'w') as f:
