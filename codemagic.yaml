@@ -5,7 +5,6 @@ workflows:
     name: iOS Device (Ad Hoc)
     instance_type: mac_mini_m1
     max_build_duration: 60
-
     environment:
       vars:
         APP_NAME:   ReverseMarketplaceBuyer
@@ -29,12 +28,10 @@ workflows:
       #   CM_PROVISIONING_PROFILE   — base64 of Ad Hoc .mobileprovision
       #   GOOGLE_SERVICE_INFO_PLIST — base64 of GoogleService-Info.plist (Firebase)
       #                               Generate: base64 -i GoogleService-Info.plist | pbcopy
-
     cache:
       cache_paths:
         - app/node_modules
         - app/ios/Pods
-
     scripts:
 
       # ── 1. Node dependencies ─────────────────────────────────────────────────
@@ -521,7 +518,6 @@ workflows:
     artifacts:
       - /tmp/ipa/*.ipa
       - "/tmp/$APP_NAME.xcarchive"
-
     publishing:
       email:
         recipients:
@@ -529,8 +525,6 @@ workflows:
         notify:
           success: true
           failure: true
-
-
   # ─── Android — standalone APK (installable on any device) ────────────────────
   #     Builds a RELEASE APK, not debug. A debug APK loads JS from the Metro dev
   #     server and shows "Could not connect to development server" when installed
@@ -541,16 +535,13 @@ workflows:
     name: Android Release APK (standalone)
     instance_type: linux_x2
     max_build_duration: 30
-
     environment:
       node: "20.20.0"
       java: "17"
-
     cache:
       cache_paths:
         - app/node_modules
         - ~/.gradle/caches
-
     scripts:
       - name: Install Node dependencies
         script: cd app && npm install
@@ -568,7 +559,306 @@ workflows:
 
     artifacts:
       - app/android/app/build/outputs/apk/release/*.apk
+    publishing:
+      email:
+        recipients:
+          - oqdeh93@gmail.com
+        notify:
+          success: true
+          failure: true
 
+
+  # ─── iOS — Simulator build (NO Apple account, runs in browser via Appetize) ──
+  #     Builds an UNSIGNED .app for the iOS Simulator. No certificate, no
+  #     provisioning profile, no ios_signing group needed. Produces a zipped .app
+  #     that you upload to https://appetize.io to run the iOS app in a browser.
+  #     Uses Release config so the JS bundle is embedded (runs without Metro).
+  ios-simulator:
+    name: iOS Simulator (.app for Appetize)
+    instance_type: mac_mini_m1
+    max_build_duration: 60
+    environment:
+      vars:
+        APP_NAME:   ReverseMarketplaceBuyer
+        BUNDLE_ID:  com.reversemarketplacebuyer
+        NO_FLIPPER: "1"
+      node: "20.20.0"
+      xcode: latest
+      cocoapods: default
+    cache:
+      cache_paths:
+        - app/node_modules
+        - app/ios/Pods
+    scripts:
+
+      # ── 1. Node dependencies ─────────────────────────────────────────────────
+      - name: Install Node dependencies
+        script: cd app && npm install
+
+      # ── 2. Generate ios/ from the RN template ────────────────────────────────
+      - name: Generate iOS project from template
+        script: |
+          if [ -d "app/ios" ] && [ -f "app/ios/Podfile" ]; then
+            echo "ios/ already exists — skipping generation."
+            exit 0
+          fi
+
+          TEMPLATE="app/node_modules/react-native/template/ios"
+          if [ ! -d "$TEMPLATE" ]; then
+            echo "ERROR: RN template not found at $TEMPLATE"
+            exit 1
+          fi
+
+          if [ -d "app/ios/Pods" ]; then
+            echo "Preserving cached Pods…"
+            mv app/ios/Pods /tmp/_ios_pods_cache
+          fi
+          rm -rf app/ios
+          cp -r "$TEMPLATE" app/ios
+          if [ -d "/tmp/_ios_pods_cache" ]; then
+            mv /tmp/_ios_pods_cache app/ios/Pods
+            echo "Pods cache restored."
+          fi
+
+          PLACEHOLDER=$(ls app/ios | grep '\.xcodeproj$' | head -1 | sed 's/\.xcodeproj$//')
+          if [ -z "$PLACEHOLDER" ]; then
+            echo "ERROR: could not detect placeholder (.xcodeproj not found)."
+            ls -la app/ios/
+            exit 1
+          fi
+          echo "Placeholder: $PLACEHOLDER → $APP_NAME"
+
+          find app/ios -type f \( \
+            -name "*.h"          -o -name "*.m"          -o -name "*.mm"       \
+            -o -name "*.swift"   -o -name "*.plist"       -o -name "*.storyboard" \
+            -o -name "*.pbxproj" -o -name "*.xcscheme"    -o -name "Podfile" \) \
+            -exec sed -i "" "s/$PLACEHOLDER/$APP_NAME/g" {} \;
+
+          find app/ios -depth -name "*${PLACEHOLDER}*" | while IFS= read -r old; do
+            dir=$(dirname "$old")
+            base=$(basename "$old")
+            newbase="${base//$PLACEHOLDER/$APP_NAME}"
+            if [ "$base" != "$newbase" ]; then
+              mv "$dir/$base" "$dir/$newbase"
+            fi
+          done
+
+          if [ ! -d "app/ios/$APP_NAME" ]; then
+            echo "ERROR: expected app/ios/$APP_NAME to be a directory after generation."
+            ls -la app/ios/
+            exit 1
+          fi
+
+          SCHEME="app/ios/$APP_NAME.xcodeproj/xcshareddata/xcschemes/$APP_NAME.xcscheme"
+          if [ ! -f "$SCHEME" ]; then
+            echo "ERROR: expected shared scheme not found at $SCHEME"
+            find "app/ios/$APP_NAME.xcodeproj" -name "*.xcscheme" 2>/dev/null
+            exit 1
+          fi
+          echo "Scheme OK: $SCHEME"
+
+          INFO_PLIST="app/ios/$APP_NAME/Info.plist"
+          if [ -f "$INFO_PLIST" ]; then
+            /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $BUNDLE_ID" "$INFO_PLIST"
+            echo "Bundle ID → $BUNDLE_ID"
+          fi
+          echo "ios/ folder ready."
+
+      # ── 3. GoogleService-Info.plist (placeholder is fine for simulator) ──────
+      - name: Set up GoogleService-Info.plist
+        script: |
+          python3 - <<'PYEOF'
+          import os, base64
+
+          APP_NAME  = os.environ['APP_NAME']
+          BUNDLE_ID = os.environ['BUNDLE_ID']
+          plist_dir  = f"app/ios/{APP_NAME}"
+          plist_path = f"{plist_dir}/GoogleService-Info.plist"
+          os.makedirs(plist_dir, exist_ok=True)
+
+          secret = os.environ.get('GOOGLE_SERVICE_INFO_PLIST', '').strip()
+          if secret:
+              with open(plist_path, 'wb') as f:
+                  f.write(base64.b64decode(secret))
+              print("GoogleService-Info.plist injected from secret.")
+          else:
+              print("No secret set — writing placeholder (fine for simulator).")
+              lines = [
+                  '<?xml version="1.0" encoding="UTF-8"?>',
+                  '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"'
+                  ' "http://www.apple.com/DTDs/PropertyList-1.0.dtd">',
+                  '<plist version="1.0">',
+                  '<dict>',
+                  '  <key>API_KEY</key>               <string>placeholder</string>',
+                  '  <key>GCM_SENDER_ID</key>         <string>000000000000</string>',
+                  '  <key>PLIST_VERSION</key>         <string>1</string>',
+                  f'  <key>BUNDLE_ID</key>             <string>{BUNDLE_ID}</string>',
+                  '  <key>PROJECT_ID</key>            <string>placeholder-project</string>',
+                  '  <key>STORAGE_BUCKET</key>        <string>placeholder-project.appspot.com</string>',
+                  '  <key>IS_ADS_ENABLED</key>        <false/>',
+                  '  <key>IS_ANALYTICS_ENABLED</key>  <false/>',
+                  '  <key>IS_APPINVITE_ENABLED</key>  <false/>',
+                  '  <key>IS_GCM_ENABLED</key>        <true/>',
+                  '  <key>IS_SIGNIN_ENABLED</key>     <false/>',
+                  '  <key>GOOGLE_APP_ID</key>         <string>1:000000000000:ios:0000000000000000000000</string>',
+                  '</dict>',
+                  '</plist>',
+              ]
+              with open(plist_path, 'w') as f:
+                  f.write('\n'.join(lines) + '\n')
+              print("Placeholder written.")
+          PYEOF
+
+      # ── 4. Patch Podfile (same fixes as the device build) ────────────────────
+      - name: Patch Podfile
+        script: |
+          PODFILE="app/ios/Podfile"
+          [ -f "$PODFILE" ] || { echo "ERROR: Podfile missing"; exit 1; }
+
+          python3 - <<'PYEOF'
+          import re
+
+          PODFILE = "app/ios/Podfile"
+          with open(PODFILE) as f:
+              src = f.read()
+          changed = False
+
+          if '$RNFirebaseAsStaticFramework' not in src:
+              src = '$RNFirebaseAsStaticFramework = true\n\n' + src
+              changed = True
+              print("+ $RNFirebaseAsStaticFramework = true")
+
+          if 'use_modular_headers!' not in src:
+              src = re.sub(r'(platform :ios[^\n]*\n)', r'\1use_modular_headers!\n', src, count=1)
+              changed = True
+              print("+ use_modular_headers!")
+
+          PERM_PODS = """\
+            permissions_path = '../node_modules/react-native-permissions/ios'
+            pod 'Permission-Camera',              :path => "#{permissions_path}/Camera"
+            pod 'Permission-LocationAlways',      :path => "#{permissions_path}/LocationAlways"
+            pod 'Permission-LocationWhenInUse',   :path => "#{permissions_path}/LocationWhenInUse"
+            pod 'Permission-Microphone',          :path => "#{permissions_path}/Microphone"
+            pod 'Permission-Notifications',       :path => "#{permissions_path}/Notifications"
+            pod 'Permission-PhotoLibrary',        :path => "#{permissions_path}/PhotoLibrary"
+            pod 'Permission-PhotoLibraryAddOnly', :path => "#{permissions_path}/PhotoLibraryAddOnly"
+          """
+          if 'Permission-Camera' not in src:
+              src = re.sub(
+                  r"(target ['\"][^'\"]+['\"] do[^\n]*\n)",
+                  lambda m: m.group(1) + PERM_PODS,
+                  src, count=1
+              )
+              changed = True
+              print("+ react-native-permissions handler pods")
+
+          if changed:
+              with open(PODFILE, 'w') as f:
+                  f.write(src)
+              print("Podfile patched.")
+          else:
+              print("Podfile already up-to-date.")
+          PYEOF
+
+      # ── 5. Patch Info.plist (privacy strings + vector-icon fonts) ────────────
+      - name: Patch Info.plist
+        script: |
+          INFO_PLIST="app/ios/$APP_NAME/Info.plist"
+          [ -f "$INFO_PLIST" ] || { echo "ERROR: Info.plist missing at $INFO_PLIST"; exit 1; }
+
+          add_string() {
+            local KEY="$1" VAL="$2"
+            if ! /usr/libexec/PlistBuddy -c "Print :$KEY" "$INFO_PLIST" &>/dev/null; then
+              /usr/libexec/PlistBuddy -c "Add :$KEY string $VAL" "$INFO_PLIST"
+              echo "  + $KEY"
+            fi
+          }
+
+          add_string NSCameraUsageDescription          "Used to take photos for your requests and profile."
+          add_string NSPhotoLibraryUsageDescription    "Used to attach photos to your requests."
+          add_string NSPhotoLibraryAddUsageDescription "Used to save photos from the app."
+          add_string NSMicrophoneUsageDescription      "Used for voice messages in chat."
+          add_string NSLocationWhenInUseUsageDescription          "Used to show nearby merchants and requests."
+          add_string NSLocationAlwaysAndWhenInUseUsageDescription "Used to show nearby merchants and requests."
+          add_string NSLocationAlwaysUsageDescription             "Used to show nearby merchants and requests."
+
+          if ! /usr/libexec/PlistBuddy -c "Print :UIAppFonts" "$INFO_PLIST" &>/dev/null; then
+            /usr/libexec/PlistBuddy -c "Add :UIAppFonts array" "$INFO_PLIST"
+          fi
+          add_font() {
+            local FONT="$1"
+            if ! /usr/libexec/PlistBuddy -c "Print :UIAppFonts" "$INFO_PLIST" 2>/dev/null | grep -qF "$FONT"; then
+              /usr/libexec/PlistBuddy -c "Add :UIAppFonts: string $FONT" "$INFO_PLIST"
+              echo "  + $FONT"
+            fi
+          }
+          for f in AntDesign Entypo EvilIcons Feather FontAwesome FontAwesome5_Brands \
+                   FontAwesome5_Regular FontAwesome5_Solid Foundation Ionicons \
+                   MaterialCommunityIcons MaterialIcons Octicons SimpleLineIcons Zocial; do
+            add_font "$f.ttf"
+          done
+          echo "Info.plist patched."
+
+      # ── 6. CocoaPods (with boost dead-mirror fix) ────────────────────────────
+      - name: Install CocoaPods
+        script: |
+          pod cache clean boost --all 2>/dev/null || true
+
+          BOOST_VER="1.76.0"
+          BOOST_FILE="boost_1_76_0.tar.bz2"
+          BOOST_URL="https://archives.boost.io/release/${BOOST_VER}/source/${BOOST_FILE}"
+          BOOST_PODSPEC="app/node_modules/react-native/third-party-podspecs/boost.podspec"
+
+          echo "Downloading boost ${BOOST_VER}…"
+          curl -L --fail --retry 3 "${BOOST_URL}" -o "/tmp/${BOOST_FILE}"
+          if ! file "/tmp/${BOOST_FILE}" | grep -q 'bzip2'; then
+            echo "ERROR: download is not a valid bzip2 archive:"
+            file "/tmp/${BOOST_FILE}"; head -c 512 "/tmp/${BOOST_FILE}"; exit 1
+          fi
+          sed -i "" "s|boostorg.jfrog.io/artifactory/main/release|archives.boost.io/release|g" "${BOOST_PODSPEC}"
+          ACTUAL_SHA=$(shasum -a 256 "/tmp/${BOOST_FILE}" | awk '{print $1}')
+          OLD_SHA=$(grep -oE '[a-f0-9]{64}' "${BOOST_PODSPEC}" | head -1)
+          if [ "${OLD_SHA}" != "${ACTUAL_SHA}" ]; then
+            sed -i "" "s/${OLD_SHA}/${ACTUAL_SHA}/" "${BOOST_PODSPEC}"
+          fi
+          PODS_CACHE="${HOME}/Library/Caches/CocoaPods/Pods/External/boost"
+          mkdir -p "${PODS_CACHE}"
+          cp "/tmp/${BOOST_FILE}" "${PODS_CACHE}/"
+
+          cd app/ios && pod install --repo-update
+
+      # ── 7. Build UNSIGNED .app for the iOS Simulator ─────────────────────────
+      - name: Build for iOS Simulator (no signing)
+        script: |
+          set -o pipefail
+          xcodebuild \
+            -workspace "app/ios/$APP_NAME.xcworkspace" \
+            -scheme      "$APP_NAME" \
+            -configuration Release \
+            -sdk         iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath /tmp/derived \
+            CODE_SIGNING_ALLOWED=NO \
+            build \
+            | xcpretty
+
+      # ── 8. Zip the .app for Appetize.io upload ───────────────────────────────
+      - name: Package .app for Appetize
+        script: |
+          APP_PATH="/tmp/derived/Build/Products/Release-iphonesimulator/$APP_NAME.app"
+          if [ ! -d "$APP_PATH" ]; then
+            echo "ERROR: built .app not found at $APP_PATH"
+            find /tmp/derived/Build/Products -name "*.app" -maxdepth 2 2>/dev/null
+            exit 1
+          fi
+          cd "$(dirname "$APP_PATH")"
+          # -y preserves symlinks inside the .app bundle (required by Appetize)
+          zip -r -y "/tmp/$APP_NAME-simulator.app.zip" "$APP_NAME.app"
+          echo "Packaged:"
+          ls -lh "/tmp/$APP_NAME-simulator.app.zip"
+
+    artifacts:
+      - /tmp/*-simulator.app.zip
     publishing:
       email:
         recipients:
