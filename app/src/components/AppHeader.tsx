@@ -18,6 +18,7 @@ import {RootStackParamList} from '../types/navigation';
 import NotificationBell from './NotificationBell';
 import {Colors} from '../theme';
 
+// Dev-only seeded accounts for the in-app account switcher. Rendered only when __DEV__.
 const TEST_ACCOUNTS = [
   {phone: '+962780000004', name: 'Khalid', role: 'BUYER'},
   {phone: '+962780000005', name: 'Layla',  role: 'BUYER'},
@@ -161,41 +162,45 @@ export default function AppHeader({accentColor = Colors.primary, onBack, title, 
             <View style={styles.items}>
               <DrawerItem icon="👤" label="My Profile" onPress={goToProfile} />
 
-              {/* Test account switcher */}
-              <TouchableOpacity
-                style={sw.header}
-                onPress={() => setSwitcherOpen(o => !o)}
-                activeOpacity={0.7}>
-                <Text style={sw.headerIcon}>🔄</Text>
-                <Text style={sw.headerLabel}>Switch Account</Text>
-                <Text style={sw.chevron}>{switcherOpen ? '▾' : '›'}</Text>
-              </TouchableOpacity>
-
-              {switcherOpen && TEST_ACCOUNTS.map(acc => {
-                const isCurrent = user?.phone === acc.phone;
-                const isLoading = switchingPhone === acc.phone;
-                return (
+              {/* Dev-only test account switcher */}
+              {__DEV__ && (
+                <>
                   <TouchableOpacity
-                    key={acc.phone}
-                    style={[sw.row, isCurrent && sw.rowActive]}
-                    onPress={() => handleSwitchAccount(acc.phone)}
-                    disabled={!!switchingPhone}
+                    style={sw.header}
+                    onPress={() => setSwitcherOpen(o => !o)}
                     activeOpacity={0.7}>
-                    <View style={[sw.roleBadge, acc.role === 'MERCHANT' && sw.roleBadgeMerchant]}>
-                      <Text style={sw.roleText}>{acc.role === 'BUYER' ? 'B' : 'M'}</Text>
-                    </View>
-                    <View style={sw.info}>
-                      <Text style={sw.name}>{acc.name}</Text>
-                      <Text style={sw.role}>{acc.role}</Text>
-                    </View>
-                    {isLoading
-                      ? <ActivityIndicator size="small" color="#6B7280" />
-                      : isCurrent
-                        ? <Text style={sw.check}>✓</Text>
-                        : null}
+                    <Text style={sw.headerIcon}>🔄</Text>
+                    <Text style={sw.headerLabel}>Switch Account</Text>
+                    <Text style={sw.chevron}>{switcherOpen ? '▾' : '›'}</Text>
                   </TouchableOpacity>
-                );
-              })}
+
+                  {switcherOpen && TEST_ACCOUNTS.map(acc => {
+                    const isCurrent = user?.phone === acc.phone;
+                    const isLoading = switchingPhone === acc.phone;
+                    return (
+                      <TouchableOpacity
+                        key={acc.phone}
+                        style={[sw.row, isCurrent && sw.rowActive]}
+                        onPress={() => handleSwitchAccount(acc.phone)}
+                        disabled={!!switchingPhone}
+                        activeOpacity={0.7}>
+                        <View style={[sw.roleBadge, acc.role === 'MERCHANT' && sw.roleBadgeMerchant]}>
+                          <Text style={sw.roleText}>{acc.role === 'BUYER' ? 'B' : 'M'}</Text>
+                        </View>
+                        <View style={sw.info}>
+                          <Text style={sw.name}>{acc.name}</Text>
+                          <Text style={sw.role}>{acc.role}</Text>
+                        </View>
+                        {isLoading
+                          ? <ActivityIndicator size="small" color="#6B7280" />
+                          : isCurrent
+                            ? <Text style={sw.check}>✓</Text>
+                            : null}
+                      </TouchableOpacity>
+                    );
+                  })}
+                </>
+              )}
             </View>
 
             {/* Sign out */}

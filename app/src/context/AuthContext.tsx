@@ -25,6 +25,7 @@ interface AuthContextValue {
   logout: () => Promise<void>;
   clearError: () => void;
   updateProfile: (payload: {role?: 'BUYER' | 'MERCHANT'; firstName?: string; lastName?: string; city?: string; country?: string}) => Promise<void>;
+  /** Dev-only: instantly log in as a seeded test account. No-op in release builds. */
   switchAccount: (phone: string) => Promise<void>;
 }
 
@@ -172,6 +173,11 @@ export function AuthProvider({children}: {children: React.ReactNode}) {
   );
 
   const switchAccount = useCallback(async (phone: string) => {
+    // Dev-only helper: relies on the backend's seeded test OTP. Hard-guarded so a
+    // release build can never authenticate through this path.
+    if (!__DEV__) {
+      throw new Error('switchAccount is only available in development builds');
+    }
     const otpRes = await AuthAPI.sendOTP(phone);
     if (!otpRes.success) {
       const msg = (otpRes as any).message ?? 'Failed to send OTP';

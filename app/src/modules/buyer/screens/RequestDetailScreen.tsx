@@ -33,9 +33,10 @@ import {getMerchantProfile} from '../../../api/reviews';
 import {useAuth} from '../../../context/AuthContext';
 import AppHeader from '../../../components/AppHeader';
 import ImageViewerModal from '../../../components/ImageViewerModal';
+import {SERVER_URL} from '../../../api/client';
 import {Colors} from '../../../theme';
 
-const API_BASE = 'http://10.0.2.2:3000';
+const API_BASE = SERVER_URL;
 const chatAudioPlayer = new AudioRecorderPlayer();
 
 function formatDuration(secs: number): string {

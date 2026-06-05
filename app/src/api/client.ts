@@ -5,15 +5,13 @@ import axios, {
   InternalAxiosRequestConfig,
 } from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Platform} from 'react-native';
+import {API_BASE_URL, SERVER_URL as CONFIG_SERVER_URL} from '../config/env';
 
-const BASE_URL =
-  Platform.OS === 'android'
-    ? 'http://10.0.2.2:3000/api/v1'
-    : 'http://localhost:3000/api/v1';
+const BASE_URL = API_BASE_URL;
 
-export const SERVER_URL =
-  Platform.OS === 'android' ? 'http://10.0.2.2:3000' : 'http://localhost:3000';
+// Re-exported so existing imports (`import {SERVER_URL} from '../api/client'`)
+// keep working; the value is sourced from the centralized env config.
+export const SERVER_URL = CONFIG_SERVER_URL;
 
 export function getImageUrl(imagePath: string): string {
   if (!imagePath) return '';

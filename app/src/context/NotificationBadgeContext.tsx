@@ -2,9 +2,10 @@ import React, {createContext, useCallback, useContext, useEffect, useRef, useSta
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {io, Socket} from 'socket.io-client';
 import {getMyNotifications} from '../api/notifications';
+import {SERVER_URL} from '../api/client';
 import {useAuth} from './AuthContext';
 
-const API_BASE = 'http://10.0.2.2:3000';
+const API_BASE = SERVER_URL;
 
 interface BadgeContextValue {
   unreadCount: number;

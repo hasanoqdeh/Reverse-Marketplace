@@ -24,12 +24,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {RootStackParamList} from '../../types/navigation';
 import {ChatMessage} from '../../types/api';
 import {getMessages, getRoom, sendMessage, markRoomRead, uploadChatMedia} from '../../api/chat';
+import {SERVER_URL} from '../../api/client';
 import {useAuth} from '../../context/AuthContext';
 import {Colors} from '../../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ChatRoom'>;
 
-const API_BASE = 'http://10.0.2.2:3000';
+const API_BASE = SERVER_URL;
 const ACCENT = Colors.primary;
 const audioPlayer = new AudioRecorderPlayer();
 

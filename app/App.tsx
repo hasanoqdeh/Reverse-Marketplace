@@ -5,6 +5,7 @@ import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 import {AuthProvider} from './src/context/AuthContext';
+import ErrorBoundary from './src/components/ErrorBoundary';
 import {RootStackParamList} from './src/types/navigation';
 import SplashScreen from './src/screens/splash/SplashScreen';
 import OnboardingScreen from './src/screens/onboarding/OnboardingScreen';
@@ -28,6 +29,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 function App(): React.JSX.Element {
   return (
     <GestureHandlerRootView style={{flex: 1}}>
+    <ErrorBoundary>
     <SafeAreaProvider>
       <AuthProvider>
         <NavigationContainer>
@@ -54,6 +56,7 @@ function App(): React.JSX.Element {
         </NavigationContainer>
       </AuthProvider>
     </SafeAreaProvider>
+    </ErrorBoundary>
     </GestureHandlerRootView>
   );
 }

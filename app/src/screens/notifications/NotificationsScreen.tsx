@@ -16,11 +16,12 @@ import {
 } from '../../api/notifications';
 import { RootStackParamList } from '../../types/navigation';
 import AppHeader from '../../components/AppHeader';
+import {SERVER_URL} from '../../api/client';
 import {Colors} from '../../theme';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
-const API_BASE = 'http://10.0.2.2:3000';
+const API_BASE = SERVER_URL;
 
 const TYPE_META: Record<string, { color: string; icon: string; label: string }> = {
   NEW_MESSAGE:        { color: '#7C3AED', icon: '💬', label: 'Message' },
